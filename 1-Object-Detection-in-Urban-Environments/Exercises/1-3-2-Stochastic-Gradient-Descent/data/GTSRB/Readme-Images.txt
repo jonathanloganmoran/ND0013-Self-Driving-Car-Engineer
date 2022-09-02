@@ -16,7 +16,7 @@ Archive content
 **********************************************
 This archive contains the following structure:
 
-There is one directory for each of the 43 classes (0000 - 00043).
+There is one directory for each of the 43 classes (0000 - 00042).
 Each directory contains the corresponding training images and one 
 text file with annotations, eg. GT-00000.csv. 
 
