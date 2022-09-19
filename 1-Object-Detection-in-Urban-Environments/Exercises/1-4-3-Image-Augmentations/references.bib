@@ -1,0 +1,108 @@
+%% This BibTeX bibliography file was created using BibDesk.
+%% https://bibdesk.sourceforge.io/
+
+%% Created for Jonathan Moran at 2022-09-19 15:21:20 -0700 
+
+
+%% Saved with string encoding Unicode (UTF-8) 
+
+
+
+@misc{https://doi.org/10.48550/arxiv.2004.00831,
+	annote = {Data augmentation has been widely adopted for object detection in 3D point clouds. However, all previous related efforts have focused on manually designing specific data augmentation methods for individual architectures. In this work, we present the first attempt to automate the design of data augmentation policies for 3D object detection. We introduce the Progressive Population Based Augmentation (PPBA) algorithm, which learns to optimize augmentation strategies by narrowing down the search space and adopting the best parameters discovered in previous iterations. On the KITTI 3D detection test set, PPBA improves the StarNet detector by substantial margins on the moderate difficulty category of cars, pedestrians, and cyclists, outperforming all current state-of-the-art single-stage detection models. Additional experiments on the Waymo Open Dataset indicate that PPBA continues to effectively improve the StarNet and PointPillars detectors on a 20x larger dataset compared to KITTI. The magnitude of the improvements may be comparable to advances in 3D perception architectures and the gains come without an incurred cost at inference time. In subsequent experiments, we find that PPBA may be up to 10x more data efficient than baseline 3D detection models without augmentation, highlighting that 3D detection models may achieve competitive accuracy with far fewer labeled examples.},
+	author = {Cheng, Shuyang and Leng, Zhaoqi and Cubuk, Ekin Dogus and Zoph, Barret and Bai, Chunyan and Ngiam, Jiquan and Song, Yang and Caine, Benjamin and Vasudevan, Vijay and Li, Congcong and Le, Quoc V. and Shlens, Jonathon and Anguelov, Dragomir},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 14:43:11 -0700},
+	date-modified = {2022-09-19 14:43:40 -0700},
+	doi = {10.48550/ARXIV.2004.00831},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Improving 3D Object Detection through Progressive Population Based Augmentation},
+	url = {https://arxiv.org/abs/2004.00831},
+	year = {2020}}
+
+@misc{https://doi.org/10.48550/arxiv.1805.09501,
+	abstract = {Data augmentation is an effective technique for improving the accuracy of modern image classifiers. However, current data augmentation implementations are manually designed. In this paper, we describe a simple procedure called AutoAugment to automatically search for improved data augmentation policies. In our implementation, we have designed a search space where a policy consists of many sub-policies, one of which is randomly chosen for each image in each mini-batch. A sub-policy consists of two operations, each operation being an image processing function such as translation, rotation, or shearing, and the probabilities and magnitudes with which the functions are applied. We use a search algorithm to find the best policy such that the neural network yields the highest validation accuracy on a target dataset. Our method achieves state-of-the-art accuracy on CIFAR-10, CIFAR-100, SVHN, and ImageNet (without additional data). On ImageNet, we attain a Top-1 accuracy of 83.5% which is 0.4% better than the previous record of 83.1%. On CIFAR-10, we achieve an error rate of 1.5%, which is 0.6% better than the previous state-of-the-art. Augmentation policies we find are transferable between datasets. The policy learned on ImageNet transfers well to achieve significant improvements on other datasets, such as Oxford Flowers, Caltech-101, Oxford-IIT Pets, FGVC Aircraft, and Stanford Cars.},
+	author = {Cubuk, Ekin D. and Zoph, Barret and Mane, Dandelion and Vasudevan, Vijay and Le, Quoc V.},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 14:34:35 -0700},
+	date-modified = {2022-09-19 14:34:58 -0700},
+	doi = {10.48550/ARXIV.1805.09501},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), Machine Learning (cs.LG), Machine Learning (stat.ML), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {AutoAugment: Learning Augmentation Policies from Data},
+	url = {https://arxiv.org/abs/1805.09501},
+	year = {2018},
+	bdsk-url-1 = {https://arxiv.org/abs/1805.09501},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1805.09501}}
+
+@misc{https://doi.org/10.48550/arxiv.1702.05538,
+	abstract = {Dataset augmentation, the practice of applying a wide array of domain-specific transformations to synthetically expand a training set, is a standard tool in supervised learning. While effective in tasks such as visual recognition, the set of transformations must be carefully designed, implemented, and tested for every new domain, limiting its re-use and generality. In this paper, we adopt a simpler, domain-agnostic approach to dataset augmentation. We start with existing data points and apply simple transformations such as adding noise, interpolating, or extrapolating between them. Our main insight is to perform the transformation not in input space, but in a learned feature space. A re-kindling of interest in unsupervised representation learning makes this technique timely and more effective. It is a simple proposal, but to-date one that has not been tested empirically. Working in the space of context vectors generated by sequence-to-sequence models, we demonstrate a technique that is effective for both static and sequential data.},
+	author = {DeVries, Terrance and Taylor, Graham W.},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 14:30:33 -0700},
+	date-modified = {2022-09-19 15:01:25 -0700},
+	doi = {10.48550/ARXIV.1702.05538},
+	keywords = {Machine Learning (stat.ML), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Dataset Augmentation in Feature Space},
+	url = {https://arxiv.org/abs/1702.05538},
+	year = {2017},
+	bdsk-url-1 = {https://arxiv.org/abs/1702.05538},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1702.05538}}
+
+@misc{https://doi.org/10.48550/arxiv.1905.05393,
+	abstract = {A key challenge in leveraging data augmentation for neural network training is choosing an effective augmentation policy from a large search space of candidate operations. Properly chosen augmentation policies can lead to significant generalization improvements; however, state-of-the-art approaches such as AutoAugment are computationally infeasible to run for the ordinary user. In this paper, we introduce a new data augmentation algorithm, Population Based Augmentation (PBA), which generates nonstationary augmentation policy schedules instead of a fixed augmentation policy. We show that PBA can match the performance of AutoAugment on CIFAR-10, CIFAR-100, and SVHN, with three orders of magnitude less overall compute. On CIFAR-10 we achieve a mean test error of 1.46%, which is a slight improvement upon the current state-of-the-art. The code for PBA is open source and is available at this https URL.},
+	author = {Ho, Daniel and Liang, Eric and Stoica, Ion and Abbeel, Pieter and Chen, Xi},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 14:23:12 -0700},
+	date-modified = {2022-09-19 14:35:32 -0700},
+	doi = {10.48550/ARXIV.1905.05393},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), Machine Learning (cs.LG), Machine Learning (stat.ML), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Population Based Augmentation: Efficient Learning of Augmentation Policy Schedules},
+	url = {https://arxiv.org/abs/1905.05393},
+	year = {2019},
+	bdsk-url-1 = {https://arxiv.org/abs/1905.05393},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1905.05393}}
+
+@misc{https://doi.org/10.48550/arxiv.1909.13719,
+	abstract = {Recent work has shown that data augmentation has the potential to significantly improve the generalization of deep learning models. Recently, automated augmentation strategies have led to state-of-the-art results in image classification and object detection. While these strategies were optimized for improving validation accuracy, they also led to state-of-the-art results in semi-supervised learning and improved robustness to common corruptions of images. An obstacle to a large-scale adoption of these methods is a separate search phase which increases the training complexity and may substantially increase the computational cost. Additionally, due to the separate search phase, these approaches are unable to adjust the regularization strength based on model or dataset size. Automated augmentation policies are often found by training small models on small datasets and subsequently applied to train larger models. In this work, we remove both of these obstacles. RandAugment has a significantly reduced search space which allows it to be trained on the target task with no need for a separate proxy task. Furthermore, due to the parameterization, the regularization strength may be tailored to different model and dataset sizes. RandAugment can be used uniformly across different tasks and datasets and works out of the box, matching or surpassing all previous automated augmentation approaches on CIFAR-10/100, SVHN, and ImageNet. On the ImageNet dataset we achieve 85.0% accuracy, a 0.6% increase over the previous state-of-the-art and 1.0% increase over baseline augmentation. On object detection, RandAugment leads to 1.0-1.3% improvement over baseline augmentation, and is within 0.3% mAP of AutoAugment on COCO. Finally, due to its interpretable hyperparameter, RandAugment may be used to investigate the role of data augmentation with varying model and dataset size. Code is available online.},
+	author = {Cubuk, Ekin D. and Zoph, Barret and Shlens, Jonathon and Le, Quoc V.},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 14:02:16 -0700},
+	date-modified = {2022-09-19 15:07:05 -0700},
+	doi = {10.48550/ARXIV.1909.13719},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {RandAugment: Practical automated data augmentation with a reduced search space},
+	url = {https://arxiv.org/abs/1909.13719},
+	year = {2019},
+	bdsk-url-1 = {https://arxiv.org/abs/1909.13719},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1909.13719}}
+
+@article{https://doi.org/10.48550/arxiv.1709.01643,
+	author = {Ratner, Alexander J. and Ehrenberg, Henry R. and Hussain, Zeshan and Dunnmon, Jared and R{\'e}, Christopher},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-19 13:53:07 -0700},
+	date-modified = {2022-09-19 13:53:14 -0700},
+	doi = {10.48550/ARXIV.1709.01643},
+	keywords = {Machine Learning (stat.ML), Computer Vision and Pattern Recognition (cs.CV), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Learning to Compose Domain-Specific Transformations for Data Augmentation},
+	url = {https://arxiv.org/abs/1709.01643},
+	year = {2017},
+	bdsk-url-1 = {https://arxiv.org/abs/1709.01643},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1709.01643}}
+
+@article{7906545,
+	abstract = {A recurring problem faced when training neural networks is that there is typically not enough data to maximize the generalization capability of deep neural networks. There are many techniques to address this, including data augmentation, dropout, and transfer learning. In this paper, we introduce an additional method, which we call smart augmentation and we show how to use it to increase the accuracy and reduce over fitting on a target network. Smart augmentation works, by creating a network that learns how to generate augmented data during the training process of a target network in a way that reduces that networks loss. This allows us to learn augmentations that minimize the error of that network. Smart augmentation has shown the potential to increase accuracy by demonstrably significant measures on all data sets tested. In addition, it has shown potential to achieve similar or improved performance levels with significantly smaller network sizes in a number of tested cases.},
+	author = {Lemley, Joseph and Bazrafkan, Shabab and Corcoran, Peter},
+	date-modified = {2022-09-19 14:59:09 -0700},
+	doi = {10.1109/ACCESS.2017.2696121},
+	journal = {IEEE Access},
+	pages = {5858-5869},
+	title = {Smart Augmentation Learning an Optimal Data Augmentation Strategy},
+	volume = {5},
+	year = {2017},
+	bdsk-url-1 = {https://doi.org/10.1109/ACCESS.2017.2696121}}
