@@ -1,6 +1,6 @@
 # Self-Driving Car Engineer Nanodegree
-## Udacity ND0013 | 2022
-This is the repository for the ND0013 - Self-Driving Car Engineer nanodegree given at Udacity during the 2022 session.
+## Udacity ND0013 | 2022 Cohort
+This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree programme given at Udacity during the 2022 session.
 
 **Note**: Work in this repository is ongoing and has not yet been finalised.
 
@@ -22,7 +22,8 @@ The following topics are covered in course projects:
 * Binary masks and image masking
 * Geometric transformations (affine, euclidean, etc.)
 * Transformation and rotation matrices
-* Data augmentation (e.g., random cropping, re-scaling, generators, etc.)
+* Data augmentation (e.g., random cropping, re-scaling, data generators, etc.)
+* Data augmentation with Albumentations (simulating motion, occlusions, time-of-day, etc.)
 * ETL pipelines
 * Serialising binary datatypes (`.tfrecords` and `TFRecordDataset`)
 * Protocol buffers (Google `protobuf`)
