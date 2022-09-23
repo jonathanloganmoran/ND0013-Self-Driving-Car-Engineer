@@ -1,0 +1,66 @@
+%% This BibTeX bibliography file was created using BibDesk.
+%% https://bibdesk.sourceforge.io/
+
+%% Created for Jonathan Moran at 2022-09-22 19:00:50 -0700 
+
+
+%% Saved with string encoding Unicode (UTF-8) 
+
+
+
+@misc{https://doi.org/10.48550/arxiv.1704.04503,
+	abstract = {Non-maximum suppression is an integral part of the object detection pipeline. First, it sorts all detection boxes on the basis of their scores. The detection box M with the maximum score is selected and all other detection boxes with a significant overlap (using a pre-defined threshold) with M are suppressed. This process is recursively applied on the remaining boxes. As per the design of the algorithm, if an object lies within the predefined overlap threshold, it leads to a miss. To this end, we propose Soft-NMS, an algorithm which decays the detection scores of all other objects as a continuous function of their overlap with M. Hence, no object is eliminated in this process. Soft-NMS obtains consistent improvements for the coco-style mAP metric on standard datasets like PASCAL VOC 2007 (1.7% for both R-FCN and Faster-RCNN) and MS-COCO (1.3% for R-FCN and 1.1% for Faster-RCNN) by just changing the NMS algorithm without any additional hyper-parameters. Using Deformable-RFCN, Soft-NMS improves state-of-the-art in object detection from 39.8% to 40.9% with a single model. Further, the computational complexity of Soft-NMS is the same as traditional NMS and hence it can be efficiently implemented. Since Soft-NMS does not require any extra training and is simple to implement, it can be easily integrated into any object detection pipeline. Code for Soft-NMS is publicly available on GitHub (http://bit.ly/2nJLNMu).},
+	author = {Bodla, Navaneeth and Singh, Bharat and Chellappa, Rama and Davis, Larry S.},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-22 18:58:48 -0700},
+	date-modified = {2022-09-22 18:59:08 -0700},
+	doi = {10.48550/ARXIV.1704.04503},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Soft-NMS -- Improving Object Detection With One Line of Code},
+	url = {https://arxiv.org/abs/1704.04503},
+	year = {2017}}
+
+@article{5255236,
+	abstract = {We describe an object detection system based on mixtures of multiscale deformable part models. Our system is able to represent highly variable object classes and achieves state-of-the-art results in the PASCAL object detection challenges. While deformable part models have become quite popular, their value had not been demonstrated on difficult benchmarks such as the PASCAL data sets. Our system relies on new methods for discriminative training with partially labeled data. We combine a margin-sensitive approach for data-mining hard negative examples with a formalism we call latent SVM. A latent SVM is a reformulation of MI--SVM in terms of latent variables. A latent SVM is semiconvex, and the training problem becomes convex once latent information is specified for the positive examples. This leads to an iterative training algorithm that alternates between fixing latent values for positive examples and optimizing the latent SVM objective function.},
+	author = {Felzenszwalb, Pedro F. and Girshick, Ross B. and McAllester, David and Ramanan, Deva},
+	date-added = {2022-09-22 17:05:15 -0700},
+	date-modified = {2022-09-22 17:05:32 -0700},
+	doi = {10.1109/TPAMI.2009.167},
+	journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+	number = {9},
+	pages = {1627-1645},
+	title = {Object Detection with Discriminatively Trained Part-Based Models},
+	volume = {32},
+	year = {2010}}
+
+@misc{https://doi.org/10.48550/arxiv.1506.01497,
+	abstract = {State-of-the-art object detection networks depend on region proposal algorithms to hypothesize object locations. Advances like SPPnet and Fast R-CNN have reduced the running time of these detection networks, exposing region proposal computation as a bottleneck. In this work, we introduce a Region Proposal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals. An RPN is a fully convolutional network that simultaneously predicts object bounds and objectness scores at each position. The RPN is trained end-to-end to generate high-quality region proposals, which are used by Fast R-CNN for detection. We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features---using the recently popular terminology of neural networks with 'attention' mechanisms, the RPN component tells the unified network where to look. For the very deep VGG-16 model, our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007, 2012, and MS COCO datasets with only 300 proposals per image. In ILSVRC and COCO 2015 competitions, Faster R-CNN and RPN are the foundations of the 1st-place winning entries in several tracks. Code has been made publicly available at https://github.com/ShaoqingRen/faster_rcnn.},
+	author = {Ren, Shaoqing and He, Kaiming and Girshick, Ross and Sun, Jian},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-09-22 13:48:32 -0700},
+	date-modified = {2022-09-22 13:51:26 -0700},
+	doi = {10.48550/ARXIV.1506.01497},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks},
+	url = {https://arxiv.org/abs/1506.01497},
+	year = {2015}}
+
+@article{Uijlings:2013aa,
+	abstract = {This paper addresses the problem of generating possible object locations for use in object recognition. We introduce selective search which combines the strength of both an exhaustive search and segmentation. Like segmentation, we use the image structure to guide our sampling process. Like exhaustive search, we aim to capture all possible object locations. Instead of a single technique to generate possible object locations, we diversify our search and use a variety of complementary image partitionings to deal with as many image conditions as possible. Our selective search results in a small set of data-driven, class-independent, high quality locations, yielding 99 {\%} recall and a Mean Average Best Overlap of 0.879 at 10,097 locations. The reduced number of locations compared to an exhaustive search enables the use of stronger machine learning techniques and stronger appearance models for object recognition. In this paper we show that our selective search enables the use of the powerful Bag-of-Words model for recognition. The selective search software is made publicly available (Software: http://disi.unitn.it/\~{}uijlings/SelectiveSearch.html).},
+	author = {Uijlings, J. R. R. and van de Sande, K. E. A. and Gevers, T. and Smeulders, A. W. M.},
+	date = {2013/09/01},
+	date-added = {2022-09-22 13:00:51 -0700},
+	date-modified = {2022-09-22 13:00:51 -0700},
+	doi = {10.1007/s11263-013-0620-5},
+	id = {Uijlings2013},
+	isbn = {1573-1405},
+	journal = {International Journal of Computer Vision},
+	number = {2},
+	pages = {154--171},
+	title = {Selective Search for Object Recognition},
+	url = {https://doi.org/10.1007/s11263-013-0620-5},
+	volume = {104},
+	year = {2013},
+	bdsk-url-1 = {https://doi.org/10.1007/s11263-013-0620-5}}
