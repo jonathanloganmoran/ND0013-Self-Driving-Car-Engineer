@@ -9,9 +9,10 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 The following topics are covered in course projects:
 * Image classification with Convolutional Neural Networks (CNNs)
 * Object detection with TensorFlow API
-* Precision and recall metrics for object detection
+* Precision/recall, AP, mAP metrics for object detection
 * Bounding box prediction
 * Intersection over Union (IoU)
+* Non-maximum Suppression / Soft-NMS
 * Machine Learning (ML) workflows with TensorFlow Sequential, Functional API
 * Model subclassing with TensorFlow
 * Camera calibration (DLT, Levenberg-Marquardt)
@@ -22,13 +23,14 @@ The following topics are covered in course projects:
 * Binary masks and image masking
 * Geometric transformations (affine, euclidean, etc.)
 * Transformation and rotation matrices
-* Data augmentation (e.g., random cropping, re-scaling, data generators, etc.)
+* Data augmentation (e.g., random cropping, re-scaling, data generators, selective blending, etc.)
 * Data augmentation with Albumentations (simulating motion, occlusions, time-of-day, etc.)
+* Automated data augmentation (e.g., proxy/target tasks, policies, Smart/RandAugment, P/PBA)
 * ETL pipelines
 * Serialising binary datatypes (`.tfrecords` and `TFRecordDataset`)
 * Protocol buffers (Google `protobuf`)
 * Stochastic gradient descent
-* Learning rate schedules
+* Custom learning rate schedules
 * Pooling and convolutional layers
 * Padding and stride hyperparameters
 * Filters and feature maps in 1D/2D
