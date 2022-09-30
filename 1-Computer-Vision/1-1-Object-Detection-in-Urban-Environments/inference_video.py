@@ -19,7 +19,7 @@ def main(labelmap_path, model_path, tf_record_path, config_path, output_path):
     Use a model and a tf record file and create a mp4 video
     args:
     - labelmap_path [str]: path to labelmap file
-    - model_path [str]: path to exported model
+    - model_path [str]: path to exported model 
     - tf_record_path [str]: path to tf record file to visualize
     - config_path [str]: path to config file
     - output_path [str]: path to mp4 file
@@ -52,15 +52,15 @@ def main(labelmap_path, model_path, tf_record_path, config_path, output_path):
     images = []
     logger.info(f'Inference on {tf_record_path}')
     for idx, batch in enumerate(dataset):
-        if idx % 10 == 0:
+        if idx % 50:
             logger.info(f'Step: {idx}')
-        # add new axis and feed into model
+        # add new axis and feed into model 
         input_tensor = batch['image']
         image_np = input_tensor.numpy().astype(np.uint8)
         input_tensor = input_tensor[tf.newaxis, ...]
 
         detections = detect_fn(input_tensor)
-
+        
         # tensor -> numpy arr, remove one dimensions
         num_detections = int(detections.pop('num_detections'))
         detections = {key: value[0, ...].numpy()
@@ -70,19 +70,19 @@ def main(labelmap_path, model_path, tf_record_path, config_path, output_path):
         # detection_classes should be ints.
         detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-        image_np_with_detections = \
-            viz_utils.visualize_boxes_and_labels_on_image_array(
-                image_np,
-                detections['detection_boxes'],
-                detections['detection_classes'],
-                detections['detection_scores'],
-                category_index,
-                use_normalized_coordinates=True,
-                max_boxes_to_draw=200,
-                min_score_thresh=.30,
-                agnostic_mode=False)
+        image_np_with_detections = image_np.copy()
+        viz_utils.visualize_boxes_and_labels_on_image_array(
+            image_np_with_detections,
+            detections['detection_boxes'],
+            detections['detection_classes'],
+            detections['detection_scores'],
+            category_index,
+            use_normalized_coordinates=True,
+            max_boxes_to_draw=200,
+            min_score_thresh=.30,
+            agnostic_mode=False)
         images.append(image_np_with_detections)
-
+    
     # now we can create the animation
     f = plt.figure()
     f.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
@@ -93,12 +93,12 @@ def main(labelmap_path, model_path, tf_record_path, config_path, output_path):
     def animate(idx):
         image = images[idx]
         im_obj.set_data(image)
-
-    anim = animation.FuncAnimation(f, animate, frames=len(images))
+        
+    anim = animation.FuncAnimation(f, animate, frames=198)
     anim.save(output_path, fps=5, dpi=300)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     logger = get_module_logger(__name__)
 
     parser = argparse.ArgumentParser(description='Create video')
@@ -109,14 +109,14 @@ if __name__ == "__main__":
     parser.add_argument('--tf_record_path', required=True, type=str,
                         help='path to the tf record file')
     parser.add_argument('--config_path', required=False, type=str,
-                        default='pipeline.config',
+                        default='pipeline.config', 
                         help='path to the config file')
-    parser.add_argument('--output_path', required=False, type=str,
-                        default='animation.mp4',
+    parser.add_argument('--output_path', required=False, type=str, 
+                        default='animation.mp4', 
                         help='path of the saved file')
     args = parser.parse_args()
-    main(args.labelmap_path,
-         args.model_path,
-         args.tf_record_path,
-         args.config_path,
+    main(args.labelmap_path, 
+         args.model_path, 
+         args.tf_record_path, 
+         args.config_path, 
          args.output_path)

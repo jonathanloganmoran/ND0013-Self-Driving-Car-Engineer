@@ -50,7 +50,7 @@ flags.DEFINE_string(
     '`checkpoint_dir` is provided, this binary operates in eval-only mode, '
     'writing resulting metrics to `model_dir`.')
 
-flags.DEFINE_integer('eval_timeout', 60, 'Number of seconds to wait for an'
+flags.DEFINE_integer('eval_timeout', 3600, 'Number of seconds to wait for an'
                      'evaluation checkpoint before exiting.')
 
 flags.DEFINE_bool('use_tpu', False, 'Whether the job is executing on a TPU.')
@@ -63,7 +63,7 @@ flags.DEFINE_integer(
     'MultiWorkerMirroredStrategy. When num_workers = 1 it uses '
     'MirroredStrategy.')
 flags.DEFINE_integer(
-    'checkpoint_every_n', 2000, 'Integer defining how often we checkpoint.')
+    'checkpoint_every_n', 500, 'Integer defining how often we checkpoint.')
 flags.DEFINE_boolean('record_summaries', True,
                      ('Whether or not to record summaries during'
                       ' training.'))
