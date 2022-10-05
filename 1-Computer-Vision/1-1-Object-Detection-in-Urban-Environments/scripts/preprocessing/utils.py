@@ -12,19 +12,24 @@ from waymo_open_dataset import dataset_pb2 as open_dataset
 RepeatedCompositeContainer = TypeVar(google.protobuf.pyext._message.RepeatedCompositeContainer)
 
 
-def get_dataset(tfrecord_path, label_map='label_map.pbtxt'):
+def get_dataset(
+        path_tf_record: str, path_label_map: str
+) -> tf.data.Dataset:
+    """Opens a `.tfrecord` file and creates a `tf.data.Dataset` instance.
+
+    :param path_tf_record: str, absolute path to a `.tfrecord` file.
+    :param path_label_map: str, absolute path to the `.pbtxt` file,
+        this should point to a StringIntLabelMap instance.
+    :returns: a `tf.data.Dataset` instance, built with the input configs.
     """
-    Opens a tf record file and create tf dataset
-    args:
-      - tfrecord_path [str]: path to a tf record file
-      - label_map [str]: path the label_map file
-    returns:
-      - dataset [tf.Dataset]: tensorflow dataset
-    """
-    input_config = input_reader_pb2.InputReader()
-    input_config.label_map_path = label_map
-    input_config.tf_record_input_reader.input_path[:] = [tfrecord_path]
     
+    input_config = input_reader_pb2.InputReader()
+    ### Set the absolute path to the locally-stored `.pbtxt` file
+    input_config.label_map_path = path_label_map
+    ### Reads the TF Example or TF Sequence Example protos from the
+    #   local `.tfrecord` files
+    input_config.tf_record_input_reader.input_path[:] = [path_tf_record]
+    ### Return the `tf.data.Dataset` instance
     dataset = build_dataset(input_config)
     return dataset
 
@@ -48,21 +53,29 @@ def get_module_logger(mod_name: str) -> logging.Logger:
     return logger
 
 
-def get_train_input(config_path):
+def get_train_input(config_path: str) -> tf.data.Dataset:
+    """Get the `.tfdata.Dataset` instance from the `config_path`.
+
+    See: More info: https://github.com/tensorflow/models/blob/master/research/object_detection/protos/train.proto
+
+    :param config_path: str, the absolute path to the updated config file,
+        a `pipeline_pb2.TrainEvalPipelineConfig` `proto` instance.
+    :returns: dataset, the `tf.data.Dataset` of batched/agumented training data,
+        examples are stored in a `(features, labels)` tuple.
     """
-    Get the tf dataset that inputs training batches
-    args:
-    - config_path [str]: path to the edited config file
-    returns:
-    - dataset [tf.Dataset]: data outputting augmented batches
-    """
-    # parse config
+
+    ### Parse the config as a dictionary of configuration objects
     configs = get_configs_from_pipeline_file(config_path)
     train_config = configs['train_config']
+    ### Fetch the training job configurations:
+    #   e.g., batch size, preprocessing, optimiser, training steps, loss, etc.
     train_input_config = configs['train_input_config']
-
-    # get the dataset
-    dataset = train_input(train_config, train_input_config, configs['model'])
+    # Return the `tf.data.Dataset` that holds `(features, labels)` tuple
+    dataset = train_input(
+                    train_config=train_config,
+                    train_input_config=train_input_config, 
+                    model_config=configs['model']
+    )
     return dataset
 
 
