@@ -1,15 +1,17 @@
 item {
-    id: 1
-    name: 'vehicle'
+  name: "TYPE_VEHICLE"
+  id: 1
 }
-
 item {
-    id: 2
-    name: 'pedestrian'
+  name: "TYPE_PEDESTRIAN"
+  id: 2
 }
-
 item {
-    id: 4
-    name: 'cyclist'
+  name: "TYPE_SIGN"
+  id: 3
+}
+item {
+  name: "TYPE_CYCLIST"
+  id: 4
 }
 
