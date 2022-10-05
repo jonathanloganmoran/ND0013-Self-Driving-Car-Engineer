@@ -5,16 +5,17 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 ## File Descriptions
 
-Filename                                           | Description
----------------------------------------------------|--------------
-`2022-07-25-Exploratory-Data-Analysis.ipynb`       | A Jupyter notebook file performing EDA on the processed Waymo perception dataset.
-`2022-07-25-Data-Augmentation-Strategies.ipynb`    | A Jupyter notebook file testing various data augmentation strategies.
-`experiments/label_map.pbtxt`                      | A TFRecord-formatted configuration file mapping class names to class ID numbers.
-`experiments/model_main_tf2.py`                    | A Python script to create and run TF2 object detection models.
-`experiments/exporter_main_v2.py`                  | A Python script to export an object detection model for inference.
-`download_process.py`                              | A Python script to download and process the Waymo dataset from a Google Cloud bucket.
-`create_splits.py`                                 | A Python script to split Waymo data into training, validation and test sets.
-`edit_config.py`                                   | A Python script to edit and save a new config file using Google Protobuf and Object Detection API.
+Filename                                                                            | Description
+------------------------------------------------------------------------------------|--------------
+`Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-1.ipynb`       | Jupyter notebook file performing basic EDA on the processed Waymo perception dataset.
+`Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb`       | Jupyter notebook file looking at various class distributions, occlusions, etc.
+`annotations/label_map.pbtxt`                                                       | StringIntLabelMap `proto` configuration file mapping class names (strings) to class IDs (integers).
+`data/filenames.txt`                                                                | List of remote paths to every Waymo Open Dataset v1.2 segment (file) hosted on the Google Cloud Storage bucket.
+`scripts/preprocessing/download_process.py`                                         | Python script to download and process the remote GCS files in `filenames.txt` as a `tf.data.Dataset` instance.
+`scripts/preprocessing/create_splits.py`                                            | Python script to split Waymo data into training, validation and test sets.
+`scripts/training/edit_config.py`                                                   | Python script to edit and save a new `TrainEvalPipelineConfig` Google Protobuf file.
+`experiments/model_main_tf2.py`                                                     | Python script to create and run a TF-2 object detection model instance.
+`experiments/exporter_main_v2.py`                                                   | Python script to export an object detection model for inference, configured with the `pipeline.config` file.
 
 
 ## Objectives
@@ -40,8 +41,8 @@ This API simplifies the training and development of object detection models in T
 
 ## Tasks
 ### Exploratory Data Analysis (EDA)
+* ✅ Looking at sample data;
 * ⬜️ Computation of label distributions;
-* ⬜️ Looking at sample data;
 * ⬜️ Checking for object occlusions;
 * ⬜️ Deciding which data augmentation strategies to use;
 
@@ -79,7 +80,7 @@ This API simplifies the training and development of object detection models in T
 This assignment was prepared by Thomas Hossler and Michael Virgo et al., Winter 2021 (link [here](https://github.com/udacity/nd013-c1-vision-starter)).
 
 Resources:
-* [1] Waymo Open Dataset - Perception (https://waymo.com/open/);
+* [1] Sun, Pei, et al., Scalability in Perception for Autonomous Driving: Waymo Open Dataset. arXiv. 2019. [doi: 10.48550/ARXIV.1912.04838](https://arxiv.org/abs/1912.04838).
 
 Helpful explanations:
-* []()
+* [Training Custom Object Detector by L. Vladimirov | TensorFlow 2 Object Detection API tutorial](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html)
