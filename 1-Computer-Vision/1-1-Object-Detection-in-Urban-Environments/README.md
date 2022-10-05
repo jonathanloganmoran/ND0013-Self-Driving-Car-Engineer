@@ -58,7 +58,7 @@ This API simplifies the training and development of object detection models in T
 * ⬜️ Revisiting data augmentation strategies.
 
 
-#### Exercises
+### Exercises
 * ✅ 1.1.1: [Choosing Metrics](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-1-Choosing-Metrics/2022-07-25-Choosing-Metrics-IoU.ipynb);
 * ✅ 1.1.2: [Data Acquisition and Visualisation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-2-Data-Acquisition-Visualisation/2022-08-01-Data-Acquisition-Visualisation.ipynb);
 * ✅ 1.1.3: [Creating TensorFlow TFRecords](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-3-Creating-TF-Records/2022-08-03-Creating-TF-Records.ipynb);
@@ -83,4 +83,5 @@ Resources:
 * [1] Sun, Pei, et al., Scalability in Perception for Autonomous Driving: Waymo Open Dataset. arXiv. 2019. [doi: 10.48550/ARXIV.1912.04838](https://arxiv.org/abs/1912.04838).
 
 Helpful explanations:
-* [Training Custom Object Detector by L. Vladimirov | TensorFlow 2 Object Detection API tutorial](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html)
+* [Training Custom Object Detector by L. Vladimirov | TensorFlow 2 Object Detection API tutorial](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html);
+* [Waymo Open Dataset Document by @Jossome | GitHub](https://github.com/Jossome/Waymo-open-dataset-document)
