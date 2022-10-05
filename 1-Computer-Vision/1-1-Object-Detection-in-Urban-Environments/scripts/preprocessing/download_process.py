@@ -100,34 +100,47 @@ def download_tfr(filename, data_dir):
     return local_path
 
 
-def process_tfr(path, data_dir):
-    """
-    process a Waymo tf record into a tf api tf record
+def process_tfr(file_path: str, dest_dir: str):
+    """Process a Waymo data file into a TF-compatible type.
 
-    args:
-        - path [str]: path to the Waymo tf record file
-        - data_dir [str]: path to the destination directory
-    """
-    # create processed data dir
-    dest = os.path.join(data_dir, 'processed')
-    os.makedirs(dest, exist_ok=True)
-    file_name = os.path.basename(path)
+    Formats the Waymo Open Data `.tfrecord` type into a 
+    `tf.train.Example` type for use with the TF Object Detection API.
 
-    logger.info(f'Processing {path}')
-    writer = tf.python_io.TFRecordWriter(f'{dest}/{file_name}')
-    dataset = tf.data.TFRecordDataset(path, compression_type='')
-    for idx, data in enumerate(dataset):
-        # we are only saving every 10 frames to reduce the number of similar
-        # images. Remove this line if you have enough space to work with full
-        # temporal resolution data.
-        if idx % 10 == 0:
+    :param file_path: Absolute path pointing to the `.tfrecord` to convert.
+    :param dest_dir: Absolute path pointing to the destination directory.
+    """
+
+    # Create subdirectory for output files
+    os.makedirs(dest_dir, exist_ok=True)
+    # Get the name of file to convert
+    file_name = os.path.basename(file_path)
+    # Get the path to directory where file is located
+    src_dir = os.path.dirname(file_path)
+    # Return if converted file already exists
+    if os.path.exists(f'{dest_dir}/{file_name}'):
+        print('Skipping {}, file already exists!'.format(file_name))
+        return
+    else:
+        logging.info(f'Processing {file_path}')
+        #writer = tf.python_io.TFRecordWriter(f'output/{file_name}')
+        ### FIX: Updated in TensorFlow 2.0
+        # Credit: https://github.com/datitran/raccoon_dataset/issues/90#issuecomment-647073794
+        #writer = tf.compat.v1.python_io.TFRecordWriter(f'output/{file_name}')
+        #writer = tf.io.TFRecordWriter(f'output/{file_name}')
+        writer = tf.io.TFRecordWriter(f'{dest_dir}/{file_name}')
+        dataset = tf.data.TFRecordDataset(file_path, compression_type='')
+        # For each Frame in the Waymo OD `.tfrecord`
+        for idx, data in enumerate(dataset):
             frame = open_dataset.Frame()
             frame.ParseFromString(bytearray(data.numpy()))
+            # Fetch the image and annotations in the Frame
             encoded_jpeg, annotations = parse_frame(frame)
             filename = file_name.replace('.tfrecord', f'_{idx}.tfrecord')
             tf_example = create_tf_example(filename, encoded_jpeg, annotations)
+            # Write the serialised tf.train.Example to the TFRecordDataset
             writer.write(tf_example.SerializeToString())
-    writer.close()
+        writer.close()
+    return
 
 
 @ray.remote
