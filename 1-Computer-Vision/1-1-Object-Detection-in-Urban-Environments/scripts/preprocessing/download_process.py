@@ -1,77 +1,129 @@
 import argparse
+from collections import namedtuple
+import google.protobuf
 import io
-import os
-import subprocess
-
-import ray
-import tensorflow.compat.v1 as tf
 from PIL import Image
 from psutil import cpu_count
+import os
+from object_detection.utils import dataset_util, label_map_util
+import ray
+import subprocess
+import tensorflow as tf
+from typing import List, TypeVar
+from utils import bytes_list_feature, bytes_feature, float_list_feature
+from utils import get_module_logger
+from utils import int64_feature, int64_list_feature, parse_frame
 from waymo_open_dataset import dataset_pb2 as open_dataset
 
-from utils import get_module_logger, parse_frame, int64_feature, int64_list_feature, \
-    bytes_list_feature, bytes_feature, float_list_feature
+
+### Creating some not-so-long custom variable types for typing hints
+RepeatedCompositeContainer = TypeVar(google.protobuf.pyext._message.RepeatedCompositeContainer)
+BoxLabel = TypeVar(waymo_open_dataset.label_pb2.Label.Box)
+### Creating tuple format to store normalised bounding box coordinates
+BboxTuple = namedtuple("BboxTuple", ['ymin', 'ymax', 'xmin', 'xmax'])
+### Fetching the Label Map file and building inverted label map dict
+label_map = label_map_util.load_labelmap(PATH_TO_LABEL_MAP)
+label_map_dict = label_map_util.get_label_map_dict(label_map)
+label_map_dict_inverted = {cls_id:cls_label for cls_label, cls_id in label_map_dict.items()}
 
 
-def create_tf_example(filename, encoded_jpeg, annotations, resize=True):
+def _build_bounding_box(open_dataset_box: waymo_open_dataset.label_pb2.Label.Box,
+                        image_width: int, image_height: int) -> BboxTuple:
+    """Builds and returns coordinates of normalised bounding box.
+    
+    Credit: https://github.com/tensorflow/datasets/blob/master/tensorflow_datasets/object_detection/waymo_open_dataset.py
+    
+    :param open_dataset_box: Bounding box feature with the centre x-y
+        coordinates, box height and width.
+    :param image_width: Width of the Waymo Open Dataset image.
+    :param image_height: Height of the Waymo Open Dataset image.
+    :returns: tuple of normalised bbox coordinates.
     """
-    This function create a tf.train.Example from the Waymo frame.
+    center_y = open_dataset_box.center_y
+    center_x = open_dataset_box.center_x
+    length = open_dataset_box.length
+    width = open_dataset_box.width
+    return BboxTuple(
+        ymin=max((center_y - (width / 2)) / image_height, 0.0),
+        ymax=min((center_y + (width / 2)) / image_height, 1.0),
+        xmin=max((center_x - (length / 2)) / image_width, 0.0),
+        xmax=min((center_x + (length / 2)) / image_width, 1.0)
+    )
 
-    args:
-        - filename [str]: name of the image
-        - encoded_jpeg [bytes]: jpeg encoded image
-        - annotations [protobuf object]: bboxes and classes
 
-    returns:
-        - tf_example [tf.Train.Example]: tf example in the objection detection api format.
+def _get_label_from_id(label: int) -> str:
+    """Returns the class label of the input class id."""
+    return label_map_dict_inverted[label]
+
+
+def create_tf_example(filename: str, encoded_jpeg: bytes, 
+    annotations: RepeatedCompositeContainer, resize: bool=True) -> tf.train.Example:
+    """Converts to TensorFlow Object Detection API format.
+
+    Annotations assumed to be labels from one camera. 
+   
+    :param filename: the name and extension of the image file.
+    :param encoded_jpeg: the byte-encoded jpeg image.
+    :param annotations: the container object storing bboxes and classes.
+    :param resize: bool (optional), resizes images to 640x640px, True by default.
+    :returns: a tf.train.Example-formatted data sample.
     """
+
     if not resize:
-        encoded_jpg_io = io.BytesIO(encoded_jpeg)
-        image = Image.open(encoded_jpg_io)
-        width, height = image.size
-        width_factor, height_factor = image.size
+        # Fetch encoded image as binary stream
+        encoded_jpeg_io = io.BytesIO(encoded_jpeg)
+        image = Image.open(encoded_jpeg_io)
+        # Store image info
+        height, width = image.size
+        height_factor, width_factor = image.size
     else:
-        image_tensor = tf.io.decode_jpeg(encoded_jpeg)
+        image_tensor = tf.io.decode_image(encoded_jpeg)
         height_factor, width_factor, _ = image_tensor.shape
-        image_res = tf.cast(tf.image.resize(image_tensor, (640, 640)), tf.uint8)
+        image_res = tf.cast(tf.image.resize(image_tensor, size=(640, 640)), dtype=tf.uint8)
         encoded_jpeg = tf.io.encode_jpeg(image_res).numpy()
         width, height = 640, 640
 
-    mapping = {1: 'vehicle', 2: 'pedestrian', 4: 'cyclist'}
-    image_format = b'jpg'
-    xmins = []
-    xmaxs = []
-    ymins = []
-    ymaxs = []
-    classes_text = []
-    classes = []
     filename = filename.encode('utf8')
-
-    for ann in annotations:
-        xmin, ymin = ann.box.center_x - 0.5 * ann.box.length, ann.box.center_y - 0.5 * ann.box.width
-        xmax, ymax = ann.box.center_x + 0.5 * ann.box.length, ann.box.center_y + 0.5 * ann.box.width
-        xmins.append(xmin / width_factor)
-        xmaxs.append(xmax / width_factor)
-        ymins.append(ymin / height_factor)
-        ymaxs.append(ymax / height_factor)
-        classes.append(ann.type)
-        classes_text.append(mapping[ann.type].encode('utf8'))
-
-    tf_example = tf.train.Example(features=tf.train.Features(feature={
+    image_format = b'jpeg'
+    # Lists to store all bounding box features
+    ymins = []
+    ymaxes = []
+    xmins = []
+    xmaxes = []
+    # Lists to store all class features
+    class_labels = []
+    class_ids = []
+    # Iterate through each row in the annotations set
+    for index, row in enumerate(annotations):
+        # Get normalised bounding box coordinates
+        (ymin, ymax, 
+         xmin, xmax) = _build_bounding_box(row.box, width_factor, height_factor)
+        ymins.append(ymin)
+        ymaxes.append(ymax)
+        xmins.append(xmin)
+        xmaxes.append(xmax)
+        # Get class info
+        class_labels.append(_get_label_from_id(row.type).encode('utf8'))
+        class_ids.append(row.type)
+    # Create TF Features tensor
+    tf_features = tf.train.Features(feature={
+        # Store image features
         'image/height': int64_feature(height),
         'image/width': int64_feature(width),
         'image/filename': bytes_feature(filename),
         'image/source_id': bytes_feature(filename),
         'image/encoded': bytes_feature(encoded_jpeg),
         'image/format': bytes_feature(image_format),
-        'image/object/bbox/xmin': float_list_feature(xmins),
-        'image/object/bbox/xmax': float_list_feature(xmaxs),
-        'image/object/bbox/ymin': float_list_feature(ymins),
-        'image/object/bbox/ymax': float_list_feature(ymaxs),
-        'image/object/class/text': bytes_list_feature(classes_text),
-        'image/object/class/label': int64_list_feature(classes),
-    }))
-    return tf_example
+        # Store object features
+        'image/objects/bboxes/ymins': float_list_feature(ymins),
+        'image/objects/bboxes/ymaxes': float_list_feature(ymaxes),
+        'image/objects/bboxes/xmins': float_list_feature(xmins),
+        'image/objects/bboxes/xmaxes': float_list_feature(xmaxes),
+        # Store class features
+        'image/objects/class/labels': bytes_list_feature(class_labels),
+        'image/objects/class/ids': int64_list_feature(class_ids)
+    })
+    return tf.train.Example(features=tf_features)
 
 
 def download_tfr(filename, data_dir):
@@ -136,7 +188,7 @@ def process_tfr(file_path: str, dest_dir: str):
             # Fetch the image and annotations in the Frame
             encoded_jpeg, annotations = parse_frame(frame)
             filename = file_name.replace('.tfrecord', f'_{idx}.tfrecord')
-            tf_example = create_tf_example(filename, encoded_jpeg, annotations)
+            tf_example = create_tf_example(filename, encoded_jpeg, annotations, resize=True)
             # Write the serialised tf.train.Example to the TFRecordDataset
             writer.write(tf_example.SerializeToString())
         writer.close()
