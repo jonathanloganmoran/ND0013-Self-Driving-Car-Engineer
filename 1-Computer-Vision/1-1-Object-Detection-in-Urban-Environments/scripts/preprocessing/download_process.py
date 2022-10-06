@@ -1,3 +1,5 @@
+from absl import app, flags, logging
+from absl import logging
 import argparse
 from collections import namedtuple
 import google.protobuf
@@ -234,7 +236,7 @@ if __name__ == "__main__":
                 help='Absolute path to the data directory'
     )
     parser.add_argument('--label_map_path', 
-                required=False, default=100, type=str,
+                required=False, default='label_map.pbtxt', type=str,
                 help='Absolute path to the `label_map.pbtxt` file'
     )
     parser.add_argument('--size', 
@@ -242,28 +244,36 @@ if __name__ == "__main__":
                 help='Number of files to download'
     )
     args = parser.parse_args()
-    ### Set the global variables
-    DIR_DATA = args.data_dir
-    PATH_TO_LABEL_MAP = args.label_map_path
-    SIZE = args.size
-
+    ### Using flags instead of globals (will probably move to `hydra` soon)
+    FLAGS = flags.FLAGS
+    ### Setting the flags
+    flags.DEFINE_string('dir_data', args.data_dir,
+                'Absolute path to the data directory')
+    flags.DEFINE_string('path_to_label_map', args.label_map_path,
+                'Absolute path to the `label_map.pbtxt` file')
+    flags.DEFINE_integer('size', args.size,
+                'Number of files to download')
+    flags.mark_as_required('dir_data')
+    flags.mark_as_required('path_to_label_map')
+    flags.mark_as_required('size')
     ### Fetching the Label Map file and building inverted label map dict
-    label_map = label_map_util.load_labelmap(PATH_TO_LABEL_MAP)
+    label_map = label_map_util.load_labelmap(FLAGS.path_to_label_map)
     label_map_dict = label_map_util.get_label_map_dict(label_map)
     label_map_dict_inverted = {
                 cls_id:cls_label for cls_label, cls_id in label_map_dict.items()
     }    
     ### Opening the list of file paths to download from GCS with gsutil
-    with open(os.path.join(DIR_DATA, 'filenames.txt'), 'r') as f:
+    with open(os.path.join(FLAGS.dir_data, 'filenames.txt'), 'r') as f:
         file_paths = f.read().splitlines()
     logger.info(f'Downloading {
-                len(file_paths[:SIZE])
+                len(file_paths[:FLAGS.size])
                 } files. Be patient, this will take a long time.'
     )
     ### Initialise the a new local Ray instance
     ray.init(num_cpus=cpu_count())
     ### Process the batched data
-    workers = [download_and_process.remote(fn, DIR_DATA) for fn in file_paths[:SIZE]]
+    workers = [download_and_process.remote(
+                        fn, FLAGS.dir_data) for fn in file_paths[:FLAGS.size]]
     # Note that `SIZE` of batch is within object store memory limits
     # See: https://docs.ray.io/en/latest/ray-core/tasks/patterns/too-many-results.html#code-example
     _ = ray.get(workers)
