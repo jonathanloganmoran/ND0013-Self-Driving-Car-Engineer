@@ -1,5 +1,4 @@
 from absl import app, flags, logging
-from absl import logging
 import argparse
 from collections import namedtuple
 import google.protobuf
@@ -64,7 +63,10 @@ def create_tf_example(
 ) -> tf.train.Example:
     """Converts to TensorFlow Object Detection API format.
 
-    Annotations assumed to be labels from one camera. 
+    Annotations are assumed to be the bounding boxes and class labels
+    captured by a single camera view.
+
+    See: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/using_your_own_dataset.md
    
     :param filename: the name and extension of the image file.
     :param encoded_jpeg: the byte-encoded jpeg image.

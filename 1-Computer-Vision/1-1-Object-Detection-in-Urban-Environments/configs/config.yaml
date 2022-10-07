@@ -1,0 +1,117 @@
+app_name: TensorFlow Object Detection API
+
+# The header/footer/template to print when calling `--help`
+header: |-
+    ${hydra.help.app_name}
+    -------------------------------
+
+footer: |-
+    Packaged with <3 by Jonathan L. Moran (jonathan.moran107@gmail.com).
+    Intended for use with the Waymo Open Dataset - Perception-Sensor 2D task.
+
+template: |-
+    ${hydra.help.header}
+    ${hydra.help.footer}
+
+    Configuration
+    --------------
+    Run the `edit_config.py` script with the supplied arguments:
+    ```
+    TRAIN_DIR:  {path to train data directory}
+    EVAL_DIR:   {path to validation or test directory}
+    BATCH_SIZE: {batch size for training}
+    CHECKPOINT: {path to pre-trained model checkpoints}
+    LABEL_MAP:  {path to the `label_map` file}
+
+    python edit_config.py -- \
+        --train_dir=$TRAIN_DIR --eval_dir=$EVAL_DIR \
+        --batch_size=$BATCH_SIZE --checkpoint=$CHECKPOINT \
+        --label_map=$LABEL_MAP
+    ```
+
+
+    Training/evaluation
+    --------------------
+    For local training/evaluation run:
+    ```
+    PIPELINE_CONFIG_PATH:                   Path to `pipeline.config` file.
+    MODEL_DIR:                              Path to `/tmp/model_outputs/` folder.
+    NUM_TRAIN_STEPS:                        Number of training steps.
+    EVAL_ON_TRAIN_DATA:                     If True, will evaluate on training data (only supported in distributed training).
+    SAMPLE_1_OF_N_EVAL_EXAMPLES:            Number of evaluation samples to skip / will sample 1 of every n samples.
+    SAMPLE_1_OF_N_EVAL_ON_TRAIN_EXAMPLES:   Number of training samples to skip for evaluation / only used if `eval_training_data` is True.
+    EVAL_TIMEOUT:                           Number of seconds to wait for an evaluation checkpoint before exiting.
+    USE_TPU:                                Whether the job is executing on a TPU.
+    TPU_NAME:                               Name of the Cloud TPU for Cluster Resolvers.
+    CHECKPOINT_EVERY_N:                     Integer defining how often to checkpoint.
+    NUM_WORKERS:                            When `num_workers` > 1, training uses 'MultiWorkerMirroredStrategy',
+                                            When `num_workers` = 1, training uses 'MirroredStrategy'.
+
+
+    python model_main_tf2.py -- \
+        --pipeline_config_path=$PIPELINE_CONFIG_PATH \
+        --model_dir=$MODEL_DIR --num_train_steps=$NUM_TRAIN_STEPS \
+        --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
+        --...
+    ```
+
+
+# Location to output Hydra run logs
+hydra:
+    run:
+        dir: ./outputs/${hydra.job.config_name}/${now:%Y-%m-%d_%H-%M-%S}
+
+
+# Default configurations to use
+defaults:
+    - dataset: waymo_open_dataset
+    - model: ssd_resnet50
+
+
+# List of all paths
+paths:
+    base: ${hydra:runtime.cwd}/                         # Path to current working directory
+    data: ${base}/data/                                 # Path to data directory
+
+
+# List of all model parameters
+params:
+    epochs: 10                                          # Number of epochs to perform during training
+    batch_size: 2                                       # Number of segments to load/process during each training iteration
+    lr: 1e-4                                            # The initial learning rate
+    lr_decay: False                                     # Whether or not to use learning rate scheduling
+
+
+ray:
+    batch_size_get: None                                # Number of objects to process in batch with `ray.get()` (avoids object store OOM)
+
+
+model:
+    ssd_resnet50:
+        dir_base: ./experiments/pre_trained_model/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8
+        dir_out: ${dir_base}/tmp/model_outputs          # Path to to `tmp/model_outputs` folder
+        dir_checkpoint: ${dir_base}/checkpoint          # Path to the trained `checkpoint` folder
+        pipeline_config: ${dir_base}/pipeline.config    # Path to pipeline configuration file
+        train_steps: 100                                # Number of training steps to perform
+        eval_on_train_data: False                       # Whether to evaluate on training data (only supported in distributed training)
+        sample_1_of_n_eval_examples: 1                  # Number of evaluation examples to skip / will sample 1 of every n samples
+        sample_1_of_n_eval_on_train_examples: None
+        eval_timeout: 25                                # Number of seconds to wait for an evaluation checkpoint before exiting
+        use_tpu: False                                  # Whether the job is executing on a TPU
+        tpu_name: ''                                    # Name of the Cloud TPU for Cluster Resolvers
+        checkpoint_every_n:                             # Integer defining how often to checkpoint
+        num_workers: 1                                  # If 1, uses 'MirroredStrategy', if > 1, uses 'MultiWorkerMirroredStrategy'
+
+
+dataset:
+    waymo_open_dataset:
+        data_dir: ${paths.data}/waymo_open_dataset      # Path to the data directory containing the filenames to download from GCS
+        label_map_path: ./data/label_map.pbtxt          # Path to the `label_map.pbtxt` file for the Waymo Open Dataset.
+        size: 10                                        # Number of `.tfrecord` files to download from the `filenames.txt` list
+        destination: ${data_dir}/split                  # Path to output dataset directory after splitting
+        train: ${destination}/train/                    # Path to train data after splitting
+        evals: ${destination}/eval/                     # Path to evaluation data after splitting
+        test: ${destination}/test/                      # Path to test data after splitting
+
+
+

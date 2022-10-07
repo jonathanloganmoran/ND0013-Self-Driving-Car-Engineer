@@ -22,7 +22,7 @@ def get_dataset(
         this should point to a StringIntLabelMap instance.
     :returns: a `tf.data.Dataset` instance, built with the input configs.
     """
-    
+
     input_config = input_reader_pb2.InputReader()
     ### Set the absolute path to the locally-stored `.pbtxt` file
     input_config.label_map_path = path_label_map
@@ -56,7 +56,7 @@ def get_module_logger(mod_name: str) -> logging.Logger:
 def get_train_input(config_path: str) -> tf.data.Dataset:
     """Get the `.tfdata.Dataset` instance from the `config_path`.
 
-    See: More info: https://github.com/tensorflow/models/blob/master/research/object_detection/protos/train.proto
+    See: https://github.com/tensorflow/models/blob/master/research/object_detection/protos/train.proto
 
     :param config_path: str, the absolute path to the updated config file,
         a `pipeline_pb2.TrainEvalPipelineConfig` `proto` instance.

@@ -20,7 +20,7 @@ def split(source: str, destination: str):
     """
     # TODO: Implement function
 
---------------------------------------------------------------------------------
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
                 description='Split data into training / validation / testing')
