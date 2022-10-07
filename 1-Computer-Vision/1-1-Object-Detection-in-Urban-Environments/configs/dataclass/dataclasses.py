@@ -43,8 +43,3 @@ class SSDResNet50Config:
 	model: TFModel
 	hyperparameters: Hyperparameters
 	dataset: Dataset
-
-
-@dataclass
-class WaymoOpenDatasetConfig:
-	dataset: Dataset

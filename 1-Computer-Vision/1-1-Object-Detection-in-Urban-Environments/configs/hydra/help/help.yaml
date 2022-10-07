@@ -22,6 +22,12 @@ template: |-
     Training/evaluation
     --------------------
     For local training/evaluation run:
+
+    ```
+    python model_main_tf2.py
+    ```
+
+    The following parameters can also be manually configured at runtime, as shown below:
     
     PIPELINE_CONFIG_PATH:                   Path to `pipeline.config` file.
     MODEL_DIR:                              Path to `/tmp/model_outputs/` folder.
@@ -46,7 +52,13 @@ template: |-
 
     Configuration
     --------------
-    Run the `edit_config.py` script with the supplied arguments:  
+    To configure the model for training, run:
+
+    ```
+    python edit_config.py
+    ```
+
+    The following parameters can also be manually configured at runtime, as shown below:
    
     TRAIN_DIR:                              Path to train data directory.
     EVAL_DIR:                               Path to validation or test directory.
