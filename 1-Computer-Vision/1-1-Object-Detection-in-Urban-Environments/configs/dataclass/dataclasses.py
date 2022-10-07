@@ -2,13 +2,19 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Paths:
-	base: str
-	data: str
+class Dataset:
+	cwd: str
+	data_dir: str
+	label_map_path: str
+	size: int
+	destination: str
+	train: str
+	evals: str
+	test: str
 
 
 @dataclass
-class Params:
+class Hyperparameters:
 	epochs: int
 	batch_size: int
 	lr:	float
@@ -33,21 +39,9 @@ class TFModel:
 
 
 @dataclass
-class Dataset:
-	data_dir: str
-  	label_map_path: str
-  	size: int
-  	destination: str
-  	train: str
-  	evals: str
-  	test: str
-
-
-@dataclass
 class SSDResNet50Config:
-	paths: Paths
-	params: Params
 	model: TFModel
+	hyperparameters: Hyperparameters
 	dataset: Dataset
 
 

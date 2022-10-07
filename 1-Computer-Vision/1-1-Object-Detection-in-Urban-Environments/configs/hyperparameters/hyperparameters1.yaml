@@ -1,0 +1,9 @@
+### TensorFlow Object Detection API on Custom Dataset ### 
+## By Jonathan L. Moran (jonathan.moran107@gmail.com) ###
+
+
+### List of all model training hyperparameters
+epochs: 10                                          # Number of epochs to perform during training
+batch_size: 2                                       # Number of segments to load/process during each training iteration
+lr: 1e-4                                            # The initial learning rate
+lr_decay: False                                     # Whether or not to use learning rate scheduling

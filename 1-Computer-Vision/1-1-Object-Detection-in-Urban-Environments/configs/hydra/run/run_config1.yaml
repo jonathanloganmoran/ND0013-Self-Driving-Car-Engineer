@@ -1,0 +1,7 @@
+### TensorFlow Object Detection API on Custom Dataset ### 
+## By Jonathan L. Moran (jonathan.moran107@gmail.com) ###
+
+
+# Location to output Hydra run logs
+dir: ${hydra:runtime.cwd}/outputs/${hydra.job.config_name}/${now:%Y-%m-%d_%H-%M-%S}
+

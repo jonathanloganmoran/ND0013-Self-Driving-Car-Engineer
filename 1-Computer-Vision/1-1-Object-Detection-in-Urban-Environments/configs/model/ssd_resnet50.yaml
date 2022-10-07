@@ -1,0 +1,44 @@
+### TensorFlow Object Detection API on Custom Dataset ### 
+## By Jonathan L. Moran (jonathan.moran107@gmail.com) ###
+
+
+# Training/evaluation
+# --------------------
+# For local training/evaluation run:
+# ```
+# PIPELINE_CONFIG_PATH:                   Path to `pipeline.config` file.
+# MODEL_DIR:                              Path to `/tmp/model_outputs/` folder.
+# NUM_TRAIN_STEPS:                        Number of training steps.
+# EVAL_ON_TRAIN_DATA:                     If True, will evaluate on training data (only supported in distributed training).
+# SAMPLE_1_OF_N_EVAL_EXAMPLES:            Number of evaluation samples to skip / will sample 1 of every n samples.
+# SAMPLE_1_OF_N_EVAL_ON_TRAIN_EXAMPLES:   Number of training samples to skip for evaluation / only used if `eval_training_data` is True.
+# EVAL_TIMEOUT:                           Number of seconds to wait for an evaluation checkpoint before exiting.
+# USE_TPU:                                Whether the job is executing on a TPU.
+# TPU_NAME:                               Name of the Cloud TPU for Cluster Resolvers.
+# CHECKPOINT_EVERY_N:                     Integer defining how often to checkpoint.
+# NUM_WORKERS:                            When `num_workers` > 1, training uses 'MultiWorkerMirroredStrategy',
+#                                         When `num_workers` = 1, training uses 'MirroredStrategy'.
+
+
+# python model_main_tf2.py -- \
+#     --pipeline_config_path=$PIPELINE_CONFIG_PATH \
+#     --model_dir=$MODEL_DIR --num_train_steps=$NUM_TRAIN_STEPS \
+#     --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
+#     --...
+# ```
+
+ssd_resnet50:
+    ### List of all TensorFlow Object Detection API parameters
+    dir_base: ${hydra:runtime.cwd}
+    dir_out: ${dir_base}/tmp/model_outputs              # Path to to `tmp/model_outputs` folder
+    dir_checkpoint: ${dir_base}/checkpoint              # Path to the trained `checkpoint` folder
+    pipeline_config: ${dir_base}/pipeline.config        # Path to pipeline configuration file
+    train_steps: 100                                    # Number of training steps to perform
+    eval_on_train_data: False                           # Whether to evaluate on training data (only supported in distributed training)
+    sample_1_of_n_eval_examples: 1                      # Number of evaluation examples to skip / will sample 1 of every n samples
+    sample_1_of_n_eval_on_train_examples: None
+    eval_timeout: 25                                    # Number of seconds to wait for an evaluation checkpoint before exiting
+    use_tpu: False                                      # Whether the job is executing on a TPU
+    tpu_name: ''                                        # Name of the Cloud TPU for Cluster Resolvers
+    checkpoint_every_n:                                 # Integer defining how often to checkpoint
+    num_workers: 1                                      # If 1, uses 'MirroredStrategy', if > 1, uses 'MultiWorkerMirroredStrategy'
