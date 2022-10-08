@@ -1,0 +1,3 @@
+[submodule "1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/addons/waymo-open-dataset"]
+	path = 1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/addons/waymo-open-dataset
+	url = https://github.com/waymo-research/waymo-open-dataset.git
