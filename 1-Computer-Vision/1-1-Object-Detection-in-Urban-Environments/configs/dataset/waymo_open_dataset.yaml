@@ -19,14 +19,15 @@
 
 
 waymo_open_dataset:
-    cwd: ${hydra:runtime.cwd}                       # Path to the current working directory (where the model was executed)
-    data_dir: ../${cwd}/data/waymo_open_dataset     # Path to the data directory containing the filenames to download from GCS
-    label_map_path: ${data_dir}/label_map.pbtxt     # Path to the `label_map.pbtxt` file for the Waymo Open Dataset.
-    size: 10                                        # Number of `.tfrecord` files to download from the `filenames.txt` list
-    destination: ${data_dir}/split                  # Path to output dataset directory after splitting
-    train: ${destination}/train                     # Path to train data after splitting
-    evals: ${destination}/eval                      # Path to evaluation data after splitting
-    test: ${destination}/test                       # Path to test data after splitting
+    cwd: ${hydra:runtime.cwd}                           # Path to the current working directory (where the model was executed)
+    # Path to the data directory containing the filenames to download from GCS
+    data_dir: ${abspath:${.cwd}/../../data/waymo_open_dataset}
+    label_map_path: ${data_dir}/label_map.pbtxt         # Path to the `label_map.pbtxt` file for the Waymo Open Dataset.
+    size: 10                                            # Number of `.tfrecord` files to download from the `filenames.txt` list
+    destination: ${.data_dir}/split                     # Path to output dataset directory after splitting
+    train: ${.destination}/train                        # Path to train data after splitting
+    evals: ${.destination}/eval                         # Path to evaluation data after splitting
+    test: ${.destination}/test                          # Path to test data after splitting
 
 ray:
-    batch_size_get: None                            # Number of objects to process in batch with `ray.get()` (avoids object store OOM)
+    batch_size_get: None                                # Number of objects to process in batch with `ray.get()` (avoids object store OOM)

@@ -30,9 +30,9 @@
 ssd_resnet50:
     ### List of all TensorFlow Object Detection API parameters
     dir_base: ${hydra:runtime.cwd}
-    dir_out: ${dir_base}/tmp/model_outputs              # Path to to `tmp/model_outputs` folder
-    dir_checkpoint: ${dir_base}/checkpoint              # Path to the trained `checkpoint` folder
-    pipeline_config: ${dir_base}/pipeline.config        # Path to pipeline configuration file
+    dir_out: ${.dir_base}/tmp/model_outputs             # Path to to `tmp/model_outputs` folder
+    dir_checkpoint: ${.dir_base}/checkpoint             # Path to the trained `checkpoint` folder
+    pipeline_config: ${.dir_base}/pipeline.config       # Path to pipeline configuration file
     train_steps: 100                                    # Number of training steps to perform
     eval_on_train_data: False                           # Whether to evaluate on training data (only supported in distributed training)
     sample_1_of_n_eval_examples: 1                      # Number of evaluation examples to skip / will sample 1 of every n samples

@@ -70,9 +70,6 @@ def process_tfrs(
 def download_and_process(path_to_filenames: str, data_dir: str, delete_records=False):
     """Downloads the requested files and converts them to TF-compatible format.
 
-    Decorated with Ray to run asynchronously on separate Python workers.
-    See: https://docs.ray.io/en/latest/ray-core/tasks.html#tasks
-
     :param path_to_filenames: the file path of the text file containing all `.tfrecord` 
     	files to download from GCS. This should be a list of strings starting with
     	'gs://'. The file paths should also include the bucket name.
