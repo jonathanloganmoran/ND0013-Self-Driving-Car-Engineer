@@ -147,7 +147,6 @@ def download_tfr(file_path: str, data_dir: str) -> str:
     ### Create the output directory
     dest = os.path.join(data_dir, 'raw')
     os.makedirs(dest, exist_ok=True)
-
     ### Download the `.tfrecord` file from GCS
     cmd = ['gsutil', 'cp', file_path, f'{dest}']
     logger.info(f'Downloading {file_name}')
@@ -267,10 +266,7 @@ if __name__ == "__main__":
     ### Opening the list of file paths to download from GCS with gsutil
     with open(os.path.join(FLAGS.dir_data, 'filenames.txt'), 'r') as f:
         file_paths = f.read().splitlines()
-    logger.info(f'Downloading {
-                len(file_paths[:FLAGS.size])
-                } files. Be patient, this will take a long time.'
-    )
+    logger.info(f'Downloading {len(file_paths[:FLAGS.size])} files. Be patient, this will take a long time.')
     ### Initialise the a new local Ray instance
     ray.init(num_cpus=cpu_count())
     ### Process the batched data
