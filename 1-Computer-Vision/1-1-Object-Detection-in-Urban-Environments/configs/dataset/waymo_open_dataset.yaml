@@ -28,6 +28,8 @@ waymo_open_dataset:
     train: ${.destination}/train                        # Path to train data after splitting
     evals: ${.destination}/eval                         # Path to evaluation data after splitting
     test: ${.destination}/test                          # Path to test data after splitting
+    train_test_split: 0.8                               # Ratio of train set to test set size
+    train_val_split: 0.8                                # Ratio of train set to validation set size
 
 ray:
     batch_size_get: None                                # Number of objects to process in batch with `ray.get()` (avoids object store OOM)

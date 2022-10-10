@@ -4,6 +4,7 @@ import glob
 import numpy as np
 import os
 import random
+import shutil
 from utils import get_module_logger
 
 
@@ -19,6 +20,44 @@ def split(source: str, destination: str):
         contains the three subfolders: `train`, `val` and `test`.
     """
     # TODO: Implement function
+
+    TRAIN_TEST_SPLIT = 0.8
+    TRAIN_VAL_SPLIT = 0.8
+
+    dirs = [os.path.join(destination, split) for split in ['train', 'test', 'val']]
+    _ = [os.makedirs(d, exist_ok=True) for d in dirs]
+
+    src = glob.glob(f"{source}/*.tfrecord")
+    src = sorted(src, key=lambda x: random.random())
+    train_set = src[:int(-len(src) * TRAIN_TEST_SPLIT)]
+    test_set = src[int(-len(src) * TRAIN_TEST_SPLIT):]
+
+    for file_path in train_set:
+        file_name = os.path.basename(file_path)
+        logger.info(f"Processing {file_name}")
+        train_file = f"{destination}/train/{file_name}"
+        val_file = f"{destination}/val/{file_name}"
+        train_writer = tf.io.TFRecordWriter(train_file)
+        val_writer = tf.io.TFRecordWriter(val_file)
+        dataset = tf.data.TFRecordDataset(file_path, compression_type='')
+        record_count = 0
+        for record_count, _ in enumerate(dataset):
+            # Get the number of records in dataset
+            pass
+        for i, data in enumerate(dataset):
+            example = tf.train.Example()
+            example.ParseFromString(data.numpy())
+            if i < record_count * TRAIN_VAL_SPLIT:
+                train_writer.write(example.SerializeToString())
+            else:
+                val_writer.write(example.SerializeToString())
+        train_writer.close()
+        val_writer.close()
+    for file_path in test_set:
+        file_name = os.path.basename(file_path)
+        logger.info(f"Copying {file_name}")
+        test_file = f"{destination}/test/{file_name}"
+        shutil.copyfile(file_path, test_file)
 
 
 if __name__ == "__main__":
