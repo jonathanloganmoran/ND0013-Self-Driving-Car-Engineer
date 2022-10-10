@@ -23,32 +23,42 @@ template: |-
     --------------------
     For local training/evaluation run:
 
-    ```
-    python model_main_tf2.py
+    ```python
+
+    python3 model_main_tf2.py
     ```
 
-    The following parameters can also be manually configured at runtime, as shown below:
-    
-    PIPELINE_CONFIG_PATH:                   Path to `pipeline.config` file.
-    MODEL_DIR:                              Path to `/tmp/model_outputs/` folder.
-    NUM_TRAIN_STEPS:                        Number of training steps (batches to process per epoch).
-    EVAL_ON_TRAIN_DATA:                     If True, will evaluate on training data (only supported in distributed training).
-    SAMPLE_1_OF_N_EVAL_EXAMPLES:            Number of evaluation samples to skip / will sample 1 of every n samples.
-    SAMPLE_1_OF_N_EVAL_ON_TRAIN_EXAMPLES:   Number of training samples to skip for evaluation / only used if `eval_training_data` is True.
-    EVAL_TIMEOUT:                           Number of seconds to wait for an evaluation checkpoint before exiting.
-    USE_TPU:                                Whether the job is executing on a TPU.
-    TPU_NAME:                               Name of the Cloud TPU for Cluster Resolvers.
-    CHECKPOINT_EVERY_N:                     Integer defining how often to checkpoint.
-    NUM_WORKERS:                            When `num_workers` > 1, training uses 'MultiWorkerMirroredStrategy',
-                                            When `num_workers` = 1, training uses 'MirroredStrategy'.
-
+    with none/any/all of the following parameters:
     ```
-    python model_main_tf2.py -- \
-        --pipeline_config_path=PIPELINE_CONFIG_PATH \
-        --model_dir=MODEL_DIR --num_train_steps=NUM_TRAIN_STEPS \
-        --sample_1_of_n_eval_examples=SAMPLE_1_OF_N_EVAL_EXAMPLES \
+    DIR_BASE:                               str         Path to the current `model` subdirectory.
+    MODEL_OUT:                              str         Path to the `/tmp/model_outputs` folder.
+    CHECKPOINT_DIR:                         str         Path to the pretrained weights/variables saved in `checkpoint` folder.
+    PIPELINE_CONFIG_PATH:                   str         Path to the `pipeline.config` file.
+    NUM_TRAIN_STEPS:                        int         Number of training steps (batch iterations) to perform. 
+    EVAL_ON_TRAIN_DATA:                     bool        If True, will evaluate on training data (only supported in distributed training).
+    SAMPLE_1_OF_N_EVAL_EXAMPLES:            int         Number of evaluation samples to skip (will sample 1 of every n samples per batch).
+    SAMPLE_1_OF_N_EVAL_ON_TRAIN_EXAMPLES:   int         Number of training samples to skip (only used if `eval_on_train_data` is True).
+    EVAL_TIMEOUT:                           int         Number of seconds to wait for an evaluation checkpoint before exiting.
+    USE_TPU:                                bool        Whether or not the job is executing on a TPU.
+    TPU_NAME:                               str         Name of the Cloud TPU for Cluster Resolvers.
+    CHECKPOINT_EVERY_N:                     int         Defines how often to checkpoint (every n steps).
+    RECORD_SUMMARIES:                       bool        Whether or not to record summaries defined by the model or training pipeline.
+    NUM_WORKERS:                            int         When `num_workers` > 1, training uses 'MultiWorkerMirroredStrategy',
+                                                        When `num_workers` = 1, training uses 'MirroredStrategy'.
+
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+
+    python3 model_main_tf2.py -- \
+        --pipeline_config_path=$PIPELINE_CONFIG_PATH \
+        --model_out=$MODEL_OUT --num_train_steps=$NUM_TRAIN_STEPS \
+        --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
         --...
     ```
+    See `configs/model/` for additional details on preconfigured values if running without parameters.
+    
+
 
     Configuration
     --------------
@@ -58,19 +68,86 @@ template: |-
     python edit_config.py
     ```
 
-    The following parameters can also be manually configured at runtime, as shown below:
-   
-    TRAIN_DIR:                              Path to train data directory.
-    EVAL_DIR:                               Path to validation or test directory.
-    BATCH_SIZE:                             Batch size for training.
-    CHECKPOINT:                             Path to pre-trained model checkpoints.
-    LABEL_MAP:                              Path to the `label_map` file.
+    with none/any/all of the following parameters:
+    TRAIN:                                  str         Path to the `train` data directory.
+    TEST:                                   str         Path to the `test` data directory.
+    VAL:                                    str         Path to the `val` data directory.
+    BATCH_SIZE:                             int         Number of examples to process per iteration.
+    CHECKPOINT_DIR:                         str         Path to the pre-trained `checkpoint` folder.
+    LABEL_MAP_PATH:                         str         Path to the dataset `label_map.pbtxt` file.
+    PIPELINE_CONFIG_PATH:                   str         Path to the `pipeline.config` file to modify.
 
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+
+    python3 edit_config.py \
+        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
+        dataset.label_map_path=LABEL_MAP_PATH \
+        hyperparameters.batch_size=BATCH_SIZE \
+        model.checkpoint_dir=CHECKPOINT_DIR \
+        model.pipeline_config_path=PIPELINE_CONFIG_PATH
     ```
-    python edit_config.py -- \
-        --train_dir=TRAIN_DIR --eval_dir=EVAL_DIR \
-        --batch_size=BATCH_SIZE --checkpoint=CHECKPOINT \
-        --label_map=
+    See `configs/model/` for additional details on preconfigured values.
+
+
+
+    Utilities
+    ---------
+
+    1. Downloading and Processing:
+
+    To download and process the `.tfrecord` files from Google Cloud Storage into `tf.data.TFRecordDataset` instances, run:
+
+    ```python
+    python3 download_process.py
+    ```
+
+    with none/any/all of the following parameters:
+        DATA_DIR:        str         Path to the `data` directory to download files to.
+        LABEL_MAP_PATH:  str         Path to the dataset `label_map.pbtxt` file.
+        SIZE:            str         Number of `.tfrecord` files to download from GCS.
+
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+
+    python3 download_process.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.label_map_path=LABEL_MAP_PATH \
+        dataset.size=SIZE
+    ```
+    See `configs/dataset/` for additional details on preconfigured values.
+
+
+    2. Creating Dataset Splits:
+
+    To split the downloaded data into three subsets `train`, `val`, and `test`, run:
+    
+    ```python
+
+    python3 create_splits.py
+    ```
+
+    with none/any/all of the following:
+        DATA_DIR:           str         Path to the source `data` directory.
+        TRAIN:              str         Path to the `train` data directory.
+        TEST:               str         Path to the `test` data directory.
+        VAL:                str         Path to the `val` data directory.
+        TRAIN_TEST_SPLIT:   float       Percent as [0, 1] to split train/test.
+        TRAIN_VAL_SPLIT:    float       Percent as [0, 1] to split train/val.
+
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+    ```python
+    
+    python3 create_splits.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
+        dataset.train_test_split=TRAIN_TEST_SPLIT \
+        dataset.train_val_split=TRAIN_VAL_SPLIT
+    ```
+    See `configs/dataset/` for additional details on preconfigured values.
+
 
 
     Additional Resources

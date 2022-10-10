@@ -1,10 +1,14 @@
-from absl import app, flags, logging
-import argparse
 from collections import namedtuple
+from configs.dataclass.dataclasses import SSDResNet50Config
+from configs.decorators.decorator import hydra_with_ray_remote
 import google.protobuf
+import hydra
+from hydra import compose, initialize
+from hydra.core.config_store import ConfigStore
 import io
-import os
 from object_detection.utils import dataset_util, label_map_util
+from omegaconf import DictConfig, OmegaConf
+import os
 from PIL import Image
 from psutil import cpu_count
 import ray
@@ -24,6 +28,12 @@ RepeatedCompositeContainer = TypeVar(
 BoxLabel = TypeVar(waymo_open_dataset.label_pb2.Label.Box)
 ### Creating tuple format to store normalised bounding box coordinates
 BboxTuple = namedtuple("BboxTuple", ['ymin', 'ymax', 'xmin', 'xmax'])
+### Defining the ConfigStore and custom resolver to handle file path definitions
+cs = ConfigStore.instance()
+cs.store(name='model_config', node=SSDResNet50Config)
+OmegaConf.register_new_resolver(
+    "abspath", lambda relative_path: os.path.abspath(relative_path)
+)
 
 
 def _build_bounding_box(
@@ -225,53 +235,48 @@ def download_and_process(file_path: str, data_dir: str):
     os.remove(local_path)
 
 
+
 if __name__ == "__main__":
+
+    """Downloads and processes the remote GCS-hosted `.tfrecord` files.
+
+    The following parameters can be modified at runtime:
+        DATA_DIR:        str         Path to the `data` directory to download files to.
+        LABEL_MAP_PATH:  str         Path to the dataset `label_map.pbtxt` file.
+        SIZE:            str         Number of `.tfrecord` files to download from GCS.
+
+    Overriding parameters globally at runtime is provided in the Hydra Basic Override syntax:
+    ```python
+    
+    python3 download_process.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.label_map_path=LABEL_MAP_PATH \
+        dataset.size=SIZE
+    ```
+    See `configs/dataset/` for additional details on preconfigured values.
+    """
 
     ### Initialise the logger instance
     logger = get_module_logger(__name__)
-    ### Fetch the arguments from the CLI
-    parser = argparse.ArgumentParser(
-                description='Download and process tf files'
-    )
-    parser.add_argument('--data_dir', required=True,
-                help='Absolute path to the data directory'
-    )
-    parser.add_argument('--label_map_path', 
-                required=False, default='label_map.pbtxt', type=str,
-                help='Absolute path to the `label_map.pbtxt` file'
-    )
-    parser.add_argument('--size', 
-                required=False, default=100, type=int,
-                help='Number of files to download'
-    )
-    args = parser.parse_args()
-    ### Using flags instead of globals (will probably move to `hydra` soon)
-    FLAGS = flags.FLAGS
-    ### Setting the flags
-    flags.DEFINE_string('dir_data', args.data_dir,
-                'Absolute path to the data directory')
-    flags.DEFINE_string('path_to_label_map', args.label_map_path,
-                'Absolute path to the `label_map.pbtxt` file')
-    flags.DEFINE_integer('size', args.size,
-                'Number of files to download')
-    flags.mark_as_required('dir_data')
-    flags.mark_as_required('path_to_label_map')
-    flags.mark_as_required('size')
+    ### Load the configuration
+    initialize(version_base=None, config_path='../../configs')
+    cfg = compose(config_name='config.yaml')
+    cfg = OmegaConf.create(cfg)
     ### Fetching the Label Map file and building inverted label map dict
-    label_map = label_map_util.load_labelmap(FLAGS.path_to_label_map)
+    label_map = label_map_util.load_labelmap(cfg['dataset'].label_map_path)
     label_map_dict = label_map_util.get_label_map_dict(label_map)
     label_map_dict_inverted = {
                 cls_id:cls_label for cls_label, cls_id in label_map_dict.items()
     }    
     ### Opening the list of file paths to download from GCS with gsutil
-    with open(os.path.join(FLAGS.dir_data, 'filenames.txt'), 'r') as f:
+    with open(os.path.join(cfg['dataset'].data_dir, 'filenames.txt'), 'r') as f:
         file_paths = f.read().splitlines()
-    logger.info(f'Downloading {len(file_paths[:FLAGS.size])} files. Be patient, this will take a long time.')
+    logger.info(f'Downloading {len(file_paths[:cfg['dataset'].size])} files. Be patient, this will take a long time.')
     ### Initialise the a new local Ray instance
     ray.init(num_cpus=cpu_count())
     ### Process the batched data
     workers = [download_and_process.remote(
-                        fn, FLAGS.dir_data) for fn in file_paths[:FLAGS.size]]
+                        fn, cfg['dataset'].data_dir) for fn in file_paths[:cfg['dataset'].size]]
     # Note that `SIZE` of batch is within object store memory limits
     # See: https://docs.ray.io/en/latest/ray-core/tasks/patterns/too-many-results.html#code-example
     _ = ray.get(workers)

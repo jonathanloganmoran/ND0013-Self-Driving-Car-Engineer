@@ -1,42 +1,70 @@
-from absl import app, flags, logging
-import argparse
+from configs.dataclass.dataclasses import SSDResNet50Config
 import glob
+import hydra
+from hydra.core.config_store import ConfigStore
 import numpy as np
+import omegaconf
+from omegaconf import DictConfig, OmegaConf
 import os
 import random
 import shutil
+import tensorflow as tf
 from utils import get_module_logger
 
 
-def split(source: str, destination: str):
+cs = ConfigStore.instance()
+cs.store(name='model_config', node=SSDResNet50Config)
+OmegaConf.register_new_resolver(
+    "abspath", lambda relative_path: os.path.abspath(relative_path)
+)
+
+
+@hydra.main(version_base=None, config_path='../../configs', config_name='config.yaml')
+def split(cfg: SSDResNet50Config):
     """Create three splits from the processed records. 
 
-    The files should be moved to new folders in the
-    same directory. This folder should be named train, val and test.
+    The three splits are `train`, `val` and `test`. Their relative sizes
+    are defined inside the `configs/dataset/waymo_open_dataset.yaml` file.
 
-    :param source: absolute path to the source data directory,
-        contains the processed `.tfrecord` files to split.
-    :param destination: absolute path to the destination data directory,
-        contains the three subfolders: `train`, `val` and `test`.
+    In order to preserve disk space, the test set files are moved from the
+    source folder to the `test` split folder.
+
+    :param cfg: the Hydra config file specifying the source and destination
+        file paths and the train/test/val split sizes.
+
+    The following parameters can be modified globally at runtime:
+        DATA_DIR:           str         Path to the source `data` directory.
+        TRAIN:              str         Path to the `train` data directory.
+        TEST:               str         Path to the `test` data directory.
+        VAL:                str         Path to the `val` data directory.
+        TRAIN_TEST_SPLIT:   float       Percent as [0, 1] to split train/test.
+        TRAIN_VAL_SPLIT:    float       Percent as [0, 1] to split train/val.
+
+    using the Basic Override syntax provided by Hydra:
+    ```python
+    
+    python3 create_splits.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
+        dataset.train_test_split=TRAIN_TEST_SPLIT \
+        dataset.train_val_split=TRAIN_VAL_SPLIT
+    ```
+    
+    See `configs/dataset/` for additional details on preconfigured values.
     """
-    # TODO: Implement function
 
-    TRAIN_TEST_SPLIT = 0.8
-    TRAIN_VAL_SPLIT = 0.8
-
-    dirs = [os.path.join(destination, split) for split in ['train', 'test', 'val']]
+    cfg = OmegaConf.create(cfg)
+    dirs = [cfg['dataset'].train, cfg['dataset'].val, cfg['dataset'].test]
     _ = [os.makedirs(d, exist_ok=True) for d in dirs]
-
-    src = glob.glob(f"{source}/*.tfrecord")
+    src = glob.glob(f"{cfg['dataset'].data_dir}/*.tfrecord")
     src = sorted(src, key=lambda x: random.random())
-    train_set = src[:int(-len(src) * TRAIN_TEST_SPLIT)]
-    test_set = src[int(-len(src) * TRAIN_TEST_SPLIT):]
-
+    train_set = src[:int(-len(src) * cfg['dataset'].train_test_split)]
+    test_set = src[int(-len(src) * cfg['dataset'].train_test_split):]
     for file_path in train_set:
         file_name = os.path.basename(file_path)
         logger.info(f"Processing {file_name}")
-        train_file = f"{destination}/train/{file_name}"
-        val_file = f"{destination}/val/{file_name}"
+        train_file = f"{cfg['dataset'].train}/{file_name}"
+        val_file = f"{cfg['dataset'].val}/{file_name}"
         train_writer = tf.io.TFRecordWriter(train_file)
         val_writer = tf.io.TFRecordWriter(val_file)
         dataset = tf.data.TFRecordDataset(file_path, compression_type='')
@@ -47,7 +75,7 @@ def split(source: str, destination: str):
         for i, data in enumerate(dataset):
             example = tf.train.Example()
             example.ParseFromString(data.numpy())
-            if i < record_count * TRAIN_VAL_SPLIT:
+            if i < record_count * cfg['dataset'].train_val_split:
                 train_writer.write(example.SerializeToString())
             else:
                 val_writer.write(example.SerializeToString())
@@ -56,25 +84,10 @@ def split(source: str, destination: str):
     for file_path in test_set:
         file_name = os.path.basename(file_path)
         logger.info(f"Copying {file_name}")
-        test_file = f"{destination}/test/{file_name}"
+        test_file = f"{cfg['dataset'].test}/{file_name}"
         shutil.move(file_path, test_file)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-                description='Split data into training / validation / testing')
-    parser.add_argument('--source', required=True,
-                help='source data directory')
-    parser.add_argument('--destination', required=True,
-                help='destination data directory')
-    args = parser.parse_args()
-    FLAGS = flags.FLAGS
-    flags.DEFINE_string('source', args.source,
-                'Absolute path to the data directory to split')
-    flags.DEFINE_string('destination', args.destination,
-                'Absolute path to the destination data directory to store splits')
-    flags.mark_flag_as_required('source')
-    flags.mark_flag_as_required('destination')
-    logger = get_module_logger(__name__)
-    logger.info('Creating splits...')
-    split(FLAGS.source, FLAGS.destination)
+
+    split()
