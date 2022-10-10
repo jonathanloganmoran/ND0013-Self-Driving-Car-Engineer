@@ -57,7 +57,7 @@ def split(source: str, destination: str):
         file_name = os.path.basename(file_path)
         logger.info(f"Copying {file_name}")
         test_file = f"{destination}/test/{file_name}"
-        shutil.copyfile(file_path, test_file)
+        shutil.move(file_path, test_file)
 
 
 if __name__ == "__main__":
