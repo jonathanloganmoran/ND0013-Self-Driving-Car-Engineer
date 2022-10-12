@@ -1,3 +1,39 @@
+# TensorFlow Object Detection API on Custom Dataset #
+# Packaged with <3 by Jonathan L. Moran (jonathan.moran107@gmail.com).
+
+r"""Set of functions to download and process a list of `.tfrecord` GCS-hosted files.
+
+In order to download and convert the files to `tf.data.TFRecordDataset` instances, the following must be provided:
+    * `label_map_path`: the path to the `label_map.pbtxt` file;
+    * `data_dir`: the path to the data directory containing a `filenames.txt` file;
+       * `filenames.txt` should be a list of GCS paths;
+    * `size`: the number of records from `filenames.txt` to download.
+
+You may specify these in `configs/dataset/` or override them at runtime (see below).
+
+To download and process the `.tfrecord` files from Google Cloud Storage into `tf.data.TFRecordDataset` instances, run:
+
+    ```python
+    python3 download_process.py
+    ```
+
+    with none/any/all of the following parameters:
+        DATA_DIR:        str         Path to the `data` directory to download files to.
+        LABEL_MAP_PATH:  str         Path to the dataset `label_map.pbtxt` file.
+        SIZE:            str         Number of `.tfrecord` files to download from GCS.
+
+Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+    python3 download_process.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.label_map_path=LABEL_MAP_PATH \
+        dataset.size=SIZE
+    ```
+See `configs/dataset/` for additional details on preconfigured values.
+"""
+
+
 from collections import namedtuple
 from configs.dataclass.dataclasses import SSDResNet50Config
 from configs.decorators.decorator import hydra_with_ray_remote
@@ -100,7 +136,6 @@ def create_tf_example(
         )
         encoded_jpeg = tf.io.encode_jpeg(image_res).numpy()
         width, height = 640, 640
-    filename = filename.encode('utf8')
     image_format = b'jpeg'
     # Lists to store all bounding box features
     ymins = []
@@ -123,6 +158,7 @@ def create_tf_example(
         class_labels.append(_get_label_from_id(row.type).encode('utf8'))
         class_ids.append(row.type)
     # Create TF Features tensor
+    filename = filename.encode('utf8')
     tf_features = tf.train.Features(feature={
         # Store image features
         'image/height': int64_feature(height),
@@ -178,8 +214,8 @@ def process_tfr(file_path: str, dest_dir: str):
     :param dest_dir: Absolute path pointing to the destination directory.
     """
 
-    ### Create subdirectory for output files
-    os.makedirs(dest_dir, exist_ok=True)
+    ### Create 'processed' subdirectory for output files
+    os.makedirs(f"{dest_dir}/processed", exist_ok=True)
     # Get the name of file to convert
     file_name = os.path.basename(file_path)
     ### Get the path to directory where file is located
@@ -227,6 +263,7 @@ def download_and_process(file_path: str, data_dir: str):
 
     ### Re-import the logger for multiprocesing
     logger = get_module_logger(__name__)
+    ### Download the `.tfrecord` file and get its local path in the 'raw' subdirectory
     local_path = download_tfr(file_path, data_dir)
     ### Process the `.tfrecord` into a TF API compatible format
     process_tfr(local_path, data_dir)
@@ -274,7 +311,7 @@ if __name__ == "__main__":
     logger.info(f'Downloading {len(file_paths[:cfg['dataset'].size])} files. Be patient, this will take a long time.')
     ### Initialise the a new local Ray instance
     ray.init(num_cpus=cpu_count())
-    ### Process the batched data
+    ### Process the batched data and store into '{data_dir}/processed' subdirectory
     workers = [download_and_process.remote(
                         fn, cfg['dataset'].data_dir) for fn in file_paths[:cfg['dataset'].size]]
     # Note that `SIZE` of batch is within object store memory limits

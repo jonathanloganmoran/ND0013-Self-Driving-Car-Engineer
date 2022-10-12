@@ -1,3 +1,43 @@
+# TensorFlow Object Detection API on Custom Dataset #
+# Packaged with <3 by Jonathan L. Moran (jonathan.moran107@gmail.com).
+
+r"""Function to edit the existing `pipeline.config` file and save it to a new file.
+
+In order to configure a TF Object Detection API model for training, you must run this
+script and specify the expected parameters. The default parameter values are located
+in `configs/model/`, `confgs/dataset/` and `configs/hyperparameters/`.
+
+
+To configure the model for training, run:
+
+    ```python
+    python3 edit_config.py
+    ```
+
+with none/any/all of the following parameters:
+    TRAIN:                                  str         Path to the `train` data directory.
+    TEST:                                   str         Path to the `test` data directory.
+    VAL:                                    str         Path to the `val` data directory.
+    BATCH_SIZE:                             int         Number of examples to process per iteration.
+    CHECKPOINT_DIR:                         str         Path to the pre-trained `checkpoint` folder.
+    LABEL_MAP_PATH:                         str         Path to the dataset `label_map.pbtxt` file.
+    PIPELINE_CONFIG_PATH:                   str         Path to the `pipeline.config` file to modify.
+
+Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+    python3 edit_config.py \
+        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
+        dataset.label_map_path=LABEL_MAP_PATH \
+        hyperparameters.batch_size=BATCH_SIZE \
+        model.checkpoint_dir=CHECKPOINT_DIR \
+        model.pipeline_config_path=PIPELINE_CONFIG_PATH
+    ```
+See `configs/model/` for additional details on preconfigured values.
+
+"""
+
+
 from configs.dataclass.dataclasses import SSDResNet50Config
 import glob
 from google.protobuf import text_format
@@ -67,5 +107,4 @@ def edit(cfg: SSDResNet50Config):
 
 
 if __name__ == "__main__":
-
     edit()

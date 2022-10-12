@@ -28,6 +28,7 @@ python model_main_tf2.py -- \
     --alsologtostderr
 """
 
+from configs.dataclass.dataclasses import SSDResNet50Config
 import hydra
 from hydra.core.config_store import ConfigStore
 import tensorflow.compat.v2 as tf
@@ -42,47 +43,6 @@ OmegaConf.register_new_resolver(
     "abspath", lambda relative_path: os.path.abspath(relative_path)
 )
 
-
-flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config '
-                                        'file.')
-flags.DEFINE_integer('num_train_steps', None, 'Number of train steps.')
-flags.DEFINE_bool('eval_on_train_data', False, 'Enable evaluating on train '
-                                    'data (only supported in distributed training).')
-flags.DEFINE_integer('sample_1_of_n_eval_examples', None, 'Will sample one of '
-                                         'every n eval input examples, where n is provided.')
-flags.DEFINE_integer('sample_1_of_n_eval_on_train_examples', 5, 'Will sample '
-                                         'one of every n train input examples for evaluation, '
-                                         'where n is provided. This is only used if '
-                                         '`eval_training_data` is True.')
-flags.DEFINE_string(
-        'model_dir', None, 'Path to output model directory '
-                                             'where event and checkpoint files will be written.')
-flags.DEFINE_string(
-        'checkpoint_dir', None, 'Path to directory holding a checkpoint.  If '
-        '`checkpoint_dir` is provided, this binary operates in eval-only mode, '
-        'writing resulting metrics to `model_dir`.')
-
-flags.DEFINE_integer('eval_timeout', 3600, 'Number of seconds to wait for an'
-                                         'evaluation checkpoint before exiting.')
-
-flags.DEFINE_bool('use_tpu', False, 'Whether the job is executing on a TPU.')
-flags.DEFINE_string(
-        'tpu_name',
-        default=None,
-        help='Name of the Cloud TPU for Cluster Resolvers.')
-flags.DEFINE_integer(
-        'num_workers', 1, 'When num_workers > 1, training uses '
-        'MultiWorkerMirroredStrategy. When num_workers = 1 it uses '
-        'MirroredStrategy.')
-flags.DEFINE_integer(
-        'checkpoint_every_n', 1000, 'Integer defining how often we checkpoint.')
-flags.DEFINE_boolean('record_summaries', True,
-                                         ('Whether or not to record summaries defined by the model'
-                                            ' or the training pipeline. This does not impact the'
-                                            ' summaries of the loss values which are always'
-                                            ' recorded.'))
-
-FLAGS = flags.FLAGS
 
 
 @hydra.main(version_base=None, config_path='../../configs', config_name='config.yaml')

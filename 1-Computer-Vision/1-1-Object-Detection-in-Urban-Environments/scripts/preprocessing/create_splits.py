@@ -1,3 +1,40 @@
+# TensorFlow Object Detection API on Custom Dataset #
+# Packaged with <3 by Jonathan L. Moran (jonathan.moran107@gmail.com).
+
+r"""Function to split a set of files into train/test/validation subsets.
+
+The files located in the `data_dir` are assumed to have been processed, e.g.,
+converted into `tf.data.TFRecordDataset`. The `split()` function therefore only
+calculates the split ratios and moves the files from their source directory into
+the respective `split` subfolder.
+
+ To split the downloaded data into three subsets `train`, `val`, and `test`, run:
+    
+    ```python
+    python3 create_splits.py
+    ```
+
+    with none/any/all of the following:
+        DATA_DIR:           str         Path to the source `data` directory.
+        TRAIN:              str         Path to the `train` data directory.
+        TEST:               str         Path to the `test` data directory.
+        VAL:                str         Path to the `val` data directory.
+        TRAIN_TEST_SPLIT:   float       Percent as [0, 1] to split train/test.
+        TRAIN_VAL_SPLIT:    float       Percent as [0, 1] to split train/val.
+
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
+    ```python
+    python3 create_splits.py \
+        dataset.data_dir=DATA_DIR \
+        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
+        dataset.train_test_split=TRAIN_TEST_SPLIT \
+        dataset.train_val_split=TRAIN_VAL_SPLIT
+    ```
+    See `configs/dataset/` for additional details on preconfigured values.
+"""
+
+
 from configs.dataclass.dataclasses import SSDResNet50Config
 import glob
 import hydra
@@ -26,8 +63,8 @@ def split(cfg: SSDResNet50Config):
     The three splits are `train`, `val` and `test`. Their relative sizes
     are defined inside the `configs/dataset/waymo_open_dataset.yaml` file.
 
-    In order to preserve disk space, the test set files are moved from the
-    source folder to the `test` split folder.
+    In order to preserve disk space, the processed `tf.data.TFRecordDataset`
+    files are moved from their source to the respective split folder.
 
     :param cfg: the Hydra config file specifying the source and destination
         file paths and the train/test/val split sizes.
@@ -56,38 +93,30 @@ def split(cfg: SSDResNet50Config):
     cfg = OmegaConf.create(cfg)
     dirs = [cfg['dataset'].train, cfg['dataset'].val, cfg['dataset'].test]
     _ = [os.makedirs(d, exist_ok=True) for d in dirs]
-    src = glob.glob(f"{cfg['dataset'].data_dir}/*.tfrecord")
+    src = glob.glob(f"{cfg['dataset'].data_dir}/processed/*.tfrecord")
     src = sorted(src, key=lambda x: random.random())
-    train_set = src[:int(-len(src) * cfg['dataset'].train_test_split)]
-    test_set = src[int(-len(src) * cfg['dataset'].train_test_split):]
-    for file_path in train_set:
-        file_name = os.path.basename(file_path)
-        logger.info(f"Processing {file_name}")
-        train_file = f"{cfg['dataset'].train}/{file_name}"
-        val_file = f"{cfg['dataset'].val}/{file_name}"
-        train_writer = tf.io.TFRecordWriter(train_file)
-        val_writer = tf.io.TFRecordWriter(val_file)
-        dataset = tf.data.TFRecordDataset(file_path, compression_type='')
-        record_count = 0
-        for record_count, _ in enumerate(dataset):
-            # Get the number of records in dataset
-            pass
-        for i, data in enumerate(dataset):
-            example = tf.train.Example()
-            example.ParseFromString(data.numpy())
-            if i < record_count * cfg['dataset'].train_val_split:
-                train_writer.write(example.SerializeToString())
-            else:
-                val_writer.write(example.SerializeToString())
-        train_writer.close()
-        val_writer.close()
-    for file_path in test_set:
-        file_name = os.path.basename(file_path)
-        logger.info(f"Copying {file_name}")
-        test_file = f"{cfg['dataset'].test}/{file_name}"
-        shutil.move(file_path, test_file)
+    ### Create splits by taking elements from left and right side
+    test_start_idx = int(len(src) * cfg['dataset'].train_test_split)
+    test_set = src[test_start_idx:]      # Get all files right of split
+    train_set = src[:test_start_idx]     # Get all files left of split
+    val_start_idx = int(len(train_set) * cfg['dataset'].train_val_split)
+    ### Move processed `tf.data.TFRecordDataset` files to their `split` subfolder
+    for src_file_path in train_set[:val_start_idx]
+        train_file_name = os.path.basename(src_file_path)
+        logger.info(f"Processing {train_file_name}")
+        train_file_path = f"{cfg['dataset'].train}/{train_file_name}"
+        shutil.move(src_file_path, train_file_path)
+    for src_file_path in train_set[val_start_idx]:
+        val_file_name = os.path.basename(src_file_path)
+        logger.info(f"Processing {val_file_name}")
+        val_file_path = f"{cfg['dataset'].val}/{val_file_name}"
+        shutil.move(src_file_path, val_file_path)
+    for src_file_path in test_set:
+        test_file_name = os.path.basename(src_file_path)
+        logger.info(f"Copying {test_file_name}")
+        test_file_path = f"{cfg['dataset'].test}/{test_file_name}"
+        shutil.move(src_file_path, test_file_path)
 
 
 if __name__ == "__main__":
-
     split()

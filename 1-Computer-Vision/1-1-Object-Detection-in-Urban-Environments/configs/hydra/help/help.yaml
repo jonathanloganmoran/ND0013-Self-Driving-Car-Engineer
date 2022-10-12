@@ -24,7 +24,6 @@ template: |-
     For local training/evaluation run:
 
     ```python
-
     python3 model_main_tf2.py
     ```
 
@@ -49,12 +48,11 @@ template: |-
     Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
 
     ```python
-
-    python3 model_main_tf2.py -- \
-        --pipeline_config_path=$PIPELINE_CONFIG_PATH \
-        --model_out=$MODEL_OUT --num_train_steps=$NUM_TRAIN_STEPS \
-        --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
-        --...
+    python3 model_main_tf2.py \
+        model.pipeline_config_path=PIPELINE_CONFIG_PATH \
+        model.model_out=MODEL_OUT model.num_train_steps=NUM_TRAIN_STEPS \
+        model.sample_1_of_n_eval_examples=SAMPLE_1_OF_N_EVAL_EXAMPLES \
+        ...
     ```
     See `configs/model/` for additional details on preconfigured values if running without parameters.
     
@@ -64,8 +62,8 @@ template: |-
     --------------
     To configure the model for training, run:
 
-    ```
-    python edit_config.py
+    ```python
+    python3 edit_config.py
     ```
 
     with none/any/all of the following parameters:
@@ -80,7 +78,6 @@ template: |-
     Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
 
     ```python
-
     python3 edit_config.py \
         dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
         dataset.label_map_path=LABEL_MAP_PATH \
@@ -111,7 +108,6 @@ template: |-
     Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
 
     ```python
-
     python3 download_process.py \
         dataset.data_dir=DATA_DIR \
         dataset.label_map_path=LABEL_MAP_PATH \
@@ -125,7 +121,6 @@ template: |-
     To split the downloaded data into three subsets `train`, `val`, and `test`, run:
     
     ```python
-
     python3 create_splits.py
     ```
 
@@ -138,8 +133,8 @@ template: |-
         TRAIN_VAL_SPLIT:    float       Percent as [0, 1] to split train/val.
 
     Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
+
     ```python
-    
     python3 create_splits.py \
         dataset.data_dir=DATA_DIR \
         dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
