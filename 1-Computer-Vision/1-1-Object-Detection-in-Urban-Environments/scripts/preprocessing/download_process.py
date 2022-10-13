@@ -26,10 +26,12 @@ Overriding parameters globally is accomplished at runtime using the Basic Overri
 
     ```python
     python3 download_process.py \
-        dataset.data_dir=DATA_DIR \
-        dataset.label_map_path=LABEL_MAP_PATH \
-        dataset.size=SIZE
+        dataset.data_dir={DATA_DIR} \
+        dataset.label_map_path={LABEL_MAP_PATH} \
+        dataset.size={SIZE}
     ```
+Note that braces "{}" should be used to perform interpolation on Python variables.
+
 See `configs/dataset/` for additional details on preconfigured values.
 """
 
@@ -42,6 +44,7 @@ import hydra
 from hydra import compose, initialize
 from hydra.core.config_store import ConfigStore
 import io
+import logging
 from object_detection.utils import dataset_util, label_map_util
 from omegaconf import DictConfig, OmegaConf
 import os
@@ -55,6 +58,7 @@ from utils import bytes_list_feature, bytes_feature, float_list_feature
 from utils import get_module_logger
 from utils import int64_feature, int64_list_feature, parse_frame
 from waymo_open_dataset import dataset_pb2 as open_dataset
+from waymo_open_dataset import label_pb2
 
 
 ### Creating some not-so-long custom variable types for typing hints
@@ -179,50 +183,52 @@ def create_tf_example(
     return tf.train.Example(features=tf_features)
 
 
-def download_tfr(file_path: str, data_dir: str) -> str:
+def download_tfr(file_path: str, data_raw_dir: str) -> str:
     """Download a single `.tfrecord` with `gsutil`.
 
     :param file_path: str, remote path to the `.tfrecord` file,
         this should start with 'gs://' and include the bucket name.
-    :param data_dir: str, the local path to the destination directory.
-    returns: local_path (str): the absolute path to where the file is saved.
+    :param data_raw_dir: str, the local path to the destination directory.
+    returns: local_path (str), the absolute path to where the file is saved.
     """
 
     ### Get the file name from the absolute path
     file_name = os.path.basename(file_path)
-    ### Create the output directory
-    dest = os.path.join(data_dir, 'raw')
-    os.makedirs(dest, exist_ok=True)
-    ### Download the `.tfrecord` file from GCS
-    cmd = ['gsutil', 'cp', file_path, f'{dest}']
-    logger.info(f'Downloading {file_name}')
-    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if res.returncode != 0:
-        logger.error(f'Could not download {file_path}')
     ### Define aboslute path to the downloaded `.tfrecord` file
-    local_path = os.path.join(dest, file_name)
+    local_path = os.path.join(data_raw_dir, file_name)
+    ### Return if the file has already been downloaded
+    if os.path.exists(local_path):
+        print('Skipping download of {}, file already exists!'.format(file_name))
+        return local_path
+    else:
+        ### Download the `.tfrecord` file from GCS
+        cmd = ['gcloud storage', 'cp', file_path, f'{local_path}']
+        logger.info(f'Downloading {file_name}')
+        # Note: `shell=True` argument needed for workaround on Linux
+        # TODO: migrate to `google.cloud` storage API
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if res.returncode != 0:
+            logger.error(f'Could not download {file_path}')
     return local_path
 
 
-def process_tfr(file_path: str, dest_dir: str):
+def process_tfr(file_path: str, data_processed_dir: str):
     """Process a Waymo data file into a TF-compatible type.
 
     Formats the Waymo Open Data `.tfrecord` type into a 
     `tf.train.Example` type for use with the TF Object Detection API.
 
     :param file_path: Absolute path pointing to the `.tfrecord` to convert.
-    :param dest_dir: Absolute path pointing to the destination directory.
+    :param data_processed_dir: Absolute path pointing to the destination directory.
     """
 
-    ### Create 'processed' subdirectory for output files
-    os.makedirs(f"{dest_dir}/processed", exist_ok=True)
     # Get the name of file to convert
     file_name = os.path.basename(file_path)
-    ### Get the path to directory where file is located
-    src_dir = os.path.dirname(file_path)
-    ### Return if converted file already exists
-    if os.path.exists(f'{dest_dir}/{file_name}'):
-        print('Skipping {}, file already exists!'.format(file_name))
+    ### Create path to store processed file
+    data_processed_path = os.path.join(data_processed_dir, file_name)
+    ### Return if converted/processed file already exists
+    if os.path.exists(data_processed_path):
+        print('Skipping processing of {}, file already exists!'.format(file_name))
         return
     else:
         logging.info(f'Processing {file_path}')
@@ -231,7 +237,7 @@ def process_tfr(file_path: str, dest_dir: str):
         # Credit: https://github.com/datitran/raccoon_dataset/issues/90#issuecomment-647073794
         #writer = tf.compat.v1.python_io.TFRecordWriter(f'output/{file_name}')
         #writer = tf.io.TFRecordWriter(f'output/{file_name}')
-        writer = tf.io.TFRecordWriter(f'{dest_dir}/{file_name}')
+        writer = tf.io.TFRecordWriter(data_processed_path)
         dataset = tf.data.TFRecordDataset(file_path, compression_type='')
         # For each Frame in the Waymo OD `.tfrecord`
         for idx, data in enumerate(dataset):
@@ -261,43 +267,49 @@ def download_and_process(file_path: str, data_dir: str):
     :param data_dir: the absolute path to the local directory to store the downloaded file.
     """
 
+    ### Create the 'raw' subdirectory for downloaded files
+    data_raw_dir = os.path.join(data_dir, 'raw')
+    os.makedirs(data_raw_dir, exist_ok=True)
+    ### Create 'processed' subdirectory for output files
+    data_processed_dir = os.path.join(data_dir, 'processed')
+    os.makedirs(data_processed_dir, exist_ok=True)
     ### Re-import the logger for multiprocesing
-    logger = get_module_logger(__name__)
+    #logger = get_module_logger(__name__)
     ### Download the `.tfrecord` file and get its local path in the 'raw' subdirectory
-    local_path = download_tfr(file_path, data_dir)
+    local_path = download_tfr(file_path, data_raw_dir)
     ### Process the `.tfrecord` into a TF API compatible format
-    process_tfr(local_path, data_dir)
+    process_tfr(local_path, data_processed_dir)
     ### Delete the original `.tfrecord` file to save space
     logger.info(f'Deleting {local_path}')
     os.remove(local_path)
 
 
-
-if __name__ == "__main__":
-
+@hydra.main(version_base=None, config_path='../../configs', config_name='config.yaml')
+def main(cfg: SSDResNet50Config):
     """Downloads and processes the remote GCS-hosted `.tfrecord` files.
 
     The following parameters can be modified at runtime:
         DATA_DIR:        str         Path to the `data` directory to download files to.
         LABEL_MAP_PATH:  str         Path to the dataset `label_map.pbtxt` file.
-        SIZE:            str         Number of `.tfrecord` files to download from GCS.
+        SIZE:            int         Number of `.tfrecord` files to download from GCS.
 
     Overriding parameters globally at runtime is provided in the Hydra Basic Override syntax:
     ```python
     
     python3 download_process.py \
-        dataset.data_dir=DATA_DIR \
-        dataset.label_map_path=LABEL_MAP_PATH \
-        dataset.size=SIZE
+        dataset.data_dir={DATA_DIR} \
+        dataset.label_map_path={LABEL_MAP_PATH} \
+        dataset.size={SIZE}
     ```
+    Note that braces "{}" should be used to perform interpolation on Python variables.
+    
     See `configs/dataset/` for additional details on preconfigured values.
     """
-
     ### Initialise the logger instance
     logger = get_module_logger(__name__)
     ### Load the configuration
-    initialize(version_base=None, config_path='../../configs')
-    cfg = compose(config_name='config.yaml')
+    #initialize(version_base=None, config_path='../../configs')
+    #cfg = compose(config_name='config', return_hydra_config=True)
     cfg = OmegaConf.create(cfg)
     ### Fetching the Label Map file and building inverted label map dict
     label_map = label_map_util.load_labelmap(cfg['dataset'].label_map_path)
@@ -308,7 +320,7 @@ if __name__ == "__main__":
     ### Opening the list of file paths to download from GCS with gsutil
     with open(os.path.join(cfg['dataset'].data_dir, 'filenames.txt'), 'r') as f:
         file_paths = f.read().splitlines()
-    logger.info(f'Downloading {len(file_paths[:cfg['dataset'].size])} files. Be patient, this will take a long time.')
+    logger.info("Downloading {} files. Be patient, this will take a long time.".format(len(file_paths[:cfg['dataset'].size])))
     ### Initialise the a new local Ray instance
     ray.init(num_cpus=cpu_count())
     ### Process the batched data and store into '{data_dir}/processed' subdirectory
@@ -317,3 +329,7 @@ if __name__ == "__main__":
     # Note that `SIZE` of batch is within object store memory limits
     # See: https://docs.ray.io/en/latest/ray-core/tasks/patterns/too-many-results.html#code-example
     _ = ray.get(workers)
+
+
+if __name__ == "__main__":
+    main()

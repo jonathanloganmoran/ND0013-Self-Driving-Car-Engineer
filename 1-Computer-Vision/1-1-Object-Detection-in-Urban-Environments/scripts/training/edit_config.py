@@ -27,14 +27,15 @@ Overriding parameters globally is accomplished at runtime using the Basic Overri
 
     ```python
     python3 edit_config.py \
-        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
-        dataset.label_map_path=LABEL_MAP_PATH \
-        hyperparameters.batch_size=BATCH_SIZE \
-        model.checkpoint_dir=CHECKPOINT_DIR \
-        model.pipeline_config_path=PIPELINE_CONFIG_PATH
+        dataset.train={TRAIN} dataset.test={TEST} dataset.val={VAL} \
+        dataset.label_map_path={LABEL_MAP_PATH} \
+        hyperparameters.batch_size={BATCH_SIZE} \
+        model.checkpoint_dir={CHECKPOINT_DIR} \
+        model.pipeline_config_path={PIPELINE_CONFIG_PATH}
     ```
-See `configs/model/` for additional details on preconfigured values.
+Note that braces "{}" should be used to perform interpolation on Python variables.
 
+See `configs/model/` for additional details on preconfigured values.
 """
 
 
@@ -72,16 +73,16 @@ def edit(cfg: SSDResNet50Config):
         LABEL_MAP_PATH:         str         Path to the dataset `label_map.pbtxt` file.
         PIPELINE_CONFIG_PATH:   str         Path to the `pipeline.config` file to modify.
     
-    Overriding parameters globally at runtime is provided in the Hydra Basic Override syntax:
+    Overriding parameters globally is accomplished at runtime using the Basic Override syntax provided by Hydra:
     ```python
-    
     python3 edit_config.py \
-        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
-        dataset.label_map_path=LABEL_MAP_PATH \
-        hyperparameters.batch_size=BATCH_SIZE \
-        model.checkpoint_dir=CHECKPOINT_DIR \
-        model.pipeline_config_path=PIPELINE_CONFIG_PATH
+        dataset.train={TRAIN} dataset.test={TEST} dataset.val={VAL} \
+        dataset.label_map_path={LABEL_MAP_PATH} \
+        hyperparameters.batch_size={BATCH_SIZE} \
+        model.checkpoint_dir={CHECKPOINT_DIR} \
+        model.pipeline_config_path={PIPELINE_CONFIG_PATH}
     ```
+    Note that braces "{}" should be used to perform interpolation on Python variables.
     
     See `configs/model/`, `configs/dataset/` and `configs/hyperparameters` for
     additional details on preconfigured values.

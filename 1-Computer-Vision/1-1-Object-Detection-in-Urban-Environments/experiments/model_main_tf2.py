@@ -73,12 +73,15 @@ def main(cfg: SSDResNet50Config):
     ```python
     
     python3 model_main_tf2.py \
-        dir_base=DIR_BASE model_out=model_out checkpoint_dir=CHECKPOINT_DIR \
-        pipeline_config_path=PIPELINE_CONFIG_PATH num_train_steps=NUM_TRAIN_STEPS \
-        sample_1_of_n_eval_examples=SAMPLE_1_OF_N_EVAL_EXAMPLES \
+        model.dir_base={DIR_BASE} model.model_out={MODEL_OUT} \
+        model.checkpoint_dir={CHECKPOINT_DIR} \
+        model.pipeline_config_path={PIPELINE_CONFIG_PATH} \
+        model.num_train_steps={NUM_TRAIN_STEPS} \
+        model.sample_1_of_n_eval_examples={SAMPLE_1_OF_N_EVAL_EXAMPLES} \
         ...
     ```
-    
+    Note that braces "{}" should be used to perform interpolation on Python variables.
+
     See `configs/model/` for additional details on preconfigured values.
     """
 

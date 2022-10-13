@@ -26,11 +26,13 @@ the respective `split` subfolder.
 
     ```python
     python3 create_splits.py \
-        dataset.data_dir=DATA_DIR \
-        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
-        dataset.train_test_split=TRAIN_TEST_SPLIT \
-        dataset.train_val_split=TRAIN_VAL_SPLIT
+        dataset.data_dir={DATA_DIR} \
+        dataset.train={TRAIN} dataset.test={TEST} dataset.val={VAL} \
+        dataset.train_test_split={TRAIN_TEST_SPLIT} \
+        dataset.train_val_split={TRAIN_VAL_SPLIT}
     ```
+    Note that braces "{}" should be used to perform interpolation on Python variables.
+
     See `configs/dataset/` for additional details on preconfigured values.
 """
 
@@ -79,13 +81,14 @@ def split(cfg: SSDResNet50Config):
 
     using the Basic Override syntax provided by Hydra:
     ```python
-    
     python3 create_splits.py \
-        dataset.data_dir=DATA_DIR \
-        dataset.train=TRAIN dataset.test=TEST dataset.val=VAL \
-        dataset.train_test_split=TRAIN_TEST_SPLIT \
-        dataset.train_val_split=TRAIN_VAL_SPLIT
+        dataset.data_dir={DATA_DIR} \
+        dataset.train={TRAIN} dataset.test={TEST} dataset.val={VAL} \
+        dataset.train_test_split={TRAIN_TEST_SPLIT} \
+        dataset.train_val_split={TRAIN_VAL_SPLIT}
     ```
+    Note that braces "{}" should be used to perform interpolation on Python variables.
+
     
     See `configs/dataset/` for additional details on preconfigured values.
     """
