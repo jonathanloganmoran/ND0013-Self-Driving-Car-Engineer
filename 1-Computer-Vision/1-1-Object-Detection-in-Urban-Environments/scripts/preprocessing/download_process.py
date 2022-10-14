@@ -202,18 +202,17 @@ def download_tfr(file_path: str, data_raw_dir: str) -> str:
         return local_path
     else:
         ### Download the `.tfrecord` file from GCS
-        cmd = ['gcloud storage', 'cp', file_path, f'{local_path}']
-        ### If running on Linux, use the following workaround:
-        # Assumes that `google-cloud-sdk` is downloaded/unzipped into `addons` folder
-        # Also that a user/service account has been authenticated/activated
-        #sh_path = '/bin/sh'
-        #gcloud_path = os.path.abspath(f'{data_raw_dir}/../../../addons/google-cloud-sdk')
-        #gsutil_path = shutil.which('gsutil', path=os.path.join(gcloud_path, 'bin'))
-        #cmd = [gsutil_path, 'cp', file_path, local_path]
+        #cmd = ['gsutil', 'cp', file_path, f'{local_path}']
+        ### Linux workaround:
+        sh_path = '/bin/sh'    # Equivalent to using `shell=True`
+        gcloud_path = os.path.abspath(f'{data_raw_dir}/../../../addons/google-cloud-sdk')
+        gsutil_path = shutil.which('gsutil', path=os.path.join(gcloud_path, 'bin'))
+        cmd = [gsutil_path, 'cp', file_path, data_raw_dir]
         logger.info(f'Downloading {file_name}')
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if res.returncode != 0:
             logger.error(f'Could not download {file_path}')
+        logger.info(f'Downloaded successfully {file_name}')
     return local_path
 
 
