@@ -88,7 +88,7 @@ def main(cfg: SSDResNet50Config):
     cfg = OmegaConf.create(cfg)
     tf.config.set_soft_device_placement(True)
 
-    if FLAGS.checkpoint_dir:
+    if cfg['model'].checkpoint_dir:
         model_lib_v2.eval_continuously(
                 pipeline_config_path=cfg['model'].pipeline_config_path,
                 model_dir=cfg['model'].model_out,
@@ -118,7 +118,7 @@ def main(cfg: SSDResNet50Config):
                     model_dir=cfg['model'].model_out,
                     train_steps=cfg['model'].num_train_steps,
                     use_tpu=cfg['model'].use_tpu,
-                    checkpoint_every_n=FLAGS.checkpoint_every_n,
+                    checkpoint_every_n=cfg['model'].checkpoint_every_n,
                     record_summaries=cfg['model'].record_summaries)
 
 if __name__ == '__main__':

@@ -26,12 +26,15 @@
 #
 # ```python
 #
-# python3 model_main_tf2.py -- \
-#     --pipeline_config_path=$PIPELINE_CONFIG_PATH \
-#     --model_out=$MODEL_OUT --num_train_steps=$NUM_TRAIN_STEPS \
-#     --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
+# python3 model_main_tf2.py \
+#     model.dir_base={DIR_BASE} \
+#     model.model_out={MODEL_OUT} \
+#     model.pipeline_config_path={PIPELINE_CONFIG_PATH} \
+#     model.model_out={MODEL_OUT} model.num_train_steps={NUM_TRAIN_STEPS} \
+#     model.sample_1_of_n_eval_examples={SAMPLE_1_OF_N_EVAL_EXAMPLES} \
 #     --...
 # ```
+# Note that braces "{}" should be used to perform interpolation on Python variables.
 #
 # See `configs/model/` for additional details on preconfigured values if running without parameters.
 
@@ -47,7 +50,7 @@ sample_1_of_n_eval_examples: 1                      # Number of evaluation examp
 sample_1_of_n_eval_on_train_examples: None
 eval_timeout: 25                                    # Number of seconds to wait for an evaluation checkpoint before exiting
 use_tpu: False                                      # Whether the job is executing on a TPU
-tpu_name: ''                                        # Name of the Cloud TPU for Cluster Resolvers
-checkpoint_every_n:                                 # Integer defining how often to checkpoint
+tpu_name: None                                      # Name of the Cloud TPU for Cluster Resolvers
+checkpoint_every_n: 100                             # Integer defining how often to checkpoint
 record_summaries: True                              # Whether or not to record summaries defined by the model or training pipelines.
 num_workers: 1                                      # If 1, uses 'MirroredStrategy', if > 1, uses 'MultiWorkerMirroredStrategy'
