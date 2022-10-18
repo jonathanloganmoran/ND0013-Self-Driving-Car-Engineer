@@ -35,11 +35,12 @@ class TFModel:
     sample_1_of_n_eval_examples: int
     sample_1_of_n_eval_on_train_examples: Optional[int]
     eval_timeout: int
-    use_tpu: Optional[bool] = False
-    tpu_name: Optional[str] = None
     checkpoint_every_n: int
-    record_summaries: Optional[bool] = False
-    num_workers: Optional[int] = 1
+    record_summaries: bool
+    num_workers: int
+    eval_on_train_data: Optional[bool] = False
+    use_tpu: Optional[bool] = False
+    tpu_name: Optional[str] = None 
     
     
 @dataclass
