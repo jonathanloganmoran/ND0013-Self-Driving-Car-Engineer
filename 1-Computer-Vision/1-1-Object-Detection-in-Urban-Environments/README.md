@@ -3,6 +3,26 @@
 From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 
+## Objectives
+* Train an object detection model on the Waymo dataset;
+* Learn how to use the TensorFlow object detection API;
+* Learn how to pick the best parameters for your model;
+* Perform an in-depth error analysis to understand your model's limitations. 
+
+
+## Introduction
+In this project you will apply the skills you have gained in this course to create a convolutional neural network to detect and classify objects using data from the [Waymo Open Dataset](https://waymo.com/open) [1]. You will be provided with a dataset of images of urban environments containing annotated cyclists, pedestrians and vehicles.
+
+First, you will perform an extensive data analysis including the computation of label distributions, display of sample images, and checking for object occlusions. You will use this analysis to decide what augmentations are meaningful for this project. Then, you will train a 
+neural network to detect and classify objects. You will monitor the training with TensorBoard and decide when to end it. Finally, you will experiment with different hyperparameters to improve your model's performance.
+
+This project will include use of the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) [2], where you can deploy your model to get predictions on images sent to the API. You will also be provided with code to create a short video of the model predictions.
+
+
+## TensorFlow Object Detection API
+The TensorFlow Object Detection API simplifies the development and training of state-of-the-art object detection models. A full list of pre-trained models can be viewed on the [TensorFlow Object Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md). 
+
+
 ## File Descriptions
 
 Filename                                                                            | Description
@@ -32,26 +52,6 @@ Filename                                                                        
 `out/`                                                                              | Report figures, TensorBoard training/validation scalar charts, output detection predictions, etc.
 
 
-## Objectives
-* Train an object detection model on the Waymo dataset;
-* Learn how to use the TensorFlow object detection API;
-* Learn how to pick the best parameters for your model;
-* Perform an in-depth error analysis to understand your model's limitations. 
-
-
-## Introduction
-In this project you will apply the skills you have gained in this course to create a convolutional neural network to detect and classify objects using data from the [Waymo Open Dataset](https://waymo.com/open) [1]. You will be provided with a dataset of images of urban environments containing annotated cyclists, pedestrians and vehicles.
-
-First, you will perform an extensive data analysis including the computation of label distributions, display of sample images, and checking for object occlusions. You will use this analysis to decide what augmentations are meaningful for this project. Then, you will train a 
-neural network to detect and classify objects. You will monitor the training with TensorBoard and decide when to end it. Finally, you will experiment with different hyperparameters to improve your model's performance.
-
-This project will include use of the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) [2], where you can deploy your model to get predictions on images sent to the API. You will also be provided with code to create a short video of the model predictions.
-
-
-## TensorFlow Object Detection API
-The TensorFlow Object Detection API simplifies the development and training of state-of-the-art object detection models. A full list of pre-trained models can be viewed on the [TensorFlow Object Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md). 
-
-
 ## Setup and Installation
 To configure your workspace, run:
 ```
@@ -59,7 +59,7 @@ pip install --editable {BASE_DIR}
 ```
 where `BASE_DIR` points to the top-level project directory. All project modules will be installed onto your PYTHONPATH automatically.
 
-To configure a Google Colab instance, copy the shell commands from [`scripts/setup/install.sh`]() into a cell and execute it. Note that with Google Colab instances there might be build issues when working with this project directory. It is only recommended to run individual scripts inside Google Colab.
+To configure a Google Colab instance, copy the shell commands from [`scripts/setup/install.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/setup/install.sh) into a cell and execute it. Note that with Google Colab instances there might be build issues when working with this project directory. It is only recommended to run individual scripts inside Google Colab.
 
 If you are running this project inside the Linux Ubuntu LTS VM provided by Udacity, see build instructions in [`2022-10-16-Report.md`]().
 
@@ -91,7 +91,7 @@ python3 download_process.py \
     dataset.label_map_path=LABEL_MAP_PATH \
     dataset.size=SIZE
 ```
-See [`configs/dataset/`]() for additional details on preconfigured values if running without parameters.
+See [`configs/dataset/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/dataset) for additional details on preconfigured values if running without parameters.
 
 
 ### Creating Dataset Splits
@@ -121,14 +121,14 @@ python3 create_splits.py \
     dataset.train_test_split=TRAIN_TEST_SPLIT \
     dataset.train_val_split=TRAIN_VAL_SPLIT
 ```
-See [`configs/dataset/`]() for additional details on preconfigured values if running without parameters.
+See [`configs/dataset/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/dataset) for additional details on preconfigured values if running without parameters.
 
 
 ## Model configuration
 
 In this project we will be using the RetinaNet (a SSD ResNet50 v1 with FPN) which has been pre-trained on the [COCO 2017](http://cocodataset.org/) dataset. First, fetch the default configuration file and pre-trained weights from the TensorFlow Object Detection Model Zoo, or alternatively from the [TensorFlow Hub](https://tfhub.dev/tensorflow/retinanet/resnet50_v1_fpn_640x640/1). 
 
-In order to use this model on the Waymo Open Dataset, we have to re-configure some of the proto definitions in the [`pipeline.config`]() file (e.g., batch size, epochs, number of classes, etc.).
+In order to use this model on the Waymo Open Dataset, we have to re-configure some of the proto definitions in the [`pipeline.config`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/pretrained_model/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/pipeline.config) file (e.g., batch size, epochs, number of classes, etc.).
 
 
 To configure the model for training, run:
@@ -158,7 +158,7 @@ python3 edit_config.py \
     model.checkpoint_dir=CHECKPOINT_DIR \
     model.pipeline_config_path=PIPELINE_CONFIG_PATH
 ```
-See [`configs/model/`]() for additional details on preconfigured values if running without parameters.
+See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
 
 
 ## Training and Evaluation
@@ -197,12 +197,12 @@ python3 model_main_tf2.py \
     model.sample_1_of_n_eval_examples=SAMPLE_1_OF_N_EVAL_EXAMPLES \
     ...
 ```
-See [`configs/model/`]() for additional details on preconfigured values if running without parameters.
+See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
 
-**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the `model_main_tf2.py` and `exporter_main_v2.py` scripts as soon as the bug as been resolved.
+**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) and [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) scripts as soon as the bug as been resolved.
 
 
-**NOTE**: the `CHECKPOINT_DIR` flag should only be included when running `model_main_tf2.py` for continuous evaluation alongside the training loop. In any case, the `CHECKPOINT_DIR` path included in the `edit_config.py` script should point to the _pre-trained model weights_, i.e., the `ckpt-0.data` and `ckpt-0.index` files downloaded from the TensorFlow Object Detection Model Zoo. The path to these checkpoint files inside the `checkpoint` folder should be  `/path/to/checkpoint/ckpt-0`. This isn't obvious upon first glance, since the path appears to reference `ckpt-0` as a subfolder of `checkpoint` when in fact it is not.
+**NOTE**: the `CHECKPOINT_DIR` flag should only be included when running [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) for continuous evaluation alongside the training loop. In any case, the `CHECKPOINT_DIR` path included in the [`edit_config.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/training/edit_config.py) script should point to the _pre-trained model weights_, i.e., the `ckpt-0.data` and `ckpt-0.index` files downloaded from the TensorFlow Object Detection Model Zoo. The path to these checkpoint files inside the `checkpoint` folder should be  `/path/to/checkpoint/ckpt-0`. This isn't obvious upon first glance, since the path appears to reference `ckpt-0` as a subfolder of `checkpoint` when in fact it is not.
 
 
 To export the trained model, run:
@@ -228,7 +228,7 @@ python3 exporter_main_v2.py \
         --output_directory {EXPORTED_MODEL_DIR} \
 ```
 
-**NOTE**: The `TRAINED_CHECKPOINT_DIR` in `exporter_main_v2.py` differs from the one used in `model_main_tf2.py` above. This path should instead point to the folder where the _training_ checkpoints are saved, which should be inside the `MODEL_OUT` path configured above.
+**NOTE**: The `TRAINED_CHECKPOINT_DIR` in [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) differs from the one used in [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) above. This path should instead point to the folder where the _training_ checkpoints are saved, which should be inside the `MODEL_OUT` path configured above.
 
 
 ### Inference
@@ -245,7 +245,7 @@ EXPORTED_MODEL_PATH:                    str         Path to the exported and sav
 LABEL_MAP_PATH:                         str         Path to the dataset `label_map.pbtxt` file.
 PIPELINE_CONFIG_PATH:                   str         Path to the `pipeline.config` file.
 TF_RECORD_PATH:                         str         Path to the `.tfrecord` file to perform inference (object detection) over.
-OUTPUT_PATH:                            str         Path to the output destination to save the inference video (a GIF file).
+INFERENCE_OUTPUT_PATH:                  str         Path to the output destination to save the inference video (a GIF file).
 ```
 
 ```python
@@ -261,22 +261,22 @@ This script will export a video of the detection results on each frame of the `.
 
 **NOTE**: The `MODEL_PATH` should point to the folder where the _training_ checkpoints are saved. This path should be inside the `MODEL_OUT` folder and also be equivalent to `TRAINED_CHECKPOINT_DIR` configured above. 
 
-**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the `inference_video.py` script as soon as the bug as been resolved.
+**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`inference_video.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/inference/inference_video.py) script as soon as the bug as been resolved.
 
 
 ## Tasks
 ### Exploratory Data Analysis (EDA)
-* ✅ [Looking at sample data]();
-* ✅ [Computation of label distributions]();
-* ✅ [Checking for object occlusions / missing annotations]();
-* ✅ [Deciding which data augmentation strategies to use]();
+* ✅ [Looking at sample data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-1.ipynb);
+* ✅ [Computation of label distributions](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
+* ✅ [Checking for object occlusions / missing annotations](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
+* ✅ [Deciding which data augmentation strategies to use](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-4-3-Image-Augmentations/2022-09-19-Image-Augmentations.ipynb));
 
 ### Model Training and Evaluation
-* ✅ [Defining the TF Object Detection API `pipeline.config` file]();
-* ✅ [Training a neural network]();
-* ✅ [Monitoring with TensorBoard]();
-* ✅ [Deciding when to end training]();
-* ✅ [Classifying objects and evaluating performance]();
+* ✅ [Defining the TF Object Detection API `pipeline.config` file](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Training a neural network](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Monitoring with TensorBoard](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Deciding when to end training](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Classifying objects and evaluating performance](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
 
 ### Improving Performance
 * ⬜️ Manipulating hyperparameters;
