@@ -4,6 +4,8 @@ from matplotlib import colors
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from object_detection.utils import dataset_util, label_map_util
+from object_detection.builders.dataset_builder import build as build_dataset
+from object_detection.utils.config_util import get_configs_from_pipeline_file
 import os
 import pandas as pd
 import tensorflow as tf
@@ -67,7 +69,9 @@ def get_frame(
     return frame
 
 
-def show_camera_image(camera_image, camera_labels, layout, cmap=None):
+def show_camera_image(
+    camera_image, camera_labels, layout, cmap=None
+):
     """Show a camera image and the given camera labels."""
 
     ax = plt.subplot(*layout)
@@ -144,6 +148,38 @@ def display_instances(
             )
 
 
+def make_gif(
+    file_path: str, pipeline_config_path: str, output_path: str='./'
+):
+    """Converts frames from a Waymo `.tfrecord` file into a GIF.
+    
+    :param file_path: Path to the `.tfrecord` file to convert.
+    :param pipeline_config_path: Path to the `pipeline.config` path of the model.
+    :param output_path: Path to the destination to save the GIF file.
+    """
+    configs = get_configs_from_pipeline_file(config_path)
+    eval_config = configs['eval_config']
+    eval_input_config = configs['eval_input_config']
+    eval_input_config.tf_record_input_reader.input_path[:] = [path]
+    dataset = build_dataset(eval_input_config)
+    images = []
+    for idx, batch in enumerate(dataset):
+        image_tensor = batch['image']
+        image_np = image_tensor.numpy().astype(np.uint8)
+        images.append(image_np)
+    f = plt.figure()
+    f.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
+    ax = plt.subplot(111)
+    ax.axis('off')
+    im_obj = ax.imshow(images[0])
+    
+    def animate(idx):
+        image = images[idx]
+        im_obj.set_data(image)
+    anim = animation.FuncAnimation(f, animate, frames=50)
+    anim.save(output_path, fps=5, dpi=300)
+
+    
 ### To use `display_instances`, modify the following parameters: ###
 # Function parameters
 # num_frames = 10
