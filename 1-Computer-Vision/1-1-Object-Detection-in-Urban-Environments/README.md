@@ -59,7 +59,7 @@ pip install --editable {BASE_DIR}
 ```
 where `BASE_DIR` points to the top-level project directory. All project modules will be installed onto your PYTHONPATH automatically.
 
-To configure a Google Colab instance, copy the shell commands from [`scripts/setup/install.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/setup/install.sh) into a cell and execute it. Note that with Google Colab instances there might be build issues when working with this project directory. It is only recommended to run individual scripts inside Google Colab.
+To configure a Google Colab instance, copy the shell commands from [`scripts/setup/install.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/setup/install.sh) into a cell and execute it. Note that with Google Colab instances there might be build issues when working with this project directory. It is only recommended to run individual scripts inside Google Colab.
 
 If you are running this project inside the Linux Ubuntu LTS VM provided by Udacity, see build instructions in [`2022-10-16-Report.md`]().
 
@@ -121,14 +121,14 @@ python3 create_splits.py \
     dataset.train_test_split=TRAIN_TEST_SPLIT \
     dataset.train_val_split=TRAIN_VAL_SPLIT
 ```
-See [`configs/dataset/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/dataset) for additional details on preconfigured values if running without parameters.
+See [`configs/dataset/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/dataset) for additional details on preconfigured values if running without parameters.
 
 
 ## Model configuration
 
 In this project we will be using the RetinaNet (a SSD ResNet50 v1 with FPN) which has been pre-trained on the [COCO 2017](http://cocodataset.org/) dataset. First, fetch the default configuration file and pre-trained weights from the TensorFlow Object Detection Model Zoo, or alternatively from the [TensorFlow Hub](https://tfhub.dev/tensorflow/retinanet/resnet50_v1_fpn_640x640/1). 
 
-In order to use this model on the Waymo Open Dataset, we have to re-configure some of the proto definitions in the [`pipeline.config`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/pretrained_model/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/pipeline.config) file (e.g., batch size, epochs, number of classes, etc.).
+In order to use this model on the Waymo Open Dataset, we have to re-configure some of the proto definitions in the [`pipeline.config`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/pretrained_model/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/pipeline.config) file (e.g., batch size, epochs, number of classes, etc.).
 
 
 To configure the model for training, run:
@@ -158,7 +158,7 @@ python3 edit_config.py \
     model.checkpoint_dir=CHECKPOINT_DIR \
     model.pipeline_config_path=PIPELINE_CONFIG_PATH
 ```
-See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
+See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
 
 
 ## Training and Evaluation
@@ -197,12 +197,12 @@ python3 model_main_tf2.py \
     model.sample_1_of_n_eval_examples=SAMPLE_1_OF_N_EVAL_EXAMPLES \
     ...
 ```
-See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
+See [`configs/model/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/configs/model) for additional details on preconfigured values if running without parameters.
 
-**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) and [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) scripts as soon as the bug as been resolved.
+**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) and [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) scripts as soon as the bug as been resolved.
 
 
-**NOTE**: the `CHECKPOINT_DIR` flag should only be included when running [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) for continuous evaluation alongside the training loop. In any case, the `CHECKPOINT_DIR` path included in the [`edit_config.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/training/edit_config.py) script should point to the _pre-trained model weights_, i.e., the `ckpt-0.data` and `ckpt-0.index` files downloaded from the TensorFlow Object Detection Model Zoo. The path to these checkpoint files inside the `checkpoint` folder should be  `/path/to/checkpoint/ckpt-0`. This isn't obvious upon first glance, since the path appears to reference `ckpt-0` as a subfolder of `checkpoint` when in fact it is not.
+**NOTE**: the `CHECKPOINT_DIR` flag should only be included when running [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) for continuous evaluation alongside the training loop. In any case, the `CHECKPOINT_DIR` path included in the [`edit_config.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/training/edit_config.py) script should point to the _pre-trained model weights_, i.e., the `ckpt-0.data` and `ckpt-0.index` files downloaded from the TensorFlow Object Detection Model Zoo. The path to these checkpoint files inside the `checkpoint` folder should be  `/path/to/checkpoint/ckpt-0`. This isn't obvious upon first glance, since the path appears to reference `ckpt-0` as a subfolder of `checkpoint` when in fact it is not.
 
 
 To export the trained model, run:
@@ -228,7 +228,7 @@ python3 exporter_main_v2.py \
         --output_directory {EXPORTED_MODEL_DIR} \
 ```
 
-**NOTE**: The `TRAINED_CHECKPOINT_DIR` in [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) differs from the one used in [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) above. This path should instead point to the folder where the _training_ checkpoints are saved, which should be inside the `MODEL_OUT` path configured above.
+**NOTE**: The `TRAINED_CHECKPOINT_DIR` in [`exporter_main_v2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/exporter_main_v2.py) differs from the one used in [`model_main_tf2.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/experiments/model_main_tf2.py) above. This path should instead point to the folder where the _training_ checkpoints are saved, which should be inside the `MODEL_OUT` path configured above.
 
 
 ### Inference
@@ -261,22 +261,22 @@ This script will export a video of the detection results on each frame of the `.
 
 **NOTE**: The `MODEL_PATH` should point to the folder where the _training_ checkpoints are saved. This path should be inside the `MODEL_OUT` folder and also be equivalent to `TRAINED_CHECKPOINT_DIR` configured above. 
 
-**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`inference_video.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/inference/inference_video.py) script as soon as the bug as been resolved.
+**NOTE**: for now, Hydra configuration support has been replaced with `argparse` command line arguments. This is due to an issue mentioned [here](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/22). Hydra will be replacing the temporary `argparse` functionality in the [`inference_video.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/scripts/inference/inference_video.py) script as soon as the bug as been resolved.
 
 
 ## Tasks
 ### Exploratory Data Analysis (EDA)
-* ✅ [Looking at sample data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-1.ipynb);
-* ✅ [Computation of label distributions](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
-* ✅ [Checking for object occlusions / missing annotations](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
+* ✅ [Looking at sample data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-1.ipynb);
+* ✅ [Computation of label distributions](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
+* ✅ [Checking for object occlusions / missing annotations](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/Exploratory-Data-Analysis/2022-09-29-Exploratory-Data-Analysis-Part-2.ipynb);
 * ✅ [Deciding which data augmentation strategies to use](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-4-3-Image-Augmentations/2022-09-19-Image-Augmentations.ipynb);
 
 ### Model Training and Evaluation
-* ✅ [Defining the TF Object Detection API `pipeline.config` file](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
-* ✅ [Training a neural network](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
-* ✅ [Monitoring with TensorBoard](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
-* ✅ [Deciding when to end training](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
-* ✅ [Classifying objects and evaluating performance](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/61d9b6f6554462f3b946cd2a2ba51823faefbcd7/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Defining the TF Object Detection API `pipeline.config` file](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Training a neural network](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Monitoring with TensorBoard](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Deciding when to end training](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
+* ✅ [Classifying objects and evaluating performance](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-11-Setup-and-Training.ipynb);
 
 ### Improving Performance
 * ⬜️ Manipulating hyperparameters;
@@ -284,21 +284,21 @@ This script will export a video of the detection results on each frame of the `.
 
 
 ### Exercises
-* ✅ 1.1.1: [Choosing Metrics](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-1-Choosing-Metrics/2022-07-25-Choosing-Metrics-IoU.ipynb);
-* ✅ 1.1.2: [Data Acquisition and Visualisation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-2-Data-Acquisition-Visualisation/2022-08-01-Data-Acquisition-Visualisation.ipynb);
-* ✅ 1.1.3: [Creating TensorFlow TFRecords](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-1-3-Creating-TF-Records/2022-08-03-Creating-TF-Records.ipynb);
-* ✅ 1.2.1: [Camera Calibration and Distortion Correction](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-2-1-Calibration-Distortion/2022-08-10-Calibration-Distortion-Correction.ipynb);
-* ✅ 1.2.2: [Image Manipulation and Masking](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-2-2-Image-Manipulation/2022-08-17-Image-Manipulation-Masking.ipynb);
-* ✅ 1.2.3: [Geometric Transformations](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-2-3-Geometric-Transformations/2022-08-23-Geometric-Transformations-Image-Augmentation.ipynb);
-* ✅ 1.3.1: [Logistic Regression](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-3-1-Logistic-Regression/2022-08-27-Logistic-Regression.ipynb);
-* ✅ 1.3.2: [Stochastic Gradient Descent](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-3-2-Stochastic-Gradient-Descent/2022-08-29-Stochastic-Gradient-Descent.ipynb);
-* ✅ 1.3.3: [Image Classification with Feedforward Neural Networks (FNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-3-3-Image-Classification-FNNs/2022-09-05-Image-Classification-Feed-Forward-Neural-Networks.ipynb);
-* ✅ 1.4.1: [Pooling Layers in Convolutional Neural Networks (CNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-4-1-Pooling-Layers-CNNs/2022-09-07-Pooling-Layers-Convolutional-Neural-Networks.ipynb);
-* ✅ 1.4.2: [Building Custom Convolutional Neural Networks (CNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-4-2-Building-Custom-CNNs/2022-09-12-Building-Custom-Convolutional-Neural-Networks.ipynb);
-* ✅ 1.4.3: [Image Augmentations for the Driving Domain](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-4-3-Image-Augmentations/2022-09-19-Image-Augmentations.ipynb);
-* ✅ 1.5.1: [Non-Maximum Suppression (NMS) and Soft-NMS](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-5-1-Non-Maximum-Suppression/2022-09-21-Non-Maximum-Suppression.ipynb);
-* ✅ 1.5.2: [Mean Average Precision (mAP)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-5-2-Mean-Average-Precision/2022-09-25-Mean-Average-Precision.ipynb);
-* ✅ 1.5.3: [Learning Rate Schedules and Adaptive Learning Rate methods](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Object-Detection-in-Urban-Environments/Exercises/1-5-3-Learning-Rate-Schedules/2022-09-28-Learning-Rate-Schedules.ipynb). 
+* ✅ 1.1.1: [Choosing Metrics](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-1-1-Choosing-Metrics/2022-07-25-Choosing-Metrics-IoU.ipynb);
+* ✅ 1.1.2: [Data Acquisition and Visualisation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-1-2-Data-Acquisition-Visualisation/2022-08-01-Data-Acquisition-Visualisation.ipynb);
+* ✅ 1.1.3: [Creating TensorFlow TFRecords](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-1-3-Creating-TF-Records/2022-08-03-Creating-TF-Records.ipynb);
+* ✅ 1.2.1: [Camera Calibration and Distortion Correction](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-2-1-Calibration-Distortion/2022-08-10-Calibration-Distortion-Correction.ipynb);
+* ✅ 1.2.2: [Image Manipulation and Masking](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-2-2-Image-Manipulation/2022-08-17-Image-Manipulation-Masking.ipynb);
+* ✅ 1.2.3: [Geometric Transformations](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-2-3-Geometric-Transformations/2022-08-23-Geometric-Transformations-Image-Augmentation.ipynb);
+* ✅ 1.3.1: [Logistic Regression](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-3-1-Logistic-Regression/2022-08-27-Logistic-Regression.ipynb);
+* ✅ 1.3.2: [Stochastic Gradient Descent](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-3-2-Stochastic-Gradient-Descent/2022-08-29-Stochastic-Gradient-Descent.ipynb);
+* ✅ 1.3.3: [Image Classification with Feedforward Neural Networks (FNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-3-3-Image-Classification-FNNs/2022-09-05-Image-Classification-Feed-Forward-Neural-Networks.ipynb);
+* ✅ 1.4.1: [Pooling Layers in Convolutional Neural Networks (CNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-4-1-Pooling-Layers-CNNs/2022-09-07-Pooling-Layers-Convolutional-Neural-Networks.ipynb);
+* ✅ 1.4.2: [Building Custom Convolutional Neural Networks (CNNs)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-4-2-Building-Custom-CNNs/2022-09-12-Building-Custom-Convolutional-Neural-Networks.ipynb);
+* ✅ 1.4.3: [Image Augmentations for the Driving Domain](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-4-3-Image-Augmentations/2022-09-19-Image-Augmentations.ipynb);
+* ✅ 1.5.1: [Non-Maximum Suppression (NMS) and Soft-NMS](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-1-Non-Maximum-Suppression/2022-09-21-Non-Maximum-Suppression.ipynb);
+* ✅ 1.5.2: [Mean Average Precision (mAP)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-2-Mean-Average-Precision/2022-09-25-Mean-Average-Precision.ipynb);
+* ✅ 1.5.3: [Learning Rate Schedules and Adaptive Learning Rate methods](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-3-Learning-Rate-Schedules/2022-09-28-Learning-Rate-Schedules.ipynb). 
 
 
 ## Credits
