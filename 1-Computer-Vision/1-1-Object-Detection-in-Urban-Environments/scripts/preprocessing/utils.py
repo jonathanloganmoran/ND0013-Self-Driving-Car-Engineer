@@ -56,7 +56,7 @@ def get_module_logger(mod_name: str) -> logging.Logger:
 
 
 def get_train_input(config_path: str) -> tf.data.Dataset:
-    """Get the `.tfdata.Dataset` instance from the `config_path`.
+    """Get the `tf.data.Dataset` instance from the `config_path`.
 
     See: https://github.com/tensorflow/models/blob/master/research/object_detection/protos/train.proto
 

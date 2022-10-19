@@ -183,39 +183,6 @@ def create_tf_example(
     return tf.train.Example(features=tf_features)
 
 
-def download_tfr(file_path: str, data_raw_dir: str) -> str:
-    """Download a single `.tfrecord` with `gsutil`.
-
-    :param file_path: str, remote path to the `.tfrecord` file,
-        this should start with 'gs://' and include the bucket name.
-    :param data_raw_dir: str, the local path to the destination directory.
-    returns: local_path (str), the absolute path to where the file is saved.
-    """
-
-    ### Get the file name from the absolute path
-    file_name = os.path.basename(file_path)
-    ### Define aboslute path to the downloaded `.tfrecord` file
-    local_path = os.path.join(data_raw_dir, file_name)
-    ### Return if the file has already been downloaded
-    if os.path.exists(local_path):
-        print('Skipping download of {}, file already exists!'.format(file_name))
-        return local_path
-    else:
-        ### Download the `.tfrecord` file from GCS
-        #cmd = ['gsutil', 'cp', file_path, f'{local_path}']
-        ### Linux workaround:
-        sh_path = '/bin/sh'    # Equivalent to using `shell=True`
-        gcloud_path = os.path.abspath(f'{data_raw_dir}/../../../addons/google-cloud-sdk')
-        gsutil_path = shutil.which('gsutil', path=os.path.join(gcloud_path, 'bin'))
-        cmd = [gsutil_path, 'cp', file_path, data_raw_dir]
-        logger.info(f'Downloading {file_name}')
-        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if res.returncode != 0:
-            logger.error(f'Could not download {file_path}')
-        logger.info(f'Downloaded successfully {file_name}')
-    return local_path
-
-
 def process_tfr(file_path: str, data_processed_dir: str):
     """Process a Waymo data file into a TF-compatible type.
 
@@ -257,6 +224,39 @@ def process_tfr(file_path: str, data_processed_dir: str):
             writer.write(tf_example.SerializeToString())
         writer.close()
     return
+
+
+def download_tfr(file_path: str, data_raw_dir: str) -> str:
+    """Download a single `.tfrecord` with `gsutil`.
+
+    :param file_path: str, remote path to the `.tfrecord` file,
+        this should start with 'gs://' and include the bucket name.
+    :param data_raw_dir: str, the local path to the destination directory.
+    returns: local_path (str), the absolute path to where the file is saved.
+    """
+
+    ### Get the file name from the absolute path
+    file_name = os.path.basename(file_path)
+    ### Define aboslute path to the downloaded `.tfrecord` file
+    local_path = os.path.join(data_raw_dir, file_name)
+    ### Return if the file has already been downloaded
+    if os.path.exists(local_path):
+        print('Skipping download of {}, file already exists!'.format(file_name))
+        return local_path
+    else:
+        ### Download the `.tfrecord` file from GCS
+        #cmd = ['gsutil', 'cp', file_path, f'{local_path}']
+        ### Linux workaround:
+        sh_path = '/bin/sh'    # Equivalent to using `shell=True`
+        gcloud_path = os.path.abspath(f'{data_raw_dir}/../../../addons/google-cloud-sdk')
+        gsutil_path = shutil.which('gsutil', path=os.path.join(gcloud_path, 'bin'))
+        cmd = [gsutil_path, 'cp', file_path, data_raw_dir]
+        logger.info(f'Downloading {file_name}')
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if res.returncode != 0:
+            logger.error(f'Could not download {file_path}')
+        logger.info(f'Downloaded successfully {file_name}')
+    return local_path
 
 
 @ray.remote

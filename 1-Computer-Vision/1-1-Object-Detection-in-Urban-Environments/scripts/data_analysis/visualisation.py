@@ -53,7 +53,10 @@ def parse_frame(
 def get_frame(
     file_path_segment: str, camera_name: str, frame_nr: int
 ) -> waymo_open_dataset.dataset_pb2.Frame:
-    """Returns the image and its annotations from the desired frame.
+    """Returns the specific `Frame` from the `.tfrecord` at the given path.
+
+    Note that you must specify the frame number you want to extract from the
+    `Frame` object.
     
     :param file_path_segment: the file path to the `.tfrecord` file.
     :param camera_name: str (optional), the name of the camera to retrieve
@@ -104,9 +107,10 @@ def display_instances(
     batch: tf.data.Dataset, class_colourmap, num_frames=10,
     camera_label='FRONT', **params
 ):
-    """
+    """Renders a batch of frames and their bounding boxes.
+
     This function takes a batch from the dataset and display the image with 
-    the associated bounding boxes.
+    the associated bounding boxes in an `ImageGrid`.
 
     :param batch: the tf.data.BatchDataset instance of Waymo OD frames.
     :param class_colourmap: the class-colour mapping for bbox annotations.
