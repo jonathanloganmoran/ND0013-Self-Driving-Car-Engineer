@@ -3,7 +3,7 @@
 #### By Jonathan L. Moran (jonathan.moran107@gmail.com)
 From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
-This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree programme.
+This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree programme taught by Thomas Hossler and Cezanne Camacho.
 
 
 ### Course Objectives
@@ -15,7 +15,7 @@ This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree pr
 
 
 ### Projects
-* ✅ 1.1: [Object Detection in Urban Environments](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/1-1-Object-Detection-2D/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments).
+* ✅ 1.1: [Object Detection in Urban Environments](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments).
 
 
 ### Exercises
