@@ -15,7 +15,7 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 
 
 ### Projects
-* ⬜️ 2.1: Object Detection with LiDAR Sensor Fusion (3D);
+* ⬜️ 2.1: Object Detection with Sensor Fusion (3D);
 * ⬜️ 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF).
 
 
