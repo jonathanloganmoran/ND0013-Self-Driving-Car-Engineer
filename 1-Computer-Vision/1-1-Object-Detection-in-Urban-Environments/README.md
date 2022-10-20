@@ -13,6 +13,17 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 ## Introduction
 In this project you will apply the skills you have gained in this course to create a convolutional neural network to detect and classify objects using data from the [Waymo Open Dataset](https://waymo.com/open) [1]. You will be provided with a dataset of images of urban environments containing annotated cyclists, pedestrians and vehicles.
 
+<a href="https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/2022-10-16-Report.md" target="_blank" rel="noopener noreferrer">
+<img src="out/figures/report/2022-10-16-Figure-8-Evaluation-1.gif" width="80%" height="80%" alt="Fig 1. Inference run in an urban residential neighbourhood of San Francisco on the final object detection model trained over the Waymo Open Dataset.">
+</a>
+
+$$
+\begin{align}
+\textrm{Fig. 1. Results from the final object detection model: inference in an urban residential neighbourhood in San Francisco, CA.} \\
+\end{align}
+$$
+
+
 First, you will perform an extensive data analysis including the computation of label distributions, display of sample images, and checking for object occlusions. You will use this analysis to decide what augmentations are meaningful for this project. Then, you will train a 
 neural network to detect and classify objects. You will monitor the training with TensorBoard and decide when to end it. Finally, you will experiment with different hyperparameters to improve your model's performance.
 
