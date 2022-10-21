@@ -4,3 +4,9 @@
 [submodule "2-Sensor-Fusion/2-1-Object-Detection-with-Sensor-Fusion/tools/waymo_reader"]
 	path = 2-Sensor-Fusion/2-1-Object-Detection-with-Sensor-Fusion/tools/waymo_reader
 	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git
+[submodule "2-Sensor-Fusion/Exercises/2-1-LiDAR-Sensor/tools/waymo_reader"]
+	path = 2-Sensor-Fusion/Exercises/2-1-LiDAR-Sensor/tools/waymo_reader
+	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git
+[submodule "2-Sensor-Fusion/Exercises/tools/waymo_reader"]
+	path = 2-Sensor-Fusion/Exercises/tools/waymo_reader
+	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git
