@@ -40,6 +40,13 @@ def vis_intensity_channel(frame, lidar_name):
     the centre-front ROI is obtained with a +/- 45deg offset
     window from the x-axis at the origin.
 
+    The intensity values are scaled uaing a heuristics-based
+    approach i.e., a contrast adjustment, which multiplies all
+    intensity values by one-half the value of the max. This was
+    selected over traditional methods e.g., z-normalization,
+    as the contrast adjustment mitigates influence of intensity
+    outliers while avoiding increasing noise levels significantly.
+
     We assume that the LiDAR sensor has been calibrated
     exactly to the direction of motion of the ego-vehicle,
     i.e., that the x-axis origin is exactly in this direction,
@@ -54,16 +61,21 @@ def vis_intensity_channel(frame, lidar_name):
     print("Exercise C1-5-5")
     ### Extract the range image from the frame
     ri = load_range_image(frame, lidar_name)
-    ### Map the value range to 8-bit grayscale
-    img_range = ri[:, :, 0]
-    img_range = img_range * 255 / (np.amax(img_range) - np.amin(img_range))
+    # Setting the invalid (no return) values to 0.0
+    ri[ri < 0] = 0.0
+    ### Map the intensity value range to 8-bit grayscale
+    img_range = ri[:, :, 1]
+    # Perform a contrast adjustment over the intensity values
+    img_scaled = img_range * np.amax(img_range) / 2
+    # Fit to 8-bit grayscale
+    img_range = img_scaled * 255 / (np.amax(img_range) - np.amin(img_range))
     img_range = img_range.astype(np.uint8)
     ### Focus image on +/- 45° ROI about the centre along the x-axis (see assumptions)
     deg45 = int(img_range.shape[1] / 8)
     ri_centre = int(img_range.shape[1] / 2)
     img_range = img_range[:, ri_centre - deg45:ri_centre + deg45]
     ### Visualising the resulting cropped 8-bit range image
-    cv2.imshow('range_image', img_range)
+    cv2.imshow('range_image_intensity', img_range)
     cv2.waitKey(0)
 
 
