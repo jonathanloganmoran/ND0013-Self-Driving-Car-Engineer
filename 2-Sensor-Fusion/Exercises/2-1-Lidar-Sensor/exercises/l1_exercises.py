@@ -24,6 +24,7 @@ sys.path.append(os.getcwd())
 ### Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+from l1_examples import load_range_image
 
 
 def _object_type_name(x: int) -> str:
@@ -44,14 +45,37 @@ def vis_intensity_channel(frame, lidar_name):
 
 
 # Exercise C1-5-2 : Compute pitch angle resolution
-def print_pitch_resolution(frame, lidar_name):
+def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
+    """Prints the vertical angular resoution of the range image.
+
+    Using the equally-divided elevation angle formula from the 
+    Projection By Elevation Angle (PBEA) method, such that:
+    $$\begin{align}
+        \theta_{res} = (\theta_{up} - \theta_{down}) / h, \\
+    \end{align}$$
+    for maximum and minimum elevation angles $\theta_{up}$ and $\theta{down}$,
+    respectively, and for height $h$ of the range image.
+
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the class id mapped to the LiDAR sensor to fetch.
+    """
 
     print("Exercise C1-5-2")
-    # load range image
-        
-    # compute vertical field-of-view from lidar calibration 
-
-    # compute pitch resolution and convert it to angular minutes
+    ### Load the range image
+    ri = load_range_image(frame, lidar_name)
+    ### Compute vertical field-of-view (VFOV) from lidar calibration 
+    # Get the laser calibration data
+    laser_calib = [sensor for sensor in frame.context.laser_calibrations if sensor.name == lidar_name][0] 
+    # Get the maximum and minimum pitch elevation angles
+    pitch_max = lidar_calib.beam_inclination_max
+    pitch_min = lidar_calib.beam_inclination_min
+    # Compute the vertical angular resolution
+    vfov = pitch_max - pitch_min
+    pitch_res_rad = vfov / ri.shape[0]
+    pitch_res_deg = pitch_res_rad * 180 / np.pi
+    # print(f'Pitch angle resolution: {pitch_res_deg:.2f}°')
+    # Convert to angular minutes
+    print(f"Pitch angle resolution: {(pitch_res_deg * 60):.2f}'")
 
 
 ### Exercise C1-3-1 : print no. of vehicles
@@ -76,7 +100,7 @@ def print_no_of_vehicles(frame: dataset_pb2.Frame, use_laser_counts=True):
         object_counts = frame.context.stats.laser_object_counts
     else:
         object_counts = frame.context.stats.camera_object_counts
-    for x in object_counts:
+    for x in object_counts:the 
         if _object_type_name(x.type) == 'TYPE_VEHICLE':
             num_vehicles = x.count
             break
