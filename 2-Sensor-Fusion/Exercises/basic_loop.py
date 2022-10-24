@@ -103,7 +103,7 @@ while True:
         lidar_name = dataset_pb2.LaserName.TOP
 
         # Exercise C1-3-1 : print no. of vehicles
-        l1_exercises.print_no_of_vehicles(frame) 
+        # l1_exercises.print_no_of_vehicles(frame) 
 
         # Example C1-3-2 : display camera image
         # l1_examples.display_image(frame)
@@ -140,14 +140,14 @@ while True:
         configs = edict()
         configs.lim_x = [0, 50]
         configs.lim_y = [-25, 25]
-        configs.lim_z = [-0.3, 3]
+        configs.lim_z = [-2.5, 3.0]
         configs.bev_width = 608
         configs.bev_height = 608
         configs.conf_thresh = 0.5
 
         # Example C2-3-1 : Crop point cloud
-        # lidar_pcl = l1_examples.range_image_to_point_cloud(frame, lidar_name, True)
-        # cropped_pcl = l2_examples.crop_pcl(lidar_pcl, configs, False)
+        lidar_pcl = l1_examples.range_image_to_point_cloud(frame, lidar_name, True)
+        cropped_pcl = l2_examples.crop_pcl(lidar_pcl, configs, True)
 
         # Exercise C2-3-2 : Transform metric point coordinates to BEV space
         # l2_exercises.pcl_to_bev(cropped_pcl, configs)
