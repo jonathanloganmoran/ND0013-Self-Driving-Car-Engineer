@@ -1,3 +1,12 @@
 [submodule "1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/addons/waymo-open-dataset"]
 	path = 1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments/addons/waymo-open-dataset
 	url = https://github.com/waymo-research/waymo-open-dataset.git
+[submodule "2-Sensor-Fusion/2-1-Object-Detection-with-Sensor-Fusion/tools/waymo_reader"]
+	path = 2-Sensor-Fusion/2-1-Object-Detection-with-Sensor-Fusion/tools/waymo_reader
+	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git
+[submodule "2-Sensor-Fusion/Exercises/2-1-LiDAR-Sensor/tools/waymo_reader"]
+	path = 2-Sensor-Fusion/Exercises/2-1-LiDAR-Sensor/tools/waymo_reader
+	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git
+[submodule "2-Sensor-Fusion/Exercises/tools/waymo_reader"]
+	path = 2-Sensor-Fusion/Exercises/tools/waymo_reader
+	url = https://github.com/gdlg/simple-waymo-open-dataset-reader.git

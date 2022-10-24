@@ -26,13 +26,22 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 ### Course Contents
 
 The following topics are covered in course exercises:
-* Will be announced as the course progresses.
+* Extracting and transforming LiDAR range data
+* Performing vehicle-sensor calibration
+* Scaling LiDAR range intensity values using heuristic methods
+* Correcting the azimuth angles using extrinsic calibration matrix
+* Transforming range images to 3D point clouds
+* And much more ... (will be announced as course progresses)
 
 
 Other topics covered in course lectures and reading material:
 * Importance of multi-modal sensors in autonomous vehicles
-* In-depth information on camera / LiDAR / radar / ultrasonics for AVs 
-* Selecting the best sensor(s) for a given job
+* Scanning / Solid-State / OPA / MEMS / FMCW LiDAR specifications
+* Time-of-Flight (ToF) LiDAR operating principle and equation (range, power, PBEA)
+* Light propagation angle for OPA LiDAR systems
+* Comparing camera / LiDAR / radar / ultrasonics performance
+* Selecting the best sensor(s) for a given job with constraints
+* 
 * And much more ... (will be announced as course progresses)
 
 
@@ -40,15 +49,14 @@ Other topics covered in course lectures and reading material:
 #### Lesson 1: Introduction to Sensor Fusion and Perception
 * Distinguish the strengths and weaknesses of each sensor modality;
 * Understand how each sensor contributes to autonomous vehicle perception systems;
-* Pick the most adequate sensor for a particular perception task.
-* Pick the most adequate model for a particular ML task;
-* Select and visualise the LiDAR range data and construct 3D point clouds.
+* Pick the most adequate sensor and model for a particular perception task.
 
 #### Lesson 2: The LiDAR Sensor
 * Explain the role and importance of LiDAR in autonomous driving systems;
 * Extract LiDAR range data from the Waymo Open Dataset;
-* Extract LiDAR attribute data e.g., point correspondences;
-* Visualise the LiDAR range data.
+* Extract LiDAR attributes e.g., point correspondences, effective FOVs and calibration data;
+* Visualise and scale the LiDAR range and intensity data;
+* Transform the range data by e.g., cropping to ROIs, converting to 3D point clouds.
 
 #### Lesson 3: Detecting Objects in LiDAR Data
 * Transform 3D point clouds into bird's-eye view (BEV) maps;

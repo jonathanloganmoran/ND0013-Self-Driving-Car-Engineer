@@ -1,0 +1,12 @@
+numpy
+opencv-python
+protobuf
+easydict
+attrdict
+torch
+pillow
+matplotlib
+wxpython
+shapely
+tqdm
+open3d
