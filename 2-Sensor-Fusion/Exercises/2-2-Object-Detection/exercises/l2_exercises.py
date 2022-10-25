@@ -34,24 +34,39 @@ def plot_precision_recall():
 
 
 # Exercise C2-3-4 : Compute precision and recall
-def compute_precision_recall(det_performance_all, conf_thresh=0.5):
+def compute_precision_recall(
+        det_performance_all: list, conf_thresh: float=0.5
+):
+    """Compute the precision and recall scores for a set of detections.
+
+    :param det_performance_all: the nested `list` of metrics for each frame.
+    :param conf_thresh: the confidence threshold used to compute the metrics.
+    """
 
     if len(det_performance_all)==0 :
         print("no detections for conf_thresh = " + str(conf_thresh))
         return
-    
-    # extract the total number of positives, true positives, false negatives and false positives
-    # format of det_performance_all is [ious, center_devs, pos_negs]
-
-    #print("TP = " + str(true_positives) + ", FP = " + str(false_positives) + ", FN = " + str(false_negatives))
-    
-    # compute precision
-    
-    # compute recall 
-
-    #print("precision = " + str(precision) + ", recall = " + str(recall) + ", conf_thres = " + str(conf_thresh) + "\n")    
-    
-
+    ### Extract the total number of positives, true positives, false negatives and false positives
+    # The format of `det_performance_all` is `[ious, center_devs, pos_negs]`
+    pos_negs_list = []
+    for item in det_performance_all:
+        # Get the `pos_negs` list for this image and append to list
+        pos_negs_list.append(item[2])
+    # Convert the list to a Numpy `ndarray` for better slicing
+    pos_negs_list = np.asarray(pos_negs_list)
+    ### Compute the metrics
+    # The format of `pos_negs_list` entry is `[num_detections, true_positives, false_negatives, false_positives]` 
+    num_detections = sum(pos_negs_list[:, 0])
+    true_positives = sum(pos_negs_list[:, 1])
+    false_negatives = sum(pos_negs_list[:, 2])
+    false_positives = sum(pos_negs_list[:, 3])
+    # Note that we do not compute true negatives for this task (assume all objects should be detected)
+    print("TP = " + str(true_positives) + ", FP = " + str(false_positives) + ", FN = " + str(false_negatives))
+    ### Compute precision
+    precision = true_positives / (true_positives + false_positives)
+    ### Compute recall
+    recall = true_positives / (true_positives + false_negatives)
+    print("precision = " + str(precision) + ", recall = " + str(recall) + ", conf_thres = " + str(conf_thresh) + "\n")    
 
 
 ### Exercise C2-3-2 : Transform metric point coordinates to BEV space
