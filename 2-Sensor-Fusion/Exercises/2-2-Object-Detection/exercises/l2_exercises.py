@@ -54,37 +54,55 @@ def compute_precision_recall(det_performance_all, conf_thresh=0.5):
 
 
 
-# Exercise C2-3-2 : Transform metric point coordinates to BEV space
-def pcl_to_bev(lidar_pcl, configs, vis=True):
-    pass
-    # compute bev-map discretization by dividing x-range by the bev-image height
+### Exercise C2-3-2 : Transform metric point coordinates to BEV space
+def pcl_to_bev(
+        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=True
+):
+    """Converts the point cloud to a BEV-map of intensity values.
 
-    # create a copy of the lidar pcl and transform all metrix x-coordinates into bev-image coordinates    
+    :param lidar_pcl: the point cloud to clip and convert to BEV-map.
+    :param configs: the EasyDict instance storing the viewing range and
+        filtering params used to crop, discretise and re-scale the PCL values.
+    :param vis: bool (optional), indicates whether or not to display the BEV-map.
+    """
 
-    # transform all metrix y-coordinates as well but center the foward-facing x-axis on the middle of the image
-
-    # shift level of ground plane to avoid flipping from 0 to 255 for neighboring pixels
-
-    # re-arrange elements in lidar_pcl_cpy by sorting first by x, then y, then by decreasing height
-
-    # extract all points with identical x and y such that only the top-most z-coordinate is kept (use numpy.unique)
-
-    # assign the height value of each unique entry in lidar_top_pcl to the height map and 
-    # make sure that each entry is normalized on the difference between the upper and lower height defined in the config file
-    
-    # sort points such that in case of identical BEV grid coordinates, the points in each grid cell are arranged based on their intensity
-
-    # only keep one point per grid cell
-
-    # create the intensity map
-
-    # visualize intensity map
-    #if vis:
-    #    img_intensity = intensity_map * 256
-    #    img_intensity = img_intensity.astype(np.uint8)
-    #    while (1):
-    #        cv2.imshow('img_intensity', img_intensity)
-    #        if cv2.waitKey(10) & 0xFF == 27:
-    #            break
-    #    cv2.destroyAllWindows()
+    ### Compute BEV-map discretisation by dividing x-range by the BEV-image height
+    bev_interval = (configs.lim_x[1] - configs.lim_x[0]) / configs.bev_height
+    ### Create a copy of the lidar pcl and transform all matrix x-coordinates into BEV-image coordinates    
+    lidar_pcl_cpy = lidar_pcl.copy()
+    lidar_pcl_cpy[:, 0] = np.int_(np.floor(lidar_pcl_cpy[:, 0] / bev_interval))
+    ### Transform all matrix y-coordinates but centre the forward-facing x-axis on the middle of the image
+    lidar_pcl_cpy[:, 1] = np.int_(np.floor(lidar_pcl_cpy[:, 1] / bev_interval) + (configs.bev_width + 1) / 2)
+    ### Shift level of ground plane to avoid flipping from 0 to 255 for neighbouring pixels
+    lidar_pcl_cpy[:, 2] = lidar_pcl_cpy[:, 2] - configs.lim_z[0]
+    ### Re-arrange elements in `lidar_pcl_cpy` by sorting first by x, then y, then by decreasing height
+    idxs_height = np.lexsort(keys=(-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0]))
+    lidar_pcl_height = lidar_pcl_cpy[idxs_height]
+    ### Extract all points with identical x and y s.t. only the top-most z-coordinate is kept
+    _, idxs_height_unique = np.unique(lidar_pcl_height[:, 0:2], axis=0, return_index=True)
+    lidar_pcl_height = lidar_pcl_height[idxs_height_unique]
+    ### Assign the height value of each unique entry in `lidar_pcl_height` to the height map 
+    height_map = np.zeros(shape=(configs.bev_height + 1, configs.bev_height + 1))
+    # Make sure that each entry is normalized on the difference between the upper and lower BEV-map height
+    height_map[np.int_(lidar_pcl_height[:, 0]), np.int_(lidar_pcl_height[:, 1])] = lidar_pcl_height[:, 2] / float(np.abs(configs.lim_z[1] - configs.lim_z[0]))
+    ### Sort points s.t. in case of identical BEV grid coordinates, the points in each grid cell are arranged based on their intensity
+    # Here we clip the intensity values to 1.0
+    lidar_pcl_cpy[lidar_pcl_cpy[:, 3] > 1.0, 3] = 1.0
+    idxs_intensity = np.lexsort(keys=(-lidar_pcl_cpy[:, 3], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0]))
+    lidar_pcl_cpy = lidar_pcl_cpy[idxs_intensity]
+    ### Only keep one point per grid cell
+    _, idxs_intensity = np.unique(lidar_pcl_cpy[:, 0:2], axis=0, return_index=True)
+    lidar_intensity = lidar_pcl_cpy[idxs_intensity]
+    ### Create the intensity map
+    intensity_map = np.zeros(shape=(configs.bev_height + 1, configs.bev_height + 1))
+    intensity_map[np.int_(lidar_intensity[:, 0]), np.int_(lidar_intensity[:, 1])] = lidar_intensity[:, 3] / (np.amax(lidar_intensity[:, 3]) - np.amin(lidar_intensity[:, 3]))
+    ### Visualise intensity map
+    if vis:
+       img_intensity = intensity_map * 256
+       img_intensity = img_intensity.astype(np.uint8)
+       while (1):
+           cv2.imshow('img_intensity_BEV', img_intensity)
+           if cv2.waitKey(10) & 0xFF == 27:
+               break
+       cv2.destroyAllWindows()
 
