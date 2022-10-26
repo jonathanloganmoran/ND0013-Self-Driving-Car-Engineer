@@ -102,8 +102,8 @@ def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
     # Get the laser calibration data
     laser_calib = [sensor for sensor in frame.context.laser_calibrations if sensor.name == lidar_name][0] 
     # Get the maximum and minimum pitch elevation angles
-    pitch_max = lidar_calib.beam_inclination_max
-    pitch_min = lidar_calib.beam_inclination_min
+    pitch_max = laser_calib.beam_inclination_max
+    pitch_min = laser_calib.beam_inclination_min
     # Compute the vertical resolution in angular degrees
     vfov = pitch_max - pitch_min
     pitch_res_rad = vfov / ri.shape[0]
@@ -141,4 +141,4 @@ def print_no_of_vehicles(frame: dataset_pb2.Frame, use_laser_counts=True):
             break
         else:
             continue           
-    print("number of labeled vehicles in current frame:" + str(num_vehicles))
+    print("Number of labeled vehicles in current frame: " + str(num_vehicles))
