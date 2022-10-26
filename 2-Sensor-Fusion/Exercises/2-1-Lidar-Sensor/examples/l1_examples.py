@@ -2,6 +2,8 @@
 # Exercises from lesson 1 (lidar)
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+#
 # Purpose of this file : Examples
 #
 # You should have received a copy of the Udacity license together with this program.
@@ -10,168 +12,266 @@
 # ----------------------------------------------------------------------
 #
 
-from PIL import Image
-import io
-import sys
-import os
 import cv2
-import open3d as o3d
+import io
 import math
 import numpy as np
-import zlib
+import open3d as o3d
+from open3d import JVisualizer
+import os
+from PIL import Image
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import RobustScaler, StandardScaler, QuantileTransformer
+import sys
+import zlib
 
 ## Add current working directory to path
 sys.path.append(os.getcwd())
 
-## Waymo open dataset reader
+### Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+
+
+def _object_type_name(x: int) -> str:
+    """Returns the class label mapped to the input class id."""
+    return label_pb2.Label.Type.Name(x)
+
+def _laser_name(x: int) -> str:
+    """Returns the LiDAR sensor name mapped to the input id."""
+    return dataset_pb2.LaserName.Name.Name(x)
+
+def _camera_name(x: int) -> str:
+    """Returns the camera name mapped to the input id."""
+    return dataset_pb2.CameraName.Name.Name(x)
 
 
 # Example C1-5-1 : Load range image
-def load_range_image(frame, lidar_name):
-    
-    lidar = [obj for obj in frame.lasers if obj.name == lidar_name][0] # get laser data structure from frame
+def load_range_image(
+        frame: dataset_pb2.Frame, lidar_name: int
+) -> np.ndarray:
+    """Returns the range image from the `frame` captured by the `lidar_name` sensor.
+
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name from which to extract and convert the range image.
+    :returns: ri, the range image as a Numpy `ndarray` object.
+    """
+
+    ### Get the object captured by the `lidar_name` from the frame proto
+    laser = [obj for obj in frame.lasers if obj.name == lidar_name][0]
     ri = []
-    if len(lidar.ri_return1.range_image_compressed) > 0: # use first response
+    ### Get the LiDAR first return data
+    if len(laser.ri_return1.range_image_compressed) > 0:
         ri = dataset_pb2.MatrixFloat()
-        ri.ParseFromString(zlib.decompress(lidar.ri_return1.range_image_compressed))
+        ri.ParseFromString(zlib.decompress(laser.ri_return1.range_image_compressed))
         ri = np.array(ri.data).reshape(ri.shape.dims)
     return ri
 
 # Example C1-5-6 : Convert range image to 3D point-cloud
-def range_image_to_point_cloud(frame, lidar_name, vis=True):
+def range_image_to_point_cloud(
+        frame: dataset_pb2.Frame, lidar_name: int, vis: bool=True, inline: bool=False
+) -> np.ndarray:
+    """Converts a range image captured by `lidar_name` into a 3D point cloud.
 
-    # extract range values from frame
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name from which to extract and convert the range image.
+    :param vis: bool (optional), if True, the resulting point cloud will be
+        displayed using the Open3D `draw_geometries` function.
+    :param inline: bool (optional), If True, the output image will be
+        rendered inline using Matplotlib for Jupyter notebook visualisation.
+    :returns: pcl_full, the 3D point cloud instance as a Numpy `ndarray` object.
+    """
+
+    ### Extract the range image from the input frame
     ri = load_range_image(frame, lidar_name)
-    ri[ri<0]=0.0
-    ri_range = ri[:,:,0]
-
-    # load calibration data
-    calibration = [obj for obj in frame.context.laser_calibrations if obj.name == lidar_name][0]
-
-    # compute vertical beam inclinations
+    # Here we clip the minimum values to 0.0 (e.g., value of -1.0 indicates no return)
+    ri[ri < 0] = 0.0
+    ri_range = ri[:, :, 0]
+    ### Load the calibration data for this sensor
+    calib_laser = [obj for obj in frame.context.laser_calibrations if obj.name == lidar_name][0]
+    ### Compute the vertical beam inclinations
     height = ri_range.shape[0]
-    inclination_min = calibration.beam_inclination_min
-    inclination_max = calibration.beam_inclination_max
+    inclination_min = calib_laser.beam_inclination_min
+    inclination_max = calib_laser.beam_inclination_max
     inclinations = np.linspace(inclination_min, inclination_max, height)
     inclinations = np.flip(inclinations)
-
-    # compute azimuth angle and correct it so that the range image center is aligned to the x-axis
+    ### Compute the azimuth angle and correct it so that the range image centre is aligned to the x-axis
     width = ri_range.shape[1]
-    extrinsic = np.array(calibration.extrinsic.transform).reshape(4,4)
-    az_correction = math.atan2(extrinsic[1,0], extrinsic[0,0])
-    azimuth = np.linspace(np.pi,-np.pi,width) - az_correction
-
-    # expand inclination and azimuth such that every range image cell has its own appropriate value pair
-    azimuth_tiled = np.broadcast_to(azimuth[np.newaxis,:], (height,width))
-    inclination_tiled = np.broadcast_to(inclinations[:,np.newaxis],(height,width))
-
-    # perform coordinate conversion
+    extrinsic = np.array(calib_laser.extrinsic.transform).reshape(4, 4)
+    az_correction = math.atan2(extrinsic[1, 0], extrinsic[0, 0])
+    azimuth = np.linspace(np.pi, -np.pi, width) - az_correction
+    ### Expand inclination and azimuth angle s.t. every range image cell has its own appropriate value pair
+    azimuth_tiled = np.broadcast_to(azimuth[np.newaxis, :], (height, width))
+    inclination_tiled = np.broadcast_to(inclinations[:, np.newaxis], (height, width))
+    ### Perform conversion to spherical coordinates
     x = np.cos(azimuth_tiled) * np.cos(inclination_tiled) * ri_range
     y = np.sin(azimuth_tiled) * np.cos(inclination_tiled) * ri_range
     z = np.sin(inclination_tiled) * ri_range
-
-    # transform 3d points into vehicle coordinate system
+    ### Transform 3D points into vehicle coordinate system
     xyz_sensor = np.stack([x,y,z,np.ones_like(z)])
     xyz_vehicle = np.einsum('ij,jkl->ikl', extrinsic, xyz_sensor)
     xyz_vehicle = xyz_vehicle.transpose(1,2,0)
-
-    # extract points with range > 0
-    idx_range = ri_range > 0
-    pcl = xyz_vehicle[idx_range,:3]
- 
-    # visualize point-cloud
+    ### Extract points with range value greater than 0
+    idxs_range = ri_range > 0
+    pcl = xyz_vehicle[idxs_range, 0:3]
+    ### Visualise the point cloud
     if vis:
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(pcl)
-        o3d.visualization.draw_geometries([pcd])
-
-    # stack lidar point intensity as last column
-    pcl_full = np.column_stack((pcl, ri[idx_range, 1]))    
-
+        if inline:
+            # Return the `pcd` object to be visualised in the notebook instance
+            return pcd
+            # With the following usage:
+            # ```
+            # visualiser = JVisualizer()
+            # visualiser.add_geometry(pcd)
+            # visualiser.show()
+            # ```
+        else:
+            o3d.visualization.draw_geometries([pcd])
+    ### Stack the lidar point intensity values as last column
+    pcl_full = np.column_stack((pcl, ri[idxs_range, 1]))    
     return pcl_full    
 
 
 # Example C1-5-4 : Visualize range channel
-def vis_range_channel(frame, lidar_name):
+def vis_range_channel(
+        frame: dataset_pb2.Frame, lidar_name: int, inline: bool=False
+):
+    """Visualises the range channel captured by the `lidar_name` sensor.
 
-    # extract range image from frame
+    Here we crop the range image to a region of interest (ROI) about the
+    x-axis at the origin with a +/- 45deg offset.
+
+    The intensity values are scaled using a heuristics-based approach,
+    i.e., a contrast adjustment is performed, which multiplies all
+    intensity values by one-half the maximum intensity value. This was
+    selected over traditional scaling methods, e.g., z-normalization,
+    as the contrast adjustment used here mitgates the influence of
+    intensity outliers while avoiding significant increases in noise.
+
+    We assume that the LiDAR sensor has been calibrated exactly to the
+    direction of motion of the ego-vehicle, i.e., that the x-axis origin
+    is parallel to the direction of motion, and that the front-half of the
+    range image constitutes a 180deg segment, such that a +/- 45deg shift
+    from the centre x-axis makes up the 'front-facing' 90deg ROI.
+
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name to extract the range image from.
+    :param inline: bool (optional), If True, the output image will be
+        rendered inline using Matplotlib for Jupyter notebook visualisation. 
+    """
+
+    ### Extract the range image from the input frame
     ri = load_range_image(frame, lidar_name)
-    ri[ri<0]=0.0
-
-    # map value range to 8bit
-    ri_range = ri[:,:,0]
+    # Here we clip the minimum values to 0.0 (e.g., value of -1.0 indicates no return)
+    ri[ri < 0] = 0.0
+    ### Map the value range to 8-bit grayscale
+    ri_range = ri[:, :, 0]
     ri_range = ri_range * 255 / (np.amax(ri_range) - np.amin(ri_range))
     img_range = ri_range.astype(np.uint8)
-
-    # focus on +/- 45° around the image center
+    ### Cropping the range image to the ROI
+    # Here we focus on +/- 45° about the x-axis origin, i.e., the image centre
     deg45 = int(img_range.shape[1] / 8)
-    ri_center = int(img_range.shape[1]/2)
-    img_range = img_range[:,ri_center-deg45:ri_center+deg45]
-
-    print('max. val = ' + str(round(np.amax(img_range[:,:]),2)))
-    print('min. val = ' + str(round(np.amin(img_range[:,:]),2)))
-
-    cv2.imshow('range_image', img_range)
-    cv2.waitKey(0)
+    ri_centre = int(img_range.shape[1] / 2)
+    img_range = img_range[:, ri_centre - deg45:ri_centre + deg45]
+    ### Printing the maximum and minimum intensity values
+    print(f"Max. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(img_range[:, :]), 2)}")
+    print(f"Min. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(img_range[:, :]), 2)}")
+    if inline:
+        plt.figure(figsize=(24, 20))
+        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor")
+        plt.imshow(img_range)
+    else:
+        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor", img_range)
+        cv2.waitKey(0)
 
 
 # Example C1-5-3 : Retrieve maximum and minimum distance
-def get_max_min_range(frame, lidar_name):
-
-    # extract range image from frame
-    ri = load_range_image(frame, lidar_name)
-    ri[ri<0]=0.0
-
-    print('max. range = ' + str(round(np.amax(ri[:,:,0]),2)) + 'm')
-    print('min. range = ' + str(round(np.amin(ri[:,:,0]),2)) + 'm')
-
-
-def print_range_image_shape(frame, lidar_name):
-
-    ri = load_range_image(frame, lidar_name)
-    print(ri.shape)
-
-    # extract range data and convert to 8 bit
-    #ri_range = ri[:,:,0]
-    #ri_range = ri_range * 256 / (np.amax(ri_range) - np.amin(ri_range))
-    #img_range = ri_range.astype(np.uint8)
+def get_max_min_range(
+        frame: dataset_pb2.Frame, lidar_name: int
+):
+    """Prints the minimum and maximum range given by `lidar_name`.
     
-    # visualize range image
-    #cv2.imshow('range_image', img_range)
-    #cv2.waitKey(0)
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name to obtain the min/max range from.
+    """
+
+    ### Extract range image from the input frame
+    ri = load_range_image(frame, lidar_name)
+    # Here we clip the minimum values to 0.0 (e.g., value of -1.0 indicates no return)
+    ri[ri < 0] = 0.0
+    ### Print the min/max range information for this sensor (in metres)
+    print(f"Max. range (m) of '{_laser_name(lidar_name)}' sensor: {round(np.amax(ri[:, :, 0]), 2)}")
+    print(f"Min. range (m) of '{_laser_name(lidar_name)}' sensor: {round(np.amin(ri[:, :, 0]), 2)}")
+
+
+def print_range_image_shape(
+        frame: dataset_pb2.Frame, lidar_name: int
+):
+    """Prints the shape of the range image given by `lidar_name`.
+
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name to obtain the range image shape from.
+    """
+
+    ### Load the range image from the LiDAR sensor
+    ri = load_range_image(frame, lidar_name)
+    ### Print the shape of the returned range image
+    print(f"Range image shape captured by '{_laser_name(lidar_name)}' sensor: {ri.shape}")
 
 
 # Example C1-3-3 : print angle of vertical field of view
-def print_vfov_lidar(frame, lidar_name):
+def print_vfov_lidar(
+        frame: dataset_pb2.Frame, lidar_name: int
+):
+    """Prints the vertical FOV of the sensor given by `lidar_name`.
 
-    # get lidar calibration data
-    calib_lidar = [obj for obj in frame.context.laser_calibrations if obj.name == lidar_name][0]
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name to obtain the vertical FOV from.
+    """
 
-    # compute vertical field of view (vfov) in rad
-    vfov_rad = calib_lidar.beam_inclination_max - calib_lidar.beam_inclination_min
-
-    # compute and print vfov in degrees
-    print(vfov_rad*180/np.pi)
+    ### Get lidar calibration data
+    calib_laser = [obj for obj in frame.context.laser_calibrations if obj.name == lidar_name][0]
+    ### Compute the vertical field-of-view (VFOV) in radians
+    vfov_rad = calib_laser.beam_inclination_max - calib_laser.beam_inclination_min
+    ### Compute and print the vertical field-of-view (VFOV) in degrees
+    vfov_deg = vfov_rad * 180 / np.pi
+    print(f"Vertical field-of-view (deg) of '{_laser_name(lidar_name)}' sensor: {vfov_deg}")
 
 
 # Example C1-3-2 : display camera image
-def display_image(frame):
+def display_image(
+        frame: dataset_pb2.Frame, inline: bool=False
+):
+    """Displays the image from the camera in the frame.
 
-    # load the camera data structure
+    :param frame: the Waymo Open Dataset `Frame` instance.
+    :param inline: bool (optional), If True, the output image will be
+        rendered inline using Matplotlib for Jupyter notebook visualisation.
+    """
+
+    ### Load the camera data structure
     camera_name = dataset_pb2.CameraName.FRONT
     image = [obj for obj in frame.images if obj.name == camera_name][0]
-
-    # convert the actual image into rgb format
+    ### Convert the actual image into rgb format
     img = np.array(Image.open(io.BytesIO(image.image)))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    # resize the image to better fit the screen
+    ### Resize the image to better fit the screen
     dim = (int(img.shape[1] * 0.5), int(img.shape[0] * 0.5))
     resized = cv2.resize(img, dim)
-
-    # display the image 
-    cv2.imshow("Front-camera image", resized)
-    cv2.waitKey(0)
+    ### Display the image
+    if inline:
+        plt.figure(figsize=(24,20))
+        plt.title(f"Image captured by the '{_camera_name(camera_name)}' camera", fontsize=20)
+        plt.imshow(cv2.cvtColor(resized, cv2.COLOR_BGR2RGB))
+    else:
+        cv2.imshow(f"Image captured by the '{_camera_name(camera_name)}' camera", resized)
+        cv2.waitKey(0)
 

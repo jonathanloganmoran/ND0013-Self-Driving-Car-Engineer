@@ -2,6 +2,8 @@
 # Exercises from lesson 1 (lidar)
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+#
 # Purpose of this file : Starter Code
 #
 # You should have received a copy of the Udacity license together with this program.
@@ -12,6 +14,7 @@
 
 import cv2
 import io
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 from PIL import Image
@@ -24,6 +27,7 @@ sys.path.append(os.getcwd())
 ### Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+
 from l1_examples import load_range_image
 
 
@@ -31,31 +35,42 @@ def _object_type_name(x: int) -> str:
     """Returns the class label mapped to the input class id."""
     return label_pb2.Label.Type.Name(x)
 
+def _laser_name(x: int) -> str:
+    """Returns the LiDAR sensor name mapped to the input id."""
+    return dataset_pb2.LaserName.Name.Name(x)
+
+def _camera_name(x: int) -> str:
+    """Returns the camera name mapped to the input id."""
+    return dataset_pb2.CameraName.Name.Name(x)
+
 
 # Exercise C1-5-5 : Visualize intensity channel
-def vis_intensity_channel(frame, lidar_name):
-    """Display the centre-front segment of range image.
+def vis_intensity_channel(
+    frame, lidar_name, inline=False
+):
+    """Visualises the range channel captured by the `lidar_name` sensor.
 
-    The range image is converted to 8-bit grayscale and
-    the centre-front ROI is obtained with a +/- 45deg offset
-    window from the x-axis at the origin.
+    Here we crop the range image to a region of interest (ROI) about the
+    x-axis at the origin with a +/- 45deg offset.
 
-    The intensity values are scaled uaing a heuristics-based
-    approach i.e., a contrast adjustment, which multiplies all
-    intensity values by one-half the value of the max. This was
-    selected over traditional methods e.g., z-normalization,
-    as the contrast adjustment mitigates influence of intensity
-    outliers while avoiding increasing noise levels significantly.
+    The intensity values are scaled using a heuristics-based approach,
+    i.e., a contrast adjustment is performed, which multiplies all
+    intensity values by one-half the maximum intensity value. This was
+    selected over traditional scaling methods, e.g., z-normalization,
+    as the contrast adjustment used here mitgates the influence of
+    intensity outliers while avoiding significant increases in noise.
 
-    We assume that the LiDAR sensor has been calibrated
-    exactly to the direction of motion of the ego-vehicle,
-    i.e., that the x-axis origin is exactly in this direction,
-    and that the front-half of the range image consistutes a
-    180deg segment, such that a -/+ 45deg shift from the centre
-    x-axis makes up a 90deg 'front-facing' ROI.
+    We assume that the LiDAR sensor has been calibrated exactly to the
+    direction of motion of the ego-vehicle, i.e., that the x-axis origin
+    is parallel to the direction of motion, and that the front-half of the
+    range image constitutes a 180deg segment, such that a +/- 45deg shift
+    from the centre x-axis makes up the 'front-facing' 90deg ROI.
 
     :param frame: the Waymo Open Dataset `Frame` instance.
-    :param lidar_name: the class id mapped to the LiDAR sensor to fetch.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name from which to extract the range image.
+    :param inline: bool (optional), If True, the output image will be
+        rendered inline using Matplotlib for Jupyter notebook visualisation. 
     """
 
     print("Exercise C1-5-5")
@@ -70,13 +85,21 @@ def vis_intensity_channel(frame, lidar_name):
     # Fit to 8-bit grayscale
     img_range = img_scaled * 255 / (np.amax(img_range) - np.amin(img_range))
     img_range = img_range.astype(np.uint8)
-    ### Focus image on +/- 45° ROI about the centre along the x-axis (see assumptions)
+    ### Cropping the range image to the ROI
+    # Here we focus on +/- 45° about the x-axis origin, i.e., the image centre
     deg45 = int(img_range.shape[1] / 8)
     ri_centre = int(img_range.shape[1] / 2)
     img_range = img_range[:, ri_centre - deg45:ri_centre + deg45]
-    ### Visualising the resulting cropped 8-bit range image
-    cv2.imshow('range_image_intensity', img_range)
-    cv2.waitKey(0)
+    ### Printing the maximum and minimum intensity values
+    print(f"Max. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(img_range[:, :]), 2)}")
+    print(f"Min. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(img_range[:, :]), 2)}")
+    if inline:
+        plt.figure(figsize=(24, 20))
+        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor")
+        plt.imshow(img_range)
+    else:
+        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor", img_range)
+        cv2.waitKey(0)
 
 
 # Exercise C1-5-2 : Compute pitch angle resolution
@@ -85,14 +108,17 @@ def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
 
     Using the equally-divided elevation angle formula from the 
     Projection By Elevation Angle (PBEA) method, such that:
-    $$\begin{align}
+    $$
+    \begin{align}
         \theta_{res} = (\theta_{up} - \theta_{down}) / h, \\
-    \end{align}$$
+    \end{align}
+    $$
     for maximum and minimum elevation angles $\theta_{up}$ and $\theta{down}$,
     respectively, and for height $h$ of the range image.
 
     :param frame: the Waymo Open Dataset `Frame` instance.
-    :param lidar_name: the class id mapped to the LiDAR sensor to fetch.
+    :param lidar_name: the integer id corresponding to the
+        LiDAR sensor name from which to print the pitch resolution.
     """
 
     print("Exercise C1-5-2")
@@ -100,17 +126,18 @@ def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
     ri = load_range_image(frame, lidar_name)
     ### Compute vertical field-of-view (VFOV) from lidar calibration 
     # Get the laser calibration data
-    laser_calib = [sensor for sensor in frame.context.laser_calibrations if sensor.name == lidar_name][0] 
+    calib_laser = [sensor for sensor in frame.context.laser_calibrations if sensor.name == lidar_name][0] 
     # Get the maximum and minimum pitch elevation angles
-    pitch_max = laser_calib.beam_inclination_max
-    pitch_min = laser_calib.beam_inclination_min
+    pitch_max = calib_laser.beam_inclination_max
+    pitch_min = calib_laser.beam_inclination_min
     # Compute the vertical resolution in angular degrees
     vfov = pitch_max - pitch_min
     pitch_res_rad = vfov / ri.shape[0]
     pitch_res_deg = pitch_res_rad * 180 / np.pi
     # print(f'Pitch angle resolution: {pitch_res_deg:.2f}°')
     # Convert to angular minutes
-    print(f"Pitch angle resolution: {(pitch_res_deg * 60):.2f}'")
+    pitch_res_ang = pitch_res_deg * 60
+    print(f"Pitch angle resolution (angular minutes) of '{_laser_name(lidar_name)}' sensor: {pitch_res_ang:.2f}'")
 
 
 ### Exercise C1-3-1 : print no. of vehicles
@@ -141,4 +168,4 @@ def print_no_of_vehicles(frame: dataset_pb2.Frame, use_laser_counts=True):
             break
         else:
             continue           
-    print("Number of labeled vehicles in current frame: " + str(num_vehicles))
+    print("Number of labelled vehicles in current frame:", num_vehicles)
