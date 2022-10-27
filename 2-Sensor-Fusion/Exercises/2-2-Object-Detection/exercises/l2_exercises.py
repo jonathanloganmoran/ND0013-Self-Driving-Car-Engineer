@@ -10,28 +10,27 @@
 # ----------------------------------------------------------------------
 #
 
-import easydict
-from PIL import Image
-import io
-import sys
-import os
 import cv2
-import open3d as o3d
-from open3d import JVisualizer
+import easydict
+import io
 import math
-import numpy as np
-import zlib
-
 import matplotlib    
 import matplotlib.pyplot as plt
+import numpy as np
+import open3d as o3d
+from open3d import JVisualizer
+import os
+from PIL import Image
+import sys
+import zlib
+
 
 # Exercise C2-4-6 : Plotting the precision-recall curve
 def plot_precision_recall():
     pass
     # Please note: this function assumes that you have pre-computed the precions/recall value pairs from the test sequence
     #              by subsequently setting the variable configs.conf_thresh to the values 0.1 ... 0.9 and noted down the results.
-    
-    # Please create a 2d scatter plot of all precision/recall pairs 
+    # Please create a 2d scatter plot of all precision/recall pairs
 
 
 

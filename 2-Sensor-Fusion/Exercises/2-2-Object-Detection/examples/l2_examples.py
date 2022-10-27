@@ -12,23 +12,26 @@
 
 import cv2
 from easydict import EasyDict
-from PIL import Image
 import io
-import sys
-import os
-import open3d as o3d
-from open3d import JVisualizer
 import math
 import numpy as np
+import open3d as o3d
+from open3d import JVisualizer
+import os
+from PIL import Image
+import sys
 import zlib
+
 
 ## Add current working directory to path
 sys.path.append(os.getcwd())
 
-## Waymo open dataset reader
-from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2, label_pb2
-import misc.objdet_tools as tools
 
+### Waymo Open Dataset Reader library
+from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+### Module to render / project bounding box labels
+import misc.objdet_tools as tools
 
 
 # Example C2-4-3 : Display detected objects on top of BEV map
@@ -63,7 +66,6 @@ def render_obj_over_bev(
             cv2.waitKey(0) 
 
 
-
 # Example C2-4-3 : Display label bounding boxes on top of bev map
 def render_bb_over_bev(
         bev_map, labels, configs, vis=False, inline=False
@@ -77,6 +79,7 @@ def render_bb_over_bev(
     :param inline: bool (optional), If True, the visualisation will be shown in a
         Matplotlib `figure` instance. If False (and `vis=True`), the BEV map will be
         rendered in a pop-up window using the `cv2.imshow` function.
+    :returns: bev_map_cpy, the BEV map with annotations as a Numpy `ndarray` object. 
     """
 
     ### Convert BEV map from a tensor to Numpy array
@@ -100,7 +103,6 @@ def render_bb_over_bev(
     return np.asarray(bev_map_cpy)
 
     
-
 # Example C2-4-2 : count total no. of vehicles and vehicles that are difficult to track
 def count_vehicles(
         frame: dataset_pb2.Frame
@@ -150,7 +152,7 @@ def min_max_intensity(
 # Example C2-3-1 : Crop point cloud
 def crop_pcl(
         lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=False, inline: bool=False
-):
+) -> np.ndarray:
     """Crops the LiDAR point cloud to the ROI defined in `configs`.
 
     :param lidar_pcl: the 3D point cloud instance as a Numpy `ndarray` object.
@@ -159,6 +161,7 @@ def crop_pcl(
     :param inline: bool (optional), If True, the visualisation will be shown using the Open3D
         Jupyter notebook `JVisualizer` viewer. If False (and `vis=True`), the point cloud is rendered
         in a pop-up window using the `o3d.visualization.draw_geometries` function.
+    :returns: lidar_pcl, the cropped point cloud as a Numpy `ndarray` object.
     """
 
     ### Create mask to remove points outside of detection cube defined in 'configs.lim_*'
