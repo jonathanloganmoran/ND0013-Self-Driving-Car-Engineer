@@ -10,12 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
+import easydict
 from PIL import Image
 import io
 import sys
 import os
 import cv2
 import open3d as o3d
+from open3d import JVisualizer
 import math
 import numpy as np
 import zlib
@@ -71,7 +73,7 @@ def compute_precision_recall(
 
 ### Exercise C2-3-2 : Transform metric point coordinates to BEV space
 def pcl_to_bev(
-        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=True
+        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=False, inline: bool=False
 ):
     """Converts the point cloud to a BEV-map of intensity values.
 
@@ -79,6 +81,8 @@ def pcl_to_bev(
     :param configs: the EasyDict instance storing the viewing range and
         filtering params used to crop, discretise and re-scale the PCL values.
     :param vis: bool (optional), indicates whether or not to display the BEV-map.
+    :param inline: bool (optional), If True, the BEV map will be rendered using a
+        Matplotlib `figure` instance. If False (and `vis=True`), OpenCV will be used.
     """
 
     ### Compute BEV-map discretisation by dividing x-range by the BEV-image height
@@ -113,11 +117,17 @@ def pcl_to_bev(
     intensity_map[np.int_(lidar_intensity[:, 0]), np.int_(lidar_intensity[:, 1])] = lidar_intensity[:, 3] / (np.amax(lidar_intensity[:, 3]) - np.amin(lidar_intensity[:, 3]))
     ### Visualise intensity map
     if vis:
-       img_intensity = intensity_map * 256
-       img_intensity = img_intensity.astype(np.uint8)
-       while (1):
-           cv2.imshow('img_intensity_BEV', img_intensity)
-           if cv2.waitKey(10) & 0xFF == 27:
-               break
-       cv2.destroyAllWindows()
-
+        img_intensity = intensity_map * 256
+        img_intensity = img_intensity.astype(np.uint8)
+        if inline:
+            fig = plt.figure(figsize=(24, 20))
+            plt.title(f"Bird's-eye view (BEV) height map: intensity channel", fontsize=20)
+            plt.imshow(img_intensity)
+        else:
+            while (1):
+                cv2.imshow(f"Bird's-eye view (BEV) height map: intensity channel", img_intensity)
+                if cv2.waitKey(10) & 0xFF == 27:
+                    break
+            cv2.destroyAllWindows()
+    else:
+        return
