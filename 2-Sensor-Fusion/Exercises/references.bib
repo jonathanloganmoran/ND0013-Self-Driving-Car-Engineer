@@ -1,12 +1,91 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for Jonathan Moran at 2022-10-26 19:08:14 -0700 
+%% Created for Jonathan Moran at 2022-10-28 11:07:08 -0700 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@misc{https://doi.org/10.48550/arxiv.1708.02002,
+	abstract = {The highest accuracy object detectors to date are based on a two-stage approach popularized by R-CNN, where a classifier is applied to a sparse set of candidate object locations. In contrast, one-stage detectors that are applied over a regular, dense sampling of possible object locations have the potential to be faster and simpler, but have trailed the accuracy of two-stage detectors thus far. In this paper, we investigate why this is the case. We discover that the extreme foreground-background class imbalance encountered during training of dense detectors is the central cause. We propose to address this class imbalance by reshaping the standard cross entropy loss such that it down-weights the loss assigned to well-classified examples. Our novel Focal Loss focuses training on a sparse set of hard examples and prevents the vast number of easy negatives from overwhelming the detector during training. To evaluate the effectiveness of our loss, we design and train a simple dense detector we call RetinaNet. Our results show that when trained with the focal loss, RetinaNet is able to match the speed of previous one-stage detectors while surpassing the accuracy of all existing state-of-the-art two-stage detectors. Code is at: this https URL.},
+	author = {Lin, Tsung-Yi and Goyal, Priya and Girshick, Ross and He, Kaiming and Doll{\'a}r, Piotr},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-10-28 11:06:49 -0700},
+	date-modified = {2022-10-28 11:07:07 -0700},
+	doi = {10.48550/ARXIV.1708.02002},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Focal Loss for Dense Object Detection},
+	url = {https://arxiv.org/abs/1708.02002},
+	year = {2017}}
+
+@article{DBLP:journals/corr/abs-1711-08488,
+	abstract = {In this work, we study 3D object detection from RGB-D data in both indoor and outdoor scenes. While previous methods focus on images or 3D voxels, often obscuring natural 3D patterns and invariances of 3D data, we directly operate on raw point clouds by popping up RGB-D scans. However, a key challenge of this approach is how to efficiently localize objects in point clouds of large-scale scenes (region proposal). Instead of solely relying on 3D proposals, our method leverages both mature 2D object detectors and advanced 3D deep learning for object localization, achieving efficiency as well as high recall for even small objects. Benefited from learning directly in raw point clouds, our method is also able to precisely estimate 3D bounding boxes even under strong occlusion or with very sparse points. Evaluated on KITTI and SUN RGB-D 3D detection benchmarks, our method outperforms the state of the art by remarkable margins while having real-time capability.},
+	author = {Charles Ruizhongtai Qi and Wei Liu and Chenxia Wu and Hao Su and Leonidas J. Guibas},
+	bibsource = {dblp computer science bibliography, https://dblp.org},
+	biburl = {https://dblp.org/rec/journals/corr/abs-1711-08488.bib},
+	date-added = {2022-10-28 11:00:42 -0700},
+	date-modified = {2022-10-28 11:00:55 -0700},
+	eprint = {1711.08488},
+	eprinttype = {arXiv},
+	journal = {CoRR},
+	timestamp = {Wed, 11 Nov 2020 08:48:10 +0100},
+	title = {Frustum PointNets for 3D Object Detection from {RGB-D} Data},
+	url = {http://arxiv.org/abs/1711.08488},
+	volume = {abs/1711.08488},
+	year = {2017}}
+
+@misc{https://doi.org/10.48550/arxiv.1611.07759,
+	abstract = {This paper aims at high-accuracy 3D object detection in autonomous driving scenario. We propose Multi-View 3D networks (MV3D), a sensory-fusion framework that takes both LIDAR point cloud and RGB images as input and predicts oriented 3D bounding boxes. We encode the sparse 3D point cloud with a compact multi-view representation. The network is composed of two subnetworks: one for 3D object proposal generation and another for multi-view feature fusion. The proposal network generates 3D candidate boxes efficiently from the bird's eye view representation of 3D point cloud. We design a deep fusion scheme to combine region-wise features from multiple views and enable interactions between intermediate layers of different paths. Experiments on the challenging KITTI benchmark show that our approach outperforms the state-of-the-art by around 25% and 30% AP on the tasks of 3D localization and 3D detection. In addition, for 2D detection, our approach obtains 10.3% higher AP than the state-of-the-art on the hard data among the LIDAR-based methods.},
+	author = {Chen, Xiaozhi and Ma, Huimin and Wan, Ji and Li, Bo and Xia, Tian},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-10-28 10:59:36 -0700},
+	date-modified = {2022-10-28 10:59:52 -0700},
+	doi = {10.48550/ARXIV.1611.07759},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Multi-View 3D Object Detection Network for Autonomous Driving},
+	url = {https://arxiv.org/abs/1611.07759},
+	year = {2016}}
+
+@misc{https://doi.org/10.48550/arxiv.1808.02350,
+	abstract = {Object detection and classification in 3D is a key task in Automated Driving (AD). LiDAR sensors are employed to provide the 3D point cloud reconstruction of the surrounding environment, while the task of 3D object bounding box detection in real time remains a strong algorithmic challenge. In this paper, we build on the success of the one-shot regression meta-architecture in the 2D perspective image space and extend it to generate oriented 3D object bounding boxes from LiDAR point cloud. Our main contribution is in extending the loss function of YOLO v2 to include the yaw angle, the 3D box center in Cartesian coordinates and the height of the box as a direct regression problem. This formulation enables real-time performance, which is essential for automated driving. Our results are showing promising figures on KITTI benchmark, achieving real-time performance (40 fps) on Titan X GPU.},
+	author = {Ali, Waleed and Abdelkarim, Sherif and Zahran, Mohamed and Zidan, Mahmoud and Sallab, Ahmad El},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-10-28 10:56:05 -0700},
+	date-modified = {2022-10-28 10:56:23 -0700},
+	doi = {10.48550/ARXIV.1808.02350},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), Image and Video Processing (eess.IV), FOS: Computer and information sciences, FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, FOS: Electrical engineering, electronic engineering, information engineering},
+	publisher = {arXiv},
+	title = {YOLO3D: End-to-end real-time 3D Oriented Object Bounding Box Detection from LiDAR Point Cloud},
+	url = {https://arxiv.org/abs/1808.02350},
+	year = {2018}}
+
+@misc{https://doi.org/10.48550/arxiv.1803.06199,
+	author = {Simon, Martin and Milz, Stefan and Amende, Karl and Gross, Horst-Michael},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-10-28 10:52:29 -0700},
+	date-modified = {2022-10-28 10:53:01 -0700},
+	doi = {10.48550/ARXIV.1803.06199},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {Complex-YOLO: Real-time 3D Object Detection on Point Clouds},
+	url = {https://arxiv.org/abs/1803.06199},
+	year = {2018}}
+
+@misc{https://doi.org/10.48550/arxiv.2207.02696,
+	author = {Wang, Chien-Yao and Bochkovskiy, Alexey and Liao, Hong-Yuan Mark},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	date-added = {2022-10-28 10:37:05 -0700},
+	date-modified = {2022-10-28 10:37:11 -0700},
+	doi = {10.48550/ARXIV.2207.02696},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+	publisher = {arXiv},
+	title = {YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors},
+	url = {https://arxiv.org/abs/2207.02696},
+	year = {2022}}
 
 @article{burns1991system,
 	abstract = {A pulsed GaAs laser rangefinder is analyzed and designed. Expressions for background 
