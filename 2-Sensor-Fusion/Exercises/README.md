@@ -35,10 +35,6 @@ All functions from Lesson 1 / Lesson 2 can be run from the `basic_loop.py` scrip
 
 To run any of the `exercises` or `examples` functions independently, use the `2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb` demo file.
 
-## Credits
-
-This assignment was prepared by Dr. Andreas Haja and Dr. Antje Muntzinger et al., 2021 (link [here](https://github.com/udacity/nd013-c2-fusion-starter)).
-
 
 ## Results
 
@@ -58,6 +54,10 @@ $$
 \end{align}
 $$
 
+
+## Credits
+
+This assignment was prepared by Dr. Andreas Haja and Dr. Antje Muntzinger et al., 2021 (link [here](https://github.com/udacity/nd013-c2-fusion-starter)).
 
 References
 * [1] Sun, Pei, et al. Scalability in Perception for Autonomous Driving: Waymo Open Dataset. arXiv. 2019. [doi:10.48550/ARXIV.1912.04838](https://arxiv.org/abs/1912.04838).
