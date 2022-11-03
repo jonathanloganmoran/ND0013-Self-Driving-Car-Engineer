@@ -1,16 +1,15 @@
-# ---------------------------------------------------------------------
-# Exercises from lesson 1 (lidar)
+# -----------------------------------------------------------------------------
+# Exercises from Lesson 2.1: The LiDAR Sensor.
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Examples
+# Purpose of this file : Functions from the `Examples` section.
 #
-# You should have received a copy of the Udacity license together with this program.
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
-#
+# -----------------------------------------------------------------------------
 
 import cv2
 import io
@@ -25,7 +24,7 @@ from sklearn.preprocessing import RobustScaler, StandardScaler, QuantileTransfor
 import sys
 import zlib
 
-## Add current working directory to path
+### Add current working directory to path
 sys.path.append(os.getcwd())
 
 ### Waymo Open Dataset Reader library
@@ -58,10 +57,12 @@ def load_range_image(
     :returns: ri, the range image as a Numpy `ndarray` object.
     """
 
-    ### Get the object captured by the `lidar_name` from the frame proto
-    laser = [obj for obj in frame.lasers if obj.name == lidar_name][0]
+    ### Step 1 : Get the data captured by the `lidar_name` from the frame proto
+    laser_data = [laser for laser in frame.lasers if laser.name == lidar_name][0]
+    ### Step 2 : Get the LiDAR first return data
+    # For information on multiple returns, see discussion below:
+    # https://github.com/waymo-research/waymo-open-dataset/issues/45
     ri = []
-    ### Get the LiDAR first return data
     if len(laser.ri_return1.range_image_compressed) > 0:
         ri = dataset_pb2.MatrixFloat()
         ri.ParseFromString(zlib.decompress(laser.ri_return1.range_image_compressed))
@@ -259,7 +260,7 @@ def display_image(
 
     ### Load the camera data structure
     camera_name = dataset_pb2.CameraName.FRONT
-    image = [obj for obj in frame.images if obj.name == camera_name][0]
+    image = [sensor for sensor in frame.images if sensor.name == camera_name][0]
     ### Convert the actual image into rgb format
     img = np.array(Image.open(io.BytesIO(image.image)))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

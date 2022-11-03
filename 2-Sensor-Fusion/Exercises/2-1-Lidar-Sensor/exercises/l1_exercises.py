@@ -1,16 +1,15 @@
-# ---------------------------------------------------------------------
-# Exercises from lesson 1 (lidar)
+# -----------------------------------------------------------------------------
+# Exercises from Lesson 2.1: The LiDAR Sensor.
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Starter Code
+# Purpose of this file : Starter code for the `Exercises` section.
 #
-# You should have received a copy of the Udacity license together with this program.
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
-#
+# -----------------------------------------------------------------------------
 
 import cv2
 import io
@@ -48,7 +47,7 @@ def _camera_name(x: int) -> str:
 def vis_intensity_channel(
     frame, lidar_name, inline=False
 ):
-    """Visualises the range channel captured by the `lidar_name` sensor.
+    """Visualises the intensity channel of the range image captured by the `lidar_name` sensor.
 
     Here we crop the range image to a region of interest (ROI) about the
     x-axis at the origin with a +/- 45deg offset.
@@ -74,31 +73,33 @@ def vis_intensity_channel(
     """
 
     print("Exercise C1-5-5")
-    ### Extract the range image from the frame
+    ### Step 1 : Extract the range image from the frame
     ri = load_range_image(frame, lidar_name)
     # Setting the invalid (no return) values to 0.0
     ri[ri < 0] = 0.0
-    ### Map the intensity value range to 8-bit grayscale
-    img_range = ri[:, :, 1]
+    ### Step 2 : Map the intensity value range to 8-bit grayscale
+    # Extract the intensity values from the range image
+    ri_intensity = ri[:, :, 1]
     # Perform a contrast adjustment over the intensity values
-    img_scaled = img_range * np.amax(img_range) / 2
+    ri_scaled = ri_intensity * np.amax(ri_intensity) / 2
     # Fit to 8-bit grayscale
-    img_range = img_scaled * 255 / (np.amax(img_range) - np.amin(img_range))
-    img_range = img_range.astype(np.uint8)
-    ### Cropping the range image to the ROI
+    ri_intensity = ri_scaled * 255 / (np.amax(ri_intensity) - np.amin(ri_intensity))
+    ri_intensity = ri_intensity.astype(np.uint8)
+    ### Step 3 : Cropping the range image to the desired ROI
     # Here we focus on +/- 45° about the x-axis origin, i.e., the image centre
-    deg45 = int(img_range.shape[1] / 8)
-    ri_centre = int(img_range.shape[1] / 2)
-    img_range = img_range[:, ri_centre - deg45:ri_centre + deg45]
-    ### Printing the maximum and minimum intensity values
-    print(f"Max. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(img_range[:, :]), 2)}")
-    print(f"Min. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(img_range[:, :]), 2)}")
+    deg45 = int(ri_intensity.shape[1] / 8)
+    ri_centre = int(ri_intensity.shape[1] / 2)
+    ri_intensity = ri_intensity[:, ri_centre - deg45:ri_centre + deg45]
+    ### Step 4 : Printing the maximum and minimum intensity values
+    print(f"Max. intensity value in the range image captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(ri_intensity[:, :]), 2)}")
+    print(f"Min. intensity value in the range image captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(ri_intensity[:, :]), 2)}")
+    ### Step 5 : Displaying the resulting intensity channel of the range image
     if inline:
         plt.figure(figsize=(24, 20))
-        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor")
+        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor: the intensity channel")
         plt.imshow(img_range)
     else:
-        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor", img_range)
+        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor: the intensity channel", ri_intensity)
         cv2.waitKey(0)
 
 
