@@ -1,14 +1,19 @@
-# ---------------------------------------------------------------------
-# Exercises from lesson 2 (object detection)
+# -----------------------------------------------------------------------------
+# Exercises from Lesson 2.2: Detecting Objects in LiDAR
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
-# Purpose of this file : Starter Code
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You should have received a copy of the Udacity license together with this program.
+# Purpose of this file : Starter code for the `Exercises` section.
+#
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
 #
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# -----------------------------------------------------------------------------
 
 import cv2
 import easydict

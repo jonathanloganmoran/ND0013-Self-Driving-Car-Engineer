@@ -9,6 +9,10 @@
 # You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
+#
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
 # -----------------------------------------------------------------------------
 
 import cv2
@@ -25,9 +29,10 @@ import sys
 import zlib
 
 ### Add current working directory to path
+# Alternatively, use the `pip install --editable ..` script with setuptools
 sys.path.append(os.getcwd())
 
-### Waymo Open Dataset Reader library
+### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
 
@@ -147,12 +152,8 @@ def vis_range_channel(
     Here we crop the range image to a region of interest (ROI) about the
     x-axis at the origin with a +/- 45deg offset.
 
-    The intensity values are scaled using a heuristics-based approach,
-    i.e., a contrast adjustment is performed, which multiplies all
-    intensity values by one-half the maximum intensity value. This was
-    selected over traditional scaling methods, e.g., z-normalization,
-    as the contrast adjustment used here mitgates the influence of
-    intensity outliers while avoiding significant increases in noise.
+    The range values are scaled using a min-max scaling appraoch then
+    converted to 8-bit values in range [0, 255].
 
     We assume that the LiDAR sensor has been calibrated exactly to the
     direction of motion of the ego-vehicle, i.e., that the x-axis origin

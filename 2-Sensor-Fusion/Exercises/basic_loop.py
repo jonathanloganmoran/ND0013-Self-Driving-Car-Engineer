@@ -1,20 +1,22 @@
-# ---------------------------------------------------------------------
-# "Loop over Waymo frames : Starting place for lesson exercises"
-# Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
+# -----------------------------------------------------------------------------
+# Entry point for programme covering Lesson 2.1 and 2.1 functions.
+# Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
+#
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
 # Purpose of this file : Loop over all frames in a Waymo Open Dataset file
-#                        and perform basic operations on the data
+#                        and perform basic operations on the data.
 #
-# You should have received a copy of the Udacity license together with this program.
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
 #
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# -----------------------------------------------------------------------------
 
-##################
-# Imports
-
-# general package imports
+### General package imports
 import os
 import sys
 import numpy as np
@@ -25,18 +27,20 @@ import copy
 import zlib
 from easydict import EasyDict as edict
 
-# Add current working directory to path
+### Add current working directory to path
+# Alternatively, use the `pip install --editable ..` script with setuptools
 sys.path.append(os.getcwd())
 
-# Waymo open dataset reader
+### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader, dataset_pb2, label_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 
-# misc. project-related imports
+### Misc. project-related package imports
 import misc.objdet_tools as tools
 from misc.helpers import load_object_from_file
 
-# add exercise directories to python path to enable relative imports
+### Add 'exercise' directories to python path to enable relative imports
+# Alternatively, use the `pip install --editable ..` script with setuptools
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 EXE_L1 = 'lesson-1-lidar-sensor/exercises/starter'
 EXA_L1 = 'lesson-1-lidar-sensor/examples'
@@ -47,34 +51,28 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, EXA_L1)))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, EXE_L2)))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, EXA_L2)))
 
-# import functions from individual exercise files
+### Import functions from individual `exercise` files
 import l2_examples
 import l2_exercises
 import l1_examples
 import l1_exercises
 
 
-##################
-# Set parameters and perform initializations
-
+### Step 1 : Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
 data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord' # Sequence 1
 #data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord' # Sequence 2
 # data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'  # Sequence 3
 show_only_frames = [0, 10]  # show only frames in interval for debugging
-
-# set pause time between frames in ms (0 = stop between frames until key is pressed)
+# Set pause time between frames in ms (0 = stop between frames until key is pressed)
 vis_pause_time = 0  
-
 # Prepare Waymo Open Dataset file for loading
 data_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dataset', data_filename)  # adjustable path in case this script is called from another working directory
 results_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
 datafile = WaymoDataFileReader(data_fullpath)
 datafile_iter = iter(datafile)  # initialize dataset iterator
 
-##################
-# Perform detection & tracking over all selected frames
-
+### Step 2: Perform detection & tracking over all selected frames
 cnt_frame = 0
 det_performance_all = []  # used for exercises in C2-4
 while True:
@@ -98,7 +96,6 @@ while True:
         # the implementation for more details
 
         ####### LESSON 1 EXERCISES & EXAMPLES START #######
-        #######
 
         lidar_name = dataset_pb2.LaserName.TOP
 
@@ -129,14 +126,12 @@ while True:
         # Example C1-5-6 : Convert range image to 3D point-cloud
         # l1_examples.range_image_to_point_cloud(frame, lidar_name)
 
-        #######
-        ####### LESSON 1 EXERCISES & EXAMPLES  END #######
+        ####### LESSON 1 EXERCISES & EXAMPLES END #######
 
 
-        ####### LESSON 2 EXERCISES & EXAMPLES  START #######
-        #######
+        ####### LESSON 2 EXERCISES & EXAMPLES START #######
 
-        # Define parameters used in subsequent steps
+        ### Step 3 : Define parameters used in subsequent steps
         configs = edict()
         configs.lim_x = [0, 50]
         configs.lim_y = [-25, 25]
@@ -170,8 +165,7 @@ while True:
         #det_performance = load_object_from_file(results_fullpath, data_filename, 'det_performance_' + str(conf_thresh), cnt_frame)
         #det_performance_all.append(det_performance)  # store all evaluation results in a list for performance assessme
 
-        #######
-        ####### LESSON 2 EXERCISES & EXAMPLES  END #######
+        ####### LESSON 2 EXERCISES & EXAMPLES END #######
 
         # increment frame counter
         cnt_frame = cnt_frame + 1

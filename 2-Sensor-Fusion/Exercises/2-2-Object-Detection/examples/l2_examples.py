@@ -1,14 +1,19 @@
-# ---------------------------------------------------------------------
-# Exercises from lesson 2 (object detection)
+# -----------------------------------------------------------------------------
+# Exercises from Lesson 2.2: Detecting Objects in LiDAR
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
-# Purpose of this file : Examples
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You should have received a copy of the Udacity license together with this program.
+# Purpose of this file : Functions from the `Examples` section.
+#
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
 #
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# -----------------------------------------------------------------------------
 
 import cv2
 from easydict import EasyDict
@@ -22,14 +27,14 @@ from PIL import Image
 import sys
 import zlib
 
-
-## Add current working directory to path
+### Add current working directory to path
+# Alternatively, use the `pip install --editable ..` script with setuptools
 sys.path.append(os.getcwd())
 
-
-### Waymo Open Dataset Reader library
+### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+
 ### Module to render / project bounding box labels
 import misc.objdet_tools as tools
 
