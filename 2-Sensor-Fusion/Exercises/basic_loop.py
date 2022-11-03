@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Entry point for programme covering Lesson 2.1 and 2.1 functions.
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
@@ -14,7 +14,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 ### General package imports
 import os
@@ -32,7 +32,9 @@ from easydict import EasyDict as edict
 sys.path.append(os.getcwd())
 
 ### Simple Waymo Open Dataset Reader library
-from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader, dataset_pb2, label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 
 ### Misc. project-related package imports
@@ -41,7 +43,9 @@ from misc.helpers import load_object_from_file
 
 ### Add 'exercise' directories to python path to enable relative imports
 # Alternatively, use the `pip install --editable ..` script with setuptools
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 EXE_L1 = 'lesson-1-lidar-sensor/exercises/starter'
 EXA_L1 = 'lesson-1-lidar-sensor/examples'
 EXE_L2 = 'lesson-2-object-detection/exercises/starter'
@@ -67,8 +71,12 @@ show_only_frames = [0, 10]  # show only frames in interval for debugging
 # Set pause time between frames in ms (0 = stop between frames until key is pressed)
 vis_pause_time = 0  
 # Prepare Waymo Open Dataset file for loading
-data_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dataset', data_filename)  # adjustable path in case this script is called from another working directory
-results_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
+data_fullpath = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'dataset', data_filename
+)  # Adjustable path in case this script is called from another working directory
+results_fullpath = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'results'
+)
 datafile = WaymoDataFileReader(data_fullpath)
 datafile_iter = iter(datafile)  # initialize dataset iterator
 
@@ -139,7 +147,7 @@ while True:
         configs.bev_width = 608
         configs.bev_height = 608
         configs.conf_thresh = 0.5
-
+        
         # Example C2-3-1 : Crop point cloud
         lidar_pcl = l1_examples.range_image_to_point_cloud(frame, lidar_name, True)
         cropped_pcl = l2_examples.crop_pcl(lidar_pcl, configs, True)

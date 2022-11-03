@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Exercises from Lesson 2.2: Detecting Objects in LiDAR
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
@@ -13,7 +13,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 import cv2
 from easydict import EasyDict
@@ -50,23 +50,24 @@ def render_obj_over_bev(
         BEV map, assumed to be object returned from `render_obj_over_bev`.
     :param configs: the `EasyDict` instance with the desired BEV map dimensions.
     :param vis: bool (optional), If True, the BEV map will be displayed.
-    :param inline: bool (optional), If True, the visualisation will be shown in a
-        Matplotlib `figure` instance. If False (and `vis=True`), the BEV map will be
+    :param inline: bool (optional), If True, the visualisation will be shown in
+        Matplotlib `figure` instance. If False (and `vis=True`), the BEV map is
         rendered in a pop-up window using the `cv2.imshow` function.
     """
 
     ### Project the detected objects into Birds's-Eye View (BEV) map image
-    tools.project_detections_into_bev(lidar_bev_labels, detections, configs, [0, 0, 255])
+    tools.project_detections_into_bev(
+        lidar_bev_labels, detections, configs, [0, 0, 255])
     ### Display the resulting BEV map
     if vis:
         lidar_bev_labels = cv2.rotate(lidar_bev_labels, cv2.ROTATE_180)
-        title_fig = "Bird's-eye view (BEV) map: ground-truth annotations shown with corresponding bounding box predictions."
+        str_title = "Bird's-eye view (BEV) map: ground-truth annotations shown with corresponding bounding box predictions."
         if inline:
             fig = plt.figure(figsize=(24, 20))
-            plt.title(title_fig, fontsize=20)
+            plt.title(str_title, fontsize=20)
             plt.imshow(lidar_bev_labels)
         else:
-            cv2.imshow(title_fig, lidar_bev_labels)
+            cv2.imshow(str_title, lidar_bev_labels)
             cv2.waitKey(0) 
 
 
@@ -80,19 +81,25 @@ def render_bb_over_bev(
     :param labels: the bounding box annotations to render over the BEV map.
     :param configs: the `EasyDict` instance with the desired BEV map dimensions.
     :param vis: bool (optional), If True, the BEV map will be displayed.
-    :param inline: bool (optional), If True, the visualisation will be shown in a
-        Matplotlib `figure` instance. If False (and `vis=True`), the BEV map will be
+    :param inline: bool (optional), If True, the visualisation will be shown in
+        Matplotlib `figure` instance. If False (and `vis=True`), the BEV map is
         rendered in a pop-up window using the `cv2.imshow` function.
     :returns: bev_map_cpy, the BEV map with annotations as a Numpy `ndarray` object. 
     """
 
     ### Convert BEV map from a tensor to Numpy array
-    bev_map_cpy = (bev_map.squeeze().permute(1, 2, 0).numpy() * 255).astype(np.uint8)
+    bev_map_cpy = bev_map.squeeze().permute(1, 2, 0).numpy() * 255
+    bev_map_cpy = bev_map_cpy.astype(np.uint8)
     ### Resize the BEV map to desired dimensions
-    bev_map_cpy = cv2.resize(bev_map_cpy, (configs.bev_width, configs.bev_height))
-    ### Convert the labels into proper bounding box format and project into the BEV map
+    bev_map_cpy = cv2.resize(bev_map_cpy, 
+                             dsize=(configs.bev_width, configs.bev_height)
+    )
+    ### Convert the labels into proper bounding box format and project the
+    #   bounding box coordinates into the BEV map image space
     label_objects = tools.convert_labels_into_objects(labels, configs)
-    tools.project_detections_into_bev(bev_map_cpy, label_objects, configs, [0, 255, 0])
+    tools.project_detections_into_bev(
+        bev_map_cpy, label_objects, configs, [0, 255, 0]
+    )
     ### Display the resulting BEV map
     if vis:
         title_fig = "Bird's-eye view (BEV) map: shown with corresponding bounding box annotations"
@@ -106,8 +113,8 @@ def render_bb_over_bev(
             cv2.waitKey(0)          
     return np.asarray(bev_map_cpy)
 
-    
-# Example C2-4-2 : count total no. of vehicles and vehicles that are difficult to track
+
+# Example C2-4-2 : count total no. of vehicles / vehicles difficult to track
 def count_vehicles(
         frame: dataset_pb2.Frame
 ):
@@ -128,7 +135,8 @@ def count_vehicles(
     for label in frame.laser_labels:
         # Note that we only record 'TYPE_VEHICLE' class annotations
         if label.type == label_pb2.Label.Type.TYPE_VEHICLE:
-            # Here we add all label instances (even if associated with the same object)
+            # Here we add all label instances
+            # even if they could be associated with the same object
             count_vehicles.cnt_vehicles += 1
             # We also make note of the number of level 'difficult' detections
             if label.detection_difficulty_level > 0:
@@ -155,33 +163,39 @@ def min_max_intensity(
 
 # Example C2-3-1 : Crop point cloud
 def crop_pcl(
-        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=False, inline: bool=False
+        lidar_pcl: np.ndarray, configs: easydict.EasyDict,
+        vis: bool=False, inline: bool=False
 ) -> np.ndarray:
     """Crops the LiDAR point cloud to the ROI defined in `configs`.
 
     :param lidar_pcl: the 3D point cloud instance as a Numpy `ndarray` object.
-    :param configs: the `EasyDict` instance with the (x, y, z) limits of the desired ROI.
-    :param vis: bool (optional), If True, the cropped point cloud will be rendered using Open3D.
-    :param inline: bool (optional), If True, the visualisation will be shown using the Open3D
-        Jupyter notebook `JVisualizer` viewer. If False (and `vis=True`), the point cloud is rendered
-        in a pop-up window using the `o3d.visualization.draw_geometries` function.
+    :param configs: the `EasyDict` instance storing the (x, y, z) coordinate
+        limits of the desired point cloud region of interest (ROI).
+    :param vis: bool (optional), If True, the cropped point cloud will be
+        displayed in a window using the Open3D `Visualizer`.
+    :param inline: bool (optional), If True, the visualisation will be displayed
+        using the Open3D Jupyter notebook `JVisualizer` viewer. If False,
+        (and `vis=True`), the point cloud is rendered in a pop-up window using
+        the `o3d.visualization.draw_geometries` function.
     :returns: lidar_pcl, the cropped point cloud as a Numpy `ndarray` object.
     """
 
     pcl_range = lidar_pcl[:, 0]
     pcl_intensity = lidar_pcl[:, 1]
     pcl_elongation = lidar_pcl[:, 2]
-    ### Create mask to remove points outside of detection cube defined in 'configs.lim_*'
-    mask = np.where((pcl_range >= configs.lim_x[0]) & (pcl_range <= configs.lim_x[1]) &
-                    (pcl_intensity >= configs.lim_y[0]) & (pcl_intensity <= configs.lim_y[1]) &
-                    (pcl_elongation >= configs.lim_z[0]) & (pcl_elongation <= configs.lim_z[1]))
+    ### Create mask to remove points outside of pre-defined region of interest
+    mask = np.where(
+        (pcl_range >= configs.lim_x[0]) & (pcl_range <= configs.lim_x[1]) &
+        (pcl_intensity >= configs.lim_y[0]) & (pcl_intensity <= configs.lim_y[1]) &
+        (pcl_elongation >= configs.lim_z[0]) & (pcl_elongation <= configs.lim_z[1])
+    )
     ### Preserve only the coordinates inside the ROI
     lidar_pcl = lidar_pcl[mask]
     ### Visualise the resulting cropped point-cloud
     if vis:
         pcd = o3d.geometry.PointCloud()
-        # Here we select only the first three channels (excluding BEV intensity channel)
-        # i.e., we omit the channel containing the filtered intensity values from the BEV map
+        # Here we select only the first three channels (excluding BEV intensity)
+        # i.e., we omit the mapped BEV intensity channel values
         pcd.points = o3d.utility.Vector3dVector(lidar_pcl[:, 0:3])
         if inline:
             # Render the point cloud using Jupyter notebook viewer

@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Exercises from Lesson 2.1: The LiDAR Sensor.
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
@@ -13,7 +13,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 import cv2
 import io

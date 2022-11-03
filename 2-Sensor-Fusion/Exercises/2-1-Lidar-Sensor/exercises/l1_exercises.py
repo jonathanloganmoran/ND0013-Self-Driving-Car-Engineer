@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Exercises from Lesson 2.1: The LiDAR Sensor.
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.  
 #
@@ -13,7 +13,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 import cv2
 import io
@@ -50,12 +50,12 @@ def _camera_name(x: int) -> str:
 
 # Exercise C1-5-5 : Visualize intensity channel
 def vis_intensity_channel(
-    frame, lidar_name, inline=False
+    frame: dataset_pb2.Frame, lidar_name: int, inline: bool=False
 ):
-    """Visualises the intensity channel of the range image captured by the `lidar_name` sensor.
+    """Visualises the intensity channel of the range image.
 
-    Here we crop the range image to a region of interest (ROI) about the
-    x-axis at the origin with a +/- 45deg offset.
+    Here we crop the range image captured by the `lidar_name` sensor to a
+    region of interest (ROI) about the x-axis origin a +/- 45deg offset.
 
     The intensity values are scaled using a heuristics-based approach,
     i.e., a contrast adjustment is performed, which multiplies all
@@ -109,7 +109,9 @@ def vis_intensity_channel(
 
 
 # Exercise C1-5-2 : Compute pitch angle resolution
-def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
+def print_pitch_resolution(
+        frame: dataset_pb2.Frame, lidar_name: int
+):
     """Prints the vertical angular resoution of the range image.
 
     Using the equally-divided elevation angle formula from the 
@@ -143,11 +145,14 @@ def print_pitch_resolution(frame: dataset_pb2.Frame, lidar_name: int):
     # print(f'Pitch angle resolution: {pitch_res_deg:.2f}°')
     # Convert to angular minutes
     pitch_res_ang = pitch_res_deg * 60
-    print(f"Pitch angle resolution (angular minutes) of '{_laser_name(lidar_name)}' sensor: {pitch_res_ang:.2f}'")
+    res = f"Pitch angle resolution (angular minutes) of '{_laser_name(lidar_name)}' sensor: {pitch_res_ang:.2f}'"
+    print(res)
 
 
 ### Exercise C1-3-1 : print no. of vehicles
-def print_no_of_vehicles(frame: dataset_pb2.Frame, use_laser_counts=True):
+def print_no_of_vehicles(
+        frame: dataset_pb2.Frame, use_laser_counts=True
+):
     """Prints the number of ground-truth vehicles in the frame.
 
     The object counts returned are obtained from the LiDAR sensor data.

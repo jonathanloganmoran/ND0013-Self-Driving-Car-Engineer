@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Project "3D Object Detection with LiDAR Data"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
@@ -13,7 +13,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 ### General package imports
 import cv2
@@ -25,12 +25,15 @@ import torch
 import os
 import sys
 PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 ### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
-from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2, label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
 
 ### Object detection tools and helper functions
 import misc.objdet_tools as tools
@@ -54,7 +57,7 @@ def _camera_name(x: int) -> str:
 def _load_range_image(
         frame: dataset_pb2.Frame, lidar_name: int
 ) -> np.ndarray:
-    """Returns the range image from the `frame` captured by the `lidar_name` sensor.
+    """Returns the range image from the `frame` captured by `lidar_name` sensor.
 
     :param frame: the Waymo Open Dataset `Frame` instance.
     :param lidar_name: the integer id corresponding to the
@@ -70,7 +73,9 @@ def _load_range_image(
     ri = []
     if len(laser.ri_return1.range_image_compressed) > 0:
         ri = dataset_pb2.MatrixFloat()
-        ri.ParseFromString(zlib.decompress(laser.ri_return1.range_image_compressed))
+        ri.ParseFromString(
+            zlib.decompress(laser.ri_return1.range_image_compressed)
+        )
         ri = np.array(ri.data).reshape(ri.shape.dims)
     return ri
 
@@ -98,20 +103,22 @@ def show_pcl(
     print("student task ID_S1_EX2")
     ### Step 1 : Initialise Open3D with key callback and create window
     visualiser = o3d.visualization.VisualizerWithKeyCallback()
-    vis.create_window(window_name='Visualising the Waymo Open Dataset: LiDAR Point Cloud data',
+    str_window = 'Visualising the Waymo Open Dataset: LiDAR Point Cloud data'
+    vis.create_window(window_name=str_window,
                       width=1280, height=720, left=50, top=50, visible=True
     )
     # Here we register the callback function to trigger on right-arrow key press
     vis.register_key_callback(key=262, callback_func=close_window)
     ### Step 2 : Create instance of Open3D `PointCloud` class
     pcd = o3d.geometry.PointCloud()
-    ### Step 3 : Set points in `pcd` instance using Open3D function `Vector3dVector`
+    ### Step 3 : Set points in `pcd` instance using Open3D `Vector3dVector`
     # Here we convert the point cloud into 3D vectors
     pcd.points = o3d.utility.Vector3dVector(pcl)
     ### Step 4 : Add / update the point cloud with the frame data
-    # Here we use `add_geometry` for the first frame, `update_geometry` is used for all other frames
+    # Here we use `add_geometry` for the first frame,
+    # note that `update_geometry` is automatically used for all other frames
     vis.add_geometry(pcd)
-    ### Step 5 : Visualise point cloud and keep window open until right-arrow is pressed
+    ### Step 5 : Visualise point cloud and preserve window instance
     vis.run()
     ####### ID_S1_EX2 END #######     
        
@@ -120,7 +127,7 @@ def show_pcl(
 def show_range_image(
         frame: dataset_pb2.Frame, lidar_name: int
 ) -> np.ndarray:
-    """Returns the range image given in the `frame` captured by `lidar_name` sensor.
+    """Returns the range image given in the `frame` captured by `lidar_name`.
 
     The range and intensity channels of the range image are stacked and
     returned after re-scaling and normalisation is performed.
@@ -150,15 +157,17 @@ def show_range_image(
     ri_range = ri_range * 255 / (np.amax(ri_range) - np.amin(ri_range))
     ri_range = ri_range.astype(np.uint8)
     ### Step 5 : Map the intensity channel onto an 8-bit scale
-    # Here we perform a contrast adjustment normalisation using the 1- and 99-percentile
+    # Here we perform a contrast adjustment using the 1- and 99-percentile
     ri_inten_scaled = ri_intensity * np.amax(ri_intensity) / 2
-    ri_intensity = ri_inten_scaled * 255 / (np.amax(ri_intensity) - np.amin(ri_intensity))
+    scale_factor_intensity = np.amax(ri_intensity) - np.amin(ri_intensity)
+    ri_intensity = ri_inten_scaled * 255 / scale_factor_intensity
     ri_intensity = ri_intensity.astype(np.uint8)
     ### Step 6 : Stack the range and intensity image vertically using np.vstack
     # Then convert the result to unsigned 8-bit integer type
     img_range_intensity = np.vstack((ri_range, ri_intensity))
     img_range_intensity = img_range_intensity.astype(np.uint8)
-    # Return resulting range image to be visualised with OpenCV inside `loop_over_dataset.py` 
+    # Return resulting range image
+    # intended to be visualised inside `loop_over_dataset.py` using Open3D
     ####### ID_S1_EX1 END #######
     return img_range_intensity
 
@@ -174,7 +183,8 @@ def bev_from_pcl(
         filtering params used to crop, discretise and re-scale the PCL values.
     :param vis: boolean (optional), If True, will visualise the resulting BEV
         map using the Open3D `Visualizer` interface.
-    :returns: the raw (unsorted, unsummarised) BEV map as a Numpy `ndarray` object.
+    :returns: input_bev_maps,
+        the raw (unsorted, unsummarised) BEV map as a Numpy `ndarray` object.
     """
 
     ### Step 0 : Pre-processing
@@ -183,57 +193,79 @@ def bev_from_pcl(
     pcl_elongation = lidar_pcl[:, 2]
     # Crop LiDAR point cloud to desired region of interest (ROI)
     # And remove points with low reflectivity values
-    mask = np.where((pcl_range >= configs.lim_x[0]) & (pcl_range <= configs.lim_x[1]) &
-                    (pcl_intensity >= configs.lim_y[0]) & (pcl_intensity <= configs.lim_y[1]) &
-                    (pcl_elongation >= configs.lim_z[0]) & (pcl_elongation <= configs.lim_z[1]))
+    mask = np.where(
+        (pcl_range >= configs.lim_x[0]) & (pcl_range <= configs.lim_x[1]) &
+        (pcl_intensity >= configs.lim_y[0]) & (pcl_intensity <= configs.lim_y[1]) &
+        (pcl_elongation >= configs.lim_z[0]) & (pcl_elongation <= configs.lim_z[1])
+    )
     lidar_pcl = lidar_pcl[mask]
     # Shift level of ground plane to avoid flipping from 0 to 255 for neighbouring pixels
     lidar_pcl[:, 2] = lidar_pcl[:, 2] - configs.lim_z[0]
-    # Convert sensor coordinates to BEV map coordinates (centre is bottom-middle)
-    ####### ID_S2_EX1 START #######     
+    ####### ID_S2_EX1 START #######
+    ### Summary: Convert sensor coordinates to BEV map coordinates
     print("student task ID_S2_EX1")
-    ### Step 1 :  Compute BEV map discretisation by dividing x-range by the BEV image height
+    ### Step 1 :  Compute BEV map discretisation
+    # Here we divide the x-range by the BEV image height
     bev_interval = (configs.lim_x[1] - configs.lim_x[0]) / configs.bev_height
     bev_offset = (configs.bev_width + 1) / 2
-    ### Step 2 : Create a copy of the lidar pcl and transform all matrix x-coordinates into BEV image coordinates    
+    ### Step 2 : Transform all matrix x-coordinates into BEV coordinates
+    # Here we create a copy to avoid mutation of the original PCL
     lidar_pcl_cpy = lidar_pcl.copy()
     lidar_pcl_cpy[:, 0] = np.int_(np.floor(lidar_pcl_cpy[:, 0] / bev_interval))
     ### Step 3 : Perform the same operation as in Step 2 for the y-coordinates
     # Here we make sure that no negative BEV coordinates occur
-    lidar_pcl_cpy[:, 1] = np.int_(np.floor(lidar_pcl_cpy[:, 1] / bev_interval) + bev_offset)
-    ### Step 4 : Visualise point cloud using the `show_pcl` function from task ID_S1_EX2
+    lidar_pcl_cpy[:, 1] = np.int_(
+        np.floor(lidar_pcl_cpy[:, 1] / bev_interval) + bev_offset
+    )
+    lidar_pcl_cpy[lidar_pcl_cpy < 0.0] = 0.0
+    ### Step 4 : Visualise point cloud using `show_pcl` from task ID_S1_EX2
     if vis:
         show_pcl(lidar_pcl_cpy)
     ####### ID_S2_EX1 END #######     
-    return lidar_pcl_cpy
-    
-    # Compute intensity layer of the BEV map
-    ####### ID_S2_EX2 START #######     
-    #######
+    ####### ID_S2_EX2 START #######
+    ### Summary: Compute intensity layer of the BEV map
     print("student task ID_S2_EX2")
-
-    ## step 1 : create a numpy array filled with zeros which has the same dimensions as the BEV map
-
-    # step 2 : re-arrange elements in lidar_pcl_cpy by sorting first by x, then y, then -z (use numpy.lexsort)
-
-    ## step 3 : extract all points with identical x and y such that only the top-most z-coordinate is kept (use numpy.unique)
-    ##          also, store the number of points per x,y-cell in a variable named "counts" for use in the next task
-
-    ## step 4 : assign the intensity value of each unique entry in lidar_top_pcl to the intensity map 
-    ##          make sure that the intensity is scaled in such a way that objects of interest (e.g. vehicles) are clearly visible    
-    ##          also, make sure that the influence of outliers is mitigated by normalizing intensity on the difference between the max. and min. value within the point cloud
-
-    ## step 5 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-
-    #######
+    ### Step 0: Pre-processing
+    # Here we clip the intensity map values to 1.0
+    lidar_pcl_cpy[lidar_pcl_cpy[:, 3] > 1.0, 3] = 1.0
+    ### Step 1 : Create a Numpy array filled with zeros
+    # Here we specify the dimensions of the BEV map
+    bev_intensity = np.zeros(shape=(configs.bev_height, configs.bev_height))
+    ### Step 2 : Re-arrange elements in `lidar_pcl_cpy`
+    # Here we sort first by x, then y, then -z (decreasing height values)
+    # Here we use `numpy.lexsort` function to accomplish this ordering
+    idxs_intensity = np.lexsort(
+        keys=(-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0])
+    )
+    lidar_pcl_top = lidar_pcl_cpy[idxs_intensity]
+    ### Step 3 : Extract all points with identical x and y,
+    #            s.t. only top-most z-coordinate is kept
+    # Here we store the number of points per x,y-cell for use in the next task
+    _, idxs_top_unique, counts = np.unique(
+            lidar_pcl_top[:, 0:2], axis=0, return_index=True, return_counts=True
+    )
+    lidar_pcl_top = lidar_pcl_cpy[idxs_top_unique]
+    ### Step 4 : Assign the intensity map values
+    # Here the intensity value of each unique `lidar_top_pcl` entry is assigned
+    # The intensity values are scaled s.t. objects of interest are clearly visible
+    # using a min-max normalisation approach.
+    intensity_vals = lidar_pcl_top[:, 3]
+    scale_factor_intensity = np.amax(intensity_vals) - np.amin(intensity_vals)
+    intensity_map[np.int_(lidar_pcl_top[:, 0]),
+                  np.int_(lidar_pcl_top[:, 1])
+                 ] = lidar_pcl_top[:, 3] / scale_factor_intensity
+    ### Step 5 : Temporarily visualise the intensity map using OpenCV
+    # Here we make sure that vehicles separate well from the background
+    img_intensity = intensity_map * 256
+    img_intensity = img_intensity.astype(np.uint8)
+    str_title = "Bird's-eye view (BEV) map: normalised intensity channel values"
+    cv2.imshow(str_title, img_intensity)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     ####### ID_S2_EX2 END ####### 
-
-
-    # Compute height layer of the BEV map
-    ####### ID_S2_EX3 START #######     
-    #######
+    ####### ID_S2_EX3 START #######
+    # Summary: Compute height layer of the BEV map     
     print("student task ID_S2_EX3")
-
     ## step 1 : create a numpy array filled with zeros which has the same dimensions as the BEV map
 
     ## step 2 : assign the height value of each unique entry in lidar_top_pcl to the height map 
