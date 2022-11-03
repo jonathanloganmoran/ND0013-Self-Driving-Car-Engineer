@@ -89,9 +89,9 @@ def pcl_to_bev(
         Matplotlib `figure` instance. If False (and `vis=True`), OpenCV will be used.
     """
 
-    ### Compute BEV-map discretisation by dividing x-range by the BEV-image height
+    ### Compute BEV map discretisation by dividing x-range by the BEV image height
     bev_interval = (configs.lim_x[1] - configs.lim_x[0]) / configs.bev_height
-    ### Create a copy of the lidar pcl and transform all matrix x-coordinates into BEV-image coordinates    
+    ### Create a copy of the lidar pcl and transform all matrix x-coordinates into BEV image coordinates    
     lidar_pcl_cpy = lidar_pcl.copy()
     lidar_pcl_cpy[:, 0] = np.int_(np.floor(lidar_pcl_cpy[:, 0] / bev_interval))
     ### Transform all matrix y-coordinates but centre the forward-facing x-axis on the middle of the image
@@ -104,10 +104,11 @@ def pcl_to_bev(
     ### Extract all points with identical x and y s.t. only the top-most z-coordinate is kept
     _, idxs_height_unique = np.unique(lidar_pcl_height[:, 0:2], axis=0, return_index=True)
     lidar_pcl_height = lidar_pcl_height[idxs_height_unique]
-    ### Assign the height value of each unique entry in `lidar_pcl_height` to the height map 
+    ### Assign the elongation value of each unique entry in `lidar_pcl_height` to the height map 
     height_map = np.zeros(shape=(configs.bev_height + 1, configs.bev_height + 1))
-    # Make sure that each entry is normalized on the difference between the upper and lower BEV-map height
-    height_map[np.int_(lidar_pcl_height[:, 0]), np.int_(lidar_pcl_height[:, 1])] = lidar_pcl_height[:, 2] / float(np.abs(configs.lim_z[1] - configs.lim_z[0]))
+    # Make sure that each entry is normalized on the difference between the upper and lower BEV map height
+    scale_factor_height = float(np.abs(configs.lim_z[1] - configs.lim_z[0]))
+    height_map[np.int_(lidar_pcl_height[:, 0]), np.int_(lidar_pcl_height[:, 1])] = lidar_pcl_height[:, 2] / scale_factor_height
     ### Sort points s.t. in case of identical BEV grid coordinates, the points in each grid cell are arranged based on their intensity
     # Here we clip the intensity values to 1.0
     lidar_pcl_cpy[lidar_pcl_cpy[:, 3] > 1.0, 3] = 1.0
@@ -118,7 +119,8 @@ def pcl_to_bev(
     lidar_intensity = lidar_pcl_cpy[idxs_intensity]
     ### Create the intensity map
     intensity_map = np.zeros(shape=(configs.bev_height + 1, configs.bev_height + 1))
-    intensity_map[np.int_(lidar_intensity[:, 0]), np.int_(lidar_intensity[:, 1])] = lidar_intensity[:, 3] / (np.amax(lidar_intensity[:, 3]) - np.amin(lidar_intensity[:, 3]))
+    scale_factor_intensity = (np.amax(lidar_intensity[:, 3]) - np.amin(lidar_intensity[:, 3]))
+    intensity_map[np.int_(lidar_intensity[:, 0]), np.int_(lidar_intensity[:, 1])] = lidar_intensity[:, 3] / scale_factor_intensity
     ### Visualise intensity map
     if vis:
         img_intensity = intensity_map * 256

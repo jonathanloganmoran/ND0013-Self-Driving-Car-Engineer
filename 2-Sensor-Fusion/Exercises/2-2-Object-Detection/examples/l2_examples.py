@@ -55,10 +55,9 @@ def render_obj_over_bev(
         rendered in a pop-up window using the `cv2.imshow` function.
     """
 
-    # project detected objects into bird's eye view
-    tools.project_detections_into_bev(lidar_bev_labels, detections, configs, [0,0,255])
-
-    # display bev map
+    ### Project the detected objects into Birds's-Eye View (BEV) map image
+    tools.project_detections_into_bev(lidar_bev_labels, detections, configs, [0, 0, 255])
+    ### Display the resulting BEV map
     if vis:
         lidar_bev_labels = cv2.rotate(lidar_bev_labels, cv2.ROTATE_180)
         title_fig = "Bird's-eye view (BEV) map: ground-truth annotations shown with corresponding bounding box predictions."
@@ -93,7 +92,7 @@ def render_bb_over_bev(
     bev_map_cpy = cv2.resize(bev_map_cpy, (configs.bev_width, configs.bev_height))
     ### Convert the labels into proper bounding box format and project into the BEV map
     label_objects = tools.convert_labels_into_objects(labels, configs)
-    tools.project_detections_into_bev(bev_map_cpy, label_objects, configs, [0,255,0])
+    tools.project_detections_into_bev(bev_map_cpy, label_objects, configs, [0, 255, 0])
     ### Display the resulting BEV map
     if vis:
         title_fig = "Bird's-eye view (BEV) map: shown with corresponding bounding box annotations"
@@ -125,7 +124,6 @@ def count_vehicles(
     if not hasattr(count_vehicles, "cnt_vehicles"):
         count_vehicles.cnt_vehicles = 0
         count_vehicles.cnt_difficult_vehicles = 0
-
     ### Loop over all labels recorded for each LiDAR sensor
     for label in frame.laser_labels:
         # Note that we only record 'TYPE_VEHICLE' class annotations
@@ -149,6 +147,7 @@ def min_max_intensity(
     """
 
     ### Retrieve the minimum and maximum intensity values from the point cloud
+    # Here we consider only the BEV intensity channel values
     min_int = np.amin(lidar_pcl[:, 3])
     max_int = np.amax(lidar_pcl[:, 3])
     print(f"Min. intensity value: {min_int}, Max. intensity value: {max_int}")
@@ -169,16 +168,20 @@ def crop_pcl(
     :returns: lidar_pcl, the cropped point cloud as a Numpy `ndarray` object.
     """
 
+    pcl_range = lidar_pcl[:, 0]
+    pcl_intensity = lidar_pcl[:, 1]
+    pcl_elongation = lidar_pcl[:, 2]
     ### Create mask to remove points outside of detection cube defined in 'configs.lim_*'
-    mask = np.where((lidar_pcl[:, 0] >= configs.lim_x[0]) & (lidar_pcl[:, 0] <= configs.lim_x[1]) &
-                    (lidar_pcl[:, 1] >= configs.lim_y[0]) & (lidar_pcl[:, 1] <= configs.lim_y[1]) &
-                    (lidar_pcl[:, 2] >= configs.lim_z[0]) & (lidar_pcl[:, 2] <= configs.lim_z[1]))
+    mask = np.where((pcl_range >= configs.lim_x[0]) & (pcl_range <= configs.lim_x[1]) &
+                    (pcl_intensity >= configs.lim_y[0]) & (pcl_intensity <= configs.lim_y[1]) &
+                    (pcl_elongation >= configs.lim_z[0]) & (pcl_elongation <= configs.lim_z[1]))
     ### Preserve only the coordinates inside the ROI
     lidar_pcl = lidar_pcl[mask]
     ### Visualise the resulting cropped point-cloud
     if vis:
         pcd = o3d.geometry.PointCloud()
-        # Here we select only the first three channels (omitting intensity)
+        # Here we select only the first three channels (excluding BEV intensity channel)
+        # i.e., we omit the channel containing the filtered intensity values from the BEV map
         pcd.points = o3d.utility.Vector3dVector(lidar_pcl[:, 0:3])
         if inline:
             # Render the point cloud using Jupyter notebook viewer
