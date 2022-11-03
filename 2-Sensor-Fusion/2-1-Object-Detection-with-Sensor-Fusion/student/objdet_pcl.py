@@ -183,8 +183,8 @@ def bev_from_pcl(
         filtering params used to crop, discretise and re-scale the PCL values.
     :param vis: boolean (optional), If True, will visualise the resulting BEV
         map using the Open3D `Visualizer` interface.
-    :returns: input_bev_maps,
-        the raw (unsorted, unsummarised) BEV map as a Numpy `ndarray` object.
+    :returns: input_bev_maps, the 3-channel RGB-like BEV map tensor, the
+        structure is as follows: `[intensity, height, density]`.
     """
 
     ### Step 0 : Pre-processing
@@ -264,44 +264,45 @@ def bev_from_pcl(
     cv2.destroyAllWindows()
     ####### ID_S2_EX2 END ####### 
     ####### ID_S2_EX3 START #######
-    # Summary: Compute height layer of the BEV map     
+    # Summary: Compute height layer of the BEV map
     print("student task ID_S2_EX3")
-    ## step 1 : create a numpy array filled with zeros which has the same dimensions as the BEV map
-
-    ## step 2 : assign the height value of each unique entry in lidar_top_pcl to the height map 
-    ##          make sure that each entry is normalized on the difference between the upper and lower height defined in the config file
-    ##          use the lidar_pcl_top data structure from the previous task to access the pixels of the height_map
-
-    ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-
-    #######
-    ####### ID_S2_EX3 END #######       
-
-    # TODO remove after implementing all of the above steps
-    lidar_pcl_cpy = []
-    lidar_pcl_top = []
-    height_map = []
-    intensity_map = []
-
-    # Compute density layer of the BEV map
+    ### Step 1 : Create the BEV map array
+    height_map = np.zeros((configs.bev_height, configs.bev_width))
+    ### Step 2 : Assign the height map values from `lidar_top_pcl`
+    # Here we use the min-max normalised values of each unique entry
+    scale_factor_height = float(np.abs(configs.lim_z[1] - configs.lim_z[0]))
+    height_map[np.int_(lidar_pcl_top[:, 0]),
+               np.int_(lidar_pcl_top[:, 1])
+              ] = lidar_pcl_top[:, 2] / scale_factor_height
+    ### Step 3 : Temporarily visualize the intensity map using OpenCV
+    # Here we make sure that vehicles separate well from the background
+    img_height = height_map * 256
+    img_height = img_height.astype(np.uint8)
+    str_title = "Bird's-eye view (BEV) map: normalised height channel values"
+    cv2.imshow(str_title, img_height)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    ####### ID_S2_EX3 END #######
+    ### Compute density layer of the BEV map
     density_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))
-    _, _, counts = np.unique(lidar_pcl_cpy[:, 0:2], axis=0, return_index=True, return_counts=True)
+    _, _, counts = np.unique(
+            lidar_pcl_cpy[:, 0:2], axis=0, return_index=True, return_counts=True
+    )
     normalizedCounts = np.minimum(1.0, np.log(counts + 1) / np.log(64)) 
-    density_map[np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])] = normalizedCounts
-        
-    # assemble 3-channel bev-map from individual maps
+    density_map[np.int_(lidar_pcl_top[:, 0]),
+                np.int_(lidar_pcl_top[:, 1])
+                ] = normalizedCounts
+    ### Create a 3-channel BEV map from the individual maps
+    # Here we create a 3-channel RGB-like data structure
     bev_map = np.zeros((3, configs.bev_height, configs.bev_width))
-    bev_map[2, :, :] = density_map[:configs.bev_height, :configs.bev_width]  # r_map
-    bev_map[1, :, :] = height_map[:configs.bev_height, :configs.bev_width]  # g_map
-    bev_map[0, :, :] = intensity_map[:configs.bev_height, :configs.bev_width]  # b_map
-
-    # expand dimension of bev_map before converting into a tensor
+    bev_map[2, :, :] = density_map[:configs.bev_height, :configs.bev_width]
+    bev_map[1, :, :] = height_map[:configs.bev_height, :configs.bev_width]
+    bev_map[0, :, :] = intensity_map[:configs.bev_height, :configs.bev_width]
+    ### Expand dimension of `bev_map` before converting into a tensor
     s1, s2, s3 = bev_map.shape
     bev_maps = np.zeros((1, s1, s2, s3))
     bev_maps[0] = bev_map
-
-    bev_maps = torch.from_numpy(bev_maps)  # create tensor from birds-eye view
+    ### Create the tensor from the Bird's-Eye View (BEV) map
+    bev_maps = torch.from_numpy(bev_maps)
     input_bev_maps = bev_maps.to(configs.device, non_blocking=True).float()
     return input_bev_maps
-
-
