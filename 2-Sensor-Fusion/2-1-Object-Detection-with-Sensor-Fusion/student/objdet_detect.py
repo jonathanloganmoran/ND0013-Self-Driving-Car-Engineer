@@ -1,33 +1,35 @@
-# ---------------------------------------------------------------------
-# Project "Track 3D-Objects Over Time"
+# -----------------------------------------------------------------------------
+# Project "3D Object Detection with LiDAR Data"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
-# Purpose of this file : Detect 3D objects in lidar point clouds using deep learning
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You should have received a copy of the Udacity license together with this program.
+# Purpose of this file : Detect 3D objects in point clouds using deep learning.
+#
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
-#
+# -----------------------------------------------------------------------------
 
-# general package imports
+
+### General package imports
 import numpy as np
 import torch
 from easydict import EasyDict as edict
 
-# add project directory to python path to enable relative imports
+### Add project directory to PYTHONPATH to enable relative imports
+# Alternatively, use the `pip install ..` script with setuptools
 import os
 import sys
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-# model-related
-from tools.objdet_models.resnet.models import fpn_resnet
-from tools.objdet_models.resnet.utils.evaluation_utils import decode, post_processing 
-
+### Model-related imports
 from tools.objdet_models.darknet.models.darknet2pytorch import Darknet as darknet
 from tools.objdet_models.darknet.utils.evaluation_utils import post_processing_v2
+from tools.objdet_models.resnet.models import fpn_resnet
+from tools.objdet_models.resnet.utils.evaluation_utils import decode, post_processing
 
 
 # load model-related parameters into an edict

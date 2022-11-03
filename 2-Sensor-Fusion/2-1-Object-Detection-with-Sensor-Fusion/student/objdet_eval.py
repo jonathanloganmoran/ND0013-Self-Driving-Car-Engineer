@@ -1,33 +1,35 @@
-# ---------------------------------------------------------------------
-# Project "Track 3D-Objects Over Time"
+# -----------------------------------------------------------------------------
+# Project "3D Object Detection with LiDAR Data"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
+#
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
 # Purpose of this file : Evaluate performance of object detection
 #
-# You should have received a copy of the Udacity license together with this program.
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
-#
+# -----------------------------------------------------------------------------
 
-# general package imports
-import numpy as np
+### General package imports
 import matplotlib
-matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well     
+# Change backend so that figure maximizing works on Mac as well
+matplotlib.use('wxagg')  
 import matplotlib.pyplot as plt
-
-import torch
-from shapely.geometry import Polygon
+import numpy as np
 from operator import itemgetter
+from shapely.geometry import Polygon
+import torch
 
-# add project directory to python path to enable relative imports
+### Add project directory to PYTHONPATH to enable relative imports
+# Alternatively, use the `pip install ..` script with setuptools
 import os
 import sys
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-# object detection tools and helper functions
+### Object detection tools and helper functions
 import misc.objdet_tools as tools
 
 

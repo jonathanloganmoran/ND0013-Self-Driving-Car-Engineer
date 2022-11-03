@@ -69,6 +69,7 @@ def load_range_image(
         ri = np.array(ri.data).reshape(ri.shape.dims)
     return ri
 
+
 # Example C1-5-6 : Convert range image to 3D point-cloud
 def range_image_to_point_cloud(
         frame: dataset_pb2.Frame, lidar_name: int, vis: bool=True, inline: bool=False
