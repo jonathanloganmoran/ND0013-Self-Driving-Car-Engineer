@@ -96,8 +96,8 @@ def vis_intensity_channel(
     ri_centre = int(ri_intensity.shape[1] / 2)
     ri_intensity = ri_intensity[:, ri_centre - deg45:ri_centre + deg45]
     ### Step 4 : Printing the maximum and minimum intensity values
-    print(f"Max. intensity value in the range image captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(ri_intensity[:, :]), 2)}")
-    print(f"Min. intensity value in the range image captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(ri_intensity[:, :]), 2)}")
+    print(f"Max. intensity channel value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(ri_intensity[:, :]), 2)}")
+    print(f"Min. intensity channel value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(ri_intensity[:, :]), 2)}")
     ### Step 5 : Displaying the resulting intensity channel of the range image
     if inline:
         plt.figure(figsize=(24, 20))

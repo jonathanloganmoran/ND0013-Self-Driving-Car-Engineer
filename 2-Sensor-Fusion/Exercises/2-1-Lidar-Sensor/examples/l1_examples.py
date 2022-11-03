@@ -181,15 +181,15 @@ def vis_range_channel(
     deg45 = int(img_range.shape[1] / 8)
     ri_centre = int(img_range.shape[1] / 2)
     img_range = img_range[:, ri_centre - deg45:ri_centre + deg45]
-    ### Printing the maximum and minimum intensity values
-    print(f"Max. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(img_range[:, :]), 2)}")
-    print(f"Min. intensity value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(img_range[:, :]), 2)}")
+    ### Printing the maximum and minimum range values (re-scaled)
+    print(f"Max. range channel value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amax(img_range[:, :]), 2)}")
+    print(f"Min. range channel value captured by '{_laser_name(lidar_name)}' sensor: {round(np.amin(img_range[:, :]), 2)}")
     if inline:
         plt.figure(figsize=(24, 20))
-        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor")
+        plt.title(f"Range image captured by the '{_laser_name(lidar_name)}' sensor: the range channel")
         plt.imshow(img_range)
     else:
-        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor", img_range)
+        cv2.imshow(f"Range image captured by the '{_laser_name(lidar_name)}' sensor: the range channel", img_range)
         cv2.waitKey(0)
 
 
