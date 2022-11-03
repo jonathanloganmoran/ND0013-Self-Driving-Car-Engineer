@@ -75,24 +75,44 @@ def _load_range_image(
     return ri
 
 
-# visualize lidar point-cloud
-def show_pcl(pcl):
+### Visualise LiDAR point cloud (ID_S1_EX2)
+def show_pcl(
+        pcl: np.ndarray
+):
+    """Displays the LiDAR point cloud data in a Open3D viewer.
 
-    ####### ID_S1_EX2 START #######     
-    #######
+    Creates an Open3D `Visualizer` instance with custom key callback
+    capability. To advance the frame, i.e., render the next point cloud,
+    use the right-arrow key (key code 262).
+
+    :param pcl: the 3D point cloud to visualise.
+    """
+
+    def close_window(vis: o3d.visualization.Visualizer) -> bool:
+        # Notify the window to be closed
+        vis.close()
+        # Return boolean indicating if `update_geometry` needs to be run
+        return False
+
+    ####### ID_S1_EX2 START #######
     print("student task ID_S1_EX2")
-
-    # step 1 : initialize open3d with key callback and create window
-    
-    # step 2 : create instance of open3d point-cloud class
-
-    # step 3 : set points in pcd instance by converting the point-cloud into 3d vectors (using open3d function Vector3dVector)
-
-    # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
-    
-    # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
-
-    #######
+    ### Step 1 : Initialise Open3D with key callback and create window
+    visualiser = o3d.visualization.VisualizerWithKeyCallback()
+    vis.create_window(window_name='Visualising the Waymo Open Dataset: LiDAR Point Cloud data',
+                      width=1280, height=720, left=50, top=50, visible=True
+    )
+    # Here we register the callback function to trigger on right-arrow key press
+    vis.register_key_callback(key=262, callback_func=close_window)
+    ### Step 2 : Create instance of Open3D `PointCloud` class
+    pcd = o3d.geometry.PointCloud()
+    ### Step 3 : Set points in `pcd` instance using Open3D function `Vector3dVector`
+    # Here we convert the point cloud into 3D vectors
+    pcd.points = o3d.utility.Vector3dVector(pcl)
+    ### Step 4 : Add / update the point cloud with the frame data
+    # Here we use `add_geometry` for the first frame, `update_geometry` is used for all other frames
+    vis.add_geometry(pcd)
+    ### Step 5 : Visualise point cloud and keep window open until right-arrow is pressed
+    vis.run()
     ####### ID_S1_EX2 END #######     
        
 
