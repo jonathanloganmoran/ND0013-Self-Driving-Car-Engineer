@@ -16,9 +16,9 @@
 # ------------------------------------------------------------------------------
 
 ### General package imports
+import easydict
 import numpy as np
 import torch
-from easydict import EasyDict as edict
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
@@ -39,23 +39,23 @@ from tools.objdet_models.resnet.utils.evaluation_utils import post_processing
 from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
 
-### Load model-related parameters into an `edict` (ID_S3_EX1)
+### Load model-related parameters into an `EasyDict` (ID_S3_EX1)
 def load_configs_model(
-        model_name: str='darknet', configs: edict.EasyDict=None
-) -> edict.EasyDict:
-    """Loads the model configurations into an `edict` instance.
+        model_name: str='darknet', configs: easydict.EasyDict=None
+) -> easydict.EasyDict:
+    """Loads the model configurations into an `EasyDict` instance.
 
     :param model_name: the desired pre-trained model to load,
         can be one of: ['darknet', 'fpn_resnet'].
     :param configs: the EasyDict instance to update.
-    :returns: configs, the updated `edict` instance containing the
+    :returns: configs, the updated `EasyDict` instance containing the
         model parameters to use.
     """
 
-    ### Step 0 : Initialising the path and `edict` variables
+    ### Step 0 : Initialising the path and `EasyDict` variables
     # Instantiate a new config dict if none has been provided
     if not configs:
-        configs = edict()  
+        configs = easydict.EasyDict()  
     # Set the parent directory of this file to enable relative paths
     curr_path = os.path.dirname(os.path.realpath(__file__))
     parent_path = configs.model_path = os.path.abspath(
@@ -100,7 +100,7 @@ def load_configs_model(
         # The name of the model architecture
         configs.arch = 'fpn_resnet'
         # The path to the pre-trained model
-        configs.pretrained_path = pretrained_filename
+        configs.pretrained_path = configs.pretrained_filename
         # The number of top 'K'
         configs.K = 50
         # If True, cuda is not used
@@ -180,12 +180,12 @@ def load_configs_model(
     return configs
 
 
-# load all object-detection parameters into an edict
+# load all object-detection parameters into an `EasyDict` instance
 def load_configs(model_name='fpn_resnet', configs=None):
 
     # init config file, if none has been passed
     if configs==None:
-        configs = edict()    
+        configs = easydict.EasyDict()    
 
     # birds-eye view (bev) parameters
     configs.lim_x = [0, 50] # detection range in m

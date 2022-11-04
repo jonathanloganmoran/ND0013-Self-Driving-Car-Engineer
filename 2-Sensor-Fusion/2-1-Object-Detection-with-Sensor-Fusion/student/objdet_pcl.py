@@ -17,6 +17,7 @@
 
 ### General package imports
 import cv2
+import easydict
 import numpy as np
 import torch
 

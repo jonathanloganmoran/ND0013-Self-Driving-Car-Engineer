@@ -115,7 +115,7 @@ exec_tracking = []
 #      'show_objects_in_bev_labels_in_camera', 'show_tracks',
 #      'show_detection_performance', 'make_tracking_movie'
 #     ]
-exec_visualization = []
+exec_visualization = ['show_objects_in_bev_labels_in_camera']
 # Initialise the execution list for each component
 exec_list = make_exec_list(exec_data, exec_detection, exec_tracking, exec_visualization)
 # Set the pause time between frames (ms);
