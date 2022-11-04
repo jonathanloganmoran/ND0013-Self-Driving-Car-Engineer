@@ -117,7 +117,7 @@ exec_tracking = []
 #     ]
 exec_visualization = []
 # Initialise the execution list for each component
-exec_list = make_exec_list(exec_detection, exec_tracking, exec_visualization)
+exec_list = make_exec_list(exec_data, exec_detection, exec_tracking, exec_visualization)
 # Set the pause time between frames (ms);
 # If set to '0', stop between frames until key is pressed.
 vis_pause_time = 0
