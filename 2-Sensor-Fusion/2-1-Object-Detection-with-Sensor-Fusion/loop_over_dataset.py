@@ -25,10 +25,10 @@ import numpy as np
 import os
 import sys
 
-## Add current working directory to path
+### Add current working directory to path
 sys.path.append(os.getcwd())
 
-## Simple Waymo Open Dataset Reader library
+### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader, dataset_pb2, label_pb2
 
@@ -95,6 +95,9 @@ camera = None
 # Fix the seed such that random values are predictable
 np.random.seed(10)
 ### Selective execution and visualisation
+# Set the data manipulation executions to perform, can be any of the following:
+#     ['pcl_from_rangeimage', 'load_image']
+exec_data = ['load_image', 'pcl_from_rangeimage']  
 # Set the detection executions to perform, can be any of the following:
 #     ['bev_from_pcl', 'detect_objects',
 #      'validate_object_labels',
