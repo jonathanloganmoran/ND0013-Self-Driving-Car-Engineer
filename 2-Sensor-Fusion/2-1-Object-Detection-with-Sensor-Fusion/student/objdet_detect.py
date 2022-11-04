@@ -101,6 +101,8 @@ def load_configs_model(
         configs.arch = 'fpn_resnet'
         # The path to the pre-trained model
         configs.pretrained_path = configs.pretrained_filename
+        # Number of convolutional layers to use
+        configs.num_layers = 18
         # The number of top 'K'
         configs.K = 50
         # If True, cuda is not used
@@ -205,44 +207,63 @@ def load_configs(model_name='fpn_resnet', configs=None):
     return configs
 
 
-# create model according to selected model type
-def create_model(configs):
+### Create model according to selected model type (ID_S3_EX1-4)
+def create_model(
+        configs: easydict.EasyDict
+) -> torch.nn.Module:
+    """Returns a `torch.nn.Module` instance from the specification in `configs.`
 
-    # check for availability of model file
-    assert os.path.isfile(configs.pretrained_filename), "No file at {}".format(configs.pretrained_filename)
+    :param configs: the `EasyDict` instance specifying the object detection
+        neural network architecture to build.
+    :returns: model, the instantiated neural network submodule configured with
+        the `torch.nn.Module` base class.
+    """
 
-    # create model depending on architecture name
-    if (configs.arch == 'darknet') and (configs.cfgfile is not None):
-        print('using darknet')
-        model = darknet(cfgfile=configs.cfgfile, use_giou_loss=configs.use_giou_loss)    
-    
+    ### Check for availability of `model` file
+    exists = os.path.isfile(configs.pretrained_filename)
+    assert exists, f"No file at {configs.pretrained_filename}"
+    ### Create the `model` according to the specified architecture name
+    if configs.arch == 'darknet' and configs.cfgfile:
+        print('Using the DarkNet model architecture')
+        # Build the DarkNet model according to the defined specifications
+        model = darknet(
+                    cfgfile=configs.cfgfile,
+                    use_giou_loss=configs.use_giou_loss
+        )
     elif 'fpn_resnet' in configs.arch:
-        print('using ResNet architecture with feature pyramid')
-        
+        print('Using the ResNet model architecture with Feature Pyramid')
         ####### ID_S3_EX1-4 START #######     
-        #######
+        # Build the ResNet model according to the defined specifications
+        model = fpn_resnet.get_pose_net(
+                    num_layers=configs.num_layers,
+                    heads=configs.heads,
+                    head_conv=configs.head_conv,
+                    imagenet_pretrained=configs.imagenet_pretrained
+        )
         print("student task ID_S3_EX1-4")
-
-        #######
-        ####### ID_S3_EX1-4 END #######     
-    
+        ####### ID_S3_EX1-4 END #######
     else:
-        assert False, 'Undefined model backbone'
-
-    # load model weights
-    model.load_state_dict(torch.load(configs.pretrained_filename, map_location='cpu'))
-    print('Loaded weights from {}\n'.format(configs.pretrained_filename))
-
-    # set model to evaluation state
-    configs.device = torch.device('cpu' if configs.no_cuda else 'cuda:{}'.format(configs.gpu_idx))
-    model = model.to(device=configs.device)  # load model to either cpu or gpu
-    model.eval()          
-
+        assert False, f"Undefined model backbone: '{configs.arch}'"
+    ### Load the pre-trained `model` weights
+    model.load_state_dict(
+        torch.load(configs.pretrained_filename, map_location='cpu')
+    )
+    print(f"Loaded weights from '{configs.pretrained_filename}'\n")
+    ### Set `model` to evaluation state
+    configs.device = torch.device(
+        'cpu' if configs.no_cuda else f"cuda:{configs.gpu_idx}"
+    )
+    # Load the `torch.nn.Module` instance either to CPU or GPU
+    model = model.to(device=configs.device)
+    model.eval()
+    # Return the configured and loaded model
     return model
 
 
-# detect trained objects in birds-eye view
-def detect_objects(input_bev_maps, model, configs):
+### Detect trained objects in Bird's-Eye View map (ID_S3_EX2)
+def detect_objects(
+        input_bev_maps: , model: , configs: easydict.EasyDict
+) -> :
 
     # deactivate autograd engine during test to reduce memory usage and speed up computations
     with torch.no_grad():  
