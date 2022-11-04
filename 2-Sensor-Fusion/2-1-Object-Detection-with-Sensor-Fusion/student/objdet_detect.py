@@ -39,8 +39,10 @@ from tools.objdet_models.resnet.utils.evaluation_utils import post_processing
 from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
 
-### Load model-related parameters into an `edict` (ID_S3_EX1-3)
-def load_configs_model(model_name='darknet', configs=None):
+### Load model-related parameters into an `edict` (ID_S3_EX1)
+def load_configs_model(
+        model_name: str='darknet', configs: edict.EasyDict=None
+) -> edict.EasyDict:
     """Loads the model configurations into an `edict` instance.
 
     :param model_name: the desired pre-trained model to load,
