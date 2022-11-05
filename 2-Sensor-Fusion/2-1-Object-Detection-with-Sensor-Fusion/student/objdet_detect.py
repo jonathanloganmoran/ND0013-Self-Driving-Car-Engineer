@@ -185,7 +185,7 @@ def load_configs_model(
 ### Load all object detection parameters into an `EasyDict` instance (ID_S3_EX2)
 def load_configs(
         model_name: str='fpn_resnet', configs: easydict.EasyDict=None
-):
+) -> easydict.EasyDict:
     """Returns the modified `EasyDict` instance with model parameters.
 
     :param model_name: the model to load the configuration settings for.
@@ -272,8 +272,9 @@ def create_model(
 
 ### Detect trained objects in Bird's-Eye View map (ID_S3_EX2)
 def detect_objects(
-        input_bev_maps: , model: torch.nn.Module, configs: easydict.EasyDict
-) -> :
+        input_bev_maps: List[np.ndarray], model: torch.nn.Module,
+        configs: easydict.EasyDict
+) -> List[list]:
     """Perform inference and post-process the object detections.
 
     :param input_bev_maps: the BEV images to perform inference over, i.e.,
@@ -282,7 +283,8 @@ def detect_objects(
         instance.
     :param configs: the `EasyDict` instance containing the confidence and NMS
         threshold values and a path to the pre-trained model.
-    :returns: objects, the set of predictions.
+    :returns: objects, the nested list of predictions, where each prediction
+        has the form: `[True, x, y, z, h, w, l, yaw]`.
     """
 
     ### Begin inference loop
@@ -326,25 +328,34 @@ def detect_objects(
             # Filter the detections by confidence threshold
             # Here the detections are of the form: [batch_size, K, 10]
             detections = post_processing(detections=detections, configs=configs)
+            # Print the first prediction of the first batch
             detections = detections[0][1]
             print(detections)
             ####### ID_S3_EX1-5 END #######     
     ####### ID_S3_EX2 START #######     
-    #######
-    # Extract 3d bounding boxes from model response
+    ### Extract the 3D bounding boxes from the model predictions
     print("student task ID_S3_EX2")
     objects = [] 
-
-    ## step 1 : check whether there are any detections
-
-        ## step 2 : loop over all detections
-        
-            ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-        
-            ## step 4 : append the current object to the 'objects' array
-        
-    #######
-    ####### ID_S3_EX2 START #######   
-    
-    return objects    
-
+    ### Step 1 : Check whether there are any detections
+    if not detections:
+        # No detections, return empty list
+        return objects
+    ### Step 2 : Loop over all detections
+    for obj in detections:
+        id_obj, bev_x, bev_y, z, h, bev_w, bev_l, yaw = obj
+        ### Step 3 : Perform the coordinate conversion
+        # Here we use the limits for x, y and z set in the configs structure
+        x = bev_y / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        y = bev_x / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
+        y -= (configs.lim_y[1] - configs.lim_y[0]) / 2
+        w = bev_w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
+        l = bev_l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        ### Step 4 : Append the current object to the `objects` array
+        if ((x >= configs.lim_x[0] and x <= configs.lim_x[1]) and
+            (y >= configs.lim_y[0] and y <= configs.lim_y[1]) and 
+            (z >= configs.lim_z[0] and z <= configs.lim_z[1])
+        ):
+            # Making sure the bounding box is within the limits of the image
+            objects.append([1, x, y, z, h, w, l, yaw])
+    ####### ID_S3_EX2 END #######   
+    return objects
