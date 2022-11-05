@@ -176,7 +176,7 @@ def show_range_image(
 
 ### Create Bird's-Eye View of LiDAR data (ID_S2_EX1)
 def bev_from_pcl(
-        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=True
+        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=False
 ):
     """Converts the point cloud to a BEV map.
 
@@ -257,13 +257,14 @@ def bev_from_pcl(
                   np.int_(lidar_pcl_top[:, 1])
                  ] = lidar_pcl_top[:, 3] / scale_factor_intensity
     ### Step 5 : Temporarily visualise the intensity map using OpenCV
-    # Here we make sure that vehicles separate well from the background
-    img_intensity = intensity_map * 256
-    img_intensity = img_intensity.astype(np.uint8)
-    str_title = "Bird's-eye view (BEV) map: normalised intensity channel values"
-    cv2.imshow(str_title, img_intensity)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    if vis:
+        # Here we make sure that vehicles separate well from the background
+        img_intensity = intensity_map * 256
+        img_intensity = img_intensity.astype(np.uint8)
+        str_title = "Bird's-eye view (BEV) map: normalised intensity channel values"
+        cv2.imshow(str_title, img_intensity)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     ####### ID_S2_EX2 END ####### 
     ####### ID_S2_EX3 START #######
     # Summary: Compute height layer of the BEV map
@@ -276,14 +277,15 @@ def bev_from_pcl(
     height_map[np.int_(lidar_pcl_top[:, 0]),
                np.int_(lidar_pcl_top[:, 1])
               ] = lidar_pcl_top[:, 2] / scale_factor_height
-    ### Step 3 : Temporarily visualize the intensity map using OpenCV
-    # Here we make sure that vehicles separate well from the background
-    img_height = height_map * 256
-    img_height = img_height.astype(np.uint8)
-    str_title = "Bird's-eye view (BEV) map: normalised height channel values"
-    cv2.imshow(str_title, img_height)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    ### Step 3 : Temporarily visualize the height map using OpenCV
+    if vis:
+        # Here we make sure that vehicles separate well from the background
+        img_height = height_map * 256
+        img_height = img_height.astype(np.uint8)
+        str_title = "Bird's-eye view (BEV) map: normalised height channel values"
+        cv2.imshow(str_title, img_height)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     ####### ID_S2_EX3 END #######
     ### Compute density layer of the BEV map
     density_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))

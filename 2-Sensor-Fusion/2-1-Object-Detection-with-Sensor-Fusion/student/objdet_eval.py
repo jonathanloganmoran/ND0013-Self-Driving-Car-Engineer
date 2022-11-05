@@ -166,12 +166,12 @@ def compute_performance_stats(
         ious.append(item[0])
         center_devs.append(item[1])
         pos_negs.append(item[2])
-        pos_negs = np.asarray(pos_negs)
     ####### ID_S4_EX3 START #######
     print('student task ID_S4_EX3')
     ### Step 1 : Extract the evaluation metrics
     # Here we sum all statistics computed across the set
-    positives = sum(pos_negs[:, 0])
+    pos_negs = np.asarray(pos_negs)
+    all_positives = sum(pos_negs[:, 0])
     true_positives = sum(pos_negs[:, 1])
     false_negatives = sum(pos_negs[:, 2])
     false_positives = sum(pos_negs[:, 3])

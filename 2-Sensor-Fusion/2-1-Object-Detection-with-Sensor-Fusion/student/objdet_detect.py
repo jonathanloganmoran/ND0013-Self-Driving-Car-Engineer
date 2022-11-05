@@ -359,9 +359,9 @@ def detect_objects(
             # Filter the detections by confidence threshold
             # Here the detections are of the form: [batch_size, K, 10]
             detections = post_processing(detections=detections, configs=configs)
-            # Print the first prediction of the first batch
+            #print(detections)
+            # Get the predictions of the first batch
             detections = detections[0][1]
-            print(detections)
             ####### ID_S3_EX1-5 END #######     
     ####### ID_S3_EX2 START #######     
     ### Extract the 3D bounding boxes from the model predictions
