@@ -30,7 +30,9 @@ sys.path.append(os.getcwd())
 
 ### Simple Waymo Open Dataset Reader library
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
-from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader, dataset_pb2, label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileReader
 
 ### 3D object detection imports
 from misc.helpers import load_object_from_file
@@ -117,7 +119,12 @@ exec_tracking = []
 #     ]
 exec_visualization = ['show_objects_in_bev_labels_in_camera']
 # Initialise the execution list for each component
-exec_list = make_exec_list(exec_data, exec_detection, exec_tracking, exec_visualization)
+exec_list = make_exec_list(
+        exec_data=exec_data,
+        exec_detection=exec_detection,
+        exec_tracking=exec_tracking,
+        exec_visualization=exec_visualization
+)
 # Set the pause time between frames (ms);
 # If set to '0', stop between frames until key is pressed.
 vis_pause_time = 0
@@ -168,7 +175,10 @@ while True:
         else:
             print('Loading LiDAR point cloud from result file')
             lidar_pcl = load_object_from_file(
-                results_fullpath, data_filename, 'lidar_pcl', cnt_frame
+                file_path=results_fullpath,
+                base_filename=data_filename,
+                object_name='lidar_pcl',
+                frame_id=cnt_frame
             )
         # Compute LiDAR Bird's-Eye View (BEV) map
         if 'bev_from_pcl' in exec_list:
@@ -177,7 +187,10 @@ while True:
         else:
             print("Loading Bird's-Eye View (BEV) map from 'results' folder")
             lidar_bev = load_object_from_file(
-                results_fullpath, data_filename, 'lidar_bev', cnt_frame
+                file_path=results_fullpath,
+                base_filename=data_filename,
+                object_name='lidar_bev',
+                frame_id=cnt_frame
             )
         # Perform inference (3D object detection) over BEV map
         if (configs_det.use_labels_as_objects==True):
@@ -199,13 +212,19 @@ while True:
                 if 'perform_tracking' in exec_list:
                     # Load the results needed to perform tracking task 
                     detections = load_object_from_file(
-                        results_fullpath, data_filename, 'detections', cnt_frame
+                        file_path=results_fullpath,
+                        base_filename=data_filename,
+                        object_name='detections',
+                        frame_id=cnt_frame
                     )
                 else:
                     # Load the results needed to perform detection evaluation
                     dets_fp_ext = f"detections_{configs_det.arch}_{configs_det.conf_thresh}"
                     detections = load_object_from_file(
-                        results_fullpath, data_filename, dets_fp_ext, cnt_frame
+                        file_path=results_fullpath,
+                        base_filename=data_filename,
+                        object_name=dets_fp_ext,
+                        frame_id=cnt_frame
                     )
         # Validate object labels against ground-truth
         if 'validate_object_labels' in exec_list:
@@ -219,10 +238,10 @@ while True:
         else:
             print("Loading object labels and val. data from 'results' folder")
             valid_label_flags = load_object_from_file(
-                    results_fullpath, 
-                    data_filename, 
-                    'valid_labels', 
-                    cnt_frame
+                    file_path=results_fullpath, 
+                    base_filename=data_filename, 
+                    object_name='valid_labels', 
+                    frame_id=cnt_frame
             )            
         # Performance evaluation for object detection
         if 'measure_detection_performance' in exec_list:
@@ -239,19 +258,19 @@ while True:
             if 'perform_tracking' in exec_list:
                 # Load the results needed for the tracking task
                 det_performance = load_object_from_file(
-                    results_fullpath,
-                    data_filename,
-                    'det_performance',
-                    cnt_frames
+                    file_path=results_fullpath,
+                    base_filename=edata_filename,
+                    object_name='det_performance',
+                    frame_id=cnt_frames
                 )
             else:
                 # Load the results needed for the tracking task
                 dets_fp_ext = f"det_performance_{configs_det.arch}_{configs_det.conf_thresh}"
                 det_performance = load_object_from_file(
-                    results_fullpath, 
-                    data_filename, 
-                    dets_fp_ext,
-                    cnt_frame
+                    file_path=results_fullpath, 
+                    base_filename=data_filename, 
+                    object_name=dets_fp_ext,
+                    frame_id=cnt_frame
                 )
         # Store all evaluation results in a list for assessment in next task
         det_performance_all.append(det_performance)
