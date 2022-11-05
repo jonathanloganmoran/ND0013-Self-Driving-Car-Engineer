@@ -91,6 +91,8 @@ def load_configs_model(
         configs.img_size = 608
         # The non-maximum suppression (NMS) score to use
         configs.nms_thresh = 0.4
+        # The minimum Intersection over Union (IoU) threshold to use
+        configs.min_iou = 0.5
         # The number of samples to debug
         configs.num_samples = None
         # Number of workers to use for multi-processing
@@ -134,10 +136,14 @@ def load_configs_model(
         configs.num_workers = 1
         # Number of samples per mini-batch
         configs.batch_size = 1
-        # 
+        # The non-maximum suppression (NMS) score to use
+        configs.nms_thresh = 0.4
+        #
         configs.peak_thresh = 0.2
         # The minimum confidence threshold to use for detections
         configs.conf_thresh = 0.5
+        # The minimum Intersection over Union (IoU) threshold to use
+        configs.min_iou = 0.5
         # If True, output image of testing phase will be saved
         configs.save_test_output = False
         # Type of test output (can be one of: ['image', 'video'])
@@ -309,7 +315,7 @@ def detect_objects(
     :param configs: the `EasyDict` instance containing the confidence and NMS
         threshold values and a path to the pre-trained model.
     :returns: objects, the nested list of predictions, where each prediction
-        has the form: `[True, x, y, z, h, w, l, yaw]`.
+        has the form: `[id, x, y, z, h, w, l, yaw]`.
     """
 
     ### Begin inference loop

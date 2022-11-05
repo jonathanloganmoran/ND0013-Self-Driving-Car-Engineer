@@ -16,6 +16,7 @@
 # ------------------------------------------------------------------------------
 
 ### General package imports
+import easydict
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -91,7 +92,7 @@ def measure_detection_performance(
             for det in detections:
                 ### Step 3 : Extract the four corners of the current detection
                 _id, x, y, z, _h, w, l, yaw = det
-                box_2 = tools.compute_box_corners(x, y, z, w, l, yaw)
+                box_2 = tools.compute_box_corners(x, y, w, l, yaw)
                 ### Step 4 : Computer the distance between two bounding boxes
                 # Distance is measured from the centre of the ground-truth to
                 # the centre of the predicted bounding box in (x, y, z)
@@ -145,9 +146,14 @@ def measure_detection_performance(
 def compute_performance_stats(
         det_performance_all: List[list]
 ):
-    """Evaluates the object detection model given the list of metrics.
+    """Computes and visualises the evaluation metrics given the detection scores.
 
-    :param det_performance_all:
+    The precision / recall scores as well as the mean / standard deviation of:
+        IoU scores, bounding box position error in (x, y, z),
+    are computed. The results are visualised in a histogram plot.
+
+    :param det_performance_all: the nested list of detection scores,
+        assumed to be computed with `measure_detection_performance`.
     """
 
     ### Extract the performance metric objects from the list
@@ -178,43 +184,39 @@ def compute_performance_stats(
     # "What are the chances of a real object being detected?"
     recall = true_positives / float(true_positives + false_negatives)
     ####### ID_S4_EX3 END #######     
-    print('precision = ' + str(precision) + ", recall = " + str(recall))   
-
-    # serialize intersection-over-union and deviations in x,y,z
+    print(f"Precision:' {precision}, Recall: {recall}")
+    ### Serialise the IoU scores and deviations in (x, y, z)
     ious_all = [element for tupl in ious for element in tupl]
     devs_x_all = []
     devs_y_all = []
     devs_z_all = []
-    for tuple in center_devs:
-        for elem in tuple:
+    for tup in center_devs:
+        for elem in tup:
             dev_x, dev_y, dev_z = elem
             devs_x_all.append(dev_x)
             devs_y_all.append(dev_y)
             devs_z_all.append(dev_z)
-    
-
-    # compute statistics
+    ### Compute additional statistics
     stdev__ious = np.std(ious_all)
     mean__ious = np.mean(ious_all)
-
     stdev__devx = np.std(devs_x_all)
     mean__devx = np.mean(devs_x_all)
-
     stdev__devy = np.std(devs_y_all)
     mean__devy = np.mean(devs_y_all)
-
     stdev__devz = np.std(devs_z_all)
     mean__devz = np.mean(devs_z_all)
     #std_dev_x = np.std(devs_x)
-
-    # plot results
+    ### Plot the detection results
     data = [precision, recall, ious_all, devs_x_all, devs_y_all, devs_z_all]
-    titles = ['detection precision', 'detection recall', 'intersection over union', 'position errors in X', 'position errors in Y', 'position error in Z']
+    titles = [
+        'detection precision', 'detection recall', 'intersection over union',
+        'position errors in X', 'position errors in Y', 'position error in Z'
+    ]
     textboxes = ['', '', '',
                  '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_x_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_x_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), ))),
                  '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_y_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_y_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), ))),
-                 '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_z_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_z_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), )))]
-
+                 '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_z_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_z_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), )))
+                ]
     f, a = plt.subplots(2, 3)
     a = a.ravel()
     num_bins = 20

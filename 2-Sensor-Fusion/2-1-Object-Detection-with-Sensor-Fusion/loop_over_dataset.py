@@ -416,7 +416,7 @@ while True:
 ####### Post-processing tasks #######
 if 'show_detection_performance' in exec_list:
     # Evaluate 3D object detection performance
-    evals.compute_performance_stats(det_performance_all, configs_det)
+    evals.compute_performance_stats(det_performance_all)
 if 'show_tracks' in exec_list:
     # Evaluate tracking results by plotting RMSE for all tracks
     plot_rmse(manager, all_labels, configs_det)
