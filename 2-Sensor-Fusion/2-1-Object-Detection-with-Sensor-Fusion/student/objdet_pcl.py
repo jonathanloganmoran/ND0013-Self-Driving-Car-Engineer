@@ -19,6 +19,7 @@
 import cv2
 import easydict
 import numpy as np
+import open3d as o3d
 import torch
 
 ### Add project directory to PYTHONPATH to enable relative imports
@@ -105,11 +106,11 @@ def show_pcl(
     ### Step 1 : Initialise Open3D with key callback and create window
     visualiser = o3d.visualization.VisualizerWithKeyCallback()
     str_window = 'Visualising the Waymo Open Dataset: LiDAR Point Cloud data'
-    vis.create_window(window_name=str_window,
+    visualiser.create_window(window_name=str_window,
                       width=1280, height=720, left=50, top=50, visible=True
     )
     # Here we register the callback function to trigger on right-arrow key press
-    vis.register_key_callback(key=262, callback_func=close_window)
+    visualiser.register_key_callback(key=262, callback_func=close_window)
     ### Step 2 : Create instance of Open3D `PointCloud` class
     pcd = o3d.geometry.PointCloud()
     ### Step 3 : Set points in `pcd` instance using Open3D `Vector3dVector`
@@ -118,9 +119,9 @@ def show_pcl(
     ### Step 4 : Add / update the point cloud with the frame data
     # Here we use `add_geometry` for the first frame,
     # note that `update_geometry` is automatically used for all other frames
-    vis.add_geometry(pcd)
+    visualiser.add_geometry(pcd)
     ### Step 5 : Visualise point cloud and preserve window instance
-    vis.run()
+    visualiser.run()
     ####### ID_S1_EX2 END #######     
        
 
