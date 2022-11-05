@@ -19,6 +19,7 @@
 import easydict
 import numpy as np
 import torch
+from typing import List
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
@@ -70,19 +71,35 @@ def load_configs_model(
         configs.pretrained_filename = os.path.join(
             configs.model_path, 'pretrained', 'complex_yolov4_mse_loss.pth'
         )
+        # The name of the model architecture (used to reference configs)
         configs.arch = 'darknet'
+        # The folder name to use for saving logs, trained models, outputs, etc.
+        configs.saved_fn = 'darknet'
+        # The subfolder to save current model outputs in '../results/{saved_fn}'
+        configs.rel_results_folder = 'results_sequence_1_darknet'
+        # The number of samples to use in each mini-batch
         configs.batch_size = 4
         configs.cfgfile = os.path.join(
             configs.model_path, 'config', 'complex_yolov4.cfg'
         )
+        # The minimum confidence threshold to use for detections
         configs.conf_thresh = 0.5
+        # Flag used to configure distributed training / testing
+        # False if using a single GPU
         configs.distributed = False
+        # Output BEV image width (height may vary)
         configs.img_size = 608
+        # The non-maximum suppression (NMS) score to use
         configs.nms_thresh = 0.4
+        # The number of samples to debug
         configs.num_samples = None
+        # Number of workers to use for multi-processing
         configs.num_workers = 4
         configs.pin_memory = True
+        # Use Generalized IoU score if True, otherwise IoU
         configs.use_giou_loss = False
+        # Whether or not to save the evaluation results
+        configs.save_test_output = True
     # If using the FPN ResNet / SFA3D model, update with relevant parameters
     elif model_name == 'fpn_resnet':
         ####### ID_S3_EX1-3 START #######     
@@ -95,10 +112,12 @@ def load_configs_model(
             configs.model_path,'pretrained', 'fpn_resnet_18_epoch_300.pth'
         )
         ### Step 2 : Adding and updating configs defined in `sfa/test.py`
-        # The folder name to use for saving logs, trained models, etc.
-        configs.saved_fn = 'fpn_resnet'    # Equivalent to 'fpn_resnet_18'
         # The name of the model architecture
         configs.arch = 'fpn_resnet'
+        # The folder name to use for saving logs, trained models, outputs, etc.
+        configs.saved_fn = 'fpn-resnet'    # Equivalent to 'fpn_resnet_18'
+        # The subfolder to save current model outputs in '../results/{saved_fn}'
+        configs.rel_results_folder = 'results_sequence_1_resnet'
         # The path to the pre-trained model
         configs.pretrained_path = configs.pretrained_filename
         # Number of convolutional layers to use
@@ -162,17 +181,21 @@ def load_configs_model(
             'dim': configs.num_dim
         }
         configs.num_input_features = 4
-        configs.root_dir = '../'
-        configs.dataset_dir = os.path.join(
-            configs.root_dir, 'dataset'
-        )
-        if configs.save_test_output:
-            configs.result_dir = os.path.join(
-                configs.root_dir, 'results', configs.saved_fn
-            )
         ####### ID_S3_EX1-3 END #######     
     else:
         raise ValueError("Error: Invalid model name '{model_name}'")
+    # Path to the project root folder
+    configs.root_dir = '../'
+    # Path to the dataset folder relative to the root folder
+    configs.dataset_dir = os.path.join(
+        configs.root_dir, 'dataset'
+    )
+    # Path to the subfolder in 'results' for the current run of this model
+    if configs.save_test_output:
+        configs.result_dir = os.path.join(
+            configs.root_dir, 'results', 
+            configs.saved_fn, configs.rel_results_folder
+    )
     ### Configurations for training on either GPU vs. CPU
     configs.no_cuda = True # if true, cuda is not used
     configs.gpu_idx = 0  # GPU index to use.

@@ -78,6 +78,11 @@ datafile_iter = iter(datafile)  # initialize dataset iterator
 #     ['darknet', 'fpn_resnet']
 configs_det = det.load_configs(model_name='fpn_resnet')
 model_det = det.create_model(configs_det)
+# Update the results filepath to the relative subfolder used by the model
+# Should point to e.g., '../results/fpn-resnet/results_sequence_1_resnet/'
+results_fullpath = os.path.join(results_fullpath, 
+    configs_det.saved_fn, configs_det.rel_results_folder
+)
 # If True, ground-truth labels are used as objects
 # If False, run inference over objects in the detection / testing loop
 configs_det.use_labels_as_objects = False
@@ -259,7 +264,7 @@ while True:
                 # Load the results needed for the tracking task
                 det_performance = load_object_from_file(
                     file_path=results_fullpath,
-                    base_filename=edata_filename,
+                    base_filename=data_filename,
                     object_name='det_performance',
                     frame_id=cnt_frames
                 )
