@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Project "3D Object Detection with LiDAR Data"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
@@ -9,60 +9,101 @@
 # You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# -----------------------------------------------------------------------------
+#
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# ------------------------------------------------------------------------------
 
 ### General package imports
 import matplotlib
-# Change backend so that figure maximizing works on Mac as well
-matplotlib.use('wxagg')  
 import matplotlib.pyplot as plt
 import numpy as np
 from operator import itemgetter
+import os
 from shapely.geometry import Polygon
+import sys
 import torch
+from typing import List
+
+# Change backend so that figure maximizing works on Mac as well
+matplotlib.use('wxagg')
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
-import os
-import sys
 PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 ### Object detection tools and helper functions
 import misc.objdet_tools as tools
 
 
-# compute various performance measures to assess object detection
-def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5):
+### Compute various performance measures to assess object detection (ID_S4_EX1)
+def measure_detection_performance(
+        detections: List[list], labels: List[list], labels_valid: List[list],
+        min_iou: float=0.5
+):
+    """Returns the computed detection performance measures.
+
+    :param detections:
+    :param labels:
+    :param labels_valid:
+    :param min_iou:
+    :returns: det_performance,
+    """
     
-     # find best detection for each valid label 
-    true_positives = 0 # no. of correctly detected objects
+    ### Find the best detection for each valid label
+    true_positives = 0    # Num. correctly detected objects
     center_devs = []
     ious = []
+    # 
     for label, valid in zip(labels, labels_valid):
         matches_lab_det = []
-        if valid: # exclude all labels from statistics which are not considered valid
-            
-            # compute intersection over union (iou) and distance between centers
-
+        # Exclude all invalid labels from metric computations
+        if valid:
             ####### ID_S4_EX1 START #######     
-            #######
             print("student task ID_S4_EX1 ")
-
-            ## step 1 : extract the four corners of the current label bounding-box
-            
-            ## step 2 : loop over all detected objects
-
-                ## step 3 : extract the four corners of the current detection
-                
-                ## step 4 : computer the center distance between label and detection bounding-box in x, y, and z
-                
-                ## step 5 : compute the intersection over union (IOU) between label and detection bounding-box
-                
-                ## step 6 : if IOU exceeds min_iou threshold, store [iou,dist_x, dist_y, dist_z] in matches_lab_det and increase the TP count
-                
-            #######
+            ### Calculate the Intersection over Union (IoU) and
+            # the distance between bounding box centres
+            ### Step 1 : Extract the four coordinate pairs of the bounding box
+            box = label.box
+            box_1 = tools.compute_box_corners(
+                        box.center_x,
+                        box.center_y,
+                        box.width,
+                        box.length,
+                        box.heading
+            )
+            ### Step 2 : Loop over all detected objects
+            for det in detections:
+                ### Step 3 : Extract the four corners of the current detection
+                _id, x, y, z, _h, w, l, yaw = det
+                box_2 = tools.compute_box_corners(x, y, z, w, l, yaw)
+                ### Step 4 : Computer the distance between two bounding boxes
+                # Distance is measured from the centre of the ground-truth to
+                # the centre of the predicted bounding box in (x, y, z)
+                dist_x = np.array(box.center_x - x).item()
+                dist_y = np.array(box.center_y - y).item()
+                dist_z = np.array(box.center_z - z).item()
+                ### Step 5 : Compute the Intersection over Union (IOU) between
+                # the ground-truth and the predicted bounding boxes
+                try:
+                    poly_1 = Polygon(box_1)
+                    poly_2 = Polygon(box_2)
+                    intersection = poly_1.intersection(poly_2).area
+                    union = poly_1.union(poly_2).area
+                    iou = intersection / union
+                except Exception as err:
+                    print(f"Encountered '{err}' error in IoU calculation")
+                ### Step 6 : Evaluate IoU results
+                # We store `[iou, dist_x, dist_y, dist_z]` in `matched_lab_det`
+                # and increase the TP count if the IoU exceeds `min_iou`
+                if iou > min_iou:
+                    matches_lab_det.append([iou, dist_x, dist_y, dist_z])
+                    true_positives += 1
             ####### ID_S4_EX1 END #######     
             
         # find best match and compute metrics

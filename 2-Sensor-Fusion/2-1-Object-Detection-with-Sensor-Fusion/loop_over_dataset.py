@@ -50,7 +50,9 @@ from student.association import Association
 from student.measurements import Sensor, Measurement
 from misc.evaluation import plot_tracks, plot_rmse, make_movie
 import misc.params as params 
- 
+
+# Name of the model to load
+MODEL_NAME = 'darknet'
 
 ### Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
@@ -76,7 +78,7 @@ datafile_iter = iter(datafile)  # initialize dataset iterator
 ### Initialise the object detection model
 # The model can be any one of the following:
 #     ['darknet', 'fpn_resnet']
-configs_det = det.load_configs(model_name='fpn_resnet')
+configs_det = det.load_configs(model_name=MODEL_NAME)
 model_det = det.create_model(configs_det)
 # Update the results filepath to the relative subfolder used by the model
 # Should point to e.g., '../results/fpn-resnet/results_sequence_1_resnet/'
@@ -104,14 +106,17 @@ np.random.seed(10)
 ### Selective execution and visualisation
 # Set the data manipulation executions to perform, can be any of the following:
 #     ['pcl_from_rangeimage', 'load_image']
-exec_data = ['load_image', 'pcl_from_rangeimage']  
+exec_data = ['pcl_from_rangeimage']  
 # Set the detection executions to perform, can be any of the following:
 #     ['bev_from_pcl', 'detect_objects',
 #      'validate_object_labels',
 #      'measure_detection_performance'
 #     ]
 # Any options not in the list will be loaded from file.
-exec_detection = ['bev_from_pcl', 'detect_objects']
+exec_detection = [
+    'bev_from_pcl', 'detect_objects', 'validate_object_labels',
+    'measure_detection_performance'
+]
 # Set the tracking executions to perform, can be any of the following:
 # ['perform_tracking']
 exec_tracking = []
@@ -122,7 +127,7 @@ exec_tracking = []
 #      'show_objects_in_bev_labels_in_camera', 'show_tracks',
 #      'show_detection_performance', 'make_tracking_movie'
 #     ]
-exec_visualization = ['show_objects_in_bev_labels_in_camera']
+exec_visualization = ['show_detection_performance']
 # Initialise the execution list for each component
 exec_list = make_exec_list(
         exec_data=exec_data,
