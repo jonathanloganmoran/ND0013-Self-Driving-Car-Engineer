@@ -41,26 +41,36 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 import misc.objdet_tools as tools
 
 
-### Compute various performance measures to assess object detection (ID_S4_EX1)
+### Compute various object detection performance measures (ID_S4_EX1 / ID_S4_EX2)
 def measure_detection_performance(
-        detections: List[list], labels: List[list], labels_valid: List[list],
+        detections: List[list], labels: List[object], labels_valid: List[object],
         min_iou: float=0.5
-):
+) -> List[List[float]]:
     """Returns the computed detection performance measures.
 
-    :param detections:
-    :param labels:
-    :param labels_valid:
-    :param min_iou:
-    :returns: det_performance,
+    :param detections: nested list of detections, each with the following form:
+        `[id, x, y, z, h, w, l, yaw]`.
+    :param labels: list of `label` instances, each with a `box` attribute
+        containing the 3D dimensions and heading angle of the predicted
+        bounding box.
+    :param labels_valid: list of `label` instances, each with a `box` attribute
+        containing the 3D dimensions and heading angle of the predicted
+        bounding box.
+    :param labels_valid: list of `label` instances, each with a `box` attribute
+        containing the 3D dimensions and heading angle of the ground-truth 
+        bounding box.
+    :param min_iou: the minimum IoU threshold to use for determining matches.
+    :returns: det_performance, a nested list of detection metrics computed
+        for each pair of predicted and ground-truth bounding boxes.
     """
     
     ### Find the best detection for each valid label
-    true_positives = 0    # Num. correctly detected objects
+    true_positives = 0    # Number of correctly detected objects
     center_devs = []
     ious = []
-    # 
     for label, valid in zip(labels, labels_valid):
+        print('type label', type(label))
+        print('type valid', type(valid))
         matches_lab_det = []
         # Exclude all invalid labels from metric computations
         if valid:
@@ -126,38 +136,47 @@ def measure_detection_performance(
     ### step 3 : compute the number of false positives
     false_positives = len(detections) - true_positives
     ####### ID_S4_EX2 END #######     
-    
     pos_negs = [all_positives, true_positives, false_negatives, false_positives]
     det_performance = [ious, center_devs, pos_negs]
-    
     return det_performance
 
 
-# evaluate object detection performance based on all frames
-def compute_performance_stats(det_performance_all):
+### Evaluate object detection performance based on all frames (ID_S4_EX3)
+def compute_performance_stats(
+        det_performance_all: List[list]
+):
+    """Evaluates the object detection model given the list of metrics.
 
-    # extract elements
+    :param det_performance_all:
+    """
+
+    ### Extract the performance metric objects from the list
     ious = []
     center_devs = []
     pos_negs = []
     for item in det_performance_all:
+        # Append the individual metrics to the list, each score was computed
+        # w.r.t. a single pair of ground-truth and detected bounding boxes
         ious.append(item[0])
         center_devs.append(item[1])
         pos_negs.append(item[2])
-    
-    ####### ID_S4_EX3 START #######     
-    #######    
+        pos_negs = np.asarray(pos_negs)
+    ####### ID_S4_EX3 START #######
     print('student task ID_S4_EX3')
-
-    ## step 1 : extract the total number of positives, true positives, false negatives and false positives
-    
-    ## step 2 : compute precision
-    precision = 0.0
-
-    ## step 3 : compute recall 
-    recall = 0.0
-
-    #######    
+    ### Step 1 : Extract the evaluation metrics
+    # Here we sum all statistics computed across the set
+    positives = sum(pos_negs[:, 0])
+    true_positives = sum(pos_negs[:, 1])
+    false_negatives = sum(pos_negs[:, 2])
+    false_positives = sum(pos_negs[:, 3])
+    ### Step 2 : Compute precision score over all detections
+    # Here precision can be thought of answering the question:
+    # "When an object is detected, what are the chances of it being real?"
+    precision = true_positives / float(true_positives + false_positives)
+    ### Step 3 : Compute recall score over all detections
+    # Here recall can be thought of answering the question:
+    # "What are the chances of a real object being detected?"
+    recall = true_positives / float(true_positives + false_negatives)
     ####### ID_S4_EX3 END #######     
     print('precision = ' + str(precision) + ", recall = " + str(recall))   
 
