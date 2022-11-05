@@ -115,7 +115,7 @@ def show_pcl(
     pcd = o3d.geometry.PointCloud()
     ### Step 3 : Set points in `pcd` instance using Open3D `Vector3dVector`
     # Here we convert the point cloud into 3D vectors
-    pcd.points = o3d.utility.Vector3dVector(pcl)
+    pcd.points = o3d.utility.Vector3dVector(pcl[:, :3])
     ### Step 4 : Add / update the point cloud with the frame data
     # Here we use `add_geometry` for the first frame,
     # note that `update_geometry` is automatically used for all other frames
