@@ -104,31 +104,27 @@ def measure_detection_performance(
                 if iou > min_iou:
                     matches_lab_det.append([iou, dist_x, dist_y, dist_z])
                     true_positives += 1
-            ####### ID_S4_EX1 END #######     
-            
-        # find best match and compute metrics
+            ####### ID_S4_EX1 END #######
+        ### Find the best bounding box match and compute metrics
+        # Here we select the detection with the greatest IoU score
         if matches_lab_det:
-            best_match = max(matches_lab_det,key=itemgetter(1)) # retrieve entry with max iou in case of multiple candidates   
+            # Retrieve entry with max IoU score in case of multiple candidates
+            best_match = max(matches_lab_det, key=itemgetter(1))  
             ious.append(best_match[0])
             center_devs.append(best_match[1:])
-
-
-    ####### ID_S4_EX2 START #######     
-    #######
+    ####### ID_S4_EX2 START #######
     print("student task ID_S4_EX2")
-    
-    # compute positives and negatives for precision/recall
-    
-    ## step 1 : compute the total number of positives present in the scene
-    all_positives = 0
-
-    ## step 2 : compute the number of false negatives
-    false_negatives = 0
-
-    ## step 3 : compute the number of false positives
-    false_positives = 0
-    
-    #######
+    ### Compute the metrics for precision / recall score
+    ### Step 1 : Compute the total number of positives present in the scene
+    # Here we have the total number of possible objects to detect
+    all_positives = labels_valid.sum()
+    # Here we count only the best predictions from the total number of correctly
+    # predicted objects, i.e., matched predictions with IoU above threshold
+    true_positives = len(ious)
+    ### Step 2 : Compute the number of false negatives
+    false_negatives = all_positives - true_positives
+    ### step 3 : compute the number of false positives
+    false_positives = len(detections) - true_positives
     ####### ID_S4_EX2 END #######     
     
     pos_negs = [all_positives, true_positives, false_negatives, false_positives]
