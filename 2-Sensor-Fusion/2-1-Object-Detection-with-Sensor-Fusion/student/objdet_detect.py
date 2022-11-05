@@ -182,28 +182,38 @@ def load_configs_model(
     return configs
 
 
-# load all object-detection parameters into an `EasyDict` instance
-def load_configs(model_name='fpn_resnet', configs=None):
+### Load all object detection parameters into an `EasyDict` instance (ID_S3_EX2)
+def load_configs(
+        model_name: str='fpn_resnet', configs: easydict.EasyDict=None
+):
+    """Returns the modified `EasyDict` instance with model parameters.
 
-    # init config file, if none has been passed
+    :param model_name: the model to load the configuration settings for.
+    :param configs: the `EasyDict` instance to store the configuration settings.
+    :returns: configs, the configured `EasyDict` instance.
+    """
+
+    ### Instantiate the `EasyDict` instance if none has been passed
     if configs==None:
         configs = easydict.EasyDict()    
-
-    # birds-eye view (bev) parameters
-    configs.lim_x = [0, 50] # detection range in m
+    ### Set the Bird's-Eye View (BEV) map parameters
+    # The detection range in metres (m)
+    configs.lim_x = [0, 50]
     configs.lim_y = [-25, 25]
     configs.lim_z = [-1, 3]
-    configs.lim_r = [0, 1.0] # reflected lidar intensity
-    configs.bev_width = 608  # pixel resolution of bev image
+    # The reflected LiDAR intensity range
+    configs.lim_r = [0, 1.0]
+    # The pixel resolution of the BEV map image
+    configs.bev_width = 608
     configs.bev_height = 608 
-
-    # add model-dependent parameters
+    ### Fetch and set the model-dependent parameters
     configs = load_configs_model(model_name, configs)
-
-    # visualization parameters
-    configs.output_width = 608 # width of result image (height may vary)
-    configs.obj_colors = [[0, 255, 255], [0, 0, 255], [255, 0, 0]] # 'Pedestrian': 0, 'Car': 1, 'Cyclist': 2
-
+    ### Set the visualisation parameters
+    # The width of the resulting image (height may vary)
+    configs.output_width = 608
+    # The bounding box colours for each class
+    # Here we have {'Pedestrian': 0, 'Car': 1, 'Cyclist': 2}
+    configs.obj_colors = [[0, 255, 255], [0, 0, 255], [255, 0, 0]]
     return configs
 
 
@@ -262,8 +272,18 @@ def create_model(
 
 ### Detect trained objects in Bird's-Eye View map (ID_S3_EX2)
 def detect_objects(
-        input_bev_maps: , model: , configs: easydict.EasyDict
+        input_bev_maps: , model: torch.nn.Module, configs: easydict.EasyDict
 ) -> :
+    """Perform inference and post-process the object detections.
+
+    :param input_bev_maps: the BEV images to perform inference over, i.e.,
+        the images containing objects to detect.
+    :param model: the pre-trained object detection net as a `torch.nn.Module`
+        instance.
+    :param configs: the `EasyDict` instance containing the confidence and NMS
+        threshold values and a path to the pre-trained model.
+    :returns: objects, the set of predictions.
+    """
 
     # deactivate autograd engine during test to reduce memory usage and speed up computations
     with torch.no_grad():  
