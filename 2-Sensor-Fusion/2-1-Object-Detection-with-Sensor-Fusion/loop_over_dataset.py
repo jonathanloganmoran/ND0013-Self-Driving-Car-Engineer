@@ -63,7 +63,7 @@ data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_cam
 # Sequence 3
 # data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
 # Restrict the number of frames to interval
-show_only_frames = [50, 51]
+show_only_frames = [50, 150]
 ### Prepare Waymo Open Dataset file for loading
 # Paths to the 'dataset' and 'results' folders
 # Using paths in case the script is called from another working directory
