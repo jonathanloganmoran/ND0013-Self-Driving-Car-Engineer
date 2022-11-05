@@ -285,17 +285,20 @@ def detect_objects(
     :returns: objects, the set of predictions.
     """
 
-    # deactivate autograd engine during test to reduce memory usage and speed up computations
+    ### Begin inference loop
+    # Deactivate the PyTorch automatic differentiation package during test run
+    # in order to reduce memory usage and speed up computations
     with torch.no_grad():  
-
-        # perform inference
+        # Perform inference over the BEV map images
         outputs = model(input_bev_maps)
-
-        # decode model output into target object format
+        ### Decode the model output into target object format
         if 'darknet' in configs.arch:
-
-            # perform post-processing
-            output_post = post_processing_v2(outputs, conf_thresh=configs.conf_thresh, nms_thresh=configs.nms_thresh) 
+            # Perform post-processing of the DarkNet predictions
+            output_post = post_processing_v2(
+                    outputs,
+                    conf_thresh=configs.conf_thresh,
+                    nms_thresh=configs.nms_thresh
+            ) 
             detections = []
             for sample_i in range(len(output_post)):
                 if output_post[sample_i] is None:
@@ -305,19 +308,27 @@ def detect_objects(
                     x, y, w, l, im, re, _, _, _ = obj
                     yaw = np.arctan2(im, re)
                     detections.append([1, x, y, 0.0, 1.50, w, l, yaw])    
-
         elif 'fpn_resnet' in configs.arch:
-            # decode output and perform post-processing
-            
-            ####### ID_S3_EX1-5 START #######     
-            #######
+            # Perform post-processing of the FPN ResNet predictions
+            ####### ID_S3_EX1-5 START #######
             print("student task ID_S3_EX1-5")
-
-            #######
+            outputs['hm_cen'] = _sigmoid(outputs['hm_cen'])
+            outputs['cen_offset'] = _sigmoid(outputs['cen_offset'])
+            detections = decode(
+                    hm_cen=outputs['hm_cen'],
+                    cen_offset=outputs['cen_offset'],
+                    direction=outputs['direction'],
+                    z_coor=outputs['z_coor'],
+                    dim=outputs['dim'],
+                    K=configs.K
+            )
+            detections = detections.cpu().numpy().astype(np.float32)
+            # Filter the detections by confidence threshold
+            # Here the detections are of the form: [batch_size, K, 10]
+            detections = post_processing(detections=detections, configs=configs)
+            detections = detections[0][1]
+            print(detections)
             ####### ID_S3_EX1-5 END #######     
-
-            
-
     ####### ID_S3_EX2 START #######     
     #######
     # Extract 3d bounding boxes from model response
