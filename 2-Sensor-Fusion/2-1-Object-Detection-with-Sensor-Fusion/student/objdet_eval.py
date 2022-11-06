@@ -16,6 +16,7 @@
 # ------------------------------------------------------------------------------
 
 ### General package imports
+from datetime import datetime
 import easydict
 import matplotlib
 import matplotlib.pyplot as plt
@@ -209,28 +210,32 @@ def compute_performance_stats(
     ### Plot the detection results
     data = [precision, recall, ious_all, devs_x_all, devs_y_all, devs_z_all]
     titles = [
-        'detection precision', 'detection recall', 'intersection over union',
-        'position errors in X', 'position errors in Y', 'position error in Z'
+        'Detection Precision', 'Detection Recall', 'Intersection over Union (IoU)',
+        'Position Errors in $X$', 'Position Errors in $Y$', 'Position Errors in $Z$'
     ]
     textboxes = ['', '', '',
                  '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_x_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_x_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), ))),
                  '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_y_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_y_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), ))),
                  '\n'.join((r'$\mathrm{mean}=%.4f$' % (np.mean(devs_z_all), ), r'$\mathrm{sigma}=%.4f$' % (np.std(devs_z_all), ), r'$\mathrm{n}=%.0f$' % (len(devs_x_all), )))
                 ]
-    f, a = plt.subplots(2, 3)
+    f, a = plt.subplots(2, 3, figsize=(24, 20))
     a = a.ravel()
     num_bins = 20
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     for idx, ax in enumerate(a):
         ax.hist(data[idx], num_bins)
-        ax.set_title(titles[idx])
+        ax.set_title(titles[idx], fontsize=20)
         if textboxes[idx]:
-            ax.text(0.05, 0.95, textboxes[idx], transform=ax.transAxes, fontsize=10,
+            ax.text(0.05, 0.95, textboxes[idx], transform=ax.transAxes, fontsize=16,
                     verticalalignment='top', bbox=props)
     plt.tight_layout()
     if matplotlib.rcParams['backend'] != 'agg':
         # If using a GUI backend, render the figure
         plt.show()
     # Save the figure to a `.png` file
-    fname_out = "2022-11-06-Output-1-Detection-Performance-Metrics.png"
-    plt.savefig(fname_out)
+    DIR_OUT = os.path.join(PACKAGE_PARENT, 'out')
+    os.makedirs(DIR_OUT, exist_ok=True)
+    fname_out = datetime.now().strftime("%Y-%m-%d-Output-1-Detection-Performance-Metrics.png")
+    fp_out = os.path.join(DIR_OUT, fname_out)
+    plt.savefig(fp_out)
+
