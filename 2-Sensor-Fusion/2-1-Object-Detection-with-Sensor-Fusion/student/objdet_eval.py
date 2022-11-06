@@ -131,7 +131,7 @@ def measure_detection_performance(
     all_positives = labels_valid.sum()
     # Here we count only the best predictions from the total number of correctly
     # predicted objects, i.e., matched predictions with IoU above threshold
-    true_positives = len(ious)
+    # true_positives = len(ious)
     ### Step 2 : Compute the number of false negatives
     false_negatives = all_positives - true_positives
     ### step 3 : compute the number of false positives
@@ -170,19 +170,15 @@ def compute_performance_stats(
     print('student task ID_S4_EX3')
     ### Step 1 : Extract the evaluation metrics
     # Here we sum all statistics computed across the set
-    pos_negs = np.asarray(pos_negs)
-    all_positives = sum(pos_negs[:, 0])
-    true_positives = sum(pos_negs[:, 1])
-    false_negatives = sum(pos_negs[:, 2])
-    false_positives = sum(pos_negs[:, 3])
+    sum_all_pos, sum_tp, sum_fn, sum_fp = np.asarray(pos_negs).sum(axis=0)
     ### Step 2 : Compute precision score over all detections
     # Here precision can be thought of answering the question:
     # "When an object is detected, what are the chances of it being real?"
-    precision = true_positives / float(true_positives + false_positives)
+    precision = sum_tp / float(sum_tp + sum_fp)
     ### Step 3 : Compute recall score over all detections
     # Here recall can be thought of answering the question:
     # "What are the chances of a real object being detected?"
-    recall = true_positives / float(true_positives + false_negatives)
+    recall = sum_tp / float(sum_tp + sum_fn)
     ####### ID_S4_EX3 END #######     
     print(f"Precision:' {precision}, Recall: {recall}")
     ### Serialise the IoU scores and deviations in (x, y, z)
@@ -190,8 +186,8 @@ def compute_performance_stats(
     devs_x_all = []
     devs_y_all = []
     devs_z_all = []
-    for tup in center_devs:
-        for elem in tup:
+    for tupl in center_devs:
+        for elem in tupl:
             dev_x, dev_y, dev_z = elem
             devs_x_all.append(dev_x)
             devs_y_all.append(dev_y)

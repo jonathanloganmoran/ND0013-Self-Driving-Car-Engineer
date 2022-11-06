@@ -33,9 +33,9 @@ SCRIPT_DIR = os.path.dirname(
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 ### Simple Waymo Open Dataset Reader library
-from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 
 ### Object detection tools and helper functions
 import misc.objdet_tools as tools
@@ -232,7 +232,7 @@ def bev_from_pcl(
     lidar_pcl_cpy[lidar_pcl_cpy[:, 3] > 1.0, 3] = 1.0
     ### Step 1 : Create a Numpy array filled with zeros
     # Here we specify the dimensions of the BEV map
-    intensity_map = np.zeros(shape=(configs.bev_height, configs.bev_height))
+    intensity_map = np.zeros(shape=(configs.bev_height + 1, configs.bev_height + 1))
     ### Step 2 : Re-arrange elements in `lidar_pcl_cpy`
     # Here we sort first by x, then y, then -z (decreasing height values)
     # Here we use `numpy.lexsort` function to accomplish this ordering
@@ -270,7 +270,7 @@ def bev_from_pcl(
     # Summary: Compute height layer of the BEV map
     print("student task ID_S2_EX3")
     ### Step 1 : Create the BEV map array
-    height_map = np.zeros((configs.bev_height, configs.bev_width))
+    height_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))
     ### Step 2 : Assign the height map values from `lidar_top_pcl`
     # Here we use the min-max normalised values of each unique entry
     scale_factor_height = float(np.abs(configs.lim_z[1] - configs.lim_z[0]))

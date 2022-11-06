@@ -26,7 +26,9 @@ from typing import List
 import os
 import sys
 PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 ### Model-related imports
@@ -191,7 +193,7 @@ def load_configs_model(
         configs.num_input_features = 4
         ####### ID_S3_EX1-3 END #######     
     else:
-        raise ValueError("Error: Invalid model name '{model_name}'")
+        raise ValueError(f"Error: Invalid model name '{model_name}'")
     # Path to the project root folder
     configs.root_dir = '../'
     # Path to the dataset folder relative to the root folder
@@ -225,7 +227,7 @@ def load_configs(
     """
 
     ### Instantiate the `EasyDict` instance if none has been passed
-    if configs==None:
+    if not configs:
         configs = easydict.EasyDict()    
     ### Set the Bird's-Eye View (BEV) map parameters
     # The detection range in metres (m)
@@ -368,19 +370,21 @@ def detect_objects(
     print("student task ID_S3_EX2")
     objects = [] 
     ### Step 1 : Check whether there are any detections
-    if not any(detections):
+    if not len(detections):
         # No detections, return empty list
         return objects
     ### Step 2 : Loop over all detections
     for obj in detections:
-        id_obj, bev_x, bev_y, z, h, bev_w, bev_l, yaw = obj
+        _id, _x, _y, _z, _h, _w, _l, _yaw = obj
         ### Step 3 : Perform the coordinate conversion
         # Here we use the limits for x, y and z set in the configs structure
-        x = bev_y / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
-        y = bev_x / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
+        x = _y / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        y = _x / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
         y -= (configs.lim_y[1] - configs.lim_y[0]) / 2
-        w = bev_w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
-        l = bev_l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        w = _w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
+        l = _l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        z = _z
+        yaw = _yaw
         ### Step 4 : Append the current object to the `objects` array
         if ((x >= configs.lim_x[0] and x <= configs.lim_x[1]) and
             (y >= configs.lim_y[0] and y <= configs.lim_y[1]) and 
