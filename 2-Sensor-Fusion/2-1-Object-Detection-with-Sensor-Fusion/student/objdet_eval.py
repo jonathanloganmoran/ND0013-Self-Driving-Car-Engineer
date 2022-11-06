@@ -27,8 +27,12 @@ import sys
 import torch
 from typing import List
 
-# Change backend so that figure maximizing works on Mac as well
-matplotlib.use('wxagg')
+### Change Matplotlib for compatibility
+# Using 'wxagg' backend so that figure maximizing works on Mac as well
+# matplotlib.use('wxagg')
+# Using 'agg' backend so that plotting works on Ubuntu 10.04.6 LTS
+# Note that 'agg' is a non-GUI backend, so only figure saving will work
+#matplotlib.use('agg')
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
@@ -224,5 +228,9 @@ def compute_performance_stats(
             ax.text(0.05, 0.95, textboxes[idx], transform=ax.transAxes, fontsize=10,
                     verticalalignment='top', bbox=props)
     plt.tight_layout()
-    plt.show()
-
+    if matplotlib.rcParams['backend'] != 'agg':
+        # If using a GUI backend, render the figure
+        plt.show()
+    # Save the figure to a `.png` file
+    fname_out = "2022-11-06-Output-1-Detection-Performance-Metrics.png"
+    plt.savefig(fname_out)

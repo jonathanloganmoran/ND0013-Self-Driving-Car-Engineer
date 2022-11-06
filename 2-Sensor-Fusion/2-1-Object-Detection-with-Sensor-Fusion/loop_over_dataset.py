@@ -129,18 +129,19 @@ exec_tracking = []
 #     ]
 exec_visualization = ['show_detection_performance']
 # Initialise the execution list for each component
+# If a `Segmentation fault` error occurs, change these to positional arguments
 exec_list = make_exec_list(
-        exec_data=exec_data,
         exec_detection=exec_detection,
         exec_tracking=exec_tracking,
-        exec_visualization=exec_visualization
+        exec_visualization=exec_visualization,
+        exec_data=exec_data
 )
 # Set the pause time between frames (ms);
 # If set to '0', stop between frames until key is pressed.
 vis_pause_time = 0
 
 
-####### START 3D object detection / tracking #######
+####### START 3D Object Detection / Tracking #######
 ### Perform detection & tracking over all selected frames
 cnt_frame = 0 
 all_labels = []
