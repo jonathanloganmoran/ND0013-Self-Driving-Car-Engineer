@@ -28,7 +28,7 @@ import sys
 import torch
 from typing import List
 
-### Change Matplotlib for compatibility
+### Change Matplotlib backend for compatibility
 # Using 'wxagg' backend so that figure maximizing works on Mac as well
 # matplotlib.use('wxagg')
 # Using 'agg' backend so that plotting works on Ubuntu 10.04.6 LTS

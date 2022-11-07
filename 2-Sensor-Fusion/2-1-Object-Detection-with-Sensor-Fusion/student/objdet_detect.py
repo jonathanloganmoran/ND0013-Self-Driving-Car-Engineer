@@ -370,7 +370,7 @@ def detect_objects(
     print("student task ID_S3_EX2")
     objects = [] 
     ### Step 1 : Check whether there are any detections
-    if not len(detections):
+    if not detections:
         # No detections, return empty list
         return objects
     ### Step 2 : Loop over all detections
