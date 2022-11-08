@@ -161,9 +161,10 @@ def show_range_image(
     ri_range = ri_range.astype(np.uint8)
     ### Step 5 : Map the intensity channel onto an 8-bit scale
     # Here we perform a contrast adjustment using the 1- and 99-percentile
-    ri_inten_scaled = ri_intensity * np.amax(ri_intensity) / 2
-    scale_factor_intensity = np.amax(ri_intensity) - np.amin(ri_intensity)
-    ri_intensity = ri_inten_scaled * 255 / scale_factor_intensity
+    ri_min = np.percentile(ri_intensity, 1)
+    ri_max = np.percentile(ri_intensity, 99)
+    np.clip(ri_intensity, a_min=ri_min, a_max=ri_max)
+    ri_intensity = np.int_((ri_intensity - ri_min) * 255. / (ri_max - ri_min))
     ri_intensity = ri_intensity.astype(np.uint8)
     ### Step 6 : Stack the range and intensity image vertically using np.vstack
     # Then convert the result to unsigned 8-bit integer type
