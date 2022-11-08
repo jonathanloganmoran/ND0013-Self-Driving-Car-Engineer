@@ -1,8 +1,9 @@
+attrdict
 numpy
 opencv-python
 protobuf
 easydict
-pytorch
+torch
 pillow
 matplotlib
 wxpython
