@@ -20,12 +20,13 @@ import cv2
 import easydict
 import numpy as np
 import open3d as o3d
+import os
+import sys
 import torch
+import zlib
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
-import os
-import sys
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(
     os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
@@ -73,10 +74,10 @@ def _load_range_image(
     # For information on multiple returns, see discussion below:
     # https://github.com/waymo-research/waymo-open-dataset/issues/45
     ri = []
-    if len(laser.ri_return1.range_image_compressed) > 0:
+    if len(laser_data.ri_return1.range_image_compressed) > 0:
         ri = dataset_pb2.MatrixFloat()
         ri.ParseFromString(
-            zlib.decompress(laser.ri_return1.range_image_compressed)
+            zlib.decompress(laser_data.ri_return1.range_image_compressed)
         )
         ri = np.array(ri.data).reshape(ri.shape.dims)
     return ri

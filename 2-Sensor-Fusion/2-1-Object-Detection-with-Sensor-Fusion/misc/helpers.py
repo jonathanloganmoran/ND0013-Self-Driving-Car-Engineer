@@ -65,14 +65,13 @@ def load_object_from_file(file_path, base_filename, object_name, frame_id=1):
 ### Prepares an `exec_list` with all tasks to be executed
 def make_exec_list(
         exec_detection: List[str], exec_tracking: List[str],
-        exec_visualization: List[str], exec_data: List[str]=None
+        exec_visualization: List[str], exec_data: List[str]=[]
 ) -> List[str]:
     """Prepares a list programme executions to run.
-
     :param exec_detection: list of desired object detection functions to run.
     :param exec_tracking: list of desired tracking functions to run.
     :param exec_visualization: list of desired visualization functions to run.
-    :param exec_data: list of desired data manipulation functions to run.
+    :param exec_data: optional, list of desired data manipulation functions to run.
     :returns: exec_list, global execution list to run.
     """
     
