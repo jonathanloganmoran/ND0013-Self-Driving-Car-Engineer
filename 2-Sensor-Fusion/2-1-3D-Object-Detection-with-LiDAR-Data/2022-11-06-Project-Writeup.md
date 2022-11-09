@@ -5,7 +5,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 
 ## Introduction
-In this assignment we worked with several pre-trained object detection models to perform 3D object detection over driving data from the [Waymo Open Dataset]() [1]. We wrote several functions to parse the LiDAR data and convert the range images into 3D point clouds. The Open3D [2] library in Python was used to visualise the 3D point cloud data. Using these functions we performed basic exploratory data analysis (EDA) techniques to discover (a) driving scenes with vehicles at varying degrees of visibility, and (b) vehicle features that appeared stable throughout the dataset.
+In this assignment we worked with several pre-trained object detection models to perform 3D object detection over driving data from the [Waymo Open Dataset](https://waymo.com/open) [1]. We wrote several functions to parse the LiDAR data and convert the range images into 3D point clouds. The Open3D [2] library in Python was used to visualise the 3D point cloud data. Using these functions we performed basic exploratory data analysis (EDA) techniques to discover (a) driving scenes with vehicles at varying degrees of visibility, and (b) vehicle features that appeared stable throughout the dataset.
 
 In order to perform inference over these range images, we needed to form a psuedo-RGB (i.e., three-channel image) data structure. Therefore we used the three channels: range, intensity and density. To mitigate the effect of outliers, we re-scaled and normalised the channel values and investigated common LiDAR sensor data cleaning tasks. After our input images were pre-processed, we ran them through several pre-trained object detection networks: the [SFA3D](https://github.com/maudzung/SFA3D) with FPN ResNet-18 backbone [3][4] and the DarkNet (i.e., Complex-YOLO) [5] models. The 3D bounding box coordinates in $(x, y, z, w, h, l)$ were regressed in each model along with a heading angle (the $\textrm{yaw}$ value). These predicted coordinates needed to be projected from BEV image space (in pixels) to the vehicle coordinate system (in metres). Once these coordinates were converted, we formed the appropriate bounding box data structure — an array of $\texttt{[\_id, x, y, z, h, w, l, yaw]}$, and visualised the results onto the BEV image and RGB image spaces. This allowed us to visually see the results of our object detection net and verify the accuracy of our model predictions in comparison to the ground-truth labels.
 
@@ -103,7 +103,7 @@ While outside the scope of this task, it is important to note that other highly-
 Before we move onto the next task, performing inference over the converted BEV image maps, let's briefly discuss the data pre-processing we have done in order to make the range images a bit clearer.
 
 #### Intensity value normalisation
-In the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/f1544058060bb1e4aa1af8068097ccb5084dd96f/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb) notebook we discussed the need for re-scaling and normalisation, as the LiDAR sensor returns in the Waymo Open Dataset exhibit saturation for highly-reflective surfaces such as license plates. Here we show the results of performing two data normalisation strategies used to mitigate the effect of intensity outliers:
+In the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb) notebook we discussed the need for re-scaling and normalisation, as the LiDAR sensor returns in the Waymo Open Dataset exhibit saturation for highly-reflective surfaces such as license plates. Here we show the results of performing two data normalisation strategies used to mitigate the effect of intensity outliers:
 
 <img src="figures/midterm_report/2022-11-06-Figure-7-Range-Image-Intensity-Channel-Normalisation.gif" width="100%" height="100%" alt="Figure 7. Range images — comparing two intensity value normalisation techniques: (a) min-max and (b) 1- and 99-percentile.">
 
@@ -146,7 +146,7 @@ $$
 
 #### Switching between sequence files
 
-Note that in order to switch between the `Sequence 1`, `Sequence 2` or `Sequence 3` segment files, you must not only uncomment the filename you wish to use in `loop_over_dataset.py`, but also the `configs.rel_results_folder` variable inside `objdet_detect.py` to match the correct sequence ID. For example, to visualise the `Sequence 2` file, uncomment the line containing the filename, as shown below:
+Note that in order to switch between the `Sequence 1`, `Sequence 2` or `Sequence 3` segment files, you must not only uncomment the filename you wish to use in [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/loop_over_dataset.py), but also the `configs.rel_results_folder` variable inside `objdet_detect.py` to match the correct sequence ID. For example, to visualise the `Sequence 2` file, uncomment the line containing the filename, as shown below:
 ```python
 # Select Waymo Open Dataset file and frame numbers
 # Sequence 1
@@ -156,7 +156,7 @@ data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_ca
 # Sequence 3
 # data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
 ```
-then modify the `configs.rel_results_folder` variable inside `objdet_detect.py` with the appropriate sequence ID. In this case, for Sequence 2 with the FPN ResNet model, that would be,
+then modify the `configs.rel_results_folder` variable inside [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/student/objdet_detect.py) with the appropriate sequence ID. In this case, for Sequence 2 with the FPN ResNet model, that would be,
 ```python
 # The subfolder to save current model outputs in '../results/{saved_fn}'
 configs.rel_results_folder = 'results_sequence_2_resnet'
@@ -164,7 +164,7 @@ configs.rel_results_folder = 'results_sequence_2_resnet'
 which points to the `'results/fpn-resnet/results_sequence_2_resnet/'` subfolder which contains the detections, range image data, etc. required to produce the 3D point clouds and range images.
 
 #### Executing individual tasks
-In order to complete the first task, _Vehicle Visibility in LiDAR Point Cloud Data_, set the executions in `loop_over_dataset.py` as follows:
+In order to complete the first task, _Vehicle Visibility in LiDAR Point Cloud Data_, set the executions in [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/loop_over_dataset.py) as follows:
 ```python
 exec_data = []
 exec_detection = []
@@ -174,7 +174,7 @@ exec_visualization = ['show_pcl', 'show_objects_in_bev_labels_in_camera']
 
 This will display two windows: an Open3D Visualizer window showing the 3D point cloud, and another with the RGB / BEV map with corresponding object annotations.
 
-To complete the second task, _Vehicle Landmarks in LiDAR Range Images_, set the executions in `loop_over_dataset.py` as follows:
+To complete the second task, _Vehicle Landmarks in LiDAR Range Images_, set the executions in [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/loop_over_dataset.py) as follows:
 ```python
 exec_data = []
 exec_detection = []
@@ -234,7 +234,7 @@ $$
 
 In the above figures we see the model predictions, shown in red in the lower-half of (b) (the BEV image) alongside the ground-truth bounding box annotations, shown in green in the upper-half of (b) (the RGB image). The model predictions have been projected into the BEV image space with respect to the vehicle coordinate system. The ground-truth labels have been preserved in their 3D format with respect to the camera sensor space. 
 
-For more information on the different coordinate systems, see [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/f1544058060bb1e4aa1af8068097ccb5084dd96f/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb).
+For more information on the different coordinate systems, see [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb).
 
 
 ## Closing Remarks
