@@ -212,6 +212,31 @@ From the figure we observe a perfect precision and recall score along with a ver
 
 While our initial evaluation results look strong, further analysis needs to be performed across other segment files.
 
+### Bounding box prediction
+
+Below are two frames from the Waymo Open Dataset evaluated on the SFA3D with FPN ResNet-18 backbone [3][4] model.
+
+<img src="figures/midterm_report/2022-11-06-Figure-10-Detections-in-BEV-Shown-with-LiDAR-PCL-1.png" width="80%" height="80%" alt="Figure 10. Evaluation 1 — LiDAR point cloud and bounding box annotations.">
+
+$$
+\begin{align}
+\textrm{Figure 10. Evaluation 1 — LiDAR point cloud and corresponding RGB and BEV images with annotations.}
+\end{align}
+$$
+
+<img src="figures/midterm_report/2022-11-06-Figure-11-Detections-in-BEV-Shown-with-LiDAR-PCL-2.png" width="80%" height="80%" alt="Figure 11. Evaluation 2 — LiDAR point cloud and bounding box annotations.">
+
+$$
+\begin{align}
+\textrm{Figure 11. Evaluation 2 — LiDAR point cloud and corresponding RGB and BEV images with annotations.}
+\end{align}
+$$
+
+In the above figures we see the model predictions, shown in red in the lower-half of (b) (the BEV image) alongside the ground-truth bounding box annotations, shown in green in the upper-half of (b) (the RGB image). The model predictions have been projected into the BEV image space with respect to the vehicle coordinate system. The ground-truth labels have been preserved in their 3D format with respect to the camera sensor space. 
+
+For more information on the different coordinate systems, see [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/f1544058060bb1e4aa1af8068097ccb5084dd96f/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb).
+
+
 ## Closing Remarks
 
 ##### Alternatives
@@ -224,7 +249,7 @@ While our initial evaluation results look strong, further analysis needs to be p
 
 
 ## Future Work
-- ⬜️ Visualise the predictions from the detection net in an animated GIF file;
+- ✅ Visualise the predictions from the detection net in e.g., BEV image space, or an animated GIF file;
 - ⬜️ Repeat the evaluation of the SFA3D model on other segment files from the Waymo Open Dataset;
 - ⬜️ Compare the detection performance to the DarkNet (Complex-YOLO) model;
 - ⬜️ Fine-tune the pre-trained models on the Waymo Open Dataset LiDAR data.
