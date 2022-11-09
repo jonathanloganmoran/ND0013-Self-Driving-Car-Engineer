@@ -43,7 +43,6 @@ Other topics covered in course lectures and reading material:
 * Light propagation angle for OPA LiDAR systems
 * Comparing camera / LiDAR / radar / ultrasonics performance
 * Selecting the best sensor(s) for a given job with constraints
-* 
 * And much more ... (will be announced as course progresses)
 
 

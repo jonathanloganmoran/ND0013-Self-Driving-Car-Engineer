@@ -16,7 +16,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 
 ### Projects
 * ✅ [Project 1.1: Object Detection in Urban Environments (2D)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments)
-* ⬜️ [Project 2.1: 3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
+* ✅ [Project 2.1: 3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
 * ⬜️ Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF).
 * ⬜️ Project 3.1: Scan Matching Localization
 * ⬜️ Project 3.2: Multi-Target Tracking with Sensor Fusion
@@ -34,9 +34,9 @@ The following topics are covered in course projects:
 * And so much more ... (see [1-Computer-Vision](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision) for full list of course topics).
 
 ##### Course 2: Sensor Fusion
-* Extract and transform 3D point clouds into bird's-eye view (BEV) maps;
+* Extract and transform LiDAR range images into 3D point clouds and bird's-eye view (BEV) maps;
 * Build and experiment with state-of-the-art 3D object detection nets;
-* And so much more ... (see [2-Sensor-Fusion]() for full list of course topics).
+* And so much more ... (see [2-Sensor-Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion) for full list of course topics).
 
 
 

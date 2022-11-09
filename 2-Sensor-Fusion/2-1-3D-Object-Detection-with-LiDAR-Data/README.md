@@ -65,7 +65,7 @@ where `BASE_DIR` points to the top-level project directory. All project modules 
 
 ## Data Acquisition
 
-This project relies on three `.tfrecord` files from the Waymo Open Dataset for data analysis, pre-processing, inference and evaluation. These filenames are referenced in `data/waymo_open_dataset/filenames.txt`.
+This project relies on three `.tfrecord` files from the Waymo Open Dataset for data analysis, pre-processing, inference and evaluation. These filenames are referenced in [`data/waymo_open_dataset/filenames.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/data/waymo_open_dataset/filenames.txt).
 
 See [Project 1.1: Object Detection in Urban Environments](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments) for information on downloading and processing the Waymo Open Dataset files from their Google Cloud Storage (GCS) hosted bucket. You will need to request access to the dataset ahead of time [here](https://waymo.com/open/licensing).
 
@@ -74,23 +74,23 @@ See [Project 1.1: Object Detection in Urban Environments](https://github.com/jon
 
 ### Exploratory Data Analysis (EDA)
 
-See [`2022-11-06-Project-Writeup.md`]() for an in-depth look at the LiDAR range image data provided in the Waymo Open Dataset. In the report we discuss our findings regarding vehicle landmarks and scenes of interest.
+See [`2022-11-06-Project-Writeup.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md) for an in-depth look at the LiDAR range image data provided in the Waymo Open Dataset. In the report we discuss our findings regarding vehicle landmarks and scenes of interest.
 
 ### Data Pre-Processing
 
-This project consists of three major pre-processing tasks: visualisation, data manipulation and conversion. Covered in the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-1-3D-Object-Detection/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb) notebook are the functions used to visualise the LiDAR range images, normalise their intensity and range channel values, and build 3D point clouds and BEV map images from the range images. An explanation of how each function can be executed in this project can be found in [`2022-11-06-Project-Writeup.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-1-3D-Object-Detection/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md).
+This project consists of three major pre-processing tasks: visualisation, data manipulation and conversion. Covered in the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb) notebook are the functions used to visualise the LiDAR range images, normalise their intensity and range channel values, and build 3D point clouds and BEV map images from the range images. An explanation of how each function can be executed in this project can be found in [`2022-11-06-Project-Writeup.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-1-3D-Object-Detection/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md).
 
 
 ### Model Inference and Evaluation
 
 In this project we use the Super Fast and Accurate 3D Object Detection Based on 3D LiDAR Point Clouds (SFA3D) [3] model. The SFA3D model relies on a ResNet-18 FPN backbone [4]. The final model was trained for 300 epochs on the 3D KITTI dataset [6]. All model code and weights can be forked from the GitHub repository by [@maudzung](https://github.com/maudzung/SFA3D).
 
-We also make use of the pre-trained DarkNet (Complex-YOLO) [5] model in this project. Its implementation in PyTorch is made available on GitHub by user [@](). A comparison of the performance between these two models is coming soon.
+We also make use of the pre-trained DarkNet (Complex-YOLO) [5] model in this project. Its implementation in PyTorch is made available on GitHub by user [@maudzung](https://github.com/maudzung/Complex-YOLOv4-Pytorch). A comparison of the performance between these two models is coming soon.
 
 
 ### Configuring the programme
 
-First, fetch the pre-trained weights and model code from the GitHub repositories linked above. Next, ensure that all project requirements / dependencies have been installed (see _Setup and Installation_ or refer to `requirements.txt` and the `tools/` folder).
+First, fetch the pre-trained weights and model code from the GitHub repositories linked above. Next, ensure that all project requirements / dependencies have been installed (see _Setup and Installation_ or refer to [`requirements.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/requirements.txt) and the [`tools/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/tools) folder).
 
 Note that if using the Udacity Ubuntu 16.04.6 LTS VM, the Matplotlib backend must be specified in order to avoid a `Segmentation fault (core dumped)` error (see [Issue #27](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/issues/27)). Currently, I am able to circumvent this by setting Matplotib to a non-GUI backend with `matplotlib.use('agg')`. This approach assumes that Matplotlib plotting functions will *not* be used, i.e., [`plt.show()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html) or [`plt.imshow()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html) are replaced with [`plt.savefig()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html).
 
@@ -113,7 +113,7 @@ Once the above have been initialised, run:
 python3 loop_over_dataset.py
 ```
 
-Currently, all configuration settings for the `'darknet'` or `'fpn_resnet'` models must be manually-specified inside the [`student/objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-1-3D-Object-Detection/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/student/objdet_detect.py) file. Migration to a command-line based configuration library, e.g., [Hydra](https://hydra.cc), is planned.
+Currently, all configuration settings for the `'darknet'` or `'fpn_resnet'` models must be manually-specified inside the [`student/objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/student/objdet_detect.py) file. Migration to a command-line based configuration library, e.g., [Hydra](https://hydra.cc), is planned.
 
 
 #### Performing Inference and Evaluation
@@ -135,28 +135,28 @@ You may also override the `MODEL_NAME` to load for inference with the following 
 configs_det = det.load_configs(model_name={MODEL_NAME})
 ```
 
-In order to use a custom pre-trained model (i.e., not the `'fpn_resnet'` or `'darknet'` model), you must modify the following functions inside `student/objdet_detect.py`:
+In order to use a custom pre-trained model (i.e., not the `'fpn_resnet'` or `'darknet'` model), you must modify the following functions inside [`student/objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/student/objdet_detect.py):
 * `detect_objects`: Performs inference and post-processing of the object detections;
 * `load_configs_model`: Loads the model ocnfigurations into an `EasyDict` instance;
 * `create_model`: Builds and returns a [`torch.nn.Module`](https://pytorch.org/docs/stable/_modules/torch/nn/modules/module.html#Module) instance from the `EasyDict` configuration settings.
 
-Note that implementing a custom model assumes that you have (a) modified the functions above to support loading / configuring the model, (b) placed the PyTorch-implemented model files inside `tools/objdet_models` and (c) have saved the serialised detections and ground-truth bounding box annotations, LiDAR BEV images and LiDAR point clouds required to make use of the [`objdet_eval.py`]() scripts as well as the visualisation functions inside [`loop_over_dataset.py`](). Already configured in this project is support for the SFA3D model which may serve as an example for the devoted engineer.
+Note that implementing a custom model assumes that you have (a) modified the functions above to support loading / configuring the model, (b) placed the PyTorch-implemented model files inside [`tools/objdet_models`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/tools/objdet_models) and (c) have saved the serialised detections and ground-truth bounding box annotations, LiDAR BEV images and LiDAR point clouds required to make use of the [`objdet_eval.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/student/objdet_eval.py) scripts as well as the visualisation functions inside [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/loop_over_dataset.py). Already configured in this project is support for the SFA3D model which may serve as an example for the devoted engineer.
 
 ## Tasks
 ### Exploratory Data Analysis (EDA)
-* ✅ [Understand the LiDAR data in the Waymo Open Dataset]();
-* ✅ [Extract and visualise range images]();
-* ✅ [Finding vehicle landmarks and scenes of interest]();
+* ✅ [Understand the LiDAR data in the Waymo Open Dataset](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
+* ✅ [Extract and visualise range images](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
+* ✅ [Finding vehicle landmarks and scenes of interest](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
 
 ### Data Pre-Processing
-* ✅ [Normalise the intensity and range channel values]();
-* ✅ [Convert the range images to 3D point clouds]();
-* ✅ [Convert the 3D point clouds to BEV map images]();
+* ✅ [Normalise the intensity and range channel values](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
+* ✅ [Convert the range images to 3D point clouds](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
+* ✅ [Convert the 3D point clouds to BEV map images](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
 
 ### Model Training and Evaluation
-* ✅ [Configure and load the object detection models]();
-* ✅ [Classify objects with a pre-trained 3D object detection model (e.g., SFA3D, Complex-YOLO)]();
-* ✅ [Evaluate the detection performance of the model (e.g., SFA3D)]();
+* ✅ [Configure and load the object detection models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
+* ✅ [Classify objects with a pre-trained 3D object detection model (e.g., SFA3D, Complex-YOLO)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
+* ✅ [Evaluate the detection performance of the model (e.g., SFA3D)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
 
 ### Improving Performance
 * ⬜️ Evaluate the detection performance of the DarkNet model;
@@ -176,5 +176,5 @@ References
 
 Helpful explanations:
 * [`Technical_details.md` by @maudzung | GitHub](https://github.com/maudzung/SFA3D/blob/0e2f0b63dc4090bd6c08e15505f11d764390087c/Technical_details.md);
-* [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb` by Jonathan L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-1-3D-Object-Detection/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
-* [`2022-11-06-Project-Writeup.md`] by Jonathan L. Moran | GitHub(https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/a330864a997eb63caebe38e1f5c23c6f183796ff/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md).
+* [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb` by Jonathan L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
+* [`2022-11-06-Project-Writeup.md`] by Jonathan L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md).
