@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Project "3D Object Detection with LiDAR Data"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
@@ -9,8 +9,11 @@
 # You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
+#
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
 # -----------------------------------------------------------------------------
-
 
 ### General package imports
 import numpy as np
