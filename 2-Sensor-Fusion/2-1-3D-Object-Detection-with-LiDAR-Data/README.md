@@ -43,10 +43,10 @@ This project will include use of the [SFA3D](https://github.com/maudzung/SFA3D) 
 
 Filename                                                             | Description
 ---------------------------------------------------------------------|----------------
-`2022-11-06-Project-Writeup.md`                                      | Markdown-formatted report of the key findings and evaluation results from this project.
+`2022-11-06-Project-Writeup.md`                                      | Markdown-formatted report on the key findings and evaluation results from this project.
 `setup.py`                                                           | Builds the project, installs dependencies and places all modules onto the PYTHONPATH via `pip install -e` command (see below).
 `loop_over_dataset.py`                                               | Entry point to the programme, implements all functions needed to parse, preview, modify, and evaluate on the LiDAR range images.
-`data/filenames.txt`                                                 | List Google Cloud Storage (GCS) file paths to the `.tfrecord` used for model evaluation.
+`data/filenames.txt`                                                 | List of Google Cloud Storage (GCS) file paths to the `.tfrecord` used for model evaluation.
 `student/objdet_detect.py`                                           | Performs 3D object detection; loads model configs, initialises PyTorch models, runs detection loop.
 `student/objdet_eval.py`                                             | Performs performance assessment of the object detection model; computes IoU, position errors, precision / recall scores.
 `student/objdet_pcl.py`                                              | Parses and modifies LiDAR point cloud data; pre-processes and converts range images to PCL; creates BEV maps from PCL.
@@ -144,21 +144,23 @@ Note that implementing a custom model assumes that you have (a) modified the fun
 
 ## Tasks
 ### Exploratory Data Analysis (EDA)
-* ✅ [Understanding LiDAR data in the Waymo Open Dataset]();
-* ✅ [Extracting and visualising range images]();
-* ✅ [Normalising the intensity and range channel values]();
+* ✅ [Understand the LiDAR data in the Waymo Open Dataset]();
+* ✅ [Extract and visualise range images]();
 * ✅ [Finding vehicle landmarks and scenes of interest]();
-* ✅ [Converting range images to 3D point clouds]();
-* ✅ [Converting 3D point clouds to BEV map images]();
+
+### Data Pre-Processing
+* ✅ [Normalise the intensity and range channel values]();
+* ✅ [Convert the range images to 3D point clouds]();
+* ✅ [Convert the 3D point clouds to BEV map images]();
 
 ### Model Training and Evaluation
-* ✅ [Configuring and loading the object detection models]();
-* ✅ [Classifying objects in 3D with the SFA3D model]();
-* ✅ [Evaluating the detection performance of the SFA3D model]();
-* ⬜️ Evaluating the detection performance of the DarkNet model;
+* ✅ [Configure and load the object detection models]();
+* ✅ [Classify objects with a pre-trained 3D object detection model (e.g., SFA3D, Complex-YOLO)]();
+* ✅ [Evaluate the detection performance of the model (e.g., SFA3D)]();
 
 ### Improving Performance
-* ⬜️ Fine-tuning the detection nets on the Waymo Open Dataset.
+* ⬜️ Evaluate the detection performance of the DarkNet model;
+* ⬜️ Implement fine-tuning strategies and re-train on the Waymo Open Dataset.
 
 
 ## Credits

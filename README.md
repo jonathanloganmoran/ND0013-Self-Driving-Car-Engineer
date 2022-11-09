@@ -16,7 +16,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 
 ### Projects
 * ✅ [Project 1.1: Object Detection in Urban Environments (2D)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments)
-* ⬜️ Project 2.1: 3D Object Detection with LiDAR Data;
+* ⬜️ [Project 2.1: 3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
 * ⬜️ Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF).
 * ⬜️ Project 3.1: Scan Matching Localization
 * ⬜️ Project 3.2: Multi-Target Tracking with Sensor Fusion
