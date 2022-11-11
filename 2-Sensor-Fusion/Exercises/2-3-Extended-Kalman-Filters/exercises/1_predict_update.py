@@ -35,7 +35,7 @@ class Filter:
     over time. This allows us to construct the filter as a MSE minimisation
     problem.
 
-    :param dim_state: the number of dimensions of the process model.
+    :param dim_state: the number of dimensions of the process model `P`.
     :param u: the external motion model.
     :param F: the state transition matrix in the linear case
         i.e., system matrix.
@@ -130,7 +130,7 @@ class Filter:
 
         ### Project the state estimate into the next time-step
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = x.T * self.F + self.u
+        x = self.F * x + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration.
@@ -160,7 +160,7 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by matrix `H`
-        gamma = z - self.H * x.T
+        gamma = z - self.H * x
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
@@ -175,7 +175,7 @@ class Filter:
         x = x + K * gamma
         ### Update the covariance matrix w.r.t. the weighted measurement
         # Here the identity $ P_{K} \times P_{k}^{-1} = I $ is used
-        P = (np.identity(n=len(P)) - K * self.H) * P
+        P = (np.identity(n=self.dim_state) - K * self.H) * P
         return x, P     
         
         
