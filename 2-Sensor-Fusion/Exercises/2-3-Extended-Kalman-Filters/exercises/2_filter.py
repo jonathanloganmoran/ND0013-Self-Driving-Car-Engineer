@@ -167,21 +167,27 @@ class Filter:
         :returns: tuple, the updated state estimate and covariance matrix.
         """
 
-        ### Update the state and covariance with associated measurement
-        # Obtain the measurement matrix
-        H = self.H()
-        # Update the residual
-        gamma = z - H * x
-        # Compute the covariance of the residual
-        S = H * P * H.transpose() + R
-        # Compute the Kalman gain
-        K = P * H.transpose() * np.linalg.inv(S)
-        # Perform the state update
+        ### Compute the measurement residual update step (i.e., innovation step)
+        # Here we compare the new measurement `z` with the prev. state estimate
+        # transformed to the measurement space by `H`
+        gamma = z - self.H() * x
+        ### Compute the covariance of the residual update
+        # Here we transform the estimation error from covariance matrix `P` to
+        # measurement space given by $H^{\top}H$ then add measurement noise `R`
+        S = self.H() * P * self.H.transpose() + R
+        ### Compute the Kalman gain
+        # Here we weight the predicted state in comparison to the measurement
+        K = P * self.H.transpose() * np.linalg.inv(S)
+        ### Update the state estimate w.r.t. the weighted measurement
+        # Here we give greater weight to either the measurement or the prev.
+        # estimate using the Kalman gain `k`, i.e., the larger the `K` the greater
+        # the weight given to the residual measurement `gamma`
         x = x + K * gamma
-        # Perform the covariance update
+        ### Update the covariance matrix w.r.t. the weighted measurement
+        # Here the identity $ P_{k} \times P_{k}^{-1} = I $ is used
         I = np.identity(self.dim_state)
-        P = (I - K * H) * P
-        return x, P   
+        P = (I - K * self.H()) * P
+        return x, P
         
         
 def run_filter():
