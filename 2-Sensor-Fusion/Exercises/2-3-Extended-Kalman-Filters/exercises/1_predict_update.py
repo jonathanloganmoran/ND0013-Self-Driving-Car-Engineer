@@ -91,7 +91,7 @@ class Filter:
         """
 
         return np.matrix([[0, 0],
-                        [0, 0]])
+                          [0, 0]])
         
     def H(self
     ) -> np.matrix:
@@ -130,7 +130,7 @@ class Filter:
 
         ### Project the state estimate into the next time-step
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = x * self.F + self.u
+        x = x.T * self.F + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration.
@@ -160,7 +160,7 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by matrix `H`
-        gamma = z - self.H * x
+        gamma = z - self.H * x.T
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
