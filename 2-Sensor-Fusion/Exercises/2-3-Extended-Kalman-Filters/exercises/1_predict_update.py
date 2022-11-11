@@ -16,7 +16,6 @@
 #       TensorFlow `tf.Tensor` data ops, is recommended.
 # ------------------------------------------------------------------------------
 
-
 ### Here we use the `numpy.matrix` class
 # Note that this class is being deprecated and its use in this programme will be
 # switched to an `numpy.ndarray` implmenetation soon.
@@ -51,7 +50,7 @@ class Filter:
         # The number of dimensions of the process model
         self.dim_state = 2
         # The external motion model (not used for this problem)
-        self.u = np.matrix([[0., 0.]])
+        self.u = np.array([[0., 0.]])
         # Instantiate the state transition matrix (i.e., system matrix)
         self.F = self.F()
         # Instantiate the process noise covariance matrix
@@ -61,7 +60,7 @@ class Filter:
 
 
     def F(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the state transition matrix.
 
         We refer to `F` as the system matrix, i.e., a linear matrix
@@ -70,11 +69,11 @@ class Filter:
         :returns: F, the linear system matrix.
         """
 
-        return np.matrix([[1, 1],
-                          [0, 1]])
+        return np.array([[1, 1],
+                         [0, 1]])
 
     def Q(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the process noise covariance matrix.
 
         We refer to `Q` as the process noise covariance matrix, i.e.,
@@ -90,11 +89,11 @@ class Filter:
         :returns: Q, the process noise covariance matrix.
         """
 
-        return np.matrix([[0, 0],
-                          [0, 0]])
+        return np.array([[0, 0],
+                         [0, 0]])
         
     def H(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the measurement function.
 
         We refer to `H` as a deterministic function relating the measurement
@@ -105,11 +104,11 @@ class Filter:
         :returns: H, the measurement matrix.
         """
 
-        return np.matrix([[1, 0]])
+        return np.array([[1, 0]])
     
     def predict(self, 
-            x: np.matrix, P: np.matrix
-    ) -> Tuple[np.matrix, np.matrix]:
+            x: np.ndarray, P: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Implements the prediction step.
 
         The state estimate and covariance matrix are updated with respect to the
@@ -124,22 +123,18 @@ class Filter:
         :returns: tuple, the predicted state estimate and covariance matrix.
         """
 
-        ############
-        # TODO: implement prediction step
-        ############
-
         ### Project the state estimate into the next time-step
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = self.F * x + self.u
+        x = self.F @ x + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration.
-        P = self.F * P * self.F.T + self.Q
+        P = np.matmul(self.F @ P, self.F.T) + self.Q
         return x, P
 
     def update(self, 
-            x: np.matrix, P: np.matrix, z: np.matrix, R: np.matrix
-    ) -> Tuple[np.matrix, np.matrix]:
+            x: np.ndarray, P: np.ndarray, z: np.ndarray, R: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Implements the update step.
 
         Also referred to as the 'correction' step, here the state estimate and
@@ -160,22 +155,22 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by matrix `H`
-        gamma = z - self.H * x
+        gamma = z - self.H @ x
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = self.H * P * self.H.T + R
+        S = np.matmul(self.H @ P, self.H.T) + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * self.H.T * S.I
+        K = np.matmul(P @ self.H.T, np.linalg.inv(S))
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `K`, i.e., the larger `K` the greater
         # the weight given to the residual measurement `gamma`
-        x = x + K * gamma
+        x = x + K @ gamma
         ### Update the covariance matrix w.r.t. the weighted measurement
         # Here the identity $ P_{K} \times P_{k}^{-1} = I $ is used
-        P = (np.identity(n=self.dim_state) - K * self.H) * P
+        P = (np.identity(n=self.dim_state) - np.matmul(K, self.H)) @ P
         return x, P     
         
         
@@ -187,10 +182,10 @@ def run_filter():
     ### Instantiate the Kalman filter object
     KF = Filter()
     ### Initialise the tracking state vector and covariance matrix
-    x = np.matrix([[0],
-                   [0]])
-    P = np.matrix([[5**2, 0],
-                   [0, 5**2]])
+    x = np.array([[0],
+                  [0]])
+    P = np.array([[5**2, 0],
+                  [0, 5**2]])
     ### Loop over the measurements and call predict and update
     for i in range(1,101):        
         print('------------------------------')
@@ -203,9 +198,9 @@ def run_filter():
         # Model the measurement noise
         sigma_z = 1
         # Initialise the noise at random from a Guassian normal distribution
-        z = np.matrix([[i + np.random.normal(0, sigma_z)]])
+        z = np.array([[i + np.random.normal(0, sigma_z)]])
         # Initialise the measurement covariance matrix
-        R = np.matrix([[sigma_z**2]])
+        R = np.array([[sigma_z**2]])
         print('z =', z)
         ### Perform the update step
         # Update the state vector and covariance matrix with the measurement
