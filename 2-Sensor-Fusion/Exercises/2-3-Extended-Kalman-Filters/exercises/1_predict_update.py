@@ -32,6 +32,8 @@ class Filter:
 
         # The number of dimensions of the process model
         self.dim_state = 2
+        # The external motion model (not used for this problem)
+        self.u = np.matrix([[0., 0.]])
 
     def F(self
 ) -> np.matrix:
@@ -97,7 +99,17 @@ class Filter:
         ############
         # TODO: implement prediction step
         ############
-        
+
+        ### Project the state estimate into the next time-step
+        # Here we obtain the state transition matrix `F`
+        F = F()
+        # Here we update the motion from $t_{k}$ to $t_{k+1}$
+        x = x * F + self.u
+        ### Project the covariance matrix into the next time-step
+        # Here the covariance process noise matrix `Q` accounts for uncertainty
+        # in object motion model due to e.g., unexpected braking / acceleration.
+        Q = Q()
+        P = F * P * F.T + Q
         return x, P
 
     def update(self, 
@@ -120,9 +132,6 @@ class Filter:
         :returns: tuple, the updated state estimate and covariance matrix.
         """
 
-        ############
-        # TODO: implement update step
-        ############
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by matrix `H`
