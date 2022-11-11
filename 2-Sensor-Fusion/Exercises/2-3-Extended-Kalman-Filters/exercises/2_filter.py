@@ -1,4 +1,21 @@
-import numpy as np
+# ------------------------------------------------------------------------------
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
+# Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
+#
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+#
+# Purpose of this file : Define the 2-D Kalman `Filter` class and its core
+#                        functions, i.e., the `predict` and `update` steps.
+#
+# You should have received a copy of the Udacity license with this program.
+#
+# https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
+#
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# ------------------------------------------------------------------------------
+
 import matplotlib
 ### Change Matplotlib backend for compatibility
 # Using 'wxagg' backend so that figure maximizing works on Mac as well
@@ -7,7 +24,11 @@ import matplotlib
 # Note that 'agg' is a non-GUI backend, so only figure saving will work
 #matplotlib.use('agg')
 import matplotlib.pyplot as plt
-
+### Here we use the `numpy.matrix` class
+# Note that this class is being deprecated and its use in this programme will be
+# switched to an `numpy.ndarray` implmenetation soon.
+# See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
+import numpy as np
 
 class Filter:
     '''The Kalman filter class.
