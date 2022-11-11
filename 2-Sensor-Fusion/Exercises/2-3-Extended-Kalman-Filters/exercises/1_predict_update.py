@@ -22,10 +22,28 @@
 # switched to an `numpy.ndarray` implmenetation soon.
 # See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
+from typing import Tuple
 
 
 class Filter:
-    '''The Kalman filter class.'''
+    '''The Kalman filter class.
+
+    Implements the 1-D Kalman filter using State space form.
+    
+    Here we assume the process noise and measurement error to be modelled by
+    Gaussian distributions with known covariance s.t. they remain stationary
+    over time. This allows us to construct the filter as a MSE minimisation
+    problem.
+
+    :param dim_state: the number of dimensions of the process model.
+    :param u: the external motion model.
+    :param F: the state transition matrix in the linear case
+        i.e., system matrix.
+    :param Q: the process noise covariance matrix, sampled at random from
+        a Gaussian normal distribution.
+    :param H: the measurement function relating the measurement and the motion
+        of the object from one time-step to the next.
+    '''
 
     def __init__(self):
         """Initialises the Kalman filter object with given dimensionality."""
@@ -34,9 +52,16 @@ class Filter:
         self.dim_state = 2
         # The external motion model (not used for this problem)
         self.u = np.matrix([[0., 0.]])
+        # Instantiate the state transition matrix (i.e., system matrix)
+        self.F = self.F()
+        # Instantiate the process noise covariance matrix
+        self.Q = self.Q()
+        # Instantiate the measurement function
+        self.H = self.H()
+
 
     def F(self
-) -> np.matrix:
+    ) -> np.matrix:
         """Implements the state transition matrix.
 
         We refer to `F` as the system matrix, i.e., a linear matrix
@@ -49,12 +74,13 @@ class Filter:
                           [0, 1]])
 
     def Q(self
-) -> np.matrix:
+    ) -> np.matrix:
         """Implements the process noise covariance matrix.
 
         We refer to `Q` as the process noise covariance matrix, i.e.,
-        the covariance of the process noise modelled as the stochastic
-        variable $\nu$.
+        the covariance of the process noise modelled after the stochastic
+        variable $\nu$ from a Gaussian distribution with zero cross-correlation
+        to the measurement noise.
 
         The larger the values of `Q`, the higher the expectation of noise.
         In e.g., an emergency braking system of a vehicle, `Q` might have
@@ -68,11 +94,13 @@ class Filter:
                         [0, 0]])
         
     def H(self
-) -> np.matrix:
+    ) -> np.matrix:
         """Implements the measurement function.
 
         We refer to `H` as a deterministic function relating the measurement
-        of an object from time-step $t_{k-1}$ to $t_{k}$.
+        of an object from time-step $t_{k-1}$ to $t_{k}$. The matrix `H` is
+        the noiseless connection between the state vector and the measurement
+        vector and is assumed to be stationary over time.
 
         :returns: H, the measurement matrix.
         """
@@ -80,8 +108,8 @@ class Filter:
         return np.matrix([[1, 0]])
     
     def predict(self, 
-        x: np.matrix, P: np.matrix
-) -> Tuple[np.matrix, np.matrix]:
+            x: np.matrix, P: np.matrix
+    ) -> Tuple[np.matrix, np.matrix]:
         """Implements the prediction step.
 
         The state estimate and covariance matrix are updated with respect to the
@@ -101,20 +129,17 @@ class Filter:
         ############
 
         ### Project the state estimate into the next time-step
-        # Here we obtain the state transition matrix `F`
-        F = F()
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = x * F + self.u
+        x = x * self.F + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration.
-        Q = Q()
-        P = F * P * F.T + Q
+        P = self.F * P * self.F.T + self.Q
         return x, P
 
     def update(self, 
-            x, P, z, R
-) -> Tuple[np.matrix, np.matrix]:
+            x: np.matrix, P: np.matrix, z: np.matrix, R: np.matrix
+    ) -> Tuple[np.matrix, np.matrix]:
         """Implements the update step.
 
         Also referred to as the 'correction' step, here the state estimate and
@@ -135,15 +160,14 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by matrix `H`
-        H = H()
-        gamma = z - H * x
+        gamma = z - self.H * x
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = H * P * H.T + R
+        S = self.H * P * self.H.T + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * H.T * S.I
+        K = P * self.H.T * S.I
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `K`, i.e., the larger `K` the greater
@@ -151,7 +175,7 @@ class Filter:
         x = x + K * gamma
         ### Update the covariance matrix w.r.t. the weighted measurement
         # Here the identity $ P_{K} \times P_{k}^{-1} = I $ is used
-        P = (np.identity(n=len(P)) - K * H) * P
+        P = (np.identity(n=len(P)) - K * self.H) * P
         return x, P     
         
         
@@ -171,7 +195,6 @@ def run_filter():
     for i in range(1,101):        
         print('------------------------------')
         print('processing measurement #' + str(i))
-        
         ### Perform the prediction step
         x, P = KF.predict(x, P) # predict to next timestep
         print('x- =', x)
