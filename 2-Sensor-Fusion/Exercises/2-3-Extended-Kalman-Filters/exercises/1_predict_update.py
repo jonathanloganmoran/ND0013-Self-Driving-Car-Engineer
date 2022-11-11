@@ -170,8 +170,13 @@ class Filter:
         return x, P     
         
         
-def run_filter():
-    """Performs Kalman filtering over the measurement data."""
+def run_filter(
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Performs Kalman filtering over the measurement data.
+
+    :returns: tuple, the final position / velocity estimates along with
+        the weighted covariance matrix.
+    """
 
     ### Fix the seed s.t. random values are predictable
     np.random.seed(10)
@@ -203,8 +208,14 @@ def run_filter():
         x, P = KF.update(x, P, z, R)
         print('x+ =', x)
         print('P+ =', P)
+    return x, P
 
         
 if __name__ == '__main__':
     ### Run the main loop
-    run_filter()
+    x_final, P_final = run_filter()
+    ### Checking test case
+    print('Position estimate final:', x_final[0][0])
+    print('Velocity estimate final:', x_final[1][0])
+    assert np.isclose(x_final[0][0], 100.0, rtol=0.05)   # Position at $x=100.0$
+    assert np.isclose(x_final[1][0], 1.0, rtol=0.02)     # Velocity at $v=1.0$
