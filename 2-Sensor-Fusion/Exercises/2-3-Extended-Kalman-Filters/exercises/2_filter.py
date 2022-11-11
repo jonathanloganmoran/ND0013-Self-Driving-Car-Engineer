@@ -55,6 +55,8 @@ class Filter:
         
         # The number of dimensions of the process model
         self.dim_state = 4
+        # The external motion model (not used for this problem)
+        self.u = np.matrix([[0., 0.]])
         # The discrete time-step
         self.dt = 0.1
         # The design parameter of the covariance process noise
@@ -140,11 +142,13 @@ class Filter:
         :returns: tuple, the predicted state estimate and covariance matrix.
         """
 
-        F = self.F()
-        # The state prediction
-        x = F * x
-        # The covariance prediction
-        P = F * P * F.transpose() + self.Q()
+        ### Project the state estimate into the next time-step
+        # Here we update the motion from $t_{k}$ to $t_{k+1}$
+        x = self.F() * x + self.u
+        ### Project the covariance matrix into the next time-step
+        # Here the covariance process noise matrix `Q` accounts for uncertainty
+        # in object motion model due to e.g., unexpected braking / acceleration
+        P = self.F() * P * self.F().transpose() + self.Q()
         return x, P
 
     def update(self,
