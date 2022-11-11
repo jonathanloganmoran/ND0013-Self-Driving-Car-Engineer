@@ -46,7 +46,7 @@ class Filter:
         """Implements the process noise covariance matrix.
 
         We refer to `Q` as the process noise covariance matrix, i.e.,
-        the covariance between the process noise modelled as a stochastic
+        the covariance of the process noise modelled as the stochastic
         variable $\nu$.
 
         The larger the values of `Q`, the higher the expectation of noise.
@@ -118,7 +118,26 @@ class Filter:
         ############
         # TODO: implement update step
         ############
-        
+        ### Compute the measurement residual update step (i.e., innovation step)
+        # Here we compare the new measurement `z` with the prev. state estimate
+        # transformed to the measurement space by matrix `H`
+        H = H()
+        gamma = z - H * x
+        ### Compute the covariance of the residual update
+        # Here we transform the estimation error from covariance matrix `P` to
+        # measurement space given by $H^{\top}H$ then add measurement noise `R`
+        S = H * P * H.T + R
+        ### Compute the Kalman gain
+        # Here we weight the predicted state in comparison to the measurement
+        K = P * H.T * S.I
+        ### Update the state estimate w.r.t. the weighted measurement
+        # Here we give greater weight to either the measurement or the prev.
+        # estimate using the Kalman gain `K`, i.e., the larger `K` the greater
+        # the weight given to the residual measurement `gamma`
+        x = x + K * gamma
+        ### Update the covariance matrix w.r.t. the weighted measurement
+        # Here the identity $ P_{K} \times P_{k}^{-1} = I $ is used
+        P = (np.identity(n=len(P)) - K * H) * P
         return x, P     
         
         
