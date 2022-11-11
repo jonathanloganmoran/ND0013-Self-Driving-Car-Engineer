@@ -16,10 +16,6 @@
 #       TensorFlow `tf.Tensor` data ops, is recommended.
 # ------------------------------------------------------------------------------
 
-### Here we use the `numpy.matrix` class
-# Note that this class is being deprecated and its use in this programme will be
-# switched to an `numpy.ndarray` implmenetation soon.
-# See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
 from typing import Tuple
 
