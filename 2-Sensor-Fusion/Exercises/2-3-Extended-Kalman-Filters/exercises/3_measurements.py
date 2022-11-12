@@ -23,8 +23,8 @@ import matplotlib
 # matplotlib.use('wxagg')
 # Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
 # Note that 'agg' is a non-GUI backend, so only figure saving will work
-#matplotlib.use('agg')
-matplotlib.use('wxagg')
+# matplotlib.use('agg')
+# matplotlib.use('wxagg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -164,16 +164,20 @@ def calc_jacobian(
         lin_y1.append(s1 * px + i1)
         lin_y2.append(s2 * px + i2)
     ### Plot the results obtained from the linearisation of $h(x)$
-    ax1.plot(plot_x, plot_y1,
+    plot_x, plot_y1 = np.asarray(plot_x), np.asarray(plot_y1).squeeze()
+    ax1.plot(plot_x.tolist(), plot_y1.tolist(),
                         color='blue', label='measurement function h'
     )
-    ax1.plot(plot_x, lin_y1,
+    lin_y1 = np.asarray(lin_y1).squeeze()
+    ax1.plot(plot_x.tolist(), lin_y1.tolist(),
                         color='red', label='linear approximation H'
     )
-    ax2.plot(plot_x, plot_y2,
+    plot_y2 = np.asarray(plot_y2).squeeze()
+    ax2.plot(plot_x.tolist(), plot_y2.tolist(),
                         color='blue', label='measurement function h'
     )
-    ax2.plot(plot_x, lin_y2,
+    lin_y2 = np.asarray(lin_y2).squeeze()
+    ax2.plot(plot_x.tolist(), lin_y2.tolist(),
                         color='red', label='linear approximation H'
     )
     # Maximise the figure window
