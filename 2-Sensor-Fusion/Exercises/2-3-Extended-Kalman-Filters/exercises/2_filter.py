@@ -255,16 +255,25 @@ def run_filter():
         x, P = KF.update(x, P, z, R)
         ### Visualise the predicted and ground-truth tracks
         # Plot the tracks
-        ax.scatter(float(x[0]), float(x[1]), color='green', s=40, marker='x', label='track')
-        ax.scatter(float(z[0]), float(z[1]), color='blue', marker='.', label='measurement')
-        ax.scatter(float(gt[0]), float(gt[1]), color='gray', s=40, marker='+', label='ground truth')
+        ax.scatter(np.float_(x[0]).tolist(), np.float_(x[1]).tolist(),
+                            color='green', s=40, marker='x', label='track'
+        )
+        # Plot the measured position estimates
+        ax.scatter(np.float_(z[0]).tolist(), np.float_(z[1]).tolist(),
+                            color='blue', marker='.', label='measurement'
+        )
+        # Plot the ground-truth position estimates
+        ax.scatter(np.float_(gt[0]).tolist(), np.float_(gt[1]).tolist(),
+                            color='gray', s=40, marker='+', label='ground truth'
+        )
         ax.set_xlabel('x [m]')
         ax.set_ylabel('y [m]')
         ax.set_xlim(0, 10)
         ax.set_ylim(0, 10)
-        # Maximise the figure window   
-        mng = plt.get_current_fig_manager()
-        mng.frame.Maximize(True)
+        # Maximise the figure window
+        if matplotlib.rcParams['backend'] == 'wxagg':
+            mng = plt.get_current_fig_manager()
+            mng.frame.Maximize(True)
         # Remove any repeated labels from the plot
         handles, labels = ax.get_legend_handles_labels()
         handle_list, label_list = [], []
