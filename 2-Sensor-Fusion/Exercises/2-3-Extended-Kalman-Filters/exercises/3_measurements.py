@@ -130,20 +130,19 @@ def calc_jacobian(
     H = cam.get_h(x)
     ### Visualise the results
     # Define the Matplotlib figure instance and data arrays
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    plot_x = []
-    plot_y1 = []
-    plot_y2 = []
-    lin_y1 = []
-    lin_y2 = []
-    # Calculate the expansion point `x` for the first-order Taylor series
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 20),
+                        constrained_layout=True)
+    fig.suptitle('Linear approximation of the camera measurement function',
+                        fontsize=20
+    )
+    ### Calculate the expansion point `x` for the first-order Taylor series
     hx_orig = cam.get_hx(x)
     # Plot the expansion point coordinates
     ax1.plot(x[0], hx_orig[0],
-                        marker='x', color='green', label='expansion point x'
+                        marker='x', color='green', label='Expansion point $x$'
     )
     ax2.plot(x[0], hx_orig[1],
-                        marker='x', color='green', label='expansion point x'
+                        marker='x', color='green', label='Expansion point $x$'
     )
     ### Calculate the linear approximation at this point
     # Define the slope of the tangent given by the Jacobian `H`
@@ -153,6 +152,11 @@ def calc_jacobian(
     i1 = float(hx_orig[0] - s1 * x[0])
     i2 = float(hx_orig[1] - s2 * x[0])
     # Calculate the non-linear measurement function $h(x)$ for each point in `x`
+    plot_x = []
+    plot_y1 = []
+    plot_y2 = []
+    lin_y1 = []
+    lin_y2 = []
     for px in range(1, 50):
         # Get the expansion point for position `px`
         x[0] = px
@@ -166,19 +170,19 @@ def calc_jacobian(
     ### Plot the results obtained from the linearisation of $h(x)$
     plot_x, plot_y1 = np.asarray(plot_x), np.asarray(plot_y1).squeeze()
     ax1.plot(plot_x.tolist(), plot_y1.tolist(),
-                        color='blue', label='measurement function h'
+                        color='blue', label='Measurement function $h(x)$'
     )
     lin_y1 = np.asarray(lin_y1).squeeze()
     ax1.plot(plot_x.tolist(), lin_y1.tolist(),
-                        color='red', label='linear approximation H'
+                        color='red', label='Linear approximation $\mathrm{H}$'
     )
     plot_y2 = np.asarray(plot_y2).squeeze()
     ax2.plot(plot_x.tolist(), plot_y2.tolist(),
-                        color='blue', label='measurement function h'
+                        color='blue', label='Measurement function $h(x)$'
     )
     lin_y2 = np.asarray(lin_y2).squeeze()
     ax2.plot(plot_x.tolist(), lin_y2.tolist(),
-                        color='red', label='linear approximation H'
+                        color='red', label='Linear approximation $\mathrm{H}$'
     )
     # Maximise the figure window
     if matplotlib.rcParams['backend'] == 'wxagg':
@@ -186,15 +190,15 @@ def calc_jacobian(
         mng.frame.Maximize(True)
     # Display the plot legends and set axes labels
     ax1.legend(loc='center left',
-                        shadow=True, fontsize='large', bbox_to_anchor=(0.5, 0.1)
+                        shadow=True, fontsize='large', bbox_to_anchor=(0.7, 0.5)
     )
-    ax1.set_xlabel('x [m]')
-    ax1.set_ylabel('h(x) first component [px]')
+    ax1.set_xlabel('x [m]', fontsize=16)
+    ax1.set_ylabel('First component of $h(x)$ [px]', fontsize=18)
     ax2.legend(loc='center left',
-                        shadow=True, fontsize='large', bbox_to_anchor=(0.5, 0.1)
+                        shadow=True, fontsize='large', bbox_to_anchor=(0.7, 0.5)
     )
-    ax2.set_xlabel('x [m]')
-    ax2.set_ylabel('h(x) second component [px]')
+    ax2.set_xlabel('x [m]', fontsize=16)
+    ax2.set_ylabel('Second component of $h(x)$ [px]', fontsize=18)
     # Show the Matplotlib figure
     plt.show()
 
@@ -209,6 +213,6 @@ if __name__ == '__main__':
                   [0],
                   [0]]
     )
-    # Run the linearisation programme
+    # Run the linearisation programme and plot the results
     calc_jacobian(x)
 
