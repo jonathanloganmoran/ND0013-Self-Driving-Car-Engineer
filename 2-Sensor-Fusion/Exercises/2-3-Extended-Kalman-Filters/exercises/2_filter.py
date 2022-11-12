@@ -211,7 +211,7 @@ def run_filter():
     # Instantiate the Kalman filter object
     KF = Filter()
     # Initialise the Matplotlib figure
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(24, 20))
     # Initialise the track state vector and covariance matrix
     x = np.array([[0],
                   [0],
@@ -256,21 +256,21 @@ def run_filter():
         ### Visualise the predicted and ground-truth tracks
         # Plot the tracks
         ax.scatter(np.float_(x[0]).tolist(), np.float_(x[1]).tolist(),
-                            color='green', s=40, marker='x', label='track'
+                            color='green', s=40, marker='x', label='Track'
         )
         # Plot the measured position estimates
         ax.scatter(np.float_(z[0]).tolist(), np.float_(z[1]).tolist(),
-                            color='blue', marker='.', label='measurement'
+                            color='blue', marker='.', label='Measurement'
         )
-        # Plot the ground-truth position estimates
+        # Plot the ground-truth positions
         ax.scatter(np.float_(gt[0]).tolist(), np.float_(gt[1]).tolist(),
-                            color='gray', s=40, marker='+', label='ground truth'
+                            color='gray', s=40, marker='+', label='Ground truth'
         )
-        ax.set_xlabel('x [m]')
-        ax.set_ylabel('y [m]')
+        ax.set_xlabel('x [m]', fontsize=16)
+        ax.set_ylabel('y [m]', fontsize=16)
         ax.set_xlim(0, 10)
         ax.set_ylim(0, 10)
-        # Maximise the figure window
+        # Maximise the figure window if using `wxagg` backend
         if matplotlib.rcParams['backend'] == 'wxagg':
             mng = plt.get_current_fig_manager()
             mng.frame.Maximize(True)
@@ -281,7 +281,12 @@ def run_filter():
             if label not in label_list:
                 handle_list.append(handle)
                 label_list.append(label)
-        ax.legend(handle_list, label_list, loc='center left', shadow=True, fontsize='x-large', bbox_to_anchor=(0.8, 0.5))
+        ax.legend(handle_list, label_list, loc='lower right',
+                            shadow=True, fontsize='x-large'
+        )
+        ax.set_title('2-D Kalman filtering: Position tracked over time',
+                            fontsize=20
+        )
         plt.pause(0.01)
     plt.show()
 
