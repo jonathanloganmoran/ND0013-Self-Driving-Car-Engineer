@@ -20,7 +20,7 @@ import matplotlib
 ### Change Matplotlib backend for compatibility
 # Using 'wxagg' backend so that figure maximizing works on Mac as well
 # matplotlib.use('wxagg')
-# Using 'agg' backend so that plotting works on Ubuntu 10.04.6 LTS
+# Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
 # Note that 'agg' is a non-GUI backend, so only figure saving will work
 #matplotlib.use('agg')
 import matplotlib.pyplot as plt

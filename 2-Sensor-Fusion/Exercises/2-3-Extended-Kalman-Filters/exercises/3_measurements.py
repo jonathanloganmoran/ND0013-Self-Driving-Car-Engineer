@@ -1,8 +1,32 @@
-# imports
-import numpy as np
+# ------------------------------------------------------------------------------
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
+# Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
+#
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+#
+# Purpose of this file : Define the `Camera` sensor class and its core
+#                        functions, i.e., the non-linear measurement model
+#                        and the intrinsic camera parameters.                        
+#
+# You should have received a copy of the Udacity license with this program.
+#
+# https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
+#
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# ------------------------------------------------------------------------------
+
 import matplotlib
-matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well  
+### Change Matplotlib backend for compatibility
+# Using 'wxagg' backend so that figure maximizing works on Mac as well
+# matplotlib.use('wxagg')
+# Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
+# Note that 'agg' is a non-GUI backend, so only figure saving will work
+#matplotlib.use('agg')
+matplotlib.use('wxagg')
 import matplotlib.pyplot as plt
+import numpy as np
 
 class Camera:
     '''Camera sensor class including measurement matrix'''
