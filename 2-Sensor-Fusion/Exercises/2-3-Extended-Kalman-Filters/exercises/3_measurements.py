@@ -27,6 +27,7 @@ import matplotlib
 # matplotlib.use('wxagg')
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
 
 
 class Camera:
@@ -69,14 +70,17 @@ class Camera:
         ### Calculate the non-linear measurement expectation value $h(x)$
         # Obtain the position coordinates from the state vector `x`
         p_x, p_y, p_z = x[0:3]
-        # Define the non-zero entries of the expectation value
-        h11 = self.c_i - self.f_i * p_y / p_x
-        h21 = self.c_j - self.f_j * p_z / p_x
-        # Set the non-zero entries with the computed values
-        hx = np.array([[h11],
-                       [h21]])
-        # Update the class attribute and return the expectation value vector
-        self.hx = hx
+        with warnings.catch_warnings():
+            # Catch any divide-by-zero warnings
+            warnings.simplefilter('error')
+            # Define the non-zero entries of the expectation value
+            h11 = self.c_i - self.f_i * p_y / p_x
+            h21 = self.c_j - self.f_j * p_z / p_x
+            # Set the non-zero entries with the computed values
+            hx = np.array([[h11],
+                           [h21]])
+            # Update the class attribute and return the expectation value vector
+            self.hx = hx
         return hx
     
     def get_h(self,
@@ -99,10 +103,13 @@ class Camera:
         p_x, p_y, p_z = x[0:3]
         # Define the non-zero entries of the Jacobian `H`
         # Variable naming convention is matrix [row, col] indexing starting at 1
-        h11 = self.f_i * p_y / p_x**2
-        h12 = -1 * self.f_i / p_x
-        h21 = self.f_j * p_z / p_x**2
-        h23 = -1 * self.f_j / p_x
+        with warnings.catch_warnings():
+            # Catch any divide-by-zero warnings
+            warnings.simplefilter('error')
+            h11 = self.f_i * p_y / p_x**2
+            h12 = -1 * self.f_i / p_x
+            h21 = self.f_j * p_z / p_x**2
+            h23 = -1 * self.f_j / p_x
         # Set the non-zero entries with the computed values
         H = np.array([[h11, h12, 0., 0., 0., 0.],
                       [h21, 0., h23, 0., 0., 0.]])
@@ -206,7 +213,7 @@ def calc_jacobian(
 if __name__ == '__main__':
     ### Init the camera measurement model and compute its linear approximation
     # Here we define the expansion point of the Taylor series
-    x = np.array([[10],
+    x = np.array([[0],
                   [1],
                   [-1],
                   [0],
