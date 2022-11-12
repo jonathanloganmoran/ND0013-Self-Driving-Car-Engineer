@@ -76,18 +76,27 @@ class Camera:
     ) -> np.matrix:
         """Implements the Jacobian matrix of the camera measurement function.
 
+        Assumed is the zero contribution of the velocity term of the state
+        vector in the measurement function. Here the first-order Taylor expansion
+        is commputed to linearise the camera measurement function at the expansion
+        point $x$.
+
         :param x: the expansion point used in the first-order Taylor series.
         :returns: H, the Jacobian matrix of the camera measurement function,
             i.e., $\mathrm{H}_{j}$ linearised about expansion point $x$.
         """
 
-        # calculate Jacobian H at current x from h(x)
-        H = np.matrix(np.zeros((2, 6)))
-        ############
-        # TODO: implement and return H
-        ############ 
-        return H
- 
+        ### Calculate the Jacobian `H` at current `x` of $h(x)$
+        # Obtain the position coordinates from the point `x`
+        p_x, p_y, p_z = x[0:3]
+        # Define the non-zero entries of the Jacobian `H`
+        # Variable naming convention is matrix [row, col] indexing starting at 1
+        h11 = self.f_i * p_y / p_x**2
+        h12 = -1 * self.f_i / p_x
+        h21 = self.f_j * p_z / p_x**2
+        h23 = -1 * self.f_j / p_x
+        return np.matrix([[h11, h12, 0., 0., 0., 0.],
+                          [h21, 0., h23, 0., 0., 0.]])
  
 def calc_jacobian(
         x: np.matrix
