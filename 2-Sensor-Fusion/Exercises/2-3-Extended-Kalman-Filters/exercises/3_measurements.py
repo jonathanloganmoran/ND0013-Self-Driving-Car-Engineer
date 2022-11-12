@@ -40,6 +40,8 @@ class Camera:
     :param f_j: the focal length along the j-axis of the image plane.
     :param c_i: the component of the principal point along the i-axis.
     :param c_j: the component of the principal point along the j-axis.
+    :param hx: the non-linear camera measurement function.
+    :param H: the linearised camera measurement matrix as a Jacobian.
     '''
 
     def __init__(self):
@@ -53,6 +55,10 @@ class Camera:
         self.c_i = 944.9
         # The principal point along the j-axis
         self.c_j = 640.2
+        # The non-linear camera measurement function
+        self.hx = None
+        # The linearised camera measurement matrix as a Jacobian
+        self.H = None
         
     def get_hx(self,
             x: np.matrix
@@ -70,8 +76,12 @@ class Camera:
         # Define the non-zero entries of the expectation value
         h11 = self.c_i - self.f_i * p_y / p_x
         h21 = self.c_j - self.f_j * p_z / p_x
-        return np.matrix([[h11],
-                          [h21]])
+        # Set the non-zero entries with the computed values
+        hx = np.matrix([[h11],
+                        [h21]])
+        # Update the class attribute and return the expectation value vector
+        self.hx = hx
+        return hx
     
     def get_h(self,
             x: np.matrix
@@ -97,8 +107,12 @@ class Camera:
         h12 = -1 * self.f_i / p_x
         h21 = self.f_j * p_z / p_x**2
         h23 = -1 * self.f_j / p_x
-        return np.matrix([[h11, h12, 0., 0., 0., 0.],
-                          [h21, 0., h23, 0., 0., 0.]])
+        # Set the non-zero entries with the computed values
+        H = np.matrix([[h11, h12, 0., 0., 0., 0.],
+                       [h21, 0., h23, 0., 0., 0.]])
+        # Update the class attribute and return the Jacobian `H`
+        self.H = H
+        return H
  
 def calc_jacobian(
         x: np.matrix
