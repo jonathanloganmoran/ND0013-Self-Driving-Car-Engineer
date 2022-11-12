@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 # switched to an `numpy.ndarray` implmenetation soon.
 # See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
+from typing import Tuple
 
 
 class Filter:
@@ -105,7 +106,7 @@ class Filter:
 
         return np.matrix([
             [self.dt**3 * self.q / 3., 0., self.dt**2 * self.q / 2., 0.],
-            [0., self.dt**3 * self.q / 3., 0., self.dt**2 / 2.]
+            [0., self.dt**3 * self.q / 3., 0., self.dt**2 / 2.],
             [self.dt**2 * self.q / 2., 0., self.dt * self.q, 0.],
             [0., self.dt**2 * self.q / 2., 0., self.dt * self.q]])
     
@@ -181,10 +182,10 @@ class Filter:
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = self.H() * P * self.H.T + R
+        S = self.H() * P * self.H().T + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * self.H.T * S.I
+        K = P * self.H().T * S.I
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `k`, i.e., the larger the `K` the greater
