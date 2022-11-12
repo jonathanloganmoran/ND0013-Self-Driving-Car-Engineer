@@ -50,6 +50,9 @@ class Filter:
         assumed to be constant as in the 1-D case.
     :param q: the design parameter of the covariance process noise matrix $Q$,
         which is selected w.r.t. the expected maximum change in velocity.
+    :param F: the state transition matrix in the 2-D filter case.
+    :param Q: the discretised process noise covariance matrix.
+    :param H: the measurement projection matrix of the linear LiDAR sensor.
     '''
 
     def __init__(self):
@@ -59,10 +62,16 @@ class Filter:
         self.dim_state = 4
         # The external motion model (not used for this problem)
         self.u = np.matrix([[0., 0.]])
-        # The discrete time-step measured in seconds (s)
+        # Set the discrete time-step (measured in seconds, s)
         self.dt = 0.1
         # The design parameter of the covariance process noise
         self.q = 0.1
+        # Instantiate the state transition matrix
+        self.F = self.F()
+        # Instantiate the process noise covariance matrix
+        self.Q = self.Q()
+        # Instantiate the measurement projection matrix
+        self.H = self.H()
 
     def F(self
     ) -> np.matrix:
@@ -148,11 +157,11 @@ class Filter:
 
         ### Project the state estimate into the next time-step
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = self.F() * x + self.u
+        x = self.F * x + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration
-        P = self.F() * P * self.F().T + self.Q()
+        P = self.F * P * self.F.T + self.Q
         return x, P
 
     def update(self,
@@ -178,14 +187,14 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by `H`
-        gamma = z - self.H() * x
+        gamma = z - self.H * x
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = self.H() * P * self.H().T + R
+        S = self.H * P * self.H.T + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * self.H().T * S.I
+        K = P * self.H.T * S.I
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `k`, i.e., the larger the `K` the greater
@@ -194,7 +203,7 @@ class Filter:
         ### Update the covariance matrix w.r.t. the weighted measurement
         # Here the identity $ P_{k} \times P_{k}^{-1} = I $ is used
         I = np.identity(self.dim_state)
-        P = (I - K * self.H()) * P
+        P = (I - K * self.H) * P
         return x, P
         
         
