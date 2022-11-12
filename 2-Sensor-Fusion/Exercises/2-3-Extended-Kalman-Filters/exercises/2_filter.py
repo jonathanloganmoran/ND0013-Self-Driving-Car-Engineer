@@ -89,7 +89,8 @@ class Filter:
         the measurement noise.
 
         The discretisation of $Q$ is such that noise through acceleration
-        is assumed to be equal in both $x$ and $y$, i.e., $ \nu_{x} = \nu_y} $.
+        is assumed to be equal in both $x$ and $y$, i.e.,
+            $ \nu_{x} = \nu_y} $.
 
         The $Q$ matrix depends on both the time-step $\Delta{t}$ and a process
         noise covariance design parameter `q`, which is selected w.r.t. the
@@ -102,16 +103,16 @@ class Filter:
         :returns Q: the process noise covariance matrix.
         """
 
-        ############
-        # TODO: implement and return Q
-        ############
-        
-        pass
+        return np.matrix([
+            [self.dt**3 * self.q / 3., 0., self.dt**2 * self.q / 2., 0.],
+            [0., self.dt**3 * self.q / 3., 0., self.dt**2 / 2.]
+            [self.dt**2 * self.q / 2., 0., self.dt * self.q, 0.],
+            [0., self.dt**2 * self.q / 2., 0., self.dt * self.q]])
     
     def H(self
     ) -> np.ndarray:
         """Implements the measurement function.
-        
+
         We refer to `H` as the projection matrix from the 4-D state space of the
         object to the 2-D measurement space of the sensor, in this case, the
         linear LiDAR sensor.
