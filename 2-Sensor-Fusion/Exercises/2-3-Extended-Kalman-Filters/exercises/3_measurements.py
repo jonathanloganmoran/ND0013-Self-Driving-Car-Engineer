@@ -64,12 +64,14 @@ class Camera:
             i.e., the expectation value $h(x)$.
         """
 
-        # calculate nonlinear measurement expectation value h(x)   
-        hx = np.zeros((2,1))
-        ############
-        # TODO: implement and return h(x)
-        ############
-        return hx
+        ### Calculate the non-linear measurement expectation value $h(x)$
+        # Obtain the position coordinates from the state vector `x`
+        p_x, p_y, p_z = x[0:3]
+        # Define the non-zero entries of the expectation value
+        h11 = self.c_i - self.f_i * p_y / p_x
+        h21 = self.c_j - self.f_j * p_z / p_x
+        return np.matrix([[h11],
+                          [h21]])
     
     def get_h(self,
             x: np.matrix
@@ -87,7 +89,7 @@ class Camera:
         """
 
         ### Calculate the Jacobian `H` at current `x` of $h(x)$
-        # Obtain the position coordinates from the point `x`
+        # Obtain the position coordinates from the state vector `x`
         p_x, p_y, p_z = x[0:3]
         # Define the non-zero entries of the Jacobian `H`
         # Variable naming convention is matrix [row, col] indexing starting at 1
