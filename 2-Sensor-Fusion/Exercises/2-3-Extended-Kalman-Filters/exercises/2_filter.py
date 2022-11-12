@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 # See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
 
+
 class Filter:
     '''The Kalman filter class.
 
@@ -63,7 +64,7 @@ class Filter:
         self.q = 0.1
 
     def F(self
-    ) -> np.ndarray:
+    ) -> np.matrix:
         """Implements the state transition matrix.
 
         Here we assume a linear motion model with constant velocity in 2-D,
@@ -79,7 +80,7 @@ class Filter:
                           [0., 0., 0., 1.]])
 
     def Q(self
-    ) -> np.ndarray:
+    ) -> np.matrix:
         """Implements the process noise covariance matrix.
 
         We refer to `Q` as the process noise covariance matrix, i.e.,
@@ -109,7 +110,7 @@ class Filter:
             [0., self.dt**2 * self.q / 2., 0., self.dt * self.q]])
     
     def H(self
-    ) -> np.ndarray:
+    ) -> np.matrix:
         """Implements the measurement function.
 
         We refer to `H` as the projection matrix from the 4-D state space of the
@@ -128,8 +129,8 @@ class Filter:
                           [0., 1., 0., 0.]])
     
     def predict(self,
-            x: np.ndarray, P: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+            x: np.matrix, P: np.matrix
+    ) -> Tuple[np.matrix, np.matrix]:
         """Implements the prediction step.
 
         The state estimate and covariance matrix are updated with respect to the
@@ -150,12 +151,12 @@ class Filter:
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration
-        P = self.F() * P * self.F().transpose() + self.Q()
+        P = self.F() * P * self.F().T + self.Q()
         return x, P
 
     def update(self,
-            x: np.ndarray, P: np.ndarray, z: np.ndarray, R: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+            x: np.matrix, P: np.matrix, z: np.matrix, R: np.matrix
+    ) -> Tuple[np.matrix, np.matrix]:
         """Implements the update step.
 
         Also referred to as the 'correction' step, here the state estimate and
@@ -180,10 +181,10 @@ class Filter:
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = self.H() * P * self.H.transpose() + R
+        S = self.H() * P * self.H.T + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * self.H.transpose() * np.linalg.inv(S)
+        K = P * self.H.T * S.I
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `k`, i.e., the larger the `K` the greater
