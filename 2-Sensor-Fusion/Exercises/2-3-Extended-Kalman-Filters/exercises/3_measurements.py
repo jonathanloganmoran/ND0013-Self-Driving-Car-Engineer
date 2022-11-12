@@ -61,8 +61,8 @@ class Camera:
         self.H = None
         
     def get_hx(self,
-            x: np.matrix
-    ) -> np.matrix:
+            x: np.ndarray
+    ) -> np.ndarray:
         """Implements the non-linear measurement function.
 
         :param x: the expansion point used in the first-order Taylor series.
@@ -77,15 +77,15 @@ class Camera:
         h11 = self.c_i - self.f_i * p_y / p_x
         h21 = self.c_j - self.f_j * p_z / p_x
         # Set the non-zero entries with the computed values
-        hx = np.matrix([[h11],
-                        [h21]])
+        hx = np.array([[h11],
+                       [h21]])
         # Update the class attribute and return the expectation value vector
         self.hx = hx
         return hx
     
     def get_h(self,
-            x: np.matrix
-    ) -> np.matrix:
+            x: np.ndarray
+    ) -> np.ndarray:
         """Implements the Jacobian matrix of the camera measurement function.
 
         Assumed is the zero contribution of the velocity term of the state
@@ -108,14 +108,14 @@ class Camera:
         h21 = self.f_j * p_z / p_x**2
         h23 = -1 * self.f_j / p_x
         # Set the non-zero entries with the computed values
-        H = np.matrix([[h11, h12, 0., 0., 0., 0.],
-                       [h21, 0., h23, 0., 0., 0.]])
+        H = np.array([[h11, h12, 0., 0., 0., 0.],
+                      [h21, 0., h23, 0., 0., 0.]])
         # Update the class attribute and return the Jacobian `H`
         self.H = H
         return H
  
 def calc_jacobian(
-        x: np.matrix
+        x: np.ndarray
 ):
     """Linearises the camera measurement function and plots the results.
     
@@ -194,12 +194,12 @@ def calc_jacobian(
 if __name__ == '__main__':
     ### Init the camera measurement model and compute its linear approximation
     # Here we define the expansion point of the Taylor series
-    x = np.matrix([[10],
-                   [1],
-                   [-1],
-                   [0],
-                   [0],
-                   [0]]
+    x = np.array([[10],
+                  [1],
+                  [-1],
+                  [0],
+                  [0],
+                  [0]]
     )
     # Run the linearisation programme
     calc_jacobian(x)
