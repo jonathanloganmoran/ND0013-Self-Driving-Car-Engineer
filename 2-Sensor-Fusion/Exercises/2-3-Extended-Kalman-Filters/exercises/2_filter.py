@@ -57,10 +57,10 @@ class Filter:
         self.dim_state = 4
         # The external motion model (not used for this problem)
         self.u = np.matrix([[0., 0.]])
-        # The discrete time-step
+        # The discrete time-step measured in seconds (s)
         self.dt = 0.1
         # The design parameter of the covariance process noise
-        self.q=0.1
+        self.q = 0.1
 
     def F(self
     ) -> np.ndarray:
@@ -111,19 +111,21 @@ class Filter:
     def H(self
     ) -> np.ndarray:
         """Implements the measurement function.
+        
+        We refer to `H` as the projection matrix from the 4-D state space of the
+        object to the 2-D measurement space of the sensor, in this case, the
+        linear LiDAR sensor.
 
-        We refer to `H` as the projection matrix from the 4-D state space of
-        the object to the 2-D measurement space of the sensor, in this case,
-        the linear LiDAR sensor (discarding velocity information from the state).
+        Here we discard the velocity information, $(v_{x}, v_{y})$, from the
+        predicted state vector $ x = (p_{x}, p_{y}, v_{x}, v_{y})^{\top} $.
+        This allows us to correctly project the 2-D components of position into
+        the measurement space.
 
         :returns: H, the measurement model of the linear LiDAR sensor in 2-D.
         """
 
-        ############
-        # TODO: implement and return H
-        ############
-    
-        pass
+        return np.matrix([[1., 0., 0., 0.],
+                          [0., 1., 0., 0.]])
     
     def predict(self,
             x: np.ndarray, P: np.ndarray
@@ -219,18 +221,25 @@ def run_filter():
         ### Perform the prediction step
         # Here we predict to the next time-step
         x, P = KF.predict(x, P)
-        # Here we generate the ground-truth observation
+        # Here we generate the ground-truth observation as a
+        # non-linear motion model
         gt = np.matrix([[i * KF.dt], 
                         [0.1 * (i * KF.dt)**2]]
         )
-        ### Obtain the measurement
-        # The measurement noise constant
+        ### Obtain the measurement using a linear motion model
+        # The measurement noise constant to account for discrepency
+        # between linear and non-linear motion models
         sigma_z = 0.2
-        # Here we generate a noisy measurement from a Guassian normal distribution 
+        # Here we generate a noisy measurement from a Guassian normal distribution
         z = np.matrix([[float(gt[0]) + np.random.normal(0, sigma_z)],
                        [float(gt[1]) + np.random.normal(0, sigma_z)]]
         )
         # Here we generate the measurement noise covariance matrix
+        # which is the uncertainty in the position measurements received by the
+        # LiDAR sensor modelled by the the standard deviations of the detections
+        # in $x$ and $y$ along the diagonal of $R$
+        # Note that the off-diagonal 0s here indicate that the noise in $x$ and $y$
+        # are in fact uncorrelated, per the assumption made w.r.t. $\gamma$
         R = np.matrix([[sigma_z**2, 0],
                        [0, sigma_z**2]]
         )
@@ -244,8 +253,8 @@ def run_filter():
         ax.scatter(float(gt[0]), float(gt[1]), color='gray', s=40, marker='+', label='ground truth')
         ax.set_xlabel('x [m]')
         ax.set_ylabel('y [m]')
-        ax.set_xlim(0,10)
-        ax.set_ylim(0,10)
+        ax.set_xlim(0, 10)
+        ax.set_ylim(0, 10)
         # Maximise the figure window   
         mng = plt.get_current_fig_manager()
         mng.frame.Maximize(True)
