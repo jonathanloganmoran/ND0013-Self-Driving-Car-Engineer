@@ -181,8 +181,9 @@ def calc_jacobian(
                         color='red', label='linear approximation H'
     )
     # Maximise the figure window
-    mng = plt.get_current_fig_manager()
-    mng.frame.Maximize(True)
+    if matplotlib.rcParams['backend'] == 'wxagg':
+        mng = plt.get_current_fig_manager()
+        mng.frame.Maximize(True)
     # Display the plot legends and set axes labels
     ax1.legend(loc='center left',
                         shadow=True, fontsize='large', bbox_to_anchor=(0.5, 0.1)
