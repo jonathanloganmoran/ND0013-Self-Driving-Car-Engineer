@@ -72,12 +72,11 @@ class Filter:
 
         :returns: F, the state transition matrix.
         """
-
-        ############
-        # TODO: implement and return F
-        ############
         
-        pass
+        return np.matrix([[1., 0., self.dt, 0.],
+                          [0., 1., 0., self.dt],
+                          [0., 0., 1., 0.],
+                          [0., 0., 0., 1.]])
 
     def Q(self
     ) -> np.ndarray:
