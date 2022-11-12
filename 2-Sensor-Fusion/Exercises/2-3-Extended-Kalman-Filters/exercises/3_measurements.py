@@ -124,40 +124,46 @@ def calc_jacobian(
 
     :param x: the expansion point used in the first-order Taylor series.
     """
-    # calculate Jacobian for x
+
+    ### Calculate the Jacobian for state vector `x`
     cam = Camera()
     H = cam.get_h(x)
-    # init visualization
-    fig, (ax1, ax2) = plt.subplots(1,2)
+    ### Visualise the results
+    # Define the Matplotlib figure instance and data arrays
+    fig, (ax1, ax2) = plt.subplots(1, 2)
     plot_x = []
     plot_y1 = []
     plot_y2 = []
     lin_y1 = []
     lin_y2 = []
-    # calculate Taylor series expansion point
+    # Calculate the expansion point `x` for the first-order Taylor series
     hx_orig = cam.get_hx(x)
+    # Plot the expansion point coordinates
     ax1.plot(x[0], hx_orig[0],
                         marker='x', color='green', label='expansion point x'
     )
     ax2.plot(x[0], hx_orig[1],
                         marker='x', color='green', label='expansion point x'
     )
-    # calculate linear approximation at this point 
-    s1 = float(H[0,0]) # slope of tangent given by Jacobian H
-    s2 = float(H[1,0])
-    i1 = float(hx_orig[0] - s1*x[0]) # intercept i = y - s*x
-    i2 = float(hx_orig[1] - s2*x[0])
-    # calculate nonlinear measurement function h
-    for px in range(1,50):
+    ### Calculate the linear approximation at this point
+    # Define the slope of the tangent given by the Jacobian `H`
+    s1 = float(H[0, 0])
+    s2 = float(H[1, 0])
+    # Define the intercept of the slope to be $i = y - s * x$
+    i1 = float(hx_orig[0] - s1 * x[0])
+    i2 = float(hx_orig[1] - s2 * x[0])
+    # Calculate the non-linear measurement function $h(x)$ for each point in `x`
+    for px in range(1, 50):
+        # Get the expansion point for position `px`
         x[0] = px
         hx = cam.get_hx(x)
+        # Append the results for plotting
         plot_x.append(px)
         plot_y1.append(hx[0])
         plot_y2.append(hx[1])
-        lin_y1.append(s1*px + i1)
-        lin_y2.append(s2*px + i2)
-        
-    # plot results
+        lin_y1.append(s1 * px + i1)
+        lin_y2.append(s2 * px + i2)
+    ### Plot the results obtained from the linearisation of $h(x)$
     ax1.plot(plot_x, plot_y1,
                         color='blue', label='measurement function h'
     )
@@ -170,10 +176,10 @@ def calc_jacobian(
     ax2.plot(plot_x, lin_y2,
                         color='red', label='linear approximation H'
     )
-    # maximize window     
+    # Maximise the figure window
     mng = plt.get_current_fig_manager()
     mng.frame.Maximize(True)
-    # legend
+    # Display the plot legends and set axes labels
     ax1.legend(loc='center left',
                         shadow=True, fontsize='large', bbox_to_anchor=(0.5, 0.1)
     )
@@ -184,6 +190,7 @@ def calc_jacobian(
     )
     ax2.set_xlabel('x [m]')
     ax2.set_ylabel('h(x) second component [px]')
+    # Show the Matplotlib figure
     plt.show()
 
 
