@@ -61,7 +61,7 @@ class Filter:
         # The number of dimensions of the process model
         self.dim_state = 4
         # The external motion model (not used for this problem)
-        self.u = np.matrix([[0., 0.]])
+        self.u = np.array([[0., 0.]])
         # Set the discrete time-step (measured in seconds, s)
         self.dt = 0.1
         # The design parameter of the covariance process noise
@@ -74,7 +74,7 @@ class Filter:
         self.H = self.H()
 
     def F(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the state transition matrix.
 
         Here we assume a linear motion model with constant velocity in 2-D,
@@ -84,13 +84,13 @@ class Filter:
         :returns: F, the state transition matrix.
         """
         
-        return np.matrix([[1., 0., self.dt, 0.],
-                          [0., 1., 0., self.dt],
-                          [0., 0., 1., 0.],
-                          [0., 0., 0., 1.]])
+        return np.array([[1., 0., self.dt, 0.],
+                         [0., 1., 0., self.dt],
+                         [0., 0., 1., 0.],
+                         [0., 0., 0., 1.]])
 
     def Q(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the process noise covariance matrix.
 
         We refer to `Q` as the process noise covariance matrix, i.e.,
@@ -113,14 +113,14 @@ class Filter:
         :returns Q: the process noise covariance matrix.
         """
 
-        return np.matrix([
+        return np.array([
             [self.dt**3 * self.q / 3., 0., self.dt**2 * self.q / 2., 0.],
             [0., self.dt**3 * self.q / 3., 0., self.dt**2 / 2.],
             [self.dt**2 * self.q / 2., 0., self.dt * self.q, 0.],
             [0., self.dt**2 * self.q / 2., 0., self.dt * self.q]])
     
     def H(self
-    ) -> np.matrix:
+    ) -> np.ndarray:
         """Implements the measurement function.
 
         We refer to `H` as the projection matrix from the 4-D state space of the
@@ -135,12 +135,12 @@ class Filter:
         :returns: H, the measurement model of the linear LiDAR sensor in 2-D.
         """
 
-        return np.matrix([[1., 0., 0., 0.],
-                          [0., 1., 0., 0.]])
+        return np.array([[1., 0., 0., 0.],
+                         [0., 1., 0., 0.]])
     
     def predict(self,
-            x: np.matrix, P: np.matrix
-    ) -> Tuple[np.matrix, np.matrix]:
+            x: np.ndarray, P: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Implements the prediction step.
 
         The state estimate and covariance matrix are updated with respect to the
@@ -157,16 +157,16 @@ class Filter:
 
         ### Project the state estimate into the next time-step
         # Here we update the motion from $t_{k}$ to $t_{k+1}$
-        x = self.F * x + self.u
+        x = self.F @ x + self.u
         ### Project the covariance matrix into the next time-step
         # Here the covariance process noise matrix `Q` accounts for uncertainty
         # in object motion model due to e.g., unexpected braking / acceleration
-        P = self.F * P * self.F.T + self.Q
+        P = np.matmul(self.F @ P, self.F.T) + self.Q
         return x, P
 
     def update(self,
-            x: np.matrix, P: np.matrix, z: np.matrix, R: np.matrix
-    ) -> Tuple[np.matrix, np.matrix]:
+            x: np.ndarray, P: np.ndarray, z: np.ndarray, R: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Implements the update step.
 
         Also referred to as the 'correction' step, here the state estimate and
@@ -187,23 +187,23 @@ class Filter:
         ### Compute the measurement residual update step (i.e., innovation step)
         # Here we compare the new measurement `z` with the prev. state estimate
         # transformed to the measurement space by `H`
-        gamma = z - self.H * x
+        gamma = z - self.H @ x
         ### Compute the covariance of the residual update
         # Here we transform the estimation error from covariance matrix `P` to
         # measurement space given by $H^{\top}H$ then add measurement noise `R`
-        S = self.H * P * self.H.T + R
+        S = np.matmul(self.H @ P, self.H.T) + R
         ### Compute the Kalman gain
         # Here we weight the predicted state in comparison to the measurement
-        K = P * self.H.T * S.I
+        K = np.matmul(P @ self.H.T, np.linalg.inv(S))
         ### Update the state estimate w.r.t. the weighted measurement
         # Here we give greater weight to either the measurement or the prev.
         # estimate using the Kalman gain `k`, i.e., the larger the `K` the greater
         # the weight given to the residual measurement `gamma`
-        x = x + K * gamma
+        x = x + K @ gamma
         ### Update the covariance matrix w.r.t. the weighted measurement
         # Here the identity $ P_{k} \times P_{k}^{-1} = I $ is used
-        I = np.identity(self.dim_state)
-        P = (I - K * self.H) * P
+        I = np.identity(n=self.dim_state)
+        P = (I - np.matmul(K, self.H)) @ P
         return x, P
         
         
@@ -217,15 +217,15 @@ def run_filter():
     # Initialise the Matplotlib figure
     fig, ax = plt.subplots()
     # Initialise the track state vector and covariance matrix
-    x = np.matrix([[0],
-                   [0],
-                   [0],
-                   [0]]
+    x = np.array([[0],
+                  [0],
+                  [0],
+                  [0]]
     )
-    P = np.matrix([[0.1**2, 0, 0, 0],
-                   [0, 0.1**2, 0, 0],
-                   [0, 0, 2**2, 0],
-                   [0, 0, 0, 2**2]]
+    P = np.array([[0.1**2, 0, 0, 0],
+                  [0, 0.1**2, 0, 0],
+                  [0, 0, 2**2, 0],
+                  [0, 0, 0, 2**2]]
     )
     # Loop over the measurements and call `predict` and `update`
     for i in range(1, 101):
@@ -234,16 +234,16 @@ def run_filter():
         x, P = KF.predict(x, P)
         # Here we generate the ground-truth observation as a
         # non-linear motion model
-        gt = np.matrix([[i * KF.dt], 
-                        [0.1 * (i * KF.dt)**2]]
+        gt = np.array([[i * KF.dt], 
+                       [0.1 * (i * KF.dt)**2]]
         )
         ### Obtain the measurement using a linear motion model
         # The measurement noise constant to account for discrepency
         # between linear and non-linear motion models
         sigma_z = 0.2
         # Here we generate a noisy measurement from a Guassian normal distribution
-        z = np.matrix([[float(gt[0]) + np.random.normal(0, sigma_z)],
-                       [float(gt[1]) + np.random.normal(0, sigma_z)]]
+        z = np.array([[float(gt[0]) + np.random.normal(0, sigma_z)],
+                      [float(gt[1]) + np.random.normal(0, sigma_z)]]
         )
         # Here we generate the measurement noise covariance matrix
         # which is the uncertainty in the position measurements received by the
@@ -251,8 +251,8 @@ def run_filter():
         # in $x$ and $y$ along the diagonal of $R$
         # Note that the off-diagonal 0s here indicate that the noise in $x$ and $y$
         # are in fact uncorrelated, per the assumption made w.r.t. $\gamma$
-        R = np.matrix([[sigma_z**2, 0],
-                       [0, sigma_z**2]]
+        R = np.array([[sigma_z**2, 0],
+                      [0, sigma_z**2]]
         )
         ### Perform the update step
         # Update the state and covariance matrix with the measurement
