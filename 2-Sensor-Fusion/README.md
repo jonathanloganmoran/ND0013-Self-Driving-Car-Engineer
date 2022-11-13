@@ -22,17 +22,21 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 ### Exercises
 * ✅ [2.1.1: The LiDAR Sensor](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-1-Lidar-Sensor);
 * ✅ [2.1.2: Detecting Objects in LiDAR](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-2-Object-Detection);
+* ✅ [2.1.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/2.1.3/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
 * ⬜️ More Exercises will be announced as the course progresses...
 
 
 ### Course Contents
-
 The following topics are covered in course exercises:
 * Extracting and transforming LiDAR range data
 * Performing vehicle-sensor calibration
 * Scaling LiDAR range intensity values using heuristic methods
 * Correcting the azimuth angles using extrinsic calibration matrix
 * Transforming range images to 3D point clouds
+* Defining object motion model assumptions / design parameters for self-driving cars
+* Using Kalman Filters for tracking in 1- and 2-D
+* Linearising the camera measurement model
+* Building Extended Kalman Filters (EKF) for tracking with camera and LiDAR data
 * And much more ... (will be announced as course progresses)
 
 
@@ -43,6 +47,8 @@ Other topics covered in course lectures and reading material:
 * Light propagation angle for OPA LiDAR systems
 * Comparing camera / LiDAR / radar / ultrasonics performance
 * Selecting the best sensor(s) for a given job with constraints
+* In-depth coverage of Kalman filter update / predict equations
+* Assumptions of Kalman filter equations for self-driving cars
 * And much more ... (will be announced as course progresses)
 
 
@@ -66,6 +72,27 @@ Other topics covered in course lectures and reading material:
 * Evaluate object detection model performance with metrics;
 * Experiment with state-of-the-art (SOTA) models and compare their performances.
 
+#### Lesson 4: Kalman Filters
+* Learn to track objects over time with linear Kalman filters;
+* Compare tracking solutions (Kalman filters, Monte-Carlo localisation, Particle filters);
+* Define measurement and motion models;
+* Reason about radar measurement data to perform vehicle correspondence.
+
+#### Lesson 5: Extended Kalman Filters
+* Track objects over time with Extended Kalman Filters (EKF);
+* Implement linear and non-linear motion and measurement models;
+* Derive a Jacobian matrix for non-linear models;
+* Apply appropriate coordinate transformations (e.g., sensor to vehicle / world coordinate space);
+* Fuse LiDAR measurements with camera detections using appropriate camera models.
+
+#### Lesson 6: Multi-Target Tracking
+* Initialise, update and delete object tracks;
+* Define and implement a track score and track state;
+* Calculate a simple detection probability / visibility reasoning;
+* Associate tracking measurements to perform Multi-Target Tracking (MTT);
+* Reduce association complexity through a gating method;
+* Evaluate tracking performance through metrics, e.g., RMSE.
+
 
 ### Material
 Syllabus:
@@ -78,7 +105,9 @@ Datasets:
 * [Waymo Open Dataset: Perception](https://waymo.com/open/).
 
 Lectures:
-* Lecture materials (videos, slides) available offline. Course lecture notes available on request.
+* Lecture materials (videos, slides) for Lessons 1 - 3 are available offline;
+* Lecture matrerials (videos) for Lesson 5 are available [here](https://www.youtube.com/playlist?list=PL6nu8g-5OMNgl_rtYmrGa-K4lkjcTJbL5);
+* Course lecture notes available on request.
 
 ### Other resources
 Companion code:

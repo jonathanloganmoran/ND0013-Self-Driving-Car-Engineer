@@ -11,12 +11,17 @@ Filename                                                                        
 ------------------------------------------------------------------------------------|--------------
 `setup.py`                                                                          | Sets the base directory and working path; used with `setuptools` to install project modules on build path.
 `basic_loop.py`                                                                     | Entry point to the programme to run each exercise and example script.
-`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`                          | Jupyter notebook file demonstrating the Lesson 1 and Lesson 2 exercises from this module.
+`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`                          | Jupyter notebook file demonstrating the Lesson 1 through Lesson 3 exercises of this course.
+`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`                          | Jupyter notebook file demonstrating the Lesson 4 through Lesson 6 exercises of this course.
 `2-1-Lidar-Sensor/exercises/l1_exercises.py`                                        | Scripts to visualise the range images and print sensor statistics.
 `2-1-Lidar-Sensor/examples/l1_examples.py`                                          | Scripts to load and convert range images to 3D point clouds; scripts to print additional sensor statistics.
 `2-2-Object-Detection/exercises/l2_exercises.py`                                    | Scripts to load and convert 3D point clouds to BEV maps; evaluation metrics functions.
 `2-2-Object-Detection/examples/l2_examples.py`                                      | Scripts to crop the point cloud to a ROI, render bounding boxes over BEV map images.
+`2-3-Extended-Kalman-Filters/exercises/1_predict_update.py`                         | The 1-D Kalman `Filter` class and class methods required to perform 1-D tracking of objects with LiDAR data.
+`2-3-Extended-Kalman-Filters/exercises/2_filter.py`                                 | The 2-D Kalman `Filter` class and class methods required to perform 2-D tracking of objects with LiDAR data.
+`2-3-Extended-Kalman-Filters/exercises/3_measurements.py`                           | The `Camera` sensor class and class methods required to linearise the measurement model for use with Extended Kalman Filter (EKF).
 `requirements.txt`                                                                  | List of project requirements and dependencies to install with `pip` via the `setuptools` script.
+`references.bib`                                                                    | List of BibTeX-formatted references mentioned in the Jupyter notebook files.
 `tools/`                                                                            | Set of submodules used as dependencies, e.g., the Simple Waymo Dataset Reader.
 `misc/`                                                                             | Set of script files to modify the LiDAR sensor matrices, fetch the sensor and programme parameters, range images, object labels, etc.
 
@@ -31,13 +36,32 @@ where `BASE_DIR` points to the top-level project directory. All project modules 
 
 ## Running the Code
 
-All functions from Lesson 1 / Lesson 2 can be run from the `basic_loop.py` script file. Inside this script file is a `while` loop that iterates over the individual frames in the specified segment file and applies the desired L1 / L2 functions.
+### L1-L3: Object Detection with LiDAR Data
+All functions from Lesson 1 through Lesson 3 are executable from inside the `basic_loop.py` script file. To run the programme, use the standard command-line execution inside the project directory as follows:
 
-To run any of the `exercises` or `examples` functions independently, use the `2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb` demo file.
+```python
+python3 basic_loop.py
+```
+
+Inside this script file is a `while` loop that iterates over the individual frames in the specified segment file and applies the desired L1 / L2 / L3 functions.
+
+To run any of the `exercises` or `examples` functions independently, use the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`]() demo file.
+
+### L4-L6: Tracking with Kalman Filters
+All functions from Lesson 4 through Lesson 6 can be previewed in the [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`]() notebook file. 
+
+To run any of the `exercises` independently, use the standard command-line execution, e.g.,
+
+```python
+python3 1_predict_update.py
+```
+
+in order to execute any of the scripts inside [`2-3-Extended-Kalman-Filters/exercises`]().
 
 
 ## Results
 
+### L1-L3: Object Detection with LiDAR Data
 <img src="figures/README/2022-10-31-Figure-1-Range-Image-Intensity-Channel.png" height="85%" width="85%" alt="Figure 1. Range image from Waymo Open Dataset: visualising the intensity channel.">
 
 $$
@@ -54,6 +78,23 @@ $$
 \end{align}
 $$
 
+### L4-L6: Tracking with Kalman Filters
+
+<img src="figures/README/2022-11-11-Figure-3-2D-Kalman-Filtering-Position-Over-Time.png" height="75%" width="75%" alt="Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.">
+
+$$
+\begin{align}
+\textrm{Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.}
+\end{align}
+$$
+
+<img src="figures/README/2022-11-12-Figure-4-Linear-Approximation-Camera-Measurement-Function.png" height="75%" width="75%" alt="Figure 4. Linear Approximations: The Camera Measurement Function.">
+
+$$
+\begin{align}
+\textrm{Figure 4. Linear Approximations: The Camera Measurement Function.}
+\end{align}
+$$
 
 ## Credits
 
@@ -73,7 +114,8 @@ References
 
 Helpful resources:
 * [Marshall, W. K., et al. Received Optical Power Calculations for Optical Communications Link Performance Analysis. The Telecommunications and Data Acquisition Report. 42(87):32-40. 1986.](hhttps://ntrs.nasa.gov/citations/19870005900);
-* [Photodetectors for LiDAR | Hamamatsu Photonics](https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/ssd/Photodetector_lidar_kapd0005e.pdf)
-* [LiDAR, Radar, and Cameras: Measuring distance with light in the automotive industry by Hamamatsu Photonics | YouTube](https://youtu.be/D5Hh8EuOD2Q)
-* [Photomultiplier Tubes: Basics and Applications (3rd Ed.) | Hamamatsu Photonics](https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/PMT_handbook_v3aE.pdf)
+* [Photodetectors for LiDAR | Hamamatsu Photonics](https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/ssd/Photodetector_lidar_kapd0005e.pdf);
+* [LiDAR, Radar, and Cameras: Measuring distance with light in the automotive industry by Hamamatsu Photonics | YouTube](https://youtu.be/D5Hh8EuOD2Q);
+* [Photomultiplier Tubes: Basics and Applications (3rd Ed.) | Hamamatsu Photonics](https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/PMT_handbook_v3aE.pdf);
+* [ND0013 Course 2 Lesson 5 Lecture Videos by Dr. Antje Muntzinger | YouTube](https://www.youtube.com/playlist?list=PL6nu8g-5OMNgl_rtYmrGa-K4lkjcTJbL5) — highly recommend going through these! 😃;
 * And a special thanks to Hélène Kodersdotter for helping me work out the units of LiDAR equations! 😊
