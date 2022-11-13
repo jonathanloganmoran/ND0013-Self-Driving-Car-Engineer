@@ -26,6 +26,10 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 * ⬜️ More Exercises will be announced as the course progresses...
 
 
+### Demo Notebooks
+* ✅ [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`]();
+* ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`]().
+
 ### Course Contents
 The following topics are covered in course exercises:
 * Extracting and transforming LiDAR range data
