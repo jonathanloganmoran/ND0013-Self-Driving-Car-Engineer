@@ -37,7 +37,7 @@ where `BASE_DIR` points to the top-level project directory. All project modules 
 ## Running the Code
 
 ### L1-L3: Object Detection with LiDAR Data
-All functions from Lesson 1 through Lesson 3 are executable from inside the `basic_loop.py` script file. To run the programme, use the standard command-line execution inside the project directory as follows:
+All functions from Lesson 1 through Lesson 3 are executable from inside the [`basic_loop.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/basic_loop.py) script file. To run the programme, use the standard command-line execution inside the project directory as follows:
 
 ```python
 python3 basic_loop.py
@@ -45,10 +45,10 @@ python3 basic_loop.py
 
 Inside this script file is a `while` loop that iterates over the individual frames in the specified segment file and applies the desired L1 / L2 / L3 functions.
 
-To run any of the `exercises` or `examples` functions independently, use the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`]() demo file.
+To run any of the `exercises` or `examples` functions independently, use the [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb) demo file.
 
 ### L4-L6: Tracking with Kalman Filters
-All functions from Lesson 4 through Lesson 6 can be previewed in the [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`]() notebook file. 
+All functions from Lesson 4 through Lesson 6 can be previewed in the [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb) notebook file. 
 
 To run any of the `exercises` independently, use the standard command-line execution, e.g.,
 
@@ -56,7 +56,7 @@ To run any of the `exercises` independently, use the standard command-line execu
 python3 1_predict_update.py
 ```
 
-in order to execute any of the scripts inside [`2-3-Extended-Kalman-Filters/exercises`]().
+in order to execute any of the scripts inside [`2-3-Extended-Kalman-Filters/exercises`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises).
 
 
 ## Results
@@ -80,7 +80,7 @@ $$
 
 ### L4-L6: Tracking with Kalman Filters
 
-<img src="figures/README/2022-11-11-Figure-3-2D-Kalman-Filtering-Position-Over-Time.png" height="75%" width="75%" alt="Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.">
+<img src="figures/README/2022-11-11-Figure-3-2D-Kalman-Filtering-Position-Over-Time.png" height="85%" width="85%" alt="Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.">
 
 $$
 \begin{align}
@@ -88,7 +88,7 @@ $$
 \end{align}
 $$
 
-<img src="figures/README/2022-11-12-Figure-4-Linear-Approximation-Camera-Measurement-Function.png" height="75%" width="75%" alt="Figure 4. Linear Approximations: The Camera Measurement Function.">
+<img src="figures/README/2022-11-12-Figure-4-Linear-Approximation-Camera-Measurement-Function.png" height="85%" width="85%" alt="Figure 4. Linear Approximations: The Camera Measurement Function.">
 
 $$
 \begin{align}

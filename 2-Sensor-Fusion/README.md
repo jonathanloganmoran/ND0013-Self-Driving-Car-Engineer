@@ -14,6 +14,11 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 * Apply learnings to complete two real-world AD/ADAS detection and tracking software programmes. 
 
 
+### Demo Notebooks
+* ✅ [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
+* ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb).
+
+
 ### Projects
 * ✅ 2.1: [3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
 * ⬜️ 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF).
@@ -22,13 +27,9 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 ### Exercises
 * ✅ [2.1.1: The LiDAR Sensor](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-1-Lidar-Sensor);
 * ✅ [2.1.2: Detecting Objects in LiDAR](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-2-Object-Detection);
-* ✅ [2.1.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/2.1.3/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
+* ✅ [2.1.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
 * ⬜️ More Exercises will be announced as the course progresses...
 
-
-### Demo Notebooks
-* ✅ [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`]();
-* ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`]().
 
 ### Course Contents
 The following topics are covered in course exercises:
