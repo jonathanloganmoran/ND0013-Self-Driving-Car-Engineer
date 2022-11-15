@@ -143,7 +143,11 @@ class Track(object):
         self.P[3:6, 3:6] = np.array(np.identity(n=3))
         # Set the velocity estimation covariance values along the diagonal
         # to something large, since we cannot directly measure velocity
-        self.P[3:6, 3:6] *= 1000
+        # Here we set estimation error covariance entries for velocity in 3D
+        sigma_p44 = 50; sigma_p55 = 50; sigma_p66 = 5
+        self.P[3, 3] = sigma_p44
+        self.P[4, 4] = sigma_p55
+        self.P[5, 5] = sigma_p66
 
 
 def visualize(
