@@ -46,7 +46,7 @@ class Measurement(object):
     :param R: the measurement noise covariance matrix.
     '''
     def __init__(self,
-            gt: np.matrix, phi: np.radians, t: np.matrix
+            gt: np.ndarray, phi: np.radians, t: np.ndarray
     ):
         """Initialises a new Measurement instance.
 
@@ -58,18 +58,18 @@ class Measurement(object):
         """
         
         ### Compute the rotation around the z-axis
-        M_rot = np.matrix([
+        M_rot = np.array([
                     [np.cos(phi), -np.sin(phi), 0], 
                     [np.sin(phi), np.cos(phi), 0],
                     [0, 0, 1]
         ])
         ### Define the sensor-to-vehicle transformation matrix
         # Initialise a 4x4 diagonal matrix
-        self.sens_to_veh = np.matrix(np.identity(n=4))            
+        self.sens_to_veh = np.array(np.identity(n=4))            
         # Construct the sensor-to-vehicle coordinate rotation matrix
         self.sens_to_veh[0:3, 0:3] = M_rot
         # Construct the sensor-to-vehicle translation vector
-        self.sens_to_veh[0:3, 3] = t
+        self.sens_to_veh[0:3, 3:] = t
         print('Coordinate transformation matrix:', self.sens_to_veh)
         ### Transform the ground-truth state from vehicle-to-sensor coordinates
         # Define the homogeneous coordinate system
@@ -77,7 +77,7 @@ class Measurement(object):
         # Set the first three ground-truth coordinates in world coordinate frame 
         gt_veh[0:3] = gt[0:3]
         # Perform the transformation from vehicle-to-sensor coordinates
-        gt_sens = np.linalg.inv(self.sens_to_veh) * gt_veh
+        gt_sens = np.linalg.inv(self.sens_to_veh) @ gt_veh
         ### Create a new `Measurement` object
         # Define the standard deviation for measurement noise in each axis
         sigma_lidar_x = 0.01
@@ -90,7 +90,7 @@ class Measurement(object):
         self.z[1] = float(gt_sens[1, 0]) + np.random.normal(0, sigma_lidar_y)
         self.z[2] = float(gt_sens[2, 0]) + np.random.normal(0, sigma_lidar_z)
         # Define the measurement noise covariance matrix
-        self.R = np.matrix([
+        self.R = np.array([
                     [sigma_lidar_x**2, 0, 0],
                     [0, sigma_lidar_y**2, 0], 
                     [0, 0, sigma_lidar_z**2]
@@ -133,23 +133,23 @@ class Track(object):
         # Obtain the sensor-to-vehicle transformation matrix
         _T_sens2veh = meas.sens_to_veh
         # Construct the sensor-to-vehicle transformation
-        self.x[0:4] = _T_sens2veh * _z_sens
+        self.x[0:4] = _T_sens2veh @ _z_sens
         ### Calculate the estimation error covariance matrix
         # Initialise the 6x6 matrix
         self.P = np.zeros((6, 6))
         # Obtain the sensor-to-vehicle rotation matrix
         _M_rot = meas.sens_to_veh[0:3, 0:3]
         # Construct the position estimation error covariance 
-        self.P[0:3, 0:3] = _M_rot * meas.R * _M_rot.T
+        self.P[0:3, 0:3] = np.matmul(_M_rot @ meas.R, _M_rot.T)
         # Initialise the velocity estimation error covariance
-        self.P[3:6, 3:6] = np.matrix(np.identity(n=3))
+        self.P[3:6, 3:6] = np.array(np.identity(n=3))
         # Set the velocity estimation covariance values along the diagonal
         # to something large, since we cannot directly measure velocity
         self.P[3:6, 3:6] *= 1000
 
 
 def visualize(
-        track: Track, meas: np.matrix
+        track: Track, meas: np.ndarray
 ):
     """Displays the track and measurement info in a Matplotlib figure.
 
@@ -179,7 +179,7 @@ def visualize(
     # Set the first three sensor coordinates in sensor coordinate frame
     z_sens[0:3] = meas.z[0:3]
     # Transform the sensor coordinates to vehicle coordinate system
-    z_veh = meas.sens_to_veh * z_sens
+    z_veh = meas.sens_to_veh @ z_sens
     ### Plot the sensor measurements and track location 
     ax3.scatter(-float(z_veh[1]), float(z_veh[0]),
                         marker='o', s=95, color='blue', label='Measurement'
@@ -217,14 +217,14 @@ def visualize(
 
 if __name__ == '__main__':
     ### Define the ground-truth measurement vector
-    gt = np.matrix([[1.7],
-                    [1],
-                    [0]
+    gt = np.array([[1.7],
+                   [1],
+                   [0]
     ])
     ### Define the sensor translation vector and rotation angle
-    t = np.matrix([[2],
-                   [0.5],
-                   [0]
+    t = np.array([[2],
+                  [0.5],
+                  [0]
     ])
     phi = np.radians(45)
     ### Generate a new `Measurement` instance
