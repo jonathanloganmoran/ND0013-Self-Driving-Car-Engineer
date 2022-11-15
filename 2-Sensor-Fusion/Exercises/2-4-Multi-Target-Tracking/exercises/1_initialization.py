@@ -112,6 +112,9 @@ class Track(object):
     ):
         """Initialises a new Track instance.
 
+        The track estimate is defined with respect to the vehicle
+        coordinate frame.
+
         :param meas: the received sensor measurement.
         :param id: the unique id to assign the new track.
         """
@@ -119,15 +122,30 @@ class Track(object):
         print('Creating track no.', id)
         # Assign the track a unique id
         self.id = id
-        # Initialise the state vector
+        ### Calculate the state vector in vehicle coordinates
+        # Initialise the 6x1 state vector
         self.x = np.zeros((6, 1))
-        # Initialise the measurement error covariance matrix
+        # Obtain the unassigned measurement vector
+        _z_sens = meas.z
+        # Convert to homogeneous coordinate system
+        _z_sens = np.vstack([_z_sens, np.newaxis])
+        _z_sens[3] = 1
+        # Obtain the sensor-to-vehicle transformation matrix
+        _T_sens2veh = meas.sens_to_veh
+        # Construct the sensor-to-vehicle transformation
+        self.x[0:4] = _T_sens2veh * _z_sens
+        ### Calculate the estimation error covariance matrix
+        # Initialise the 6x6 matrix
         self.P = np.zeros((6, 6))
-
-        ############
-        # TODO: initialize self.x and self.P from measurement z and R,
-        #       don't forget coordinate transforms
-        ############
+        # Obtain the sensor-to-vehicle rotation matrix
+        _M_rot = meas.sens_to_veh[0:3, 0:3]
+        # Construct the position estimation error covariance 
+        self.P[0:3, 0:3] = _M_rot * meas.R * _M_rot.T
+        # Initialise the velocity estimation error covariance
+        self.P[3:6, 3:6] = np.matrix(np.identity(n=3))
+        # Set the velocity estimation covariance values along the diagonal
+        # to something large, since we cannot directly measure velocity
+        self.P[3:6, 3:6] *= 1000
 
 
 def visualize(
