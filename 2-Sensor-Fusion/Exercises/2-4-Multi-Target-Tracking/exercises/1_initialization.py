@@ -4,8 +4,10 @@
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Define the Kalman `Filter` class and its core
-#                        functions, i.e., the `predict` and `update` steps.
+# Purpose of this file : Define the LiDAR `Measurement` and `Track` classes and
+#                        their core functionality, i.e., coordinate transforms,
+#                        state vector, track initialisation, visualisation, etc.
+#                        
 #
 # You should have received a copy of the Udacity license with this program.
 #
