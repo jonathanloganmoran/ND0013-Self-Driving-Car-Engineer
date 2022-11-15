@@ -31,40 +31,9 @@ import matplotlib.ticker as ticker
 # switched to an `numpy.ndarray` implmenetation soon.
 # See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
-
-
-class Track:
-    '''The Track class implementing state, track id and covariance features.
-
-    :param id: the unique track id.
-    :param x: the state vector.
-    :param P: the measurement error covariance matrix.
-    '''
-
-    def __init__(self,
-            meas: np.matrix, id: int
-    ):
-        """Initialises a new Track instance.
-
-        :param meas: the received sensor measurement.
-        :param id: the unique id to assign the new track.
-        """
-        
-        print('Creating track no.', id)
-        # Assign the track a unique id
-        self.id = id
-        # Initialise the state vector
-        self.x = np.zeros((6, 1))
-        # Initialise the measurement error covariance matrix
-        self.P = np.zeros((6, 6))
-
-        ############
-        # TODO: initialize self.x and self.P from measurement z and R,
-        #       don't forget coordinate transforms
-        ############
         
         
-class Measurement:
+class Measurement(object):
     '''The LiDAR sensor measurement class.
 
     Implements the measurement reading `z`, the measurement noise covariance `R`
@@ -127,7 +96,40 @@ class Measurement:
                     [0, 0, sigma_lidar_z**2]
         ])
 
-   
+
+class Track(object):
+    '''The Track class implementing state, track id and covariance features.
+
+    A new track is created when an unassigned measurement has been received.
+
+    :param id: the unique track id.
+    :param x: the state vector.
+    :param P: the measurement error covariance matrix.
+    '''
+
+    def __init__(self,
+            meas: Measurement, id: int
+    ):
+        """Initialises a new Track instance.
+
+        :param meas: the received sensor measurement.
+        :param id: the unique id to assign the new track.
+        """
+        
+        print('Creating track no.', id)
+        # Assign the track a unique id
+        self.id = id
+        # Initialise the state vector
+        self.x = np.zeros((6, 1))
+        # Initialise the measurement error covariance matrix
+        self.P = np.zeros((6, 6))
+
+        ############
+        # TODO: initialize self.x and self.P from measurement z and R,
+        #       don't forget coordinate transforms
+        ############
+
+
 def visualize(
         track: Track, meas: np.matrix
 ):
