@@ -43,15 +43,16 @@ class Measurement(object):
         values correspond to the estimated position in 3D. 
     :param R: the measurement noise covariance matrix.
     '''
+
     def __init__(self,
             gt: np.ndarray, phi: np.radians, t: np.ndarray
     ):
         """Initialises a new Measurement instance.
 
         :param gt: the ground-truth state of the vehicle defined with respect
-            to the vehicle coordinate system.
-        :param phi: the angle of rotation of the sensor coordinate system
-            defined with respect to the vehicle coordinate system.
+            to the vehicle coordinate frame.
+        :param phi: the angle of rotation of the sensor coordinate frame
+            defined with respect to the vehicle coordinate frame.
         :param t: the translation vector from sensor to vehicle coordinates.
         """
         
@@ -66,13 +67,13 @@ class Measurement(object):
         self.sens_to_veh = np.array(np.identity(n=4))            
         # Construct the sensor-to-vehicle coordinate rotation matrix
         self.sens_to_veh[0:3, 0:3] = M_rot
-        # Construct the sensor-to-vehicle translation vector
+        # Construct the sensor-to-vehicle coordinate translation vector
         self.sens_to_veh[0:3, 3:] = t
         print('Coordinate transformation matrix:', self.sens_to_veh)
         ### Transform the ground-truth state from vehicle-to-sensor coordinates
         # Define the homogeneous coordinate system
         gt_veh = np.ones((4, 1))
-        # Set the first three ground-truth coordinates in world coordinate frame 
+        # Set the first three ground-truth coordinates in vehicle frame 
         gt_veh[0:3] = gt[0:3]
         # Perform the transformation from vehicle-to-sensor coordinates
         gt_sens = np.linalg.inv(self.sens_to_veh) @ gt_veh
@@ -180,7 +181,7 @@ def visualize(
     z_sens = np.ones((4, 1))
     # Set the first three sensor coordinates in sensor coordinate frame
     z_sens[0:3] = meas.z[0:3]
-    # Transform the sensor coordinates to vehicle coordinate system
+    # Transform the sensor coordinates to vehicle coordinate frame
     z_veh = meas.sens_to_veh @ z_sens
     ### Plot the sensor measurements and track location 
     ax3.scatter(-float(z_veh[1]), float(z_veh[0]),
