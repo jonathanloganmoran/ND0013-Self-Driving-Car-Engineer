@@ -5,7 +5,7 @@
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
 # Purpose of this file : Define the `Camera` class and its core functionality,
-#                        i.e., coordinate transforms and field-of-view (FOV)
+#                        i.e., coordinate transforms and field of view (FOV)
 #                        sanity checking for sensor fusion / track management.
 #                        
 #
@@ -31,100 +31,159 @@ import matplotlib.ticker as ticker
 import numpy as np
 
 
-class Camera:
-    '''Camera sensor class including field of view and coordinate transformation'''
-    def __init__(self, phi, t):
-        self.fov = [-np.pi/4, np.pi/4] # sensor field of view / opening angle
-        
-        # compute rotation around z axis
-        M_rot = np.matrix([[np.cos(phi), -np.sin(phi), 0],
+class Camera(object):
+    '''The Camera sensor class.
+
+    Implements the coordinate transformations between sensor and vehicle
+    coordinate frames, as well as the field of view (FOV) sanity checking
+    for tracking / sensor fusion tasks.
+
+    :param fov: the opening angle (i.e., field of view) of the camera sensor.
+    :param sens_to_veh: the coordinate transformation matrix from the
+        sensor frame to the vehicle frame (i.e., the extrinsics matrix).
+    :param veh_to_sen: the coordinate transformation matrix from the
+        vehicle frame to the sensor frame.
+    '''
+
+    def __init__(self,
+            phi: np.radians, t: np.matrix
+    ):
+        """Initialises a Camera instance.
+
+        :param phi: the angle between the vehicle frame and the sensor frame,
+            i.e., the angle of rotation between the x-axes.
+        :param t: the translation vector describing the offset along the x-axis
+            of the sensor frame origin from the vehicle frame origin.
+        """
+
+        ### Defining the sensor attributes
+        # The sensor field of view (i.e., the opening angle)
+        self.fov = [-np.pi / 4, np.pi / 4]
+        # Here we compute the rotation around the z-axis w.r.t. angle `phi`
+        M_rot = np.matrix([
+                    [np.cos(phi), -np.sin(phi), 0],
                     [np.sin(phi), np.cos(phi), 0],
-                    [0, 0, 1]])
-        
-        # coordiante transformation matrix from sensor to vehicle coordinates
-        self.sens_to_veh = np.matrix(np.identity(4))            
+                    [0, 0, 1]
+        ])
+        ### Defining the coordinate transformation matrices
+        # Here we construct the sensor-to-vehicle transformation matrix
+        self.sens_to_veh = np.matrix(np.identity(n=4))
         self.sens_to_veh[0:3, 0:3] = M_rot
         self.sens_to_veh[0:3, 3] = t
-        self.veh_to_sens = np.linalg.inv(self.sens_to_veh) # transformation vehicle to sensor coordinates
+        # Here we construct the vehicle-to-sensor transformation matrix
+        self.veh_to_sens = np.linalg.inv(self.sens_to_veh)
     
-    def in_fov(self, x):
-        # check if an object x can be seen by this sensor
+    def in_fov(self,
+            x: np.matrix
+    ) -> bool:
+        """Checks if the given object `x` is within the sensor field of view.
 
+        :param x: the object state vector to obtain the coordinates from.
+        :returns: boolean, whether or not the object at its position can be
+            seen by the sensor, i.e., if the object is within the sensor's FOV.
+        """
+
+        # check if an object x can be seen by this sensor
         ############
-        # TODO: Return True if x lies in sensor's field of view, otherwise return False. 
+        # TODO: Return True if x lies in sensor's field of view,
+        # otherwise return False. 
         # Don't forget to transform from vehicle to sensor coordinates.
         ############
             
         return False
         
-#################
+
 def run():
-    '''generate random points and check visibility'''
-    # camera with translation and rotation angle
+    """Tests the camera visibility function and plots the results.
+
+    A `Camera` instance is created with a set of attribute values specifying its
+    translation vector and angle of rotation. Inside the `Camera` class is the
+    definition of the sensor field of view used to check whether or not an object
+    lies within the camera field of view. Here the object state is initialised
+    with simulated track position and velocity values.
+    """
+
+    ### Defining the camera parameters
+    # The translation vector
     t = np.matrix([[2],
                     [0],
                     [0]])
+    # The angle of rotation between vehicle and sensor frame
     phi = np.radians(45)
+    ### Creating a new `Camera` instance
     cam = Camera(phi, t)
-
-    # initialize visualization
-    fig, ax = plt.subplots()
-
+    ### Initialise the Matplotlib figure
+    fig, ax = plt.subplots(1, 1)
+    ### Running the programme loop over the simulated track detections
     for i in range(50):
-        # define track position and velocity
-        x = np.matrix([[np.random.uniform(-5,5)],
-                    [np.random.uniform(-5,5)],
-                    [0],
-                    [0],
-                    [0],
-                    [0]])
-
-        # check if x is visible by camera
+        # Define the track state vector, i.e., position and velocity estimate
+        x = np.matrix([
+                [np.random.uniform(-5,5)],      # Position along x-axis
+                [np.random.uniform(-5,5)],      # Position along y-axis
+                [0],                            # Position along z-axis
+                [0],                            # Velocity along x-axis
+                [0],                            # Velocity along y-axis
+                [0]                             # Velocity along z-axis
+        ])
+        ### Check if the position of tracked object `x` is visible by the camera
         result = cam.in_fov(x)
-        
-        # plot results
-        pos_veh = np.ones((4, 1)) # homogeneous coordinates
+        ### Plot the results
+        # Define the homogeneous coordinate system
+        pos_veh = np.ones((4, 1))
+        # Obtain the position estimate from the track state vector
         pos_veh[0:3] = x[0:3] 
-        pos_sens = cam.veh_to_sens*pos_veh # transform from vehicle to sensor coordinates
+        # Construct the vehicle-to-sensor coordinate transformation 
+        pos_sens = cam.veh_to_sens * pos_veh
         if result == True:
+            ### If the position is within the camera field of view
+            # Plot the track position with a marker of colour `col`
             col = 'green'
-            ax.scatter(float(-pos_sens[1]), float(pos_sens[0]), marker='o', color=col, label='visible track')
+            ax.scatter(float(-pos_sens[1]), float(pos_sens[0]),
+                                marker='o', color=col, label='visible track'
+            )
         else:
+            ### If the position is not within the camera field of view
+            # Plot the track position with a marker of colour `col`
             col = 'red'
-            ax.scatter(float(-pos_sens[1]), float(pos_sens[0]), marker='o', color=col, label='invisible track')
-        ax.text(float(-pos_sens[1]), float(pos_sens[0]), str(result))
-        
-    # plot FOV    
+            ax.scatter(float(-pos_sens[1]), float(pos_sens[0]),
+                                marker='o', color=col, label='invisible track'
+            )
+        ax.text(float(-pos_sens[1]), float(pos_sens[0]), str(result))  
+    ### Plot the field of view of the camera sensor
     ax.plot([0, -5], [0, 5], color='blue', label='field of view') 
     ax.plot([0, 5], [0, 5], color='blue')
-
     # Maximise the figure window
     if matplotlib.rcParams['backend'] == 'wxagg':
         mng = plt.get_current_fig_manager()
         mng.frame.Maximize(True)
-
-    # remove repeated labels
+    ### Remove any repeated labels from the figure
     handles, labels = ax.get_legend_handles_labels()
     handle_list, label_list = [], []
     for handle, label in zip(handles, labels):
         if label not in label_list:
             handle_list.append(handle)
             label_list.append(label)
-    ax.legend(handle_list, label_list, loc='center left', shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.1))
-
-    # axis
+    ### Set the figure properties
+    # Initialise the legend instance
+    ax.legend(handle_list, label_list, loc='center left',
+                        shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.1)
+    )
+    # Set the axes labels
     ax.set_xlabel('y [m]')
     ax.set_ylabel('x [m]')
-    ax.set_xlim(-5,5)
-    ax.set_ylim(0,5)
-
-    # correct x ticks (positive to the left)
-    ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(-x) if x!=0 else '{0:g}'.format(x))
+    # Set the x-axis and y-axis limits
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(0, 5)
+    # Correct the x-axis ticks so that the positive values are to the left
+    ticks_x = ticker.FuncFormatter(
+        lambda x, pos: '{0:g}'.format(-x) if x != 0 else '{0:g}'.format(x)
+    )
     ax.xaxis.set_major_formatter(ticks_x)
-
+    ### Show the resulting plot
     if matplotlib.rcParams['backend'] != 'agg':
         plt.show()
 
-####################
-# call main loop
-run()
+
+if __name__ == '__main__':
+    ### Run the programme loop
+    run()
