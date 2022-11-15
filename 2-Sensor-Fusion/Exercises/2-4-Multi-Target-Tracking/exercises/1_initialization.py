@@ -158,14 +158,20 @@ def visualize(
     :param meas: the measurement vector defined in sensor coordinate frame.
     """
 
-    ### Initialise the Matplotlib figure instance
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    ### Creating the Matplotlib figure instance
+    # Initialising the subplots
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(24, 20),
+                                constrained_layout=True)
+    # Setting the figure title
+    sp_t = 'Track Initialisation: Converting Measurement'
+    sp_t +=  ' from Sensor to Vehicle Coordinates'
+    fig.suptitle(sp_t, fontsize=20)
     ### Plot the track location and sensor measurements
     ax1.scatter(-meas.z[1], meas.z[0],
-                        marker='o', color='blue', label='measurement'
+                        marker='o', s=95, color='blue', label='Measurement'
     )
     ax2.scatter(-track.x[1], track.x[0],
-                        color='red', s=80, marker='x', label='initialized track'
+                        color='red', s=95, marker='x', label='Initialised track'
     )
     ### Transform the sensor measurement to vehicle coordinates for visualisation
     # Define the homogeneous coordinate system 
@@ -176,10 +182,10 @@ def visualize(
     z_veh = meas.sens_to_veh * z_sens
     ### Plot the sensor measurements and track location 
     ax3.scatter(-float(z_veh[1]), float(z_veh[0]),
-                        marker='o', color='blue', label='measurement'
+                        marker='o', s=95, color='blue', label='Measurement'
     )
     ax3.scatter(-track.x[1], track.x[0],
-                        color='red', s=80, marker='x', label='initialized track'
+                        color='red', s=95, marker='x', label='Initialised track'
     )
     # Maximise the figure window
     if matplotlib.rcParams['backend'] == 'wxagg':
@@ -188,10 +194,10 @@ def visualize(
     ### Define the legend and axes
     for ax in (ax1, ax2, ax3):
         ax.legend(loc='center left',
-                        shadow=True, fontsize='large', bbox_to_anchor=(0.5, 0.1)
+                        shadow=True, fontsize='large', bbox_to_anchor=(.7, .1)
         )
-        ax.set_xlabel('y [m]')
-        ax.set_ylabel('x [m]')
+        ax.set_xlabel('y [m]', fontsize=14)
+        ax.set_ylabel('x [m]', fontsize=14)
         ax.set_xlim(-2, 2)
         ax.set_ylim(0, 2)
         ### Correct the x-axis ticks making the positive values to the left
@@ -200,12 +206,13 @@ def visualize(
         )
         ax.xaxis.set_major_formatter(ticks_x)
     ### Set the figure titles
-    ax1.title.set_text('Sensor Coordinates')
-    ax2.title.set_text('Vehicle Coordinates')
+    ax1.set_title('Sensor Coordinates', fontsize=16)
+    ax2.set_title('Vehicle Coordinates', fontsize=16)
     txt3 = 'Vehicle Coordinates\n (track and measurement should align)'
-    ax3.title.set_text(txt3)
+    ax3.set_title(txt3, fontsize=16)
     ### Show the figure
-    plt.show()
+    if matplotlib.rcParams['backend'] != 'agg':
+        plt.show()
 
 
 if __name__ == '__main__':
