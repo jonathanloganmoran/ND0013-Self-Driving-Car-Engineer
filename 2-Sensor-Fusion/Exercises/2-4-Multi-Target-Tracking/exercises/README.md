@@ -29,4 +29,16 @@ In the `Camera` class, please implement the function `in_fov()`. It takes the cu
 
 ### Desired Result
 
-If you run the script, you can see the opening angle of the camera in blue, so the visible range is in the area between the blue lines. The script generates random points and calculates whether the points lie inside the field of view. If you have implemented everything correctly, the result should be `False` for all red points outside the field of view, but the visible points in between the blue lines should be green and return `True`. 
+If you run the script, you can see the opening angle of the camera in blue, so the visible range is in the area between the blue lines. The script generates random points and calculates whether the points lie inside the field of view. If you have implemented everything correctly, the result should be `False` for all red points outside the field of view, but the visible points in between the blue lines should be green and return `True`.
+
+## 3_association_matrix.py
+
+In this exercise, you will implement the association matrix for a simple association problem with 3 tracks and 3 measurements. 
+
+### Your Task
+
+In the `Association` class, please implement the attribute `association_matrix` in the function called `associate()`. This function gets as input a list of N track indices `track_list` and a list of M measurement indices `meas_list`. The association matrix is initialized to an NxM matrix with matrix components set to infinity. Now please fill the association matrix with the respective Mahalanobis distances. To calculate these distances, please implement the `MHD()` function below that gets a track `track` and a measurement `meas` as input and returns the Mahalanobis distance. You will also have to implement the measurement function H here for a 4D state vector and a 2D lidar measurement. We neglect the height in this exercise, as well as the transformation from vehicle to sensor coordinates, so the track state is already given in sensor coordinates here.
+
+### Desired Result
+
+If you run the script, the figure contains 3 tracks in red and 3 measurements in green. If you have implemented everything correctly, the script links all associated track-measurement-pairs with gray lines and writes the calculated MHD next to it. The console output shows how the resulting association matrix looks like.
