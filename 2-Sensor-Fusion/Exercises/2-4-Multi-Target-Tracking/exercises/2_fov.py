@@ -101,6 +101,9 @@ class Camera(object):
         p_x, p_y, _ = _p_veh[0:3]
         ### Check if the object at tracked position can be seen by the sensor
         # Calculate the angle offset of the object w.r.t. the vehicle frame
+        if p_x == 0:
+            # Make sure that the divisor is not zero
+            raise ZeroDivisionError
         alpha = math.atan(p_y / p_x)
         # Check if the angle offset is within the camera opening angle
         if np.abs(alpha) <= self.fov[1]:
