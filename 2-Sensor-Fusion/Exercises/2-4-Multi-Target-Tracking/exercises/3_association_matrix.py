@@ -140,24 +140,33 @@ class Association(object):
         # TODO: fill association matrix with Mahalanobis distances between all tracks and all measurements
         ############
         
-    def MHD(self,
+    def calc_mhd(self,
             track: Track, meas: Measurement
     ) -> float:
-        """Implements the Mahalanobis distance with validation gating.
+        """Implements the Mahalanobis distance calculation.
 
         :param track: the Track instance with known estimation error covariance.
         :param meas: the Measurement instance with uncertain position estimate
             and its measurement error covariance.
+        :returns: the Mahalanobis distance measure between the given track
+            and the measurement objects.
         """
+        
+        ### Compute the measurement matrix for the LiDAR sensor
+        # Here we form a projection from 4D state space to 2D LiDAR measurement space
+        _H = np.matrix([
+                    [1., 0., 0., 0.],
+                    [0., 1., 0., 0.]
+        ])
+        ### Compute the residual and its covariance for the LiDAR Sensor
+        # Here we compute the residual
+        gamma = meas.z - _H * track.x
+        # Here we compute the covariance of the residual
+        _S = _H * track.P * H.T + meas.R
+        ### Compute the Mahalanobis distance
+        dist = gamma.T * np.linalg.inv(_S) * gamma
+        return float(dist)
 
-        ### Calculate the Mahalanobis distance
-        ############
-        # TODO: Calculate and return Mahalanobis distance between track and meas. 
-        # You will also need to implement the measurement matrix H for 2D lidar measurements.
-        # Note that the track is already given in sensor coordinates here, no transformation needed.
-        ############
-        return 0.
-         
 
 def run():
     """Tests the track / measurement association and visualises the results."""
