@@ -129,14 +129,19 @@ def run():
     ### Creating a new `Camera` instance
     cam = Camera(phi, t)
     ### Initialise the Matplotlib figure
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1,figsize=(24, 20),
+                    constrained_layout=True
+    )
+    # Setting the figure title
+    txt1 = 'Track Positions With Respect to Camera Field of View'
+    fig.suptitle(txt1, fontsize=20)
     ### Running the programme loop over the simulated track detections
     for i in range(50):
         # Define the track state vector, i.e., position and velocity estimate
         # Note that the position is defined w.r.t. the vehicle frame
         x = np.matrix([
-                [np.random.uniform(-5,5)],      # Position along x-axis
-                [np.random.uniform(-5,5)],      # Position along y-axis
+                [np.random.uniform(-5, 5)],     # Position along x-axis
+                [np.random.uniform(-5, 5)],     # Position along y-axis
                 [0],                            # Position along z-axis
                 [0],                            # Velocity along x-axis
                 [0],                            # Velocity along y-axis
@@ -156,18 +161,18 @@ def run():
             # Plot the track position with a marker of colour `col`
             col = 'green'
             ax.scatter(float(-pos_sens[1]), float(pos_sens[0]),
-                                marker='o', color=col, label='visible track'
+                            marker='o', s=95, color=col, label='Visible track'
             )
         else:
             ### If the position is not within the camera field of view
             # Plot the track position with a marker of colour `col`
             col = 'red'
             ax.scatter(float(-pos_sens[1]), float(pos_sens[0]),
-                                marker='o', color=col, label='invisible track'
+                            marker='o', s=95, color=col, label='Invisible track'
             )
         ax.text(float(-pos_sens[1]), float(pos_sens[0]), str(result))  
     ### Plot the field of view of the camera sensor
-    ax.plot([0, -5], [0, 5], color='blue', label='field of view') 
+    ax.plot([0, -5], [0, 5], color='blue', label='Field of view') 
     ax.plot([0, 5], [0, 5], color='blue')
     # Maximise the figure window
     if matplotlib.rcParams['backend'] == 'wxagg':
@@ -186,8 +191,8 @@ def run():
                         shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.1)
     )
     # Set the axes labels
-    ax.set_xlabel('y [m]')
-    ax.set_ylabel('x [m]')
+    ax.set_xlabel('y [m]', fontsize=14)
+    ax.set_ylabel('x [m]', fontsize=14)
     # Set the x-axis and y-axis limits
     ax.set_xlim(-5, 5)
     ax.set_ylim(0, 5)
