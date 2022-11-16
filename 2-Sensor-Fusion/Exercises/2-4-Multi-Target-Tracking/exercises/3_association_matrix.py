@@ -182,8 +182,12 @@ def run():
     # Initialise the association lists
     track_list = []
     meas_list = []
-    ### Initialise the Matplotlib figure
-    fig, ax = plt.subplots()
+    ### Create the Matplotlib figure instance
+    # Initialise a new subplot
+    fig, ax = plt.subplots(1, 1, figsize=(24, 20), constrained_layout=True)
+    # Set the figure title
+    txt1 = 'Track and Measurement Association: Mahalanobis Distance'
+    fig.suptitle(txt1, fontsize=20)
     ### Simulate measurements and run the data association task
     for i in range(3):
         # Create a new track instance
@@ -192,10 +196,11 @@ def run():
         track_list.append(track)
         # Plot the track
         ax.scatter(float(-track.x[1]), float(track.x[0]),
-                                marker='x', color='red', label='track'
+                        marker='x', s=95, color='red', label='Track'
         )
-        ax.text(float(-track.x[1]), float(track.x[0]), str(track.id),
-                                color='red'
+        # Set the track label
+        ax.text(float(-track.x[1] + 0.05), float(track.x[0] + 0.05),
+                        str(track.id), fontsize=16, color='red'
         )
         # Create a new measurement instance
         meas = Measurement(i + 1, float(track.x[0]), float(track.x[1]))
@@ -203,11 +208,11 @@ def run():
         meas_list.append(meas)
         # Plot the measurement
         ax.scatter(float(-meas.z[1]), float(meas.z[0]),
-                                marker='o', color='green', label='measurement'
+                        marker='o', s=95, color='green', label='Measurement'
         )
-        # Set the axis label
-        ax.text(float(-meas.z[1]), float(meas.z[0]),
-                                str(meas.id), color='green'
+        # Set the measurement label
+        ax.text(float(-meas.z[1] + 0.05), float(meas.z[0] + 0.05),
+                        str(meas.id), fontsize=16, color='green'
         )
     ### Calculate the association matrix
     association.associate(track_list, meas_list)
@@ -221,14 +226,14 @@ def run():
                 # Plot the distance
                 ax.plot([float(-track.x[1]), float(-meas.z[1])],
                         [float(track.x[0]), float(meas.z[0])],
-                        color='gray'
+                        color='gray', label='Distance'
                 )
-                # Set the axis label
+                # Set the distance label
                 str_dist = "{:.2f}".format(dist)
                 ax.text(
                     float((-track.x[1] - meas.z[1]) / 2), 
                     float((track.x[0] + meas.z[0]) / 2), 
-                    str_dist
+                    str_dist, fontsize=14
                 )
     # Maximise the figure window
     if matplotlib.rcParams['backend'] == 'wxagg':
@@ -244,11 +249,11 @@ def run():
     ### Set the figure properties
     # Initialise the legend
     ax.legend(handle_list, label_list, loc='center left',
-                    shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.1)
+                    shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.05)
     )
     # Set the axes labels
-    ax.set_xlabel('y [m]')
-    ax.set_ylabel('x [m]')
+    ax.set_xlabel('y [m]', fontsize=14)
+    ax.set_ylabel('x [m]', fontsize=14)
     # Set the axes limits
     ax.set_xlim(-5, 5)
     ax.set_ylim(0, 10)
