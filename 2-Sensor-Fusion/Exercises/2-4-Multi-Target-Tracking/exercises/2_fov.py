@@ -18,6 +18,7 @@
 #       TensorFlow `tf.Tensor` data ops, is recommended.
 # ------------------------------------------------------------------------------
 
+import math
 import matplotlib
 ### Change Matplotlib backend for compatibility
 # Using 'wxagg' backend so that figure maximizing works on Mac as well
@@ -82,19 +83,30 @@ class Camera(object):
     ) -> bool:
         """Checks if the given object `x` is within the sensor field of view.
 
-        :param x: the object state vector to obtain the coordinates from.
+        :param x: the object state vector to obtain the coordinates from,
+            note that the position is defined w.r.t. the vehicle frame.
         :returns: boolean, whether or not the object at its position can be
             seen by the sensor, i.e., if the object is within the sensor's FOV.
         """
 
-        # check if an object x can be seen by this sensor
-        ############
-        # TODO: Return True if x lies in sensor's field of view,
-        # otherwise return False. 
-        # Don't forget to transform from vehicle to sensor coordinates.
-        ############
-            
-        return False
+        ### Transform the track state position coordinates into sensor frame
+        # Obtain the position coordinates of the object in sensor frame
+        _p_sens = x[0:3]
+        # Convert to homogeneous coordinates
+        _p_sens = np.vstack([_p_sens, np.newaxis])
+        _p_sens[3] = 1
+        # Construct the vehicle-to-sensor transformation
+        _p_veh = self.veh_to_sens * _p_sens
+        # Obtain the position coordinates of the object in sensor frame
+        p_x, p_y, _ = _p_veh[0:3]
+        ### Check if the object at tracked position can be seen by the sensor
+        # Calculate the angle offset of the object w.r.t. the vehicle frame
+        alpha = math.atan(p_y / p_x)
+        # Check if the angle offset is within the camera opening angle
+        if np.abs(alpha) <= self.fov[1]:
+            return True
+        else:
+            return False
         
 
 def run():
@@ -121,6 +133,7 @@ def run():
     ### Running the programme loop over the simulated track detections
     for i in range(50):
         # Define the track state vector, i.e., position and velocity estimate
+        # Note that the position is defined w.r.t. the vehicle frame
         x = np.matrix([
                 [np.random.uniform(-5,5)],      # Position along x-axis
                 [np.random.uniform(-5,5)],      # Position along y-axis
