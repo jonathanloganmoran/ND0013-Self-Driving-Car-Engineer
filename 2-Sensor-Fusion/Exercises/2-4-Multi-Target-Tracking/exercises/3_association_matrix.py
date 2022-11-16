@@ -8,7 +8,7 @@
 #                        classes and their core functionalities, i.e., track
 #                        state, measurement vector, covariance matrices and
 #                        the Single Nearest Neighbour (SNN) association using
-#                        a minimisation over Mahalanobis distances.                    
+#                        a minimisation over Mahalanobis distances.                   
 #
 # You should have received a copy of the Udacity license with this program.
 #
