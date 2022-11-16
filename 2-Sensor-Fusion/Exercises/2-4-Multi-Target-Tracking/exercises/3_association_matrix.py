@@ -104,7 +104,7 @@ class Track(object):
 class Association(object):
     '''The Association class.
 
-    Implements the Single Nearest Neighbour (SNN) association and gating based
+    Implements the Single Nearest Neighbour (SNN) association based
     on the Mahalanobis distance metric.
 
     :param association_matrix: the data association matrix used to assign
