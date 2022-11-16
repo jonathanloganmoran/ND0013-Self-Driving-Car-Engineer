@@ -1,7 +1,13 @@
 # imports
 import numpy as np
 import matplotlib
-matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well   
+### Change Matplotlib backend for compatibility
+# Using 'wxagg' backend so that figure maximizing works on Mac as well
+# matplotlib.use('wxagg')
+# Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
+# Note that 'agg' is a non-GUI backend, so only figure saving will work
+# matplotlib.use('agg')
+# matplotlib.use('wxagg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from scipy.stats.distributions import chi2
@@ -163,9 +169,10 @@ def run():
 
     #################
     # visualization
-    # maximize window     
-    mng = plt.get_current_fig_manager()
-    mng.frame.Maximize(True)
+    # Maximise the figure window
+    if matplotlib.rcParams['backend'] == 'wxagg':
+        mng = plt.get_current_fig_manager()
+        mng.frame.Maximize(True)
 
     # remove repeated labels
     handles, labels = ax.get_legend_handles_labels()
@@ -186,7 +193,9 @@ def run():
     ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(-x) if x!=0 else '{0:g}'.format(x))
     ax.xaxis.set_major_formatter(ticks_x)
             
-    plt.show() 
+    ### Show the resulting plot
+    if matplotlib.rcParams['backend'] != 'agg':
+        plt.show()
         
 ####################
 # call main loop
