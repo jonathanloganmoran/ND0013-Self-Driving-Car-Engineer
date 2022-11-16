@@ -51,7 +51,7 @@ class Camera(object):
     '''
 
     def __init__(self,
-            phi: np.radians, t: np.matrix
+            phi: np.radians, t: np.ndarray
     ):
         """Initialises a Camera instance.
 
@@ -65,21 +65,21 @@ class Camera(object):
         # The sensor field of view (i.e., the opening angle)
         self.fov = [-np.pi / 4, np.pi / 4]
         # Here we compute the rotation around the z-axis w.r.t. angle `phi`
-        M_rot = np.matrix([
+        M_rot = np.array([
                     [np.cos(phi), -np.sin(phi), 0],
                     [np.sin(phi), np.cos(phi), 0],
                     [0, 0, 1]
         ])
         ### Defining the coordinate transformation matrices
         # Here we construct the sensor-to-vehicle transformation matrix
-        self.sens_to_veh = np.matrix(np.identity(n=4))
+        self.sens_to_veh = np.array(np.identity(n=4))
         self.sens_to_veh[0:3, 0:3] = M_rot
-        self.sens_to_veh[0:3, 3] = t
+        self.sens_to_veh[0:3, 3:] = t
         # Here we construct the vehicle-to-sensor transformation matrix
         self.veh_to_sens = np.linalg.inv(self.sens_to_veh)
     
     def in_fov(self,
-            x: np.matrix
+            x: np.ndarray
     ) -> bool:
         """Checks if the given object `x` is within the sensor field of view.
 
@@ -96,7 +96,7 @@ class Camera(object):
         _p_sens = np.vstack([_p_sens, np.newaxis])
         _p_sens[3] = 1
         # Construct the vehicle-to-sensor transformation
-        _p_veh = self.veh_to_sens * _p_sens
+        _p_veh = self.veh_to_sens @ _p_sens
         # Obtain the position coordinates of the object in sensor frame
         p_x, p_y, _ = _p_veh[0:3]
         ### Check if the object at tracked position can be seen by the sensor
@@ -124,9 +124,10 @@ def run():
 
     ### Defining the camera parameters
     # The translation vector
-    t = np.matrix([[2],
-                    [0],
-                    [0]])
+    t = np.array([[2],
+                  [0],
+                  [0]
+    ])
     # The angle of rotation between vehicle and sensor frame
     phi = np.radians(45)
     ### Creating a new `Camera` instance
@@ -142,7 +143,7 @@ def run():
     for i in range(50):
         # Define the track state vector, i.e., position and velocity estimate
         # Note that the position is defined w.r.t. the vehicle frame
-        x = np.matrix([
+        x = np.array([
                 [np.random.uniform(-5, 5)],     # Position along x-axis
                 [np.random.uniform(-5, 5)],     # Position along y-axis
                 [0],                            # Position along z-axis
@@ -158,7 +159,7 @@ def run():
         # Obtain the position estimate from the track state vector
         pos_veh[0:3] = x[0:3] 
         # Construct the vehicle-to-sensor coordinate transformation 
-        pos_sens = cam.veh_to_sens * pos_veh
+        pos_sens = cam.veh_to_sens @ pos_veh
         if result == True:
             ### If the position is within the camera field of view
             # Plot the track position with a marker of colour `col`

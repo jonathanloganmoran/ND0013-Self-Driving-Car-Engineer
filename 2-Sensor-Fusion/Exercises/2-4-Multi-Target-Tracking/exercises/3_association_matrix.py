@@ -46,7 +46,7 @@ class Measurement(object):
     '''
 
     def __init__(self,
-            id: int, x: np.matrix, y: np.matrix
+            id: int, x: np.ndarray, y: np.ndarray
     ):
         """Initialises a new Measurement instance.
 
@@ -59,11 +59,12 @@ class Measurement(object):
         # Set the unique measurement id
         self.id = id
         # Generate the measurement vector
-        self.z = np.matrix([[x + np.random.normal(0, 2)],
-                            [y + np.random.normal(0, 2)]
+        self.z = np.array([
+                    [x + np.random.normal(0, 2)],
+                    [y + np.random.normal(0, 2)]
         ])
         # Initialise the measurement error covariance matrix
-        self.R = np.matrix([
+        self.R = np.array([
                     [2, 0],
                     [0, 2]
         ])
@@ -89,13 +90,14 @@ class Track(object):
         # Set the unique track id
         self.id = id
         # Generate a new state vector
-        self.x = np.matrix([[np.random.uniform(2, 8)],
-                            [np.random.uniform(-3, 3)],
-                            [0],
-                            [0]
+        self.x = np.array([
+                    [np.random.uniform(2, 8)],
+                    [np.random.uniform(-3, 3)],
+                    [0],
+                    [0]
         ])
         # Initialise the estimation error covariance matrix
-        self.P = np.matrix([
+        self.P = np.array([
                     [2, 0, 0, 0],
                     [0, 3, 0, 0],
                     [0, 0, 1, 0],
@@ -117,7 +119,7 @@ class Association(object):
         """Initialises a new Association instance with matrix."""
 
         # Instantiate the association matrix
-        self.association_matrix = np.matrix([])
+        self.association_matrix = np.array([])
         
     def associate(self,
             track_list: List[Track], meas_list: List[Measurement]
@@ -157,17 +159,17 @@ class Association(object):
         
         ### Compute the measurement matrix for the LiDAR sensor
         # Here we form a projection from 4D state space to 2D LiDAR measurement space
-        _H = np.matrix([
+        _H = np.array([
                     [1., 0., 0., 0.],
                     [0., 1., 0., 0.]
         ])
         ### Compute the residual and its covariance for the LiDAR Sensor
         # Here we compute the residual
-        gamma = meas.z - _H * track.x
+        gamma = meas.z - _H @ track.x
         # Here we compute the covariance of the residual
-        _S = _H * track.P * _H.T + meas.R
+        _S = np.matmul(_H @ track.P, _H.T) + meas.R
         ### Compute the Mahalanobis distance
-        dist = gamma.T * np.linalg.inv(_S) * gamma
+        dist = np.matmul(gamma.T @ np.linalg.inv(_S), gamma)
         return float(dist)
 
 
