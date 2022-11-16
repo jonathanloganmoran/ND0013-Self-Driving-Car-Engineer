@@ -135,11 +135,14 @@ class Association(object):
         # The number of measurements left to assign
         M = len(meas_list)
         # Initialise the association matrix values
-        self.association_matrix = np.inf * np.ones((N, M)) 
-        ############
-        # TODO: fill association matrix with Mahalanobis distances between all tracks and all measurements
-        ############
-        
+        self.association_matrix = np.inf * np.ones((N, M))
+        for x_i, track in enumerate(track_list):
+            for z_j, measurement in enumerate(meas_list):
+                # Compute the Mahalanobis distance
+                dist = self.calc_mhd(track, measurement)
+                # Update the entry in the matrix with the distance value
+                self.association_matrix[x_i, z_j] = dist
+
     def calc_mhd(self,
             track: Track, meas: Measurement
     ) -> float:
@@ -162,7 +165,7 @@ class Association(object):
         # Here we compute the residual
         gamma = meas.z - _H * track.x
         # Here we compute the covariance of the residual
-        _S = _H * track.P * H.T + meas.R
+        _S = _H * track.P * _H.T + meas.R
         ### Compute the Mahalanobis distance
         dist = gamma.T * np.linalg.inv(_S) * gamma
         return float(dist)
