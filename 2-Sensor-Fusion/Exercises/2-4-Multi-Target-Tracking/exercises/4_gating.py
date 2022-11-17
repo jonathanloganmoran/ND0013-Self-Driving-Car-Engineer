@@ -109,7 +109,7 @@ class Association(object):
 
     Implements the Single Nearest Neighbour (SNN) association and
     1-D validation gating based on the Mahalanobis distance metric.
-    
+
     The SNN is a non-Bayesian approach assuming that each track generates
     at most one measurement and that each measurement originates from
     at most one track.
@@ -224,21 +224,28 @@ class Association(object):
         along with the corresponding ids in the `unassigned_tracks` and
         `unassigned_meas` lists.
         
-        :returns: tuple, the indices of the cloest track and measurement.
+        :returns: tuple, the closest unassociated track and measurement objects.
         """
 
-        ############
-        # TODO: 
-        # - find indices of closest track and measurement for next update
-        # - return NAN if no more associations can be found
-        #   (i.e. minimum entry in association matrix is infinity)
-        # - delete row and column in association matrix for closest track and
-        #   measurement
-        # - remove found track number from unassigned_tracks, meas number from
-        #   unassigned_meas
-        # - return indices of closest track and measurement for next update
-        ############
-        return np.nan, np.nan
+        ### Find the closest track and measurement
+        # Return NaN if no valid track / measurement pairs exist
+        if np.min(self.association_matrix) == np.inf:
+            return np.nan, np.nan
+        # Get the indices of the entry with the lowest score
+        idx_track, idx_measurement = np.unravel_index(
+                indices=np.argmin(self.association_matrix, axis=None),
+                shape=self.association_matrix.shape
+        )
+        ### Get the closest track and measurement objects
+        track_closest = self.unassigned_tracks[idx_track]
+        measurement_closest = self.unassigned_meas[idx_measurement]
+        ### Remove the track and measurement objects from the lists
+        self.unassigned_tracks.remove(track_closest)
+        self.unassigned_meas.remove(measurement_closest)
+        ### Remove the track-measurement pair from the association matrix
+        _A = np.delete(self.association_matrix, idx_track, axis=0)
+        self.association_matrix = np.delete(_A, idx_measurement, axis=1)
+        return track_closest, measurement_closest
          
     
 def run():
