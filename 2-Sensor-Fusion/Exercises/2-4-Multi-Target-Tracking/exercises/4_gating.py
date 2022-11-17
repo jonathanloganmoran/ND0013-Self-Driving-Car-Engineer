@@ -265,20 +265,28 @@ def run():
     meas_list = []
     ### Create the Matplotlib figure instance
     # Initialise a new subplot
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=(24, 20),
+                    constrained_layout=True
+    )
+    # Set the figure title
+    txt1 = 'Track and Measurement Association: Mahalanobis Distance'
+    txt1 += ' with Validation Gating'
+    fig.suptitle(txt1, fontsize=20)
     ### Simulate measurements and run the data association task
-    for i in range(3):
+    # Number of simulated measurements / tracks to produce
+    n_sim = 3
+    for i in range(n_sim):
         # Create a new track instance
         track = Track(i + 1)
         # Append the new track to the known tracks list
         track_list.append(track)
         # Plot the track
         ax.scatter(float(-track.x[1]), float(track.x[0]),
-                        marker='x', color='red', label='Track'
+                        marker='x', s=95, color='red', label='Track'
         )
         # Set the track label
-        ax.text(float(-track.x[1]), float(track.x[0]),
-                        str(track.id), color='red'
+        ax.text(float(-track.x[1]) + 0.05, float(track.x[0]) + 0.05,
+                        str(track.id), fontsize=16, color='red'
         )
         # Create a new measurement instance
         meas = Measurement(i + 1, float(track.x[0]), float(track.x[1]))
@@ -286,11 +294,11 @@ def run():
         meas_list.append(meas)
         # Plot the measurement
         ax.scatter(float(-meas.z[1]), float(meas.z[0]),
-                        marker='o', color='green', label='Measurement'
+                        marker='o', s=95, color='green', label='Measurement'
         )
         # Set the measurement label
-        ax.text(float(-meas.z[1]), float(meas.z[0]),
-                        str(meas.id), color='green'
+        ax.text(float(-meas.z[1]) + 0.05, float(meas.z[0]) + 0.05,
+                        str(meas.id), fontsize=16, color='green'
         )
     ### Calculate the association matrix with validation gating
     association.associate(track_list, meas_list)
@@ -307,14 +315,14 @@ def run():
                 ax.plot(
                     [float(-track.x[1]), float(-meas.z[1])],
                     [float(track.x[0]), float(meas.z[0])],
-                    color='gray'
+                    color='gray', label='Distance'
                 )
                 # Set the distance label
                 str_dist = "{:.2f}".format(dist)
                 ax.text(
                     float((-track.x[1] - meas.z[1]) / 2),
                     float((track.x[0] + meas.z[0]) / 2),
-                    str_dist
+                    str_dist, fontsize=14
                 )
     ### Update the associated tracks with the measurements
     matrix_orig = association.association_matrix
@@ -336,14 +344,15 @@ def run():
             [float(-track.x[1]), float(-meas.z[1])],
             [float(track.x[0]), float(meas.z[0])],
             color='blue',
-            label='association'
+            label='Association',
+            linewidth=3
         )
         # Set the distance label
         str_dist = "{:.2f}".format(dist)
         ax.text(
-            float((-track.x[1] - meas.z[1]) / 2),
-            float((track.x[0] + meas.z[0]) / 2),
-            str_dist
+            float((-track.x[1] - meas.z[1]) + 0.05 / 2),
+            float((track.x[0] + meas.z[0]) + 0.05 / 2),
+            str_dist, fontsize=14
         )
         f1 = f"Found association between track {ind_track + 1} "
         f1 += f"and measurement {ind_meas + 1} " 
@@ -369,8 +378,8 @@ def run():
                     shadow=True, fontsize='large', bbox_to_anchor=(0.9, 0.05)
     )
     # Set the axes labels
-    ax.set_xlabel('y [m]')
-    ax.set_ylabel('x [m]')
+    ax.set_xlabel('y [m]', fontsize=14)
+    ax.set_ylabel('x [m]', fontsize=14)
     # Set the axes limits
     ax.set_xlim(-5, 5)
     ax.set_ylim(0, 10)
