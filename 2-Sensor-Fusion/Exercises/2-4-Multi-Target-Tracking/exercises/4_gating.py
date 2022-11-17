@@ -147,6 +147,10 @@ class Association(object):
         N = len(track_list)
         # The number of measurements left to assign
         M = len(meas_list)
+        # The list of indices of the unassigned tracks
+        self.unassigned_tracks = list(range(N))
+        # The list of indices of the unassigned measurements
+        self.unassigned_meas = list(range(M))
         # Initialise the association matrix values
         self.association_matrix = np.inf * np.ones((N, M))
         for x_i, track in enumerate(track_list):
