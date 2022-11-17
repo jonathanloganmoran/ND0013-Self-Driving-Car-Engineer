@@ -109,6 +109,13 @@ class Association(object):
 
     Implements the Single Nearest Neighbour (SNN) association and
     1-D validation gating based on the Mahalanobis distance metric.
+    
+    The SNN is a non-Bayesian approach assuming that each track generates
+    at most one measurement and that each measurement originates from
+    at most one track.
+
+    The validation gate is a region of acceptance such that a percentage
+    $100 * (1 - \alpha)$ of true measurements are rejected.
 
     :param association_matrix: the data association matrix used to assign
         uncertain measurements to known tracks.
@@ -121,7 +128,7 @@ class Association(object):
     def __init__(self):
         """Initialises the Association instance and its attributes."""
 
-        self.association_matrix = np.matrix([])
+        self.association_matrix = np.array([])
         self.unassigned_tracks = []
         self.unassigned_meas = []
         
@@ -164,8 +171,8 @@ class Association(object):
         ### Compute the measurement matrix for the LiDAR sensor
         # Here we form a projection from 4D state space to 2D LiDAR measurement space
         _H = np.array([
-                    [1., 0., 0., 0.],
-                    [0., 1., 0., 0.]
+                [1., 0., 0., 0.],
+                [0., 1., 0., 0.]
         ])
         ### Compute the residual and its covariance for the LiDAR Sensor
         # Here we compute the residual
@@ -174,10 +181,10 @@ class Association(object):
         _S = np.matmul(_H @ track.P, _H.T) + meas.R
         ### Compute the Mahalanobis distance
         dist = np.matmul(gamma.T @ np.linalg.inv(_S), gamma)
-        return float(dist)
+        return dist
     
     def gating(self,
-            dist_mh
+            dist_mh, p_thresh=0.95, df_z=2
     ) -> bool:
         """Checks if the measurement is inside the gating region.
 
@@ -193,13 +200,21 @@ class Association(object):
         $\alpha$.
 
         :param dist_mh: the Mahalanbois distance.
+        :param p_thresh: optional, the probability threshold, i.e., percentage
+            of true measurements assumed to be within the gating area.
+        :param df_z: optional, the degrees of freedom (DoF) of the measurement
+            space of vector $z$.
         :returns: boolean, True if the measurement lies within the gate area.
         """ 
 
-        ############
-        # TODO: return True if measurement lies inside gate, otherwise return False
-        ############
-        return True
+        ### Compute the inverse of the Chi-square cumulative distribution (cdf)
+        # Using the percent point function (i.e., inverse of cdf)
+        ppf = chi2.ppf(p=p_thresh, df=df_z)
+        ### Check the Mahalanobis distance measure against the limit
+        if dist_mh < ppf:
+            return True
+        else:
+            return False
         
     def get_closest_track_and_meas(self
     ) -> Tuple[int, int]:
