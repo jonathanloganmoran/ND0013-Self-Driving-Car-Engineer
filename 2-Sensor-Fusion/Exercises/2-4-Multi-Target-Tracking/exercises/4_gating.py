@@ -103,7 +103,6 @@ class Track(object):
         ])
 
 
-
 class Association(object):
     '''The Association class.
 
@@ -188,7 +187,7 @@ class Association(object):
         return dist
     
     def gating(self,
-            dist_mh, p_thresh=0.95, df_z=2
+            dist_mh: float, p_thresh: float=0.95, df_z: int=2
     ) -> bool:
         """Checks if the measurement is inside the gating region.
 
@@ -250,8 +249,8 @@ class Association(object):
         _A = np.delete(self.association_matrix, idx_track, axis=0)
         self.association_matrix = np.delete(_A, idx_measurement, axis=1)
         return track_closest, measurement_closest
-         
-    
+
+
 def run():
     """Tests the track / measurement association and visualises the results."""
 
@@ -305,7 +304,6 @@ def run():
     print('Association matrix:', association.association_matrix)
     print('unassigned_tracks list:', association.unassigned_tracks)
     print('unassigned_meas list:', association.unassigned_meas)     
-
     ### Visualise the Mahalanobis distances
     for track in track_list:
         for meas in meas_list:
