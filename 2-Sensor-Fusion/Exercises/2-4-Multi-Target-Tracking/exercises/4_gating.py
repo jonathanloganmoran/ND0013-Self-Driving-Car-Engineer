@@ -348,9 +348,11 @@ def run():
         # Set the distance label
         str_dist = "{:.2f}".format(dist)
         ax.text(
-            float((-track.x[1] - meas.z[1]) + 0.05 / 2),
-            float((track.x[0] + meas.z[0]) + 0.05 / 2),
-            str_dist, fontsize=14
+            x=float((-track.x[1] - meas.z[1]) + 0.05 / 2),
+            y=float((track.x[0] + meas.z[0]) + 0.05 / 2),
+            s=str_dist,
+            fontsize=14,
+            clip_on=True    # Here we clip any values outside the plot limit
         )
         f1 = f"Found association between track {ind_track + 1} "
         f1 += f"and measurement {ind_meas + 1} " 

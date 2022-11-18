@@ -170,7 +170,13 @@ def run():
             ax.scatter(float(-pos_sens[1]), float(pos_sens[0]),
                             marker='o', s=95, color=col, label='Invisible track'
             )
-        ax.text(float(-pos_sens[1]), float(pos_sens[0]), str(result))  
+            # Plot the track `in_fov` result
+        ax.text(
+                x=float(-pos_sens[1]),
+                y=float(pos_sens[0]),
+                s=str(result),
+                clip_on=True    # Here we clip any values outside the plot limit
+        ) 
     ### Plot the field of view of the camera sensor
     ax.plot([0, -5], [0, 5], color='blue', label='Field of view') 
     ax.plot([0, 5], [0, 5], color='blue')
