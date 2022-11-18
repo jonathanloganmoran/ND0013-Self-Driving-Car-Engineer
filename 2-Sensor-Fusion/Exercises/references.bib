@@ -1,12 +1,27 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for Jonathan Moran at 2022-11-12 17:21:29 -0800 
+%% Created for Jonathan Moran at 2022-11-17 19:20:27 -0800 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@article{geiger20133d,
+	abstract = {In this paper, we present a novel probabilistic generative model for multi-object traffic scene understanding from movable platforms which reasons jointly about the 3D scene layout as well as the location and orientation of objects in the scene. In particular, the scene topology, geometry, and traffic activities are inferred from short video sequences. Inspired by the impressive driving capabilities of humans, our model does not rely on GPS, lidar, or map knowledge. Instead, it takes advantage of a diverse set of visual cues in the form of vehicle tracklets, vanishing points, semantic scene labels, scene flow, and occupancy grids. For each of these cues, we propose likelihood functions that are integrated into a probabilistic generative model. We learn all model parameters from training data using contrastive divergence. Experiments conducted on videos of 113 representative intersections show that our approach successfully infers the correct layout in a variety of very challenging scenarios. To evaluate the importance of each feature cue, experiments using different feature combinations are conducted. Furthermore, we show how by employing context derived from the proposed method we are able to improve over the state-of-the-art in terms of object detection and object orientation estimation in challenging and cluttered urban environments.},
+	author = {Geiger, Andreas and Lauer, Martin and Wojek, Christian and Stiller, Christoph and Urtasun, Raquel},
+	date-added = {2022-11-17 19:17:28 -0800},
+	date-modified = {2022-11-17 19:20:24 -0800},
+	journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+	keywords = {Roads; Vehicles; Layout; Three-dimensional displays; Semantics; Splines (mathematics); Hidden Markov models; Image Sequences; Object Detection; Object tracking; Road traffic; Traffic engineering computing; Video signal processing; 3D Traffic Scene Understanding; Autonomous Vehicles; Autonomous Driving; Scene Analysis; Image Processing and Computer Vision; Robots},
+	month = {September},
+	number = {5},
+	pages = {1012--1025},
+	publisher = {IEEE},
+	title = {3D Traffic Scene Understanding From Movable Platforms},
+	volume = {36},
+	year = {2013}}
 
 @article{10.1115/1.3662552,
 	abstract = {The classical filtering and prediction problem is re-examined using the Bode-Shannon representation of random processes and the ``state-transition'' method of analysis of dynamic systems. New results are: (1) The formulation and methods of solution of the problem apply without modification to stationary and nonstationary statistics and to growing-memory and infinite-memory filters. (2) A nonlinear difference (or differential) equation is derived for the covariance matrix of the optimal estimation error. From the solution of this equation the co-efficients of the difference (or differential) equation of the optimal linear filter are obtained without further calculations. (3) The filtering problem is shown to be the dual of the noise-free regulator problem. The new method developed here is applied to two well-known problems, confirming and extending earlier results. The discussion is largely self-contained and proceeds from first principles; basic concepts of the theory of random processes are reviewed in the Appendix.},
@@ -23,7 +38,8 @@
 	title = {A New Approach to Linear Filtering and Prediction Problems},
 	url = {https://doi.org/10.1115/1.3662552},
 	volume = {82},
-	year = {1960}}
+	year = {1960},
+	bdsk-url-1 = {https://doi.org/10.1115/1.3662552}}
 
 @misc{https://doi.org/10.48550/arxiv.1708.02002,
 	abstract = {The highest accuracy object detectors to date are based on a two-stage approach popularized by R-CNN, where a classifier is applied to a sparse set of candidate object locations. In contrast, one-stage detectors that are applied over a regular, dense sampling of possible object locations have the potential to be faster and simpler, but have trailed the accuracy of two-stage detectors thus far. In this paper, we investigate why this is the case. We discover that the extreme foreground-background class imbalance encountered during training of dense detectors is the central cause. We propose to address this class imbalance by reshaping the standard cross entropy loss such that it down-weights the loss assigned to well-classified examples. Our novel Focal Loss focuses training on a sparse set of hard examples and prevents the vast number of easy negatives from overwhelming the detector during training. To evaluate the effectiveness of our loss, we design and train a simple dense detector we call RetinaNet. Our results show that when trained with the focal loss, RetinaNet is able to match the speed of previous one-stage detectors while surpassing the accuracy of all existing state-of-the-art two-stage detectors. Code is at: this https URL.},
