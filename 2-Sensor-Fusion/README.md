@@ -16,19 +16,20 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 
 ### Demo Notebooks
 * ✅ [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
-* ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb).
+* ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
+* ✅ [`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
 
 
 ### Projects
 * ✅ 2.1: [3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
-* ⬜️ 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF).
+* ⬜️ 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF) — in progress! 🎉
 
 
 ### Exercises
 * ✅ [2.1.1: The LiDAR Sensor](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-1-Lidar-Sensor);
 * ✅ [2.1.2: Detecting Objects in LiDAR](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-2-Object-Detection);
-* ✅ [2.1.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
-* ⬜️ More Exercises will be announced as the course progresses...
+* ✅ [2.2.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
+* ✅ [2.2.4: Multi-Target Tracking (MTT) with Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-4-Multi-Target-Tracking/exercises).
 
 
 ### Course Contents
@@ -112,6 +113,7 @@ Datasets:
 Lectures:
 * Lecture materials (videos, slides) for Lessons 1 - 3 are available offline;
 * Lecture matrerials (videos) for Lesson 5 are available [here](https://www.youtube.com/playlist?list=PL6nu8g-5OMNgl_rtYmrGa-K4lkjcTJbL5);
+* Lecture materials (videos) for Lesson 6 are available [here](https://youtube.com/playlist?list=PL6nu8g-5OMNiT23So1PBXuL8B8HmBPpEJ).
 * Course lecture notes available on request.
 
 ### Other resources
