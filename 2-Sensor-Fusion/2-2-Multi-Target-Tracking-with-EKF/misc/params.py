@@ -1,38 +1,55 @@
-# ---------------------------------------------------------------------
-# Project "Track 3D-Objects Over Time"
+# ------------------------------------------------------------------------------
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
-# Purpose of this file : Parameter file for tracking
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You should have received a copy of the Udacity license together with this program.
+# Purpose of this file : Define the parameters for the tracking algorithm.             
+#
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
 #
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# ------------------------------------------------------------------------------
 
-# general parameters
-dim_state = 6 # process model dimension
+### General parameters
+# Process model dimension
+dim_state = 6
 
-# Kalman filter parameters (Step 1)
-dt = 0.1 # time increment
-q=3 # process noise variable for Kalman filter Q
+### Step 1 : Kalman filter parameters
+# Discrete time increment (fixed)
+dt = 0.1
+# Process noise design parameter for covariance `Q`
+q = 3
 
-# track management parameters (Step 2)
-confirmed_threshold = 0.8 # track score threshold to switch from 'tentative' to 'confirmed'
-delete_threshold = 0.6 # track score threshold to delete confirmed tracks
-window = 6 # number of frames for track score calculation
-max_P = 3**2 # delete track if covariance of px or py bigger than this
-sigma_p44 = 50 # initial setting for estimation error covariance P entry for vx
-sigma_p55 = 50 # initial setting for estimation error covariance P entry for vy
-sigma_p66 = 5 # initial setting for estimation error covariance P entry for vz
-weight_dim = 0.1 # sliding average parameter for dimension estimation
+### Step 2 : Track management parameters
+# Track score threshold from 'tentative' to 'confirmed'
+confirmed_threshold = 0.8
+# Track score threshold to delete 'confirmed' tracks
+delete_threshold = 0.6
+# Number of frames in window for track score calculation
+window = 6
+# Covariance threshold in `px` or `py` to delete highly uncertain tracks
+max_P = 3**2
+# Initial values for the estimation error covariance `P` entries 
+sigma_p44 = 50
+sigma_p55 = 50
+sigma_p66 = 5
+# Sliding average parameter for dimension estimation
+weight_dim = 0.1
 
-# association parameters (Step 3)
-gating_threshold = 0.995 # percentage of correct measurements that shall lie inside gate
+### Step 3 : Association parameters
+# Percentage of correct measurements assumed to be inside the gate
+gating_threshold = 0.995
 
-# measurement parameters (Step 4)
-sigma_lidar_x = 0.1 # measurement noise standard deviation for lidar x position   
-sigma_lidar_y = 0.1 # measurement noise standard deviation for lidar y position   
-sigma_lidar_z = 0.1 # measurement noise standard deviation for lidar z position   
-sigma_cam_i = 5 # measurement noise standard deviation for image i coordinate
-sigma_cam_j = 5 # measurement noise standard deviation for image j coordinate
+### Step 4 : Measurement parameters
+# Measurement noise standard deviation for LiDAR sensor
+sigma_lidar_x = 0.1
+sigma_lidar_y = 0.1
+sigma_lidar_z = 0.1
+# Measurement noise standard deviation for camera sensor
+sigma_cam_i = 5
+sigma_cam_j = 5
