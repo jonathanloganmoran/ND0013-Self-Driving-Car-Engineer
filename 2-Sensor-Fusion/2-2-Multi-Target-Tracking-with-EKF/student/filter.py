@@ -1,10 +1,12 @@
 # ------------------------------------------------------------------------------
-# Project "3D Object Detection with LiDAR Data"
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Define `Filter` class.
+# Purpose of this file : Define the `Filter` class and its core functionality,
+#                        i.e., the measurement state transition function, the
+#                        covariance matrices, predict and update steps.
 #
 # You should have received a copy of the Udacity license with this program.
 #
@@ -13,7 +15,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 ### General package imports
 import numpy as np

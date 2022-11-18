@@ -1,14 +1,23 @@
-# ---------------------------------------------------------------------
-# Project "Track 3D-Objects Over Time"
+# ------------------------------------------------------------------------------
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
-# Purpose of this file : Classes for track and track management
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You should have received a copy of the Udacity license together with this program.
+# Purpose of this file : Define the `Track` and `TrackManagement` classes
+#                        and their core functionality, i.e., the track state,
+#                        track id, covariance matrices, and functions for
+#                        track initialisation / deletion.
+#                        
+#
+# You should have received a copy of the Udacity license with this program.
 #
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
-# ----------------------------------------------------------------------
 #
+# NOTE: The current version of this programme relies on Numpy to perform data 
+#       manipulation, however, a platform-specific implementation, e.g.,
+#       TensorFlow `tf.Tensor` data ops, is recommended.
+# ------------------------------------------------------------------------------
 
 # imports
 import numpy as np

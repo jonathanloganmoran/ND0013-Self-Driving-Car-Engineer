@@ -1,10 +1,14 @@
 # ------------------------------------------------------------------------------
-# Project "3D Object Detection with LiDAR Data"
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Define `Sensor` and `Measurement` classes.
+# Purpose of this file : Define the `Sensor` and `Measurement` classes
+#                        and their core functionality, i.e., the measurement
+#                        vector, covariance matrices, coordinate transformations
+#                        and camera intrinsic parameters.
+#                        
 #
 # You should have received a copy of the Udacity license with this program.
 #
@@ -13,7 +17,7 @@
 # NOTE: The current version of this programme relies on Numpy to perform data 
 #       manipulation, however, a platform-specific implementation, e.g.,
 #       TensorFlow `tf.Tensor` data ops, is recommended.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 ### General package imports
 import numpy as np

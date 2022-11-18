@@ -1,11 +1,11 @@
 # ------------------------------------------------------------------------------
-# Project "3D Object Detection with LiDAR Data"
+# Project "Multi-Target Tracking with Extended Kalman Filters and Sensor Fusion"
 # Copyright (C) 2020, Dr. Antje Muntzinger / Dr. Andreas Haja.
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
 # Purpose of this file : Loop over all frames in a Waymo Open Dataset file,
-#                        detect and track objects and visualize results.
+#                        detect and track objects and visualise the results.              
 #
 # You should have received a copy of the Udacity license with this program.
 #
