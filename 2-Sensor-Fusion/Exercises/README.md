@@ -11,8 +11,9 @@ Filename                                                                        
 ------------------------------------------------------------------------------------|--------------
 `setup.py`                                                                          | Sets the base directory and working path; used with `setuptools` to install project modules on build path.
 `basic_loop.py`                                                                     | Entry point to the programme to run each exercise and example script.
-`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`                          | Jupyter notebook file demonstrating the Lesson 1 through Lesson 3 exercises of this course.
-`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`                          | Jupyter notebook file demonstrating the Lesson 4 through Lesson 6 exercises of this course.
+`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`                          | Jupyter notebook file demonstrating the Lesson 1 through Lesson 3 exercises of this course, i.e., 3D object tracking functions.
+`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`                          | Jupyter notebook file demonstrating the Lesson 4 through Lesson 5 exercises of this course, i.e., extended Kalman filter functions.
+`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb`                          | Jupyter notebook file demonstrating the Lesson 6 exercises of this course, i.e., multi-target tracking.
 `2-1-Lidar-Sensor/exercises/l1_exercises.py`                                        | Scripts to visualise the range images and print sensor statistics.
 `2-1-Lidar-Sensor/examples/l1_examples.py`                                          | Scripts to load and convert range images to 3D point clouds; scripts to print additional sensor statistics.
 `2-2-Object-Detection/exercises/l2_exercises.py`                                    | Scripts to load and convert 3D point clouds to BEV maps; evaluation metrics functions.
@@ -20,6 +21,10 @@ Filename                                                                        
 `2-3-Extended-Kalman-Filters/exercises/1_predict_update.py`                         | The 1-D Kalman `Filter` class and class methods required to perform 1-D tracking of objects with LiDAR data.
 `2-3-Extended-Kalman-Filters/exercises/2_filter.py`                                 | The 2-D Kalman `Filter` class and class methods required to perform 2-D tracking of objects with LiDAR data.
 `2-3-Extended-Kalman-Filters/exercises/3_measurements.py`                           | The `Camera` sensor class and class methods required to linearise the measurement model for use with Extended Kalman Filter (EKF).
+`2-4-Multi-Target-Tracking/exercises/1_initialization.py`                           | The `Measurement` and `Track` classes with function to simulate track-measurement instances and plot their locations in 2D.
+`2-4-Multi-Target-Tracking/exercises/2_fov.py`                                      | The `Camera` coordinate transformation class with functions to check visibility of given position and plot the position w.r.t. the camera FOV.
+`2-4-Multi-Target-Tracking/exercises/3_association_matrix.py`                       | The `Measurement`, `Track` and `Association` classes implementing the Mahalanobis distance-based association with function to visualise the resulting pairs.
+`2-4-Multi-Target-Tracking/exercises/4_gating.py`                                   | Extends `3_association_matrix.py` with the validation gating algorithm, implements function to plot the closest-distance pairs. 
 `requirements.txt`                                                                  | List of project requirements and dependencies to install with `pip` via the `setuptools` script.
 `references.bib`                                                                    | List of BibTeX-formatted references mentioned in the Jupyter notebook files.
 `tools/`                                                                            | Set of submodules used as dependencies, e.g., the Simple Waymo Dataset Reader.
@@ -91,11 +96,11 @@ $$
 
 ### L4-L5: Kalman Filters
 
-<img src="figures/README/2022-11-11-Figure-3-2D-Kalman-Filtering-Position-Over-Time.png" height="85%" width="85%" alt="Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.">
+<img src="figures/README/2022-11-11-Figure-3-2D-Kalman-Filtering-Position-Over-Time.png" height="90%" width="90%" alt="Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.">
 
 $$
 \begin{align}
-\textrm{Figure 3. Kalman Filtering in 2-D: Tracking Object Position Over Time.}
+\textrm{Figure 3. Kalman Filtering in 2-D: tracking object position over time.}
 \end{align}
 $$
 
@@ -103,7 +108,43 @@ $$
 
 $$
 \begin{align}
-\textrm{Figure 4. Linear Approximations: The Camera Measurement Function.}
+\textrm{Figure 4. Linear Approximations: the camera measurement function.}
+\end{align}
+$$
+
+### L6: Multi-Target Tracking
+
+<img src="figures/README/2022-11-15-Figure-1-Track-Measurement-Coordinates.png" height="85%" width="85%" alt="Figure 5. Coordinate Transformations: From Sensor to Vehicle Coordinate Frame.">
+
+$$
+\begin{align}
+\textrm{Figure 5. Coordinate Transformations: from sensor to vehicle coordinate frame.}
+\end{align}
+$$
+
+<img src="figures/README/2022-11-15-Figure-2-Camera-FOV-Track-Measurement-Coordinates.png" height="85%" width="85%" alt="Figure 6. Camera Detection Visibility: Position Estimates With Respect to Camera Field of View.">
+
+$$
+\begin{align}
+\textrm{Figure 6. Camera Detection Visibility: position estimates with respect to camera field of view.}
+\end{align}
+$$
+
+
+<img src="figures/README/2022-11-16-Figure-1-Data-Association.png" height="85%" width="85%" alt="Figure 7. Track and Measurement Association: The Mahalanobis Distance Metric..">
+
+$$
+\begin{align}
+\textrm{Figure 7. Track and Measurement Association: the Mahalanobis distance metric.}
+\end{align}
+$$
+
+
+<img src="figures/README/2022-11-16-Figure-3-Association-with-Gating.png" height="85%" width="85%" alt="Figure 8. Track and Measurement Association: Closest-pair Associations Using Mahalanobis Distance with Validation Gating.">
+
+$$
+\begin{align}
+\textrm{Figure 8. Track and Measurement Association: closest-pair associations using Mahalanobis distance with validation gating.}
 \end{align}
 $$
 
