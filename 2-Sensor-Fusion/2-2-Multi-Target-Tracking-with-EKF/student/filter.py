@@ -158,34 +158,84 @@ class Filter:
         track.set_x(_x)
         track.set_P(_P)
 
-    def update(self, track, meas):
-        ############
-        # TODO Step 1: update state x and covariance P with associated measurement, save x and P in track
-        ############
-        
-        ############
-        # END student code
-        ############ 
+    def update(self, 
+            track: Track, meas: Measurement
+    ):
+        """Implements the update step.
+
+        Also referred to as the 'correction' step, here the state estimate and
+        the covariance matrix are updated w.r.t. the measurement observed at
+        time $t_{k}$.
+
+        Note that the current implementation assumes the linear LiDAR sensor
+        model. In Step 4 this will be refactored to an agnostic implementation
+        using measurement function $h(\mathrm{x}).
+
+        :param track: the Track instance containing the state estimate and the
+            process noise covariance matrix updated from the prediction step.
+        :param meas: the Measurement instance containing the measurement vector
+            and the measurement noise covariance.
+        """
+
+        ### Compute the measurement residual update step (i.e., innovation step)
+        _gamma = self.gamma(track, meas)
+        ### Compute the covariance of the residual update
+        # Getting the linearised measurement matrix (i.e., the Jacobian)
+        _H = meas.get_H()
+        _S = self.S(track, meas, _H)
+        ### Compute the Kalman gain
+        # Weighting the predicted state in comparison to the measurement
+        _K = np.matmul(track.P @ _H.T, np.linalg.inv(_S))
+        ### Update the state estimate w.r.t. the weighted measurement
+        # Giving greater weight to either the measurement or the prev. estimate
+        # using the Kalman gain `K`, i.e., the larger the `K` the greater
+        # the weight given to the residual measurement `gamma`
+        _x = track.x + _K @ _gamma
+        # Setting the updated state estimate
+        track.set_x(_x)
+        ### Update the covariance matrix w.r.t. the weighted measurement
+        # The identity $\mathrm{P}_{k} \times \mathrm{P}_{k}^{-1} = I$ is used.
+        _I = np.identity(n=self.dim_state)
+        _P = (_I - np.matmul(_K, _H)) @ track.P
+        # Setting the updated measurement error covariance
+        track.set_P(_P)
+        ### Update the dimensions using exponential sliding average
         track.update_attributes(meas)
     
-    def gamma(self, track, meas):
-        ############
-        # TODO Step 1: calculate and return residual gamma
-        ############
+    def gamma(self,
+            track: Track, meas: Measurement
+    ) -> np.ndarray:
+        """Helper function to compute and return the residual $\gamma$.
 
-        return 0
+        The residual is the difference between the new measurement $\mathrm{z}$
+        and the previous state estimate transformed to the measurement space.
+
+        Note that this current implementation assumes the linear LiDAR sensor
+        model. In Step 4 this will be refactored to an agnostic implementation
+        using measurement function $h(\mathrm{x})$.
+
+        :param track: the Track instance containing the state estimate and the
+            process noise covariance matrix updated from the prediction step.
+        :param meas: the Measurement instance containing the measurement vector
+            and the measurement noise covariance.
+        :returns: gamma, the measurement residual update.
+        """
+
+        return meas.z - meas.get_H() @ track.x
+
+    def S(self,
+            track: Track, meas: Measurement, H: np.ndarray
+    ) -> np.ndarray:
+        """Helper function to compute and return the residual covariance $\mathrm{S}$.
         
-        ############
-        # END student code
-        ############ 
+        The estimation error covariance $\mathrm{P}$ is transformed to measurement
+        space given by $\mathrm{H}\mathrm{H}^{\top}$. Then, the measurement noise
+        covariance $\mathrm{R}$ is added.
 
-    def S(self, track, meas, H):
-        ############
-        # TODO Step 1: calculate and return covariance of residual S
-        ############
-
-        return 0
+        :param track: the Track instance containing the estimation error covariance.
+        :param meas: the Measurement instance containing the measurement noise covariance.
+        :param H: the Jacobian of the measurement model.
+        :returns: S, the estimation error covariance of the residual.
+        """
         
-        ############
-        # END student code
-        ############ 
+        return np.matmul(H @ track.P, H.T) + meas.R
