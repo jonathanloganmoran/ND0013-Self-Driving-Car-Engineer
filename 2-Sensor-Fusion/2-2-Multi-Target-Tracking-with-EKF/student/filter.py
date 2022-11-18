@@ -31,8 +31,12 @@ SCRIPT_DIR = os.path.dirname(
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 ### Tracking package imports
+# Import the Measurement class for typing hints
+from student.measurements import Measurement
 # Import the Kalman filter parameters for `dt` and `q`
 import misc.params as params
+# Import Track class for typing hints
+from student.trackmanagement import Track
 
 
 class Filter:
