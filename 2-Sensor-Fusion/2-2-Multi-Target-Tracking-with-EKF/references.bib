@@ -1,33 +1,29 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for Jonathan Moran at 2022-11-08 14:15:49 -0800 
+%% Created for Jonathan Moran at 2022-11-18 14:14:04 -0800 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
 
-@article{10.1177/0278364913491297,
-	abstract = {We present a novel dataset captured from a VW station wagon for use in mobile robotics and autonomous driving research. In total, we recorded 6 hours of traffic scenarios at 10-100 Hz using a variety of sensor modalities such as high-resolution color and grayscale stereo cameras, a Velodyne 3D laser scanner and a high-precision GPS/IMU inertial navigation system. The scenarios are diverse, capturing real-world traffic situations, and range from freeways over rural areas to inner-city scenes with many static and dynamic objects. Our data is calibrated, synchronized and timestamped, and we provide the rectified and raw image sequences. Our dataset also contains object labels in the form of 3D tracklets, and we provide online benchmarks for stereo, optical flow, object detection and other tasks. This paper describes our recording platform, the data format and the utilities that we provide.},
-	address = {USA},
-	author = {Geiger, A and Lenz, P and Stiller, C and Urtasun, R},
-	date-added = {2022-11-08 14:13:11 -0800},
-	date-modified = {2022-11-08 14:15:45 -0800},
-	doi = {10.1177/0278364913491297},
-	issn = {0278-3649},
-	issue_date = {September 2013},
-	journal = {International Journal of Robotics Research},
-	keywords = {stereo, cameras, optical flow, Dataset, field robotics, SLAM, benchmarks, tracking, mobile robotics, KITTI, computer vision, autonomous driving, laser, object detection, GPS},
-	month = {September},
-	number = {11},
-	numpages = {7},
-	pages = {1231--1237},
-	publisher = {Sage Publications, Inc.},
-	title = {Vision Meets Robotics: The KITTI Dataset},
-	url = {https://doi.org/10.1177/0278364913491297},
-	volume = {32},
-	year = {2013}}
+@book{nla.cat-vn941564,
+	abstract = {This graduate-level text augments and extends beyond undergraduate studies of signal processing, particularly in regard to communication systems and digital filtering theory. Vital for students in the fields of control and communications, its contents are also relevant to students in such diverse areas as statistics, economics, bioengineering, and operations research.},
+	address = { Englewood Cliffs, N.J. 07632},
+	author = {Anderson, Brian D. O. and Moore, John B.},
+	catalogue-url = {https://nla.gov.au/nla.cat-vn941564},
+	date-added = {2022-11-18 14:07:28 -0800},
+	date-modified = {2022-11-18 14:14:00 -0800},
+	isbn = {0136381227},
+	language = {English},
+	life-dates = {1979 -},
+	pages = {pp.64-65},
+	publisher = {Prentice-Hall},
+	subjects = {Signal processing.; Electric filters.},
+	title = {Optimal Filtering},
+	type = {Book},
+	year = {1979}}
 
 @misc{https://doi.org/10.48550/arxiv.2001.03343,
 	abstract = {In this work, we propose an efficient and accurate monocular 3D detection framework in single shot. Most successful 3D detectors take the projection constraint from the 3D bounding box to the 2D box as an important component. Four edges of a 2D box provide only four constraints and the performance deteriorates dramatically with the small error of the 2D detector. Different from these approaches, our method predicts the nine perspective keypoints of a 3D bounding box in image space, and then utilize the geometric relationship of 3D and 2D perspectives to recover the dimension, location, and orientation in 3D space. In this method, the properties of the object can be predicted stably even when the estimation of keypoints is very noisy, which enables us to obtain fast detection speed with a small architecture. Training our method only uses the 3D properties of the object without the need for external networks or supervision data. Our method is the first real-time system for monocular image 3D detection while achieves state-of-the-art performance on the KITTI benchmark. Code will be released at https://github.com/Banconxuan/RTM3D.},
@@ -40,7 +36,9 @@
 	publisher = {arXiv},
 	title = {RTM3D: Real-time Monocular 3D Detection from Object Keypoints for Autonomous Driving},
 	url = {https://arxiv.org/abs/2001.03343},
-	year = {2020}}
+	year = {2020},
+	bdsk-url-1 = {https://arxiv.org/abs/2001.03343},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.2001.03343}}
 
 @misc{https://doi.org/10.48550/arxiv.1803.06199,
 	author = {Simon, Martin and Milz, Stefan and Amende, Karl and Gross, Horst-Michael},
@@ -66,7 +64,8 @@
 	keywords = {Training; Degredation; Complexity theory; Image recognition; Neural networks; Visualization; Image segmentation; Image classification; Learning (artificial intelligence); Neural nets; Object detection},
 	pages = {770-778},
 	title = {Deep Residual Learning for Image Recognition},
-	year = {2016}}
+	year = {2016},
+	bdsk-url-1 = {https://doi.org/10.1109/CVPR.2016.90}}
 
 @misc{https://doi.org/10.48550/arxiv.1912.04838,
 	abstract = {The research community has increasing interest in autonomous driving research, despite the resource intensity of obtaining representative real world data. Existing self-driving datasets are limited in the scale and variation of the environments they capture, even though generalization within and between operating regions is crucial to the overall viability of the technology. In an effort to help align the research community's contributions with real-world self-driving problems, we introduce a new large scale, high quality, diverse dataset. Our new dataset consists of 1150 scenes that each span 20 seconds, consisting of well synchronized and calibrated high quality LiDAR and camera data captured across a range of urban and suburban geographies. It is 15x more diverse than the largest camera+LiDAR dataset available based on our proposed diversity metric. We exhaustively annotated this data with 2D (camera image) and 3D (LiDAR) bounding boxes, with consistent identifiers across frames. Finally, we provide strong baselines for 2D as well as 3D detection and tracking tasks. We further study the effects of dataset size and generalization across geographies on 3D detection methods. Find data, code and more up-to-date information at https://waymo.com/open/.},
@@ -82,30 +81,3 @@
 	year = {2019},
 	bdsk-url-1 = {https://arxiv.org/abs/1912.04838},
 	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1912.04838}}
-
-@misc{https://doi.org/10.48550/arxiv.1801.09847,
-	abstract = {Open3D is an open-source library that supports rapid development of software that deals with 3D data. The Open3D frontend exposes a set of carefully selected data structures and algorithms in both C++ and Python. The backend is highly optimized and is set up for parallelization. Open3D was developed from a clean slate with a small and carefully considered set of dependencies. It can be set up on different platforms and compiled from source with minimal effort. The code is clean, consistently styled, and maintained via a clear code review mechanism. Open3D has been used in a number of published research projects and is actively deployed in the cloud. We welcome contributions from the open-source community.},
-	author = {Zhou, Qian-Yi and Park, Jaesik and Koltun, Vladlen},
-	copyright = {arXiv.org perpetual, non-exclusive license},
-	date-added = {2022-11-07 19:22:22 -0800},
-	date-modified = {2022-11-07 19:22:22 -0800},
-	doi = {10.48550/ARXIV.1801.09847},
-	keywords = {Computer Vision and Pattern Recognition (cs.CV), Graphics (cs.GR), Robotics (cs.RO), FOS: Computer and information sciences, FOS: Computer and information sciences},
-	publisher = {arXiv},
-	title = {Open3D: A Modern Library for 3D Data Processing},
-	url = {https://arxiv.org/abs/1801.09847},
-	year = {2018},
-	bdsk-url-1 = {https://arxiv.org/abs/1801.09847},
-	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1801.09847}}
-
-@techreport{Olsen2018LidarFM,
-	abstract = {Pavement markings and signs are important traffic control devices used to guide and regulate traffic movement through visual information presented to motorists. Signs and markings are made with retroreflective materials to enhance visibility for motorists, particularly at night. Retroreflectivity evaluation of an extensive highway network for maintenance and asset management purposes is a critical, yet challenging task for state departments of transportation (DOTs). Visual evaluation can often be subjective while field measurement techniques can be time-consuming and dangerous. This project investigated the effectiveness of evaluating pavement marking and sign retroreflectivity with mobile lidar data. Oregon DOT currently captures mobile lidar surveys of the entire highway network within a two-year cycle for other purposes of asset management, utility location, engineering surveys, and more. The study found that mobile lidar point clouds can be used to additionally extract quantitative, accurate estimates of retroreflectivity for pavement markings, providing a safe, cost-effective, and reliable solution. Software was also produced to extract the pavement markings and perform the evaluation. Reliable retroreflectivity measurements of signs, however, was not possible due to sensor intensity saturation effects.},
-	author = {Michael J. Olsen and Christopher E. Parrish and Erzhuo Che and Jaehoon Jung and J. H. Jr. Greenwood},
-	date-modified = {2022-11-07 19:20:32 -0800},
-	keywords = {Geographic Information Systems; Highways; Laser Radar; Maintenance and Preservation; Mobile Lidar; Pavement Management Systems; Pavement Markings; Quality Control; Retroflection; Retroreflectivity; Road Markings.},
-	month = {August},
-	number = {No. FHWA-OR-RD-19-01},
-	organization = {Oregon Department of Transportation},
-	title = {Lidar for Maintenance of Pavement Reflective Markings and Retroreflective Signs: Vol. I Reflective Pavement Markings},
-	year = {2018},
-	bdsk-url-1 = {https://rosap.ntl.bts.gov/view/dot/36526}}

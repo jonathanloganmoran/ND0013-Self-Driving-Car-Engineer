@@ -38,7 +38,7 @@ import misc.params as params
 class Filter:
     '''The Kalman filter class.
 
-    Implements the Kalman filter in 3-D using State space form.
+    Implements the Kalman filter in 3-D using state-space form.
 
     Here we assume the process noise and measurement error are modelled by
     Gaussian distributions. The process noise is assumed to have zero-mean and
@@ -70,6 +70,8 @@ class Filter:
         self.dt = params.dt
         # Process noise covariance design parameter
         self.q = params.q
+        # System matrix `F`
+        self.F = self.F()
 
     def F(self
     ) -> np.ndarray:
@@ -99,8 +101,8 @@ class Filter:
         the measurement noise.
 
         The discretisation of $Q$ is such that noise through acceleration
-        is assumed to be equal in both $x$ and $y$, i.e.,
-            $ \nu_{x} = \nu_y} $.
+        is assumed to be equal in both $x$, $y$ and $z$, i.e.,
+            $ \nu_{x} = \nu_{y} = \nu_{z} $.
 
         The $Q$ matrix depends on both the time-step $\Delta{t}$ and a process
         noise covariance design parameter `q`, which is selected w.r.t. the
@@ -113,13 +115,21 @@ class Filter:
         :returns Q: the process noise covariance matrix.
         """
 
-        return np.array([
-            [self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2., 0., 0.],
-            [0., self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2., 0.],
-            [0., 0., self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2.],
-            [self.dt**2 * self.q / 2., 0., 0., self.dt * self.q, 0., 0.],
-            [0., self.dt**2 * self.q / 2., 0., 0., self.dt * self.q, 0.],
-            [0., 0., self.dt**2 * self.q / 2., 0., 0., self.dt * self.q]])
+        ### Discretising the continuous model
+        # Assuming noise through acceleration is equal in x, y, and z
+        _Q = np.diag([0., 0., 0., self.q, self.q, self.q])
+        _F = self.F
+        # The matrix exponential
+        # Here the integral factor is evaluated from t=0 to t=dt
+        _integral_factor = np.array([
+            [self.dt / 3, 0., 0., self.dt / 2, 0., 0.],
+            [0., self.dt / 3., 0., 0., self.dt / 2, 0.],
+            [0., 0., self.dt / 3, 0., 0., self.dt / 2],
+            [self.dt / 2, 0., 0., self.dt, 0., 0.],
+            [0., self.dt / 2, 0., 0., self.dt, 0.],
+            [0., 0., self.dt / 2, 0., 0., self.dt]])
+        QT = _integral_factor * np.matmul(_F @ _Q, _F.T)
+        return QT.T
 
     def Q(self):
         ############
