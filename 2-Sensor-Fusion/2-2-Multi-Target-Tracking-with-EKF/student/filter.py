@@ -70,8 +70,11 @@ class Filter:
         self.dt = params.dt
         # Process noise covariance design parameter
         self.q = params.q
-        # System matrix `F`
+        # State transition function in state-space
         self.F = self.F()
+        # Process noise covariance
+        self.Q = self.Q()
+
 
     def F(self
     ) -> np.ndarray:
@@ -118,7 +121,6 @@ class Filter:
         ### Discretising the continuous model
         # Assuming noise through acceleration is equal in x, y, and z
         _Q = np.diag([0., 0., 0., self.q, self.q, self.q])
-        _F = self.F
         # The matrix exponential
         # Here the integral factor is evaluated from t=0 to t=dt
         _integral_factor = np.array([
@@ -128,30 +130,33 @@ class Filter:
             [self.dt / 2, 0., 0., self.dt, 0., 0.],
             [0., self.dt / 2, 0., 0., self.dt, 0.],
             [0., 0., self.dt / 2, 0., 0., self.dt]])
-        QT = _integral_factor * np.matmul(_F @ _Q, _F.T)
+        QT = _integral_factor * np.matmul(self.F @ _Q, self.F.T)
         return QT.T
 
-    def Q(self):
-        ############
-        # TODO Step 1: implement and return process noise covariance Q
-        ############
+    def predict(self,
+            track: Track
+    ):
+        """Implements the prediction step.
 
-        return 0
-        
-        ############
-        # END student code
-        ############ 
+        The state estimate $x^{+}$$ and covariance matrix $P^{+}$ of the given
+        Track instance are updated with respect to the next time-step.
+     
+        :param track: the Track instance containing the state estimation
+            and the covariance matrix from the previous time-step.
+        """
 
-    def predict(self, track):
-        ############
-        # TODO Step 1: predict state x and estimation error covariance P to next timestep, save x and P in track
-        ############
-
-        pass
-        
-        ############
-        # END student code
-        ############ 
+        ### Compute the motion and covariance in the case that `dt` has changed
+        self.F = self.F()
+        self.Q = self.Q()
+        ### Project the state estimate and covariance into the next time-step
+        # Assuming a zero contribution due to an external motion model
+        _x = self.F @ track.x
+        # Adding uncertainty to the object motion model due to
+        # e.g., unexpected braking / acceleration via covariance `Q` 
+        _P = np.matmul(self.F @ track.P, self.F.T) + self.Q
+        # Update the track state and covariance
+        track.set_x(_x)
+        track.set_P(_P)
 
     def update(self, track, meas):
         ############
