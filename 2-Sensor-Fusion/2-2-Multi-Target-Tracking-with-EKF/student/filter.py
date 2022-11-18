@@ -75,7 +75,6 @@ class Filter:
         # Process noise covariance
         self.Q = self.Q()
 
-
     def F(self
     ) -> np.ndarray:
         """Implements the state transition function as a system matrix `F`.
@@ -93,7 +92,7 @@ class Filter:
                          [0., 0., 0., 1., 0., 0.],
                          [0., 0., 0., 0., 1., 0.],
                          [0., 0., 0., 0., 0., 1.]])
-        
+
     def Q(self
     ) -> np.ndarray:
         """Implements the process noise covariance matrix.
@@ -167,10 +166,6 @@ class Filter:
         the covariance matrix are updated w.r.t. the measurement observed at
         time $t_{k}$.
 
-        Note that the current implementation assumes the linear LiDAR sensor
-        model. In Step 4 this will be refactored to an agnostic implementation
-        using measurement function $h(\mathrm{x}).
-
         :param track: the Track instance containing the state estimate and the
             process noise covariance matrix updated from the prediction step.
         :param meas: the Measurement instance containing the measurement vector
@@ -181,7 +176,7 @@ class Filter:
         _gamma = self.gamma(track, meas)
         ### Compute the covariance of the residual update
         # Getting the linearised measurement matrix (i.e., the Jacobian)
-        _H = meas.get_H()
+        _H = meas.sensor.get_H(track.x)
         _S = self.S(track, meas, _H)
         ### Compute the Kalman gain
         # Weighting the predicted state in comparison to the measurement
@@ -210,10 +205,6 @@ class Filter:
         The residual is the difference between the new measurement $\mathrm{z}$
         and the previous state estimate transformed to the measurement space.
 
-        Note that this current implementation assumes the linear LiDAR sensor
-        model. In Step 4 this will be refactored to an agnostic implementation
-        using measurement function $h(\mathrm{x})$.
-
         :param track: the Track instance containing the state estimate and the
             process noise covariance matrix updated from the prediction step.
         :param meas: the Measurement instance containing the measurement vector
@@ -221,7 +212,7 @@ class Filter:
         :returns: gamma, the measurement residual update.
         """
 
-        return meas.z - meas.get_H() @ track.x
+        return meas.z - meas.sensor.get_hx(track.x) @ track.x
 
     def S(self,
             track: Track, meas: Measurement, H: np.ndarray
