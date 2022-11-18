@@ -89,6 +89,37 @@ class Filter:
                          [0., 0., 0., 0., 1., 0.],
                          [0., 0., 0., 0., 0., 1.]])
         
+    def Q(self
+    ) -> np.ndarray:
+        """Implements the process noise covariance matrix.
+
+        We refer to `Q` as the process noise covariance matrix, i.e.,
+        the covariance of the process noise modelled after the variable
+        $\nu$ from a Gaussian distribution with zero-cross correlation to
+        the measurement noise.
+
+        The discretisation of $Q$ is such that noise through acceleration
+        is assumed to be equal in both $x$ and $y$, i.e.,
+            $ \nu_{x} = \nu_y} $.
+
+        The $Q$ matrix depends on both the time-step $\Delta{t}$ and a process
+        noise covariance design parameter `q`, which is selected w.r.t. the
+        expected maximum change in velocity. For highly-dynamic manoeuvres,
+        a higher parameter value, e.g., $q = 8 m/s^2$ is sufficient for
+        emergency braking systems, whereas smaller values of `q`, e.g.,
+        $q = 3 m/s^2$, are sufficient for normal driving conditions such as the
+        highway driving scenario.
+
+        :returns Q: the process noise covariance matrix.
+        """
+
+        return np.array([
+            [self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2., 0., 0.],
+            [0., self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2., 0.],
+            [0., 0., self.dt**3 * self.q / 3., 0., 0., self.dt**2 * self.q / 2.],
+            [self.dt**2 * self.q / 2., 0., 0., self.dt * self.q, 0., 0.],
+            [0., self.dt**2 * self.q / 2., 0., 0., self.dt * self.q, 0.],
+            [0., 0., self.dt**2 * self.q / 2., 0., 0., self.dt * self.q]])
 
     def Q(self):
         ############
