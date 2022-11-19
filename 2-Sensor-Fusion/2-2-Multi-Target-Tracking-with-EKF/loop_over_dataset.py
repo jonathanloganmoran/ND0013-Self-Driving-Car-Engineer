@@ -52,18 +52,18 @@ from misc.evaluation import plot_tracks, plot_rmse, make_movie
 import misc.params as params 
 
 # Name of the model to load
-MODEL_NAME = 'darknet'
+MODEL_NAME = 'fpn_resnet'
 
 ### Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
 # Sequence 1
-data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord'
+# data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord'
 # Sequence 2
-# data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord'
+data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord'
 # Sequence 3
 # data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
 # Restrict the number of frames to interval
-show_only_frames = [50, 150]
+show_only_frames = [150, 200]
 ### Prepare Waymo Open Dataset file for loading
 # Paths to the 'dataset' and 'results' folders
 # Using paths in case the script is called from another working directory
@@ -89,7 +89,7 @@ results_fullpath = os.path.join(results_fullpath,
 # If False, run inference over objects in the detection / testing loop
 configs_det.use_labels_as_objects = False
 ### Uncomment this setting to restrict the y-range in the final project
-# configs_det.lim_y = [-25, 25] 
+configs_det.lim_y = [-25, 25] 
 ### Initialise the MTT algorithm (Project 2.2)
 # Instantiate the Kalman filter class
 KF = Filter()
@@ -113,13 +113,10 @@ exec_data = ['pcl_from_rangeimage']
 #      'measure_detection_performance'
 #     ]
 # Any options not in the list will be loaded from file.
-exec_detection = [
-    'bev_from_pcl', 'detect_objects', 'validate_object_labels',
-    'measure_detection_performance'
-]
+exec_detection = []
 # Set the tracking executions to perform, can be any of the following:
 # ['perform_tracking']
-exec_tracking = []
+exec_tracking = ['perform_tracking']
 # Set the visualisation executions to perform;
 # Can be any number of the following:
 #     ['show_range_image', 'show_bev', 'show_pcl',
@@ -127,7 +124,7 @@ exec_tracking = []
 #      'show_objects_in_bev_labels_in_camera', 'show_tracks',
 #      'show_detection_performance', 'make_tracking_movie'
 #     ]
-exec_visualization = ['show_detection_performance']
+exec_visualization = ['show_tracks']
 # Initialise the execution list for each component
 # If a `Segmentation fault` error occurs, change these to positional arguments
 exec_list = make_exec_list(
@@ -272,7 +269,7 @@ while True:
                     file_path=results_fullpath,
                     base_filename=data_filename,
                     object_name='det_performance',
-                    frame_id=cnt_frames
+                    frame_id=cnt_frame
                 )
             else:
                 # Load the results needed for the tracking task
