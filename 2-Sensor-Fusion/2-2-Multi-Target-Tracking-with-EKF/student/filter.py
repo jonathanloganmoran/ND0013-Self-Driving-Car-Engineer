@@ -157,7 +157,8 @@ class Filter:
         track.set_P(_P)
 
     def update(self, 
-            track: Track, meas: Measurement
+            track: Track,
+            meas: Measurement
     ):
         """Implements the update step.
 
@@ -197,7 +198,8 @@ class Filter:
         track.update_attributes(meas)
     
     def gamma(self,
-            track: Track, meas: Measurement
+            track: Track,
+            meas: Measurement
     ) -> np.ndarray:
         """Helper function to compute and return the residual $\gamma$.
 
@@ -214,7 +216,9 @@ class Filter:
         return meas.z - meas.sensor.get_hx(track.x)
 
     def S(self,
-            track: Track, meas: Measurement, H: np.ndarray
+            track: Track,
+            meas: Measurement,
+            H: np.ndarray
     ) -> np.ndarray:
         """Helper function to compute and return the residual covariance $\mathrm{S}$.
         

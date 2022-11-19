@@ -49,7 +49,9 @@ import misc.objdet_tools as tools
 
 ### Compute various object detection performance measures (ID_S4_EX1 / ID_S4_EX2)
 def measure_detection_performance(
-        detections: List[list], labels: List[object], labels_valid: List[object],
+        detections: List[list],
+        labels: List[object],
+        labels_valid: List[object],
         min_iou: float=0.5
 ) -> List[List[float]]:
     """Returns the computed detection performance measures.

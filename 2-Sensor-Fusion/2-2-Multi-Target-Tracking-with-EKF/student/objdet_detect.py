@@ -44,7 +44,8 @@ from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
 ### Load model-related parameters into an `EasyDict` (ID_S3_EX1)
 def load_configs_model(
-        model_name: str='darknet', configs: easydict.EasyDict=None
+        model_name: str='darknet',
+        configs: easydict.EasyDict=None
 ) -> easydict.EasyDict:
     """Loads the model configurations into an `EasyDict` instance.
 
@@ -217,7 +218,8 @@ def load_configs_model(
 
 ### Load all object detection parameters into an `EasyDict` instance (ID_S3_EX2)
 def load_configs(
-        model_name: str='fpn_resnet', configs: easydict.EasyDict=None
+        model_name: str='fpn_resnet',
+        configs: easydict.EasyDict=None
 ) -> easydict.EasyDict:
     """Returns the modified `EasyDict` instance with model parameters.
 
@@ -305,7 +307,8 @@ def create_model(
 
 ### Detect trained objects in Bird's-Eye View map (ID_S3_EX2)
 def detect_objects(
-        input_bev_maps: List[np.ndarray], model: torch.nn.Module,
+        input_bev_maps: List[np.ndarray],
+        model: torch.nn.Module,
         configs: easydict.EasyDict
 ) -> List[list]:
     """Perform inference and post-process the object detections.

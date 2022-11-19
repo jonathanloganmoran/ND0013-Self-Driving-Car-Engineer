@@ -58,7 +58,8 @@ def _camera_name(x: int) -> str:
 # Example C1-5-1 : Load range image
 # See `../Exercises/2-1-Lidar-Sensor/examples/l1_examples.py`
 def _load_range_image(
-        frame: dataset_pb2.Frame, lidar_name: int
+        frame: dataset_pb2.Frame,
+        lidar_name: int
 ) -> np.ndarray:
     """Returns the range image from the `frame` captured by `lidar_name` sensor.
 
@@ -128,7 +129,8 @@ def show_pcl(
 
 ### Visualise range image (ID_S1_EX1)
 def show_range_image(
-        frame: dataset_pb2.Frame, lidar_name: int
+        frame: dataset_pb2.Frame,
+        lidar_name: int
 ) -> np.ndarray:
     """Returns the range image given in the `frame` captured by `lidar_name`.
 
@@ -178,7 +180,9 @@ def show_range_image(
 
 ### Create Bird's-Eye View of LiDAR data (ID_S2_EX1)
 def bev_from_pcl(
-        lidar_pcl: np.ndarray, configs: easydict.EasyDict, vis: bool=False
+        lidar_pcl: np.ndarray,
+        configs: easydict.EasyDict,
+        vis: bool=False
 ):
     """Converts the point cloud to a BEV map.
 
