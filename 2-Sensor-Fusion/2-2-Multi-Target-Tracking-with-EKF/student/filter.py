@@ -211,7 +211,7 @@ class Filter:
         :returns: gamma, the measurement residual update.
         """
 
-        return meas.z - meas.sensor.get_hx(track.x) @ track.x
+        return meas.z - meas.sensor.get_hx(track.x)
 
     def S(self,
             track: Track, meas: Measurement, H: np.ndarray
