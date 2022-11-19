@@ -72,7 +72,7 @@ from student.trackmanagement import Track, Trackmanagement
 
 
 def plot_tracks(
-        fig: Matplotlib.figure.Figure,
+        fig: matplotlib.figure.Figure,
         ax: matplotlib.axis.Axis,
         ax2: matplotlib.axis.Axis,
         track_list: List[Track],
@@ -83,7 +83,7 @@ def plot_tracks(
         camera: Sensor,
         configs_det: easydict.EasyDict,
         state: bool=None
-) -> Tuple[Matplotlib.figure.Figure, matplotlib.axis.Axis, Matplotlib.axis.Axis]:
+) -> Tuple[matplotlib.figure.Figure, matplotlib.axis.Axis, matplotlib.axis.Axis]:
     """Plots the tracks, measurements and ground-truth labels in BEV image.
 
     :param fig: the `Matplotlib.figure.Figure` subplot instance to update with
@@ -115,8 +115,10 @@ def plot_tracks(
     # Clear the subplots
     ax.cla()
     ax2.cla()
+    # Hide the axes tick marks on the image plot
+    ax2.axis('off')
     # Plot the image onto the second subplot
-    ax2.imshow(image)
+    ax2.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     ### Loop through all tracks in list
     for track in track_list:
         ### Plot each track, measurement and ground truth in BEV
@@ -151,12 +153,14 @@ def plot_tracks(
                         color=col,
                         alpha=0.2,
                         transform=t
+            )
             ax.add_patch(rec)
             # Plot the track `id` for debugging
             ax.text(
                 x=float(-track.x[1]),
                 y=float(track.x[0]+1),
-                s=str(track.id)
+                s=str(track.id),
+                fontsize=14
             )
             # Plot the track position depending on its state
             if track.state == 'initialized':
@@ -164,27 +168,27 @@ def plot_tracks(
                     x=float(-track.x[1]),
                     y=float(track.x[0]),
                     color=col,
-                    s=80,
+                    s=225,
                     marker='x',
-                    label='initialized track'
+                    label='Initialised track'
                 )
             elif track.state == 'tentative':
                 ax.scatter(
                     x=float(-track.x[1]),
                     y=float(track.x[0]),
                     color=col,
-                    s=80,
+                    s=225,
                     marker='x',
-                    label='tentative track'
+                    label='Tentative track'
                 )
             elif track.state == 'confirmed':
                 ax.scatter(
                     x=float(-track.x[1]),
                     y=float(track.x[0]),
                     color=col,
-                    s=80,
+                    s=225,
                     marker='x',
-                    label='confirmed track'
+                    label='Confirmed track'
             )
             ### Project the tracks into image space
             # Transform the coordinates from vehicle to sensor frame
@@ -192,8 +196,8 @@ def plot_tracks(
             pos_veh = np.ones((4, 1))
             pos_veh[0:3] = track.x[0:3]
             pos_sens = camera.veh_to_sens @ pos_veh
-            # Obtain the transformed coordinates in image space
-            x, y, z = pos_sens
+            # Obtain the transformed homogeneous coordinates in image space
+            x, y, z, _ = pos_sens
             ### Obtain the coordinates of the bounding box
             # Get the coordinates of the bounding box corners
             x_corners = [-l/2, l/2, l/2, l/2, l/2, -l/2, -l/2, -l/2]
@@ -247,7 +251,7 @@ def plot_tracks(
                 x=-1 * label.box.center_y,
                 y=label.box.center_x,
                 color='gray',
-                s=80,
+                s=225,
                 marker='+',
                 label='ground truth'
             )
@@ -266,8 +270,8 @@ def plot_tracks(
         mng = plt.get_current_fig_manager()
         mng.frame.Maximize(True)
     # Set the x- and y-axis labels
-    ax.set_xlabel('y [m]')
-    ax.set_ylabel('x [m]')
+    ax.set_xlabel('y [m]', fontsize=18)
+    ax.set_ylabel('x [m]', fontsize=18)
     # Set the aspect ratio of the axes scaling
     ax.set_aspect('equal')      # Using same scaling for x- and y-axis
     # Set the x- and y-axis limits for corresponding vehicle coordinate frame
@@ -288,7 +292,7 @@ def plot_tracks(
             label_list.append(label)
     # Initialise the legend
     ax.legend(handle_list, label_list, loc='center left',
-            shadow=True, fontsize='x-large', bbox_to_anchor=(0.8, 0.5)
+            shadow=True, fontsize='x-large', bbox_to_anchor=(0.75, 0.1)
     )
     # Set the refresh time (used to animate the figure)
     plt.pause(0.01)

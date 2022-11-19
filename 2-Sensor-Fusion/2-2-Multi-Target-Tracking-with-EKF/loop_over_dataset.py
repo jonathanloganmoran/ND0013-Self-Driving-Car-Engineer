@@ -69,15 +69,19 @@ BoxLabel = TypeVar(label_pb2.Label.Box)
 
 # Name of the model to load
 MODEL_NAME = 'fpn_resnet'
+# Name of the Waymo Open Dataset file to load
+SEQUENCE_ID = 1
 
 ### Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
-# Sequence 1
-# data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord'
-# Sequence 2
-data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord'
-# Sequence 3
-# data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
+if SEQUENCE_ID = 1:
+    data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord'
+elif SEQUENCE_ID = 2:
+    data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord'
+elif SEQUENCE_ID = 3:
+    data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
+else:
+    raise ValueError(f"Invalid `SEQUENCE_ID` {SEQUENCE_ID}")
 # Restrict the number of frames to interval
 show_only_frames = [150, 200]
 ### Prepare Waymo Open Dataset file for loading
@@ -164,7 +168,9 @@ det_performance_all = []
 np.random.seed(0)
 if 'show_tracks' in exec_list:
     # Initialise the figure to plot tracking results
-    fig, (ax2, ax) = plt.subplots(1,2)
+    fig, (ax2, ax) = plt.subplots(1, 2, figsize=(24, 20),
+        constrained_layout=True
+    )
 ### Entry point into the main programme loop
 while True:
     try:
@@ -403,7 +409,7 @@ while True:
             # Visualise the tracking results
             if 'show_tracks' in exec_list:
                 fig, ax, ax2 = plot_tracks(
-                    fig, 
+                    fig,
                     ax, 
                     ax2, 
                     manager.track_list,
@@ -418,6 +424,7 @@ while True:
                     # Save tracking results to file
                     fname = f"{results_fullpath}/tracking{cnt_frame:03d}.png"
                     print(f"Saving frame '{fname}'")
+                    fig.suptitle(f'Tracking of Vehicles in Sequence {SEQUENCE_ID}')
                     fig.savefig(fname)
         ### Completing one loop
         # Increment the frame counter
