@@ -418,7 +418,7 @@ if 'show_detection_performance' in exec_list:
     evals.compute_performance_stats(det_performance_all)
 if 'show_tracks' in exec_list:
     # Evaluate tracking results by plotting RMSE for all tracks
-    plot_rmse(manager, all_labels, configs_det)
+    plot_rmse(manager, all_labels)
 if 'make_tracking_movie' in exec_list:
     # Output the tracking results to a movie file
     make_movie(results_fullpath)
