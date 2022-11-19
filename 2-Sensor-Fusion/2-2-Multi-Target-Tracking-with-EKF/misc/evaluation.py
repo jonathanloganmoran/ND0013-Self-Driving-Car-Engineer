@@ -17,6 +17,7 @@
 # ------------------------------------------------------------------------------
 
 import cv2
+from datetime import datetime
 import easydict
 import google.protobuf
 import matplotlib
@@ -296,7 +297,7 @@ def plot_tracks(
 
 
 def plot_rmse(
-        manager: Trackmanager,
+        manager: Trackmanagement,
         all_labels: List[list],
         configs_det: easydict.EasyDict=None
 ):
@@ -323,7 +324,12 @@ def plot_rmse(
     """
 
     ### Initialise a Matplotlib instance
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(1, 1, figsize=(24, 20),
+                constrained_layout=True
+    )
+    # Set the figure title
+    s1 = f'Root Mean Square Error \ncomputed over frames {150}-{200} in Sequence {2}'
+    plt.suptitle(s1, fontsize=22)
     plot_empty = True
     ### Loop over all tracks
     for track_id in range(manager.last_id+1):
@@ -389,6 +395,7 @@ def plot_rmse(
                 time,
                 rmse,
                 marker='x',
+                linewidth=3,
                 label=f'RMSE track {track_id}\n (mean: {rmse_sum:.2f})'
             )
     ### Configure the Matplotlib figure instance
@@ -403,18 +410,21 @@ def plot_rmse(
     else:
         # Configure the figure legend
         plt.legend(loc='center left',
-            shadow=True, fontsize='x-large', bbox_to_anchor=(0.9, 0.5)
+            shadow=True, fontsize='xx-large', bbox_to_anchor=(0.85, 0.05)
         )
         # Set the x- and y-axis labels
-        plt.xlabel('time [s]')
-        plt.ylabel('RMSE [m]')
+        plt.xlabel('time [s]', fontsize=18)
+        plt.ylabel('RMSE [m]', fontsize=18)
         ### Show the resulting plot
         if matplotlib.rcParams['backend'] != 'agg':
             # If using a GUI backend, display the plot in a new window
             plt.show()
         else:
             # Using a non-GUI backend, save the figure to an image file
-            plt.savefig('2022-11-18-Figure-1-Evaluation-RMSE.png')
+            fname_out = datetime.now().strftime(
+                            "%Y-%m-%d-Figure-1-Evaluation-RMSE.png"
+            )
+            plt.savefig(fname_out)
 
 
 def make_movie(
