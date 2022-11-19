@@ -19,6 +19,7 @@
 ### General package imports
 import copy
 import cv2
+import google.protobuf    # For typing hints
 import math
 import matplotlib
 ### Change Matplotlib backend for compatibility
@@ -32,6 +33,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
+from typing import List, TypeVar
 
 ### Add current working directory to path
 sys.path.append(os.getcwd())
@@ -57,7 +59,13 @@ from student.trackmanagement import Trackmanagement
 from student.association import Association
 from student.measurements import Sensor, Measurement
 from misc.evaluation import plot_tracks, plot_rmse, make_movie
-import misc.params as params 
+import misc.params as params
+
+### Creating some not-so-long custom variable types for typing hints
+RepeatedCompositeContainer = TypeVar(
+        google.protobuf.pyext._message.RepeatedCompositeContainer
+)
+BoxLabel = TypeVar(label_pb2.Label.Box)
 
 # Name of the model to load
 MODEL_NAME = 'fpn_resnet'
