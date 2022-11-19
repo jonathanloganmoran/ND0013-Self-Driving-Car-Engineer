@@ -60,9 +60,6 @@ class Filter:
         be fixed in this implementation.
     :param q: the design parameter of the covariance process noise matrix $Q$,
         which is selected w.r.t. the expected maximum change in velocity.
-    :param F: the state transition matrix in the 3-D case.
-    :param Q: the discretised process noise covariance matrix.
-    :param H: the measurement projection matrix of the linear LiDAR sensor.
     '''
 
     def __init__(self):
@@ -74,10 +71,6 @@ class Filter:
         self.dt = params.dt
         # Process noise covariance design parameter
         self.q = params.q
-        # State transition function in state-space
-        self.F = self.F()
-        # Process noise covariance
-        self.Q = self.Q()
 
     def F(self
     ) -> np.ndarray:
@@ -121,6 +114,8 @@ class Filter:
         :returns Q: the process noise covariance matrix.
         """
 
+        ### Compute the system matrix in the case that `dt` has changed
+        _F = self.F()
         ### Discretising the continuous model
         # Assuming noise through acceleration is equal in x, y, and z
         _Q = np.diag([0., 0., 0., self.q, self.q, self.q])
@@ -133,7 +128,7 @@ class Filter:
             [self.dt / 2, 0., 0., self.dt, 0., 0.],
             [0., self.dt / 2, 0., 0., self.dt, 0.],
             [0., 0., self.dt / 2, 0., 0., self.dt]])
-        QT = _integral_factor * np.matmul(self.F @ _Q, self.F.T)
+        QT = _integral_factor * np.matmul(_F @ _Q, _F.T)
         return QT.T
 
     def predict(self,
@@ -149,14 +144,14 @@ class Filter:
         """
 
         ### Compute the motion and covariance in the case that `dt` has changed
-        self.F = self.F()
-        self.Q = self.Q()
+        _F = self.F()
+        _Q = self.Q()
         ### Project the state estimate and covariance into the next time-step
         # Assuming a zero contribution due to an external motion model
         _x = self.F @ track.x
         # Adding uncertainty to the object motion model due to
         # e.g., unexpected braking / acceleration via covariance `Q` 
-        _P = np.matmul(self.F @ track.P, self.F.T) + self.Q
+        _P = np.matmul(_F @ track.P, _F.T) + _Q
         # Update the track state and covariance
         track.set_x(_x)
         track.set_P(_P)
