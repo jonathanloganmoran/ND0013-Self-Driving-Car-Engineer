@@ -133,7 +133,7 @@ exec_data = ['pcl_from_rangeimage']
 exec_detection = []
 # Set the tracking executions to perform, can be any of the following:
 # ['perform_tracking']
-exec_tracking = ['perform_tracking']
+exec_tracking = ['perform_tracking', 'make_tracking_movie']
 # Set the visualisation executions to perform;
 # Can be any number of the following:
 #     ['show_range_image', 'show_bev', 'show_pcl',
@@ -416,7 +416,7 @@ while True:
                 )
                 if 'make_tracking_movie' in exec_list:
                     # Save tracking results to file
-                    fname = f"{results_fullpath}'/tracking{cnt_frame:03d}.png"
+                    fname = f"{results_fullpath}/tracking{cnt_frame:03d}.png"
                     print(f"Saving frame '{fname}'")
                     fig.savefig(fname)
         ### Completing one loop
