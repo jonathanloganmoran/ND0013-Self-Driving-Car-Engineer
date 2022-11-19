@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-# imports
+import easydict
 import numpy as np
 import matplotlib
 ### Change Matplotlib backend for compatibility
@@ -37,6 +37,9 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
+
+# Import the Trackmanager class for typing hints
+from student.trackmanagement import Trackmanagement
     
 def plot_tracks(fig, ax, ax2, track_list, meas_list, lidar_labels, lidar_labels_valid, 
                       image, camera, configs_det, state=None):
@@ -175,66 +178,121 @@ def plot_tracks(fig, ax, ax2, track_list, meas_list, lidar_labels, lidar_labels_
     return fig, ax, ax2
 
 
-def plot_rmse(manager, all_labels, configs_det):
+def plot_rmse(
+        manager: Trackmanager, all_labels: List[list],
+        configs_det: easydict.EasyDict=None
+):
+    """Calculates the RMSE score for the given tracks with ground-truth labels.
+
+    The list of ground-truth detections, i.e., `all_labels` is assumed to be a
+    list of lists, where each element has the form:
+            `[frame.laser_labels, valid_label_flags]`
+    where `valid_label_flags` is an array with elements `1` or `0` such that
+    `1` indicates a valid object, i.e., one that is of the 'TYPE_VEHICLE'
+    object class and has a corresponding bounding box label inside the default
+    BEV image range (see below).
+
+    If the `configs_det` instance is not provided, the provided tracks are
+    assumed to be within the default BEV image range, i.e., between
+            0 < x < 50        and        -25 < y < 25.
+    Note that when using the default implementation, `all_labels` should have
+    been already sanity-checked using `objdet_tools.validate_object_labels()`.
+
+    :param manager: the Trackmanager instance containing the 'confirmed' tracks
+        to evaluate.
+    :param all_labels: the list of ground-truth detections, each element has the
+        form `[frame.laser_labels, valid_label_flags]` where 
+    """
+
+    ### Initialise a Matplotlib instance
     fig, ax = plt.subplots()
     plot_empty = True
-    
-    # loop over all tracks
+    ### Loop over all tracks
     for track_id in range(manager.last_id+1):
+        # Initialise the variables needed to compute RMSE
         rmse_sum = 0
         cnt = 0
         rmse = []
         time = []
-        
-        # loop over timesteps
+        ### Loop over the tracks from each time-step
         for i, result_dict in enumerate(manager.result_list):
+            # Get the ground-truth bounding box labels
             label_list = all_labels[i]
+            # Skip track if no estimate exists for this time-step
             if track_id not in result_dict:
                 continue
+            # Get the track info associated with the track id
             track = result_dict[track_id]
             if track.state != 'confirmed':
+                # Skipping any tracks with score below the 'confirmed' threshold
                 continue
-            
-            # find closest label and calculate error at this timestamp
+            ### Find the closest label and calculate error at this time-step
             min_error = np.inf
             for label, valid in zip(label_list[0], label_list[1]):
                 error = 0
                 if valid: 
-                    # check if label lies inside specified range
-                    if label.box.center_x > configs_det.lim_x[0] and label.box.center_x < configs_det.lim_x[1] and label.box.center_y > configs_det.lim_y[0] and label.box.center_y < configs_det.lim_y[1]:
+                    ### Check if the label lies inside specified BEV range
+                    # Note this is redundant if using the default BEV range
+                    # Therefore, `configs_det` should only be provided as an
+                    # argument when different BEV dimensions are used
+                    is_inside_bev_dims = True 
+                    if configs_det:
+                        if not (
+                            label.box.center_x > configs_det.lim_x[0]
+                            and label.box.center_x < configs_det.lim_x[1]
+                            and label.box.center_y > configs_det.lim_y[0]
+                            and label.box.center_y < configs_det.lim_y[1]
+                        ):
+                            is_inside_bev_dims = False
+                    elif is_inside_bev_dims:
+                        # Compute error for the track position estimate
                         error += (label.box.center_x - float(track.x[0]))**2
                         error += (label.box.center_y - float(track.x[1]))**2
                         error += (label.box.center_z - float(track.x[2]))**2
                         if error < min_error:
                             min_error = error
+                    else:
+                        raise 'Warning: label not inside BEV detection window'
+            # Check that the track error was calculated
             if min_error < np.inf:
+                # Compute the RMSE score
                 error = np.sqrt(min_error)
                 time.append(track.t)
-                rmse.append(error)     
+                rmse.append(error)
                 rmse_sum += error
                 cnt += 1
-            
-        # calc overall RMSE
-        if cnt != 0:
+        ### Calculate the overall RMS for each track
+        if cnt:
             plot_empty = False
+            # Compute the average RMSE over all time-steps
             rmse_sum /= cnt
-            # plot RMSE
-            ax.plot(time, rmse, marker='x', label='RMSE track ' + str(track_id) + '\n(mean: ' 
-                    + '{:.2f}'.format(rmse_sum) + ')')
-    
+            # Plot the resulting average RMSE score
+            ax.plot(
+                time,
+                rmse,
+                marker='x',
+                label=f'RMSE track {track_id}\n (mean: {rmse_sum:.2f})'
+            )
+    ### Configure the Matplotlib figure instance
     # Maximise the figure window if using `wxagg` backend
     if matplotlib.rcParams['backend'] == 'wxagg':
         mng = plt.get_current_fig_manager()
         mng.frame.Maximize(True)
-    ax.set_ylim(0,1)
+    # Set the y-axis limits
+    ax.set_ylim(0, 1)
     if plot_empty: 
         print('No confirmed tracks found to plot RMSE!')
     else:
-        plt.legend(loc='center left', shadow=True, fontsize='x-large', bbox_to_anchor=(0.9, 0.5))
+        # Configure the figure legend
+        plt.legend(loc='center left',
+            shadow=True, fontsize='x-large', bbox_to_anchor=(0.9, 0.5)
+        )
+        # Set the x- and y-axis labels
         plt.xlabel('time [s]')
         plt.ylabel('RMSE [m]')
         ### Show the resulting plot
         if matplotlib.rcParams['backend'] != 'agg':
+            # If using a GUI backend, display the plot in a new window
             plt.show()
         else:
             # Using a non-GUI backend, save the figure to an image file
