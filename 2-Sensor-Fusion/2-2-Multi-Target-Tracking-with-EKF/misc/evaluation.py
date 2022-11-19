@@ -13,7 +13,13 @@
 # imports
 import numpy as np
 import matplotlib
-matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well     
+### Change Matplotlib backend for compatibility
+# Using 'wxagg' backend so that figure maximizing works on Mac as well
+# matplotlib.use('wxagg')
+# Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
+# Note that 'agg' is a non-GUI backend, so only figure saving will work
+matplotlib.use('agg')
+# matplotlib.use('wxagg') 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.path import Path
@@ -216,9 +222,10 @@ def plot_rmse(manager, all_labels, configs_det):
             ax.plot(time, rmse, marker='x', label='RMSE track ' + str(track_id) + '\n(mean: ' 
                     + '{:.2f}'.format(rmse_sum) + ')')
     
-    # maximize window     
-    mng = plt.get_current_fig_manager()
-    mng.frame.Maximize(True)
+    # Maximise the figure window if using `wxagg` backend
+    if matplotlib.rcParams['backend'] == 'wxagg':
+        mng = plt.get_current_fig_manager()
+        mng.frame.Maximize(True)
     ax.set_ylim(0,1)
     if plot_empty: 
         print('No confirmed tracks found to plot RMSE!')
@@ -226,8 +233,12 @@ def plot_rmse(manager, all_labels, configs_det):
         plt.legend(loc='center left', shadow=True, fontsize='x-large', bbox_to_anchor=(0.9, 0.5))
         plt.xlabel('time [s]')
         plt.ylabel('RMSE [m]')
-        plt.show()
-        
+        ### Show the resulting plot
+        if matplotlib.rcParams['backend'] != 'agg':
+            plt.show()
+        else:
+            # Using a non-GUI backend, save the figure to an image file
+            plt.savefig('2022-11-18-Figure-1-Evaluation-RMSE.png')
         
 def make_movie(path):
     # read track plots

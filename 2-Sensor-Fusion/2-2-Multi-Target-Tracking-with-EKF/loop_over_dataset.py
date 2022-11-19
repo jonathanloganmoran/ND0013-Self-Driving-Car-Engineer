@@ -20,6 +20,14 @@
 import copy
 import cv2
 import math
+import matplotlib
+### Change Matplotlib backend for compatibility
+# Using 'wxagg' backend so that figure maximizing works on Mac as well
+# matplotlib.use('wxagg')
+# Using 'agg' backend so that plotting works on Ubuntu 16.04.6 LTS
+# Note that 'agg' is a non-GUI backend, so only figure saving will work
+matplotlib.use('agg')
+# matplotlib.use('wxagg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
