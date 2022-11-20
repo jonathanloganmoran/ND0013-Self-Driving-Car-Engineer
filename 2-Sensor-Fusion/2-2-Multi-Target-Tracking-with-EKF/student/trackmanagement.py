@@ -28,6 +28,7 @@ import collections
 import numpy as np
 import os
 import sys
+from typing import List
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
@@ -37,8 +38,11 @@ SCRIPT_DIR = os.path.dirname(
 )
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-### Import the track management parameters
-import misc.params as params 
+### Tracking package imports
+# Import the tracking management configuration parameters
+import misc.params as params
+# Import the Measurement class for typing hints
+from student.measurements import Measurement
 
 
 class Track(object):
