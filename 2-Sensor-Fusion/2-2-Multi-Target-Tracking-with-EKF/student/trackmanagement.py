@@ -26,6 +26,7 @@ import collections
 # switched to an `numpy.ndarray` implmenetation soon.
 # See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
+import os
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
