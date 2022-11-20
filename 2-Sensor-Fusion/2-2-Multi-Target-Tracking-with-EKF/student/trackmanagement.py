@@ -254,7 +254,6 @@ class TrackManagement(object):
             if meas_list[j].sensor.name == 'lidar':
                 self.init_track(meas_list[j])
 
-
     def add_track_to_list(self,
             track: Track
     ):
@@ -290,17 +289,27 @@ class TrackManagement(object):
     ):
         """Updates the given track's score and state.
 
+        Assumes that the given track was associated with a measurement,
+        i.e., the object assigned to this track was seen by one of the
+        sensors and a valid measurement was obtained for this time-step.
+
         :param track: the specific track to update.
         """
-        ############
-        # TODO Step 2: implement track management for updated tracks:
-        # - increase track score
-        # - set track state to 'tentative' or 'confirmed'
-        ############
-        pass
-        ############
-        # END student code
-        ############
+
+        _new_score = track.score + 1. / params.window
+        # Prevent the track score from increasing above `1.0`
+        track.score = min(_new_score, 1.0)
+        ### Update the track state for this iteration
+        if track.state == 'initialized':
+            # Increase the track state to the next level
+            track.state = 'tentative'
+        elif (
+            track.state == 'tentative'
+            and track.score > params.confirmed_threshold
+        ):
+            track.state = 'confirmed'
+        else:
+            raise ValueError(f"Invalid track state '{track.state}'")
 
     def init_track(self,
             meas: Measurement
