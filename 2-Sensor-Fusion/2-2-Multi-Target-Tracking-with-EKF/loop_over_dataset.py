@@ -55,7 +55,7 @@ import misc.objdet_tools as tools
 
 ### Tracking package imports
 from student.filter import Filter
-from student.trackmanagement import Trackmanagement
+from student.trackmanagement import TrackManagement
 from student.association import Association
 from student.measurements import Sensor, Measurement
 from misc.evaluation import plot_tracks, plot_rmse, make_movie
@@ -117,7 +117,7 @@ KF = Filter()
 # Instantiate the data association class
 association = Association()
 # Instantiate the track manager class
-manager = Trackmanagement()
+manager = TrackManagement()
 # Init the LiDAR sensor object
 lidar = None
 # Init the camera sensor object

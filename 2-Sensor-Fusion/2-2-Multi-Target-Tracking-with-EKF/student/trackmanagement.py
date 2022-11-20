@@ -146,7 +146,7 @@ class Track:
             )
 
 
-class Trackmanagement:
+class TrackManagement:
     '''The Track Management class.
 
     :param N: the current number of tracks managed by this instance.
@@ -157,7 +157,7 @@ class Trackmanagement:
     '''
 
     def __init__(self):
-        """Initialises a new Trackmanagement instance."""
+        """Initialises a new TrackManagement instance."""
 
         ### Initialise the attributes
         # Set the number of current managed tracks to zero 
@@ -225,7 +225,7 @@ class Trackmanagement:
                 self.init_track(meas_list[j])
 
 
-    def addTrackToList(self,
+    def add_track_to_list(self,
             track
     ):
         """Adds the given track to the track manager.
@@ -256,7 +256,7 @@ class Trackmanagement:
         # Incrementing the last inserted track id by one
         track = Track(meas, self.last_id + 1)
         # Add the new track to the list
-        self.addTrackToList(track)
+        self.add_track_to_list(track)
 
     def delete_track(self,
             track

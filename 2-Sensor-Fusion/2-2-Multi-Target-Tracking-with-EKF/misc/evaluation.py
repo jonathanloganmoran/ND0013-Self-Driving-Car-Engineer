@@ -68,7 +68,7 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
 ### Tracking package imports
 # Imports for typing hints
 from student.measurements import Measurement, Sensor
-from student.trackmanagement import Track, Trackmanagement
+from student.trackmanagement import Track, TrackManagement
 
 
 def plot_tracks(
@@ -301,7 +301,7 @@ def plot_tracks(
 
 
 def plot_rmse(
-        manager: Trackmanagement,
+        manager: TrackManagement,
         all_labels: List[list],
         configs_det: easydict.EasyDict=None
 ):
