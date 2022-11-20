@@ -98,9 +98,9 @@ class Track(object):
         # Set the velocity estimation covariance values along the diagonal
         # to something large, since we cannot directly measure velocity;
         # Here we set the estimation error covariance entries for velocity in 3D
-        self.P[3, 3] = sigma_p44**2
-        self.P[4, 4] = sigma_p55**2
-        self.P[5, 5] = sigma_p66**2
+        self.P[3, 3] = params.sigma_p44**2
+        self.P[4, 4] = params.sigma_p55**2
+        self.P[5, 5] = params.sigma_p66**2
         # Set the track state to the starting state
         self.state = 'initialised'
         # Set the track score
