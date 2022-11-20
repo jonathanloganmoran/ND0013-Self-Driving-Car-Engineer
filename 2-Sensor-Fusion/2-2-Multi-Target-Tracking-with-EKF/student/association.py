@@ -154,21 +154,34 @@ class Association(object):
     ) -> bool:
         """Checks if the measurement is inside the gating region of the track.
 
+        The validation gate assumes a Gaussian measurement model with residual
+        covariance $\mathrm{S}$. The area of the validation gate forms a
+        hyper-ellipsoid which follows a Chi-square distribution, assuming that
+        the Mahalanobis distance is a sum of squared normally-distributed
+        random variables.
+
+        The probability of a measurement being inside the gating area is given
+        w.r.t. a gating threshold. This probability, $100 * (1 - p)$, can be
+        obtained from the inverse Chi-square cumulative distribution function.        
+
         :param dist_mh: the Mahalanobis distance between track and measurement.
-        :param sensor: the `Sensor` instance containing the sensor-to-vehicle
-            transformation matrix used to convert the residual covariance to
-            vehicle space.
-        :returns: boolean, whether the measurement is within the gating region.
+        :param sensor: the `Sensor` instance containing the degrees of freedom
+            of the measurement space.
+        :returns: boolean, whether the measurement is within the gating region
+            with high certainty.
         """
 
-        ############
-        # TODO Step 3: return True if measurement lies inside gate, otherwise False
-        ############
-        pass
-        ############
-        # END student code
-        ############ 
-        
+        ### Compute the inverse of the Chi-square cumulative distribution func.
+        #   i.e., the inverse cdf using the percent point function
+        ppf = chi2.ppf(p=params.gating_threshold, df=sensor.dim_meas) 
+        ### Check the given Mahalanobis distance against the limit
+        if dist_mh < ppf:
+            # High likelihood this is a true measurement inside the gate
+            return True
+        else:
+            # Not likely this measurement is inside the gate
+            return False
+
     def calc_mhd(self,
             track: Track,
             meas: Measurement,
