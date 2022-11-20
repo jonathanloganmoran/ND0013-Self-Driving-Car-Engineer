@@ -74,7 +74,7 @@ BoxLabel = TypeVar(label_pb2.Label.Box)
 # Name of the model to load
 MODEL_NAME = 'fpn_resnet'
 # Name of the Waymo Open Dataset file to load
-SEQUENCE_ID = 2
+SEQUENCE_ID = 1
 
 ### Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
@@ -87,7 +87,7 @@ elif SEQUENCE_ID == 3:
 else:
     raise ValueError(f"Invalid `SEQUENCE_ID` {SEQUENCE_ID}")
 # Restrict the number of frames to interval
-show_only_frames = [65, 100]
+show_only_frames = [0, 200]
 ### Prepare Waymo Open Dataset file for loading
 # Paths to the 'dataset' and 'results' folders
 # Using paths in case the script is called from another working directory
@@ -114,10 +114,10 @@ model_det = det.create_model(configs_det)
 # If False, run inference over objects in the detection / testing loop
 configs_det.use_labels_as_objects = False
 ### Uncomment this setting to restrict the y-range in the final project
-# Here we change from [-25, 25] to [-5, 15] to limit possible targets
+# Here we change from [-5, 15] to [-25, 25] to allow for possible targets
 # left and right of our single tracked vehicle; used to test the track
-# initialisation and deletion results (i.e., Step 2)
-configs_det.lim_y = [-5, 15] 
+# association and multi-target tracking (i.e., Step 3)
+configs_det.lim_y = [-25, 25] 
 ### Initialise the MTT algorithm (Project 2.2)
 # Instantiate the Kalman filter class
 KF = Filter()
