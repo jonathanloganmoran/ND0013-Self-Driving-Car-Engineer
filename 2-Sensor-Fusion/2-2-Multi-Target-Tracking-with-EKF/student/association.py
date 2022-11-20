@@ -83,33 +83,24 @@ class Association(object):
         :param track_list: the list of current known assigned tracks.
         :param meas_list: the list of current, already associated measurements.
         :param KF: the Kalman `Filter` instance containing the residual
-            covariance matrix `S`.
+            covariance function to compute matrix $\mathrm{S}$.
         """
 
-        ############
-        # TODO Step 3: association:
-        # - replace association_matrix with the actual association matrix based
-        #   on Mahalanobis distance (see below) for all tracks and measurements
-        # - update list of unassigned measurements and unassigned tracks
-        ############
-        
+        ### Instantiate the new unassigned tracks / measurements lists
+        self.unassigned_tracks = list(range(N))
+        self.unassigned_meas = list(range(M))
         ### Initialise the association matrix based on Mahalanobis distance
         # Here we assume a single measurement, single track assumption
-        # Instantiate the new association matrix
-        self.association_matrix = np.matrix([])
-        # Instantiate the new unassigned tracks / measurements lists
-        self.unassigned_tracks = []
-        self.unassigned_meas = []
-        # Reset the current measurement and track lists
-        if len(meas_list) > 0:
-            self.unassigned_meas = [0]
-        if len(track_list) > 0:
-            self.unassigned_tracks = [0]
-        if len(meas_list) > 0 and len(track_list) > 0: 
-            self.association_matrix = np.matrix([[0]])
-        ############
-        # END student code
-        ############
+        self.association_matrix = np.matrix(
+            np.full((len(track_list), len(meas_list)), fill_value=np.inf)
+        )
+        # Compute the association matrix values
+        for x_i, track in enumerate(track_list):
+            for z_j, measurement in enumerate(meas_list):
+                # Compute the Mahalanobis distance
+                dist = self.calc_mhd(track, measurement, KF)
+                # Update the entry in the matrix with the distance value
+                self.association_matrix[x_i, z_j] = dist
 
     def get_closest_track_and_meas(self
     ) -> Tuple[Track, Measurement]:
@@ -200,6 +191,8 @@ class Association(object):
         :param track: the `Track` instance with known estimation error covariance.
         :param meas: the `Measurement` instance with uncertain position estimate
             and corresponding measurement error covariance.
+        :param KF: the Kalman `Filter` instance containing the residual
+            covariance function used to compute $\mathrm{S}$.
         :returns: dist, the Mahalanobis distance measure between the given
             track and the measurement.
         """
@@ -210,7 +203,7 @@ class Association(object):
         # Computing the residual
         gamma = meas.z - _H @ track.x
         # Computing the covariance of the residual w.r.t. measurement noise
-        _S = np.matmul(_H @ track.P, _H.T) + meas.R
+        _S = KF.S(track, meas, _H)
         ### Calculate the Mahalanobis distance
         dist = np.matmul(gamma.T @ np.linalg.inv(_S), gamma)
         return dist
@@ -251,10 +244,10 @@ class Association(object):
             if not meas_list[0].sensor.in_fov(track.x):
                 # Here we skip the update step for tracks not in the sensor FOV
                 continue
-            # Perform the Kalman update (i.e., correction / innovation) step
             s1 = f"Update track {track.id} with {meas_list[idx_meas].sensor.name}"
             s1 += f", measurement {idx_measurement}"
             print(s1)
+            # Perform the Kalman update (i.e., correction / innovation) step
             KF.update(track, meas_list[idx_meas])
             # Update the score and track state 
             manager.handle_updated_track(track)
