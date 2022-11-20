@@ -102,7 +102,7 @@ class Track(object):
         self.P[4, 4] = params.sigma_p55**2
         self.P[5, 5] = params.sigma_p66**2
         # Set the track state to the starting state
-        self.state = 'initialised'
+        self.state = 'initialized'
         # Set the track score
         self.score = 1. / params.window
         ### Initialising the other track attributes
@@ -239,7 +239,9 @@ class TrackManagement(object):
                     # Obtain the delete threshold to use based on track state
                     if track.state == 'confirmed':
                         threshold = params.delete_threshold
-                    elif track.state in ['initialized', 'tentative']:
+                    elif (
+                        track.state in {'initialized', 'initialised', 'tentative'}
+                    ):
                         # TODO: move into `params` file
                         threshold = 0.17
                     else:
@@ -253,6 +255,15 @@ class TrackManagement(object):
                         or track.P[1, 1] > params.max_P
                     ):
                         tracks_to_delete.append(track)
+                    else:
+                        # Skipping track deletion, score is above threshold 
+                        pass
+                else:
+                    # Skipping update, measurement not in sensor FOV
+                    pass
+        else:
+            # Skipping update, no measurements in list
+            pass
         ### Delete all tracks marked for deletion during sweep
         _ = [self.delete_track(track) for track in tracks_to_delete]
         ### Initialise a new track for each unassigned measurement
@@ -309,14 +320,16 @@ class TrackManagement(object):
         # Prevent the track score from increasing above `1.0`
         track.score = min(_new_score, 1.0)
         ### Update the track state for this iteration
-        if track.state == 'initialized':
+        if track.state in {'initialized', 'initialised'}:
             # Increase the track state to the next level
             track.state = 'tentative'
-        elif (
-            track.state == 'tentative'
-            and track.score > params.confirmed_threshold
-        ):
-            track.state = 'confirmed'
+        elif track.state == 'tentative':
+            if track.score > params.confirmed_threshold:
+                track.state = 'confirmed'
+            else:
+                pass
+        elif track.state == 'confirmed':
+            pass
         else:
             raise ValueError(f"Invalid track state '{track.state}'")
 
