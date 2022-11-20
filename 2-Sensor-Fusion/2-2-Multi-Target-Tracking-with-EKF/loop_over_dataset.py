@@ -74,11 +74,11 @@ SEQUENCE_ID = 1
 
 ### Set parameters and perform initializations
 # Select Waymo Open Dataset file and frame numbers
-if SEQUENCE_ID = 1:
+if SEQUENCE_ID == 1:
     data_filename = 'training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord'
-elif SEQUENCE_ID = 2:
+elif SEQUENCE_ID == 2:
     data_filename = 'training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord'
-elif SEQUENCE_ID = 3:
+elif SEQUENCE_ID == 3:
     data_filename = 'training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord'
 else:
     raise ValueError(f"Invalid `SEQUENCE_ID` {SEQUENCE_ID}")
