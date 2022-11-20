@@ -49,7 +49,7 @@ class Track(object):
     :param yaw: the rotation from sensor-to-vehicle coordinates.
     :param t: the timestamp of the measurement w.r.t. elapsed time `dt`.
     '''
-     
+
     def __init__(self,
             meas: Measurement,
             _id: int
@@ -191,7 +191,7 @@ class TrackManagement(object):
         tracks for camera measurements, as their position in 3D cannot be
         accurately estimated from a single time-step.
 
-        In the management loop, all existing tracks are sweeped and their
+        In the management loop, all unassigned tracks are sweeped and their
         track scores are updated based on the position estimate relative to
         the visibility of the current sensor. If any measurements are outside
         of the sensor visibility, the track score will remain the same.
@@ -212,21 +212,40 @@ class TrackManagement(object):
         # feel free to define your own parameters)
         ############
 
+        ### Instantiate a list of tracks to delete
+        tracks_to_delete = []
         ### Loop through all unassigned tracks
         for i in unassigned_tracks:
             # Get the next track in the list
             track = self.track_list[i]
+            ### Decrease the track score for any unassigned tracks
             if meas_list:
-                # Check the sensor visibility based on this track's measurement
+                # Check sensor visibility based on track's last measurement
                 if meas_list[0].sensor.in_fov(track.x):
-                    # Increase the track score if measurement is within FOV
-                    # your code goes here
-                    pass
-        ### Delete any tracks with a score below the threshold
-        #   or estimation error covariance above the tolerance
-        ############
-        # END student code
-        ############
+                    # Decrease track score if measurement was last within FOV
+                    track.score -= 1. / params.window
+                    # Prevent the track score from dropping below `0`
+                    track.score = max(track.score, 0.)
+                    ### Delete track according to threshold
+                    # Obtain the delete threshold to use based on track state
+                    if track.state == 'confirmed':
+                        threshold = params.delete_threshold
+                    elif track.state in ['initialized', 'tentative']:
+                        # TODO: move into `params` file
+                        threshold = 0.17
+                    else:
+                        # Track state not recognised
+                        raise ValueError(f"Invalid track state '{track.state}'")
+                    # Delete track if track score less than threshold
+                    # or if the estimation error covariance is too high
+                    if (
+                        track.score < threshold
+                        or track.P[0, 0] > params.max_P
+                        or track.P[1, 1] > params.max_P
+                    ):
+                        tracks_to_delete.append(track)
+        ### Delete all tracks marked for deletion during sweep
+        _ = [self.delete_track(track) for track in tracks_to_delete]
         ### Initialise a new track for each unassigned measurement
         for j in unassigned_meas:
             # Here we only initialise new tracks for LiDAR measurements
