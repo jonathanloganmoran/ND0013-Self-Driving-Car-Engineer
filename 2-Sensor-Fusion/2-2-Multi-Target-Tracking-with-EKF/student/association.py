@@ -43,7 +43,7 @@ from student.measurements import Measurement, Sensor
 from student.trackmanagement import Track, TrackManagement
 
 
-class Association:
+class Association(object):
     '''The Association class.
 
     Implements the Single Nearest Neighbor (SNN) assocation algorithm with
@@ -179,17 +179,20 @@ class Association:
         :param track: the `Track` instance with known estimation error covariance.
         :param meas: the `Measurement` instance with uncertain position estimate
             and corresponding measurement error covariance.
-        :returns: dist_mh, the Mahalanobis distance measure between the given
+        :returns: dist, the Mahalanobis distance measure between the given
             track and the measurement.
         """
 
-        ############
-        # TODO Step 3: calculate and return Mahalanobis distance
-        ############
-        pass
-        ############
-        # END student code
-        ############ 
+        ### Compute the measurement function for the sensor / track
+        # Here we obtain the Jacobian assuming a liDAR sensor measurement
+        _H = meas.sensor.get_H(track.x)
+        # Computing the residual
+        gamma = meas.z - _H @ track.x
+        # Computing the covariance of the residual w.r.t. measurement noise
+        _S = np.matmul(_H @ track.P, _H.T) + meas.R
+        ### Calculate the Mahalanobis distance
+        dist = np.matmul(gamma.T @ np.linalg.inv(_S), gamma)
+        return dist
     
     def associate_and_update(self,
             manager: TrackManagement,
