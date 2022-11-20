@@ -39,7 +39,7 @@ import misc.params as params
 from student.trackmanagement import Track
 
 
-class Filter:
+class Filter(object):
     '''The Kalman filter class.
 
     Implements the Kalman filter in 3-D using state-space form.

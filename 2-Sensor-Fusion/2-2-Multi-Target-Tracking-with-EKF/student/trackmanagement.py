@@ -35,7 +35,7 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 import misc.params as params 
 
 
-class Track:
+class Track(object):
     '''The Track class.
 
     :param id: the unique track id.
@@ -146,7 +146,7 @@ class Track:
             )
 
 
-class TrackManagement:
+class TrackManagement(object):
     '''The Track Management class.
 
     :param N: the current number of tracks managed by this instance.
@@ -226,7 +226,7 @@ class TrackManagement:
 
 
     def add_track_to_list(self,
-            track
+            track: Track
     ):
         """Adds the given track to the track manager.
 
@@ -244,22 +244,8 @@ class TrackManagement:
         # Update the last inserted track id
         self.last_id = track.id
 
-    def init_track(self,
-            meas
-    ):
-        """Initialises a new track instance and adds it to the track list.
-
-        :param meas: the measurement to assign to a new track instance.
-        """
-
-        ### Create a new track instance
-        # Incrementing the last inserted track id by one
-        track = Track(meas, self.last_id + 1)
-        # Add the new track to the list
-        self.add_track_to_list(track)
-
     def delete_track(self,
-            track
+            track: Track
     ):
         """Removes the given track from the track list.
 
@@ -270,7 +256,7 @@ class TrackManagement:
         self.track_list.remove(track)
         
     def handle_updated_track(self,
-            track
+            track: Track
     ):
         """Updates the given track's score and state.
 
@@ -284,4 +270,18 @@ class TrackManagement:
         pass
         ############
         # END student code
-        ############ 
+        ############
+
+    def init_track(self,
+            meas: Measurement
+    ):
+        """Initialises a new track instance and adds it to the track list.
+
+        :param meas: the measurement to assign to a new track instance.
+        """
+
+        ### Create a new track instance
+        # Incrementing the last inserted track id by one
+        track = Track(meas, self.last_id + 1)
+        # Add the new track to the list
+        self.add_track_to_list(track)

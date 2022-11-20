@@ -27,13 +27,16 @@ import numpy as np
 import os
 import sys
 PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
+### Import 
 import misc.params as params
 
 
-class Sensor:
+class Sensor(object):
     '''Sensor class including measurement matrix'''
     def __init__(self, name, calib):
         self.name = name
@@ -139,7 +142,7 @@ class Sensor:
         
 ################### 
         
-class Measurement:
+class Measurement(object):
     '''Measurement class including measurement values, covariance, timestamp, sensor'''
     def __init__(self, num_frame, z, sensor):
         # create measurement object
