@@ -87,8 +87,8 @@ class Association(object):
         """
 
         ### Instantiate the new unassigned tracks / measurements lists
-        self.unassigned_tracks = list(range(N))
-        self.unassigned_meas = list(range(M))
+        self.unassigned_tracks = list(range(len(track_list)))
+        self.unassigned_meas = list(range(len(meas_list)))
         ### Initialise the association matrix based on Mahalanobis distance
         # Here we assume a single measurement, single track assumption
         self.association_matrix = np.matrix(
