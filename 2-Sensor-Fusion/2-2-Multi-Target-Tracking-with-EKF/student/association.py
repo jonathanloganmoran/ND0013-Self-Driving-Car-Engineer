@@ -122,6 +122,9 @@ class Association(object):
         # If no valid track-measurement pairs exist in matrix, return NaN
         if np.min(self.association_matrix) == np.inf:
             return np.nan, np.nan
+        else:
+            # Proceed as normal, fetching distance values from matrix 
+            pass
         # Get the indices of the entry with the closest distance
         idx_track, idx_measurement = np.unravel_index(
             indices=np.argmin(self.association_matrix, axis=None),
@@ -238,17 +241,24 @@ class Association(object):
             if np.isnan(idx_track):
                 print('---no more associations---')
                 break
+            else:
+                # Proceed, tracks left to associate
+                pass
             # Get the track at this index
             track = manager.track_list[idx_track]
             # Check sensor visibility    
             if not meas_list[0].sensor.in_fov(track.x):
                 # Here we skip the update step for tracks not in the sensor FOV
                 continue
-            s1 = f"Update track {track.id} with {meas_list[idx_meas].sensor.name}"
+            else:
+                # Proceed to update tracks inside the sensor FOV
+                pass
+            s1 = f"Update track {track.id}"
+            s1 += f" with {meas_list[idx_measurement].sensor.name}"
             s1 += f", measurement {idx_measurement}"
             print(s1)
             # Perform the Kalman update (i.e., correction / innovation) step
-            KF.update(track, meas_list[idx_meas])
+            KF.update(track, meas_list[idx_measurement])
             # Update the score and track state 
             manager.handle_updated_track(track)
             # Set the updated track
