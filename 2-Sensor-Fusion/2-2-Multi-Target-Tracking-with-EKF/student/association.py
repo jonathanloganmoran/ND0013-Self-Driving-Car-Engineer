@@ -123,7 +123,7 @@ class Association(object):
         if np.min(self.association_matrix) == np.inf:
             return np.nan, np.nan
         # Get the indices of the entry with the closest distance
-        idx_track, idx_measurement = np.unravel_idx(
+        idx_track, idx_measurement = np.unravel_index(
             indices=np.argmin(self.association_matrix, axis=None),
             shape=self.association_matrix.shape
         )
