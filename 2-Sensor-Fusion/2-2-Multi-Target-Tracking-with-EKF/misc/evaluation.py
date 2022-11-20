@@ -296,7 +296,7 @@ def plot_tracks(
             label_list.append(label)
     # Initialise the legend
     ax.legend(handle_list, label_list, loc='center left',
-            shadow=True, fontsize='x-large', bbox_to_anchor=(0.65, 0.1)
+            shadow=True, fontsize='x-large', bbox_to_anchor=(0.75, 0.1)
     )
     # Set the refresh time (used to animate the figure)
     plt.pause(0.01)
