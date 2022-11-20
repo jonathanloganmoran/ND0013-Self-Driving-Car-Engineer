@@ -25,7 +25,7 @@ import numpy as np
 import os
 from scipy.stats.distributions import chi2
 import sys
-from typing import List
+from typing import List, Tuple
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
