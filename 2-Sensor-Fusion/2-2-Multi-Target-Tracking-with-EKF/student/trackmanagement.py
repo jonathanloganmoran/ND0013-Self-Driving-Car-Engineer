@@ -47,59 +47,70 @@ class Track(object):
     :param height: the height from the measurement associated with this track.
     :param length: the length from the measurement associated with this track.
     :param yaw: the rotation from sensor-to-vehicle coordinates.
-    :param t: the translation vector from sensor-to-vehicle coordinates.
+    :param t: the timestamp of the measurement w.r.t. elapsed time `dt`.
     '''
+     
     def __init__(self,
             meas: Measurement,
-            id: int
+            _id: int
     ):
         """Initialises a new Track instance.
 
-        :param meas: the Measurement to associate with this track.
+        :param meas: the LiDAR measurement to associate with this track.
         :param id: the unique id to assign this track.
         """
 
-        print('creating track no.', id)
+        print('creating track no.', _id)
         # Obtain the rotation matrix from sensor-to-vehicle coordinates
         M_rot = meas.sensor.sens_to_veh[0:3, 0:3]        
-        ############
-        # TODO Step 2: initialization:
-        # - replace fixed track initialization values by initialization
-        #   of x and P based on unassigned measurement transformed from sensor-
-        #   to-vehicle coordinates
-        # - initialize track state and track score with appropriate values
-        ############
-        self.x = np.matrix([
-                    [49.53980697],
-                    [3.41006279],
-                    [0.91790581],
-                    [0.],
-                    [0.],
-                    [0.]
-        ])
-        self.P = np.matrix([
-                    [9.0e-02, 0., 0., 0., 0., 0.],
-                    [0., 9.0e-02, 0., 0., 0., 0.],
-                    [0., 0., 6.4e-03, 0., 0., 0.],
-                    [0., 0., 0., 2.5e+03, 0., 0.],
-                    [0., 0., 0., 0., 2.5e+03, 0.],
-                    [0., 0., 0., 0., 0., 2.5e+01]
-        ])
-        self.state = 'confirmed'
-        self.score = 0
-        ############
-        # END student code
-        ############
-        # other track attributes
-        self.id = id
+        ### Initialise the track state vector
+        # Initialise the 6x1 state vector
+        self.x = np.ones((6, 1))
+        # Fetch the unassigned measurement vector
+        _z_sens = meas.z
+        # Convert to homogeneous coordinate system
+        _z_sens = np.vstack((_z_sens, np.new_axis))
+        _z_sens[3] = 1
+        # Obtain the sensor-to-vehicle transformation matrix
+        _T_sens2veh = meas.sensor.sens_to_veh
+        # Convert coordinates from sensor-to-vehicle frame
+        self.x[0:4] = _T_sens2veh @ _z_sens
+        ### Initialise the estimation error covariance matrix
+        self.P = np.zeros((6, 6))
+        # Obtain the sensor-to-vehicle rotation matrix
+        _M_rot = meas.sensor.sens_to_veh[0:3, 0:3]
+        # Fetch the measurement noise covariance
+        _R_sens = meas.R
+        # Construct the position estimation error covariance
+        self.P[0:3, 0:3] = np.matmul(_M_rot @ _R_sens, _M_rot.T)
+        # Initialise the velocity estimation error covariance
+        self.P[3:6, 3:6] = np.array(np.identity(n=3))  
+        # Set the velocity estimation covariance values along the diagonal
+        # to something large, since we cannot directly measure velocity;
+        # Here we set the estimation error covariance entries for velocity in 3D
+        self.P[3, 3] = sigma_p44**2
+        self.P[4, 4] = sigma_p55**2
+        self.P[5, 5] = sigma_p66**2
+        # Set the track state to the starting state
+        self.state = 'initialised'
+        # Set the track score
+        self.score = 1. / params.window
+        ### Initialising the other track attributes
+        # Set the track id
+        self.id = _id
+        # Set the measurement width
         self.width = meas.width
+        # Set the measurement length
         self.length = meas.length
+        # Set the measurement height
         self.height = meas.height
-        # The rotation angle from sensor-to-vehicle coordinates
+        # Compute the rotation angle from sensor-to-vehicle coordinates
         # i.e., the roll around the x-axis w.r.t. the vehicle frame
         self.yaw =  np.arccos(
             M_rot[0, 0] * np.cos(meas.yaw) + M_rot[0,1] * np.sin(meas.yaw)
         )
+        # Set the timestamp of the measurement
+        # i.e., the (frame number - 1) * dt
         self.t = meas.t
 
     def set_x(self,
@@ -277,7 +288,7 @@ class TrackManagement(object):
     ):
         """Initialises a new track instance and adds it to the track list.
 
-        :param meas: the measurement to assign to a new track instance.
+        :param meas: the LiDAR measurement to assign to a new track instance.
         """
 
         ### Create a new track instance
