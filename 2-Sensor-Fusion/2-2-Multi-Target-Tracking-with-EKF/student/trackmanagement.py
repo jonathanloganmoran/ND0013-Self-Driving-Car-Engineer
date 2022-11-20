@@ -21,6 +21,10 @@
 
 ### General package imports
 import collections
+### Here we use the `numpy.matrix` class
+# Note that this class is being deprecated and its use in this programme will be
+# switched to an `numpy.ndarray` implmenetation soon.
+# See: https://numpy.org/devdocs/reference/generated/numpy.matrix.html#numpy.matrix
 import numpy as np
 
 ### Add project directory to PYTHONPATH to enable relative imports
@@ -164,7 +168,6 @@ class TrackManagement(object):
     :param track_list: the list of current (active) tracks.
     :param result_list: the 
     :param last_id: the track id of the last track to be added.
-
     '''
 
     def __init__(self):
