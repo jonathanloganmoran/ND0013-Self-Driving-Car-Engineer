@@ -126,27 +126,35 @@ class Association(object):
 
         :returns: the track and measurement instances from the unassigned lists.
         """
-        ############
-        # TODO Step 3: find closest track and measurement:
-        # - find minimum entry in association matrix
-        # - delete row and column
-        # - remove corresponding track and measurement from unassigned_tracks
-        #   and unassigned_meas
-        # - return this track and measurement
-        ############
-        # the following only works for at most one track and one measurement
-        update_track = 0
-        update_meas = 0
-        
-        # remove from list
-        self.unassigned_tracks.remove(update_track) 
-        self.unassigned_meas.remove(update_meas)
-        self.association_matrix = np.matrix([])
-            
-        ############
-        # END student code
-        ############ 
-        return update_track, update_meas     
+
+        ### Find the closest track and measurement entry in matrix
+        # If no valid track-measurement pairs exist in matrix, return NaN
+        if np.min(self.association_matrix) == np.inf:
+            return np.nan, np.nan
+        # Get the indices of the entry with the closest distance
+        idx_track, idx_measurement = np.unravel_idx(
+            indices=np.argmin(self.association_matrix, axis=None),
+            shape=self.association_matrix.shape
+        )
+        ### Get the closest track and measurement objects
+        track_closest = self.unassigned_tracks[idx_track]
+        measurement_closest = self.unassigned_meas[idx_measurement]
+        ### Remove the track and measurement objects from their lists
+        self.unassigned_tracks.remove(track_closest)
+        self.unassigned_meas.remove(measurement_closest)
+        ### Remove the track-measurement pair from the association matrix
+        self.association_matrix = np.delete(
+                arr=self.association_matrix,
+                obj=idx_track,
+                axis=0
+        )
+        self.association_matrix = np.delete(
+                arr=self.association_matrix,
+                obj=idx_measurement,
+                axis=1
+        )
+        ### Return the closest track-measurement pair
+        return track_closest, measurement_closest   
 
     def gating(self,
             dist_mh: float,
