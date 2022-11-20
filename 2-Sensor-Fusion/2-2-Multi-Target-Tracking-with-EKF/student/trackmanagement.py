@@ -79,7 +79,7 @@ class Track(object):
         # Fetch the unassigned measurement vector
         _z_sens = meas.z
         # Convert to homogeneous coordinate system
-        _z_sens = np.vstack((_z_sens, np.new_axis))
+        _z_sens = np.vstack((_z_sens, np.newaxis))
         _z_sens[3] = 1
         # Obtain the sensor-to-vehicle transformation matrix
         _T_sens2veh = meas.sensor.sens_to_veh
