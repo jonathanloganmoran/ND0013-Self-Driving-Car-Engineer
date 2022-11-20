@@ -19,138 +19,269 @@
 #       TensorFlow `tf.Tensor` data ops, is recommended.
 # ------------------------------------------------------------------------------
 
-# imports
-import numpy as np
+### General package imports
 import collections
+import numpy as np
 
-# add project directory to python path to enable relative imports
-import os
-import sys
+### Add project directory to PYTHONPATH to enable relative imports
+# Alternatively, use the `pip install ..` script with setuptools
 PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+SCRIPT_DIR = os.path.dirname(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
+)
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+### Import the track management parameters
 import misc.params as params 
 
+
 class Track:
-    '''Track class with state, covariance, id, score'''
-    def __init__(self, meas, id):
+    '''The Track class.
+
+    :param id: the unique track id.
+    :param state: the string of the current state determined by the track score.
+    :param score: the track score as computed by a n-last detections weighting.
+    :param x: the state vector containing the position estimate.
+    :param P: the estimation error covariance matrix.
+    :param width: the width from the measurement associated with this track.
+    :param height: the height from the measurement associated with this track.
+    :param length: the length from the measurement associated with this track.
+    :param yaw: the rotation from sensor-to-vehicle coordinates.
+    :param t: the translation vector from sensor-to-vehicle coordinates.
+    '''
+    def __init__(self,
+            meas: Measurement,
+            id: int
+    ):
+        """Initialises a new Track instance.
+
+        :param meas: the Measurement to associate with this track.
+        :param id: the unique id to assign this track.
+        """
+
         print('creating track no.', id)
-        M_rot = meas.sensor.sens_to_veh[0:3, 0:3] # rotation matrix from sensor to vehicle coordinates
-        
+        # Obtain the rotation matrix from sensor-to-vehicle coordinates
+        M_rot = meas.sensor.sens_to_veh[0:3, 0:3]        
         ############
         # TODO Step 2: initialization:
-        # - replace fixed track initialization values by initialization of x and P based on 
-        # unassigned measurement transformed from sensor to vehicle coordinates
+        # - replace fixed track initialization values by initialization
+        #   of x and P based on unassigned measurement transformed from sensor-
+        #   to-vehicle coordinates
         # - initialize track state and track score with appropriate values
         ############
-
-        self.x = np.matrix([[49.53980697],
-                        [ 3.41006279],
-                        [ 0.91790581],
-                        [ 0.        ],
-                        [ 0.        ],
-                        [ 0.        ]])
-        self.P = np.matrix([[9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 6.4e-03, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+01]])
+        self.x = np.matrix([
+                    [49.53980697],
+                    [3.41006279],
+                    [0.91790581],
+                    [0.],
+                    [0.],
+                    [0.]
+        ])
+        self.P = np.matrix([
+                    [9.0e-02, 0., 0., 0., 0., 0.],
+                    [0., 9.0e-02, 0., 0., 0., 0.],
+                    [0., 0., 6.4e-03, 0., 0., 0.],
+                    [0., 0., 0., 2.5e+03, 0., 0.],
+                    [0., 0., 0., 0., 2.5e+03, 0.],
+                    [0., 0., 0., 0., 0., 2.5e+01]
+        ])
         self.state = 'confirmed'
         self.score = 0
-        
         ############
         # END student code
-        ############ 
-               
+        ############
         # other track attributes
         self.id = id
         self.width = meas.width
         self.length = meas.length
         self.height = meas.height
-        self.yaw =  np.arccos(M_rot[0,0]*np.cos(meas.yaw) + M_rot[0,1]*np.sin(meas.yaw)) # transform rotation from sensor to vehicle coordinates
+        # The rotation angle from sensor-to-vehicle coordinates
+        # i.e., the roll around the x-axis w.r.t. the vehicle frame
+        self.yaw =  np.arccos(
+            M_rot[0, 0] * np.cos(meas.yaw) + M_rot[0,1] * np.sin(meas.yaw)
+        )
         self.t = meas.t
 
-    def set_x(self, x):
+    def set_x(self,
+            x: np.matrix
+    ):
+        """Sets the state vector estimate to the given object."""
         self.x = x
         
-    def set_P(self, P):
+    def set_P(self,
+            P: np.matrix
+    ):
+        """Sets the estimation error covariance to the given object."""
         self.P = P  
         
-    def set_t(self, t):
-        self.t = t  
+    def set_t(self,
+            t: np.matrix
+    ):
+        """Sets the translation vector instance to the given object."""
+        self.t = t
+
+    def update_attributes(self,
+            meas: Measurement
+    ):
+        """Updates the track with the latest measurement.
+
+        Uses the exponential sliding average to compute the estimate of the
+        dimensions and orientation of the object from the provided measurement.
         
-    def update_attributes(self, meas):
-        # use exponential sliding average to estimate dimensions and orientation
+        :param meas: the Measurement instance to update the track state with.
+        """
+
+        ### Estimate the dimensions and the orientation for LiDAR measurement
+        # Using exponential sliding average
         if meas.sensor.name == 'lidar':
             c = params.weight_dim
-            self.width = c*meas.width + (1 - c)*self.width
-            self.length = c*meas.length + (1 - c)*self.length
-            self.height = c*meas.height + (1 - c)*self.height
+            self.width = c * meas.width + (1 - c) * self.width
+            self.length = c * meas.length + (1 - c) * self.length
+            self.height = c * meas.height + (1 - c) * self.height
+            # Tranform the measurement coordinates from sensor-to-vehicle
             M_rot = meas.sensor.sens_to_veh
-            self.yaw = np.arccos(M_rot[0,0]*np.cos(meas.yaw) + M_rot[0,1]*np.sin(meas.yaw)) # transform rotation from sensor to vehicle coordinates
-        
-        
-###################        
+            self.yaw = np.arccos(
+                M_rot[0, 0] * np.cos(meas.yaw) + M_rot[0, 1] * np.sin(meas.yaw)
+
+            )
+
 
 class Trackmanagement:
-    '''Track manager with logic for initializing and deleting objects'''
+    '''The Track Management class.
+
+    :param N: the current number of tracks managed by this instance.
+    :param track_list: the list of current (active) tracks.
+    :param result_list: the 
+    :param last_id: the track id of the last track to be added.
+
+    '''
+
     def __init__(self):
-        self.N = 0 # current number of tracks
+        """Initialises a new Trackmanagement instance."""
+
+        ### Initialise the attributes
+        # Set the number of current managed tracks to zero 
+        self.N = 0
+        # Instantiate the empty track / result lists
         self.track_list = []
-        self.last_id = -1
         self.result_list = []
+        # Set the last track id inserted to void
+        self.last_id = -1
         
-    def manage_tracks(self, unassigned_tracks, unassigned_meas, meas_list):  
+    def manage_tracks(self,
+            unassigned_tracks: List[Track],
+            unassigned_meas: List[Measurement],
+            meas_list: List[Measurement]
+    ):
+        """Runs the track management loop.
+
+        In the initialisation loop, a new track is created for each new
+        LiDAR measurement. Here we choose to skip the initialisation of new
+        tracks for camera measurements, as their position in 3D cannot be
+        accurately estimated from a single time-step.
+
+        In the management loop, all existing tracks are sweeped and their
+        track scores are updated based on the position estimate relative to
+        the visibility of the current sensor. If any measurements are outside
+        of the sensor visibility, the track score will remain the same.
+        In other words, we choose to avoid decreasing the score of tracks
+        who are not currently visibile by both of the sensor types. 
+
+        :param unassigned_tracks: the list of tracks that have not yet been
+            assigned to a measurement.
+        :param unassigned_meas: the list of measurements that have not yet been
+            associated with a track.
+        :param meas_list: the list of measurements from this current time-step.
+        """
         ############
         # TODO Step 2: implement track management:
         # - decrease the track score for unassigned tracks
-        # - delete tracks if the score is too low or P is too big (check params.py for parameters that might be helpful, but
+        # - delete tracks if the score is too low or P is too big
+        #   (check params.py for parameters that might be helpful, but
         # feel free to define your own parameters)
         ############
-        
-        # decrease score for unassigned tracks
+
+        ### Loop through all unassigned tracks
         for i in unassigned_tracks:
+            # Get the next track in the list
             track = self.track_list[i]
-            # check visibility    
-            if meas_list: # if not empty
+            if meas_list:
+                # Check the sensor visibility based on this track's measurement
                 if meas_list[0].sensor.in_fov(track.x):
+                    # Increase the track score if measurement is within FOV
                     # your code goes here
-                    pass 
-
-        # delete old tracks   
-
+                    pass
+        ### Delete any tracks with a score below the threshold
+        #   or estimation error covariance above the tolerance
         ############
         # END student code
-        ############ 
-            
-        # initialize new track with unassigned measurement
-        for j in unassigned_meas: 
-            if meas_list[j].sensor.name == 'lidar': # only initialize with lidar measurements
+        ############
+        ### Initialise a new track for each unassigned measurement
+        for j in unassigned_meas:
+            # Here we only initialise new tracks for LiDAR measurements
+            # Since we cannot accurately estimate 3D position from camera
+            # measurements in a single time-step
+            if meas_list[j].sensor.name == 'lidar':
                 self.init_track(meas_list[j])
-            
-    def addTrackToList(self, track):
+
+
+    def addTrackToList(self,
+            track
+    ):
+        """Adds the given track to the track manager.
+
+        When a new track is added to the track list, the number of
+        tracks `N` increments by one. The `last_id` attribute is also
+        updated to reflect the `id` of the given track added to the list.
+
+        :param track: the new track to add to the track list.
+        """
+
+        ### Add the new track to the current tracks list
         self.track_list.append(track)
+        # Increment the current number of tracks managed
         self.N += 1
+        # Update the last inserted track id
         self.last_id = track.id
 
-    def init_track(self, meas):
+    def init_track(self,
+            meas
+    ):
+        """Initialises a new track instance and adds it to the track list.
+
+        :param meas: the measurement to assign to a new track instance.
+        """
+
+        ### Create a new track instance
+        # Incrementing the last inserted track id by one
         track = Track(meas, self.last_id + 1)
+        # Add the new track to the list
         self.addTrackToList(track)
 
-    def delete_track(self, track):
+    def delete_track(self,
+            track
+    ):
+        """Removes the given track from the track list.
+
+        :param track: the track instance to remove from the track list.
+        """
+
         print('deleting track no.', track.id)
         self.track_list.remove(track)
         
-    def handle_updated_track(self, track):      
+    def handle_updated_track(self,
+            track
+    ):
+        """Updates the given track's score and state.
+
+        :param track: the specific track to update.
+        """
         ############
         # TODO Step 2: implement track management for updated tracks:
         # - increase track score
         # - set track state to 'tentative' or 'confirmed'
         ############
-
         pass
-        
         ############
         # END student code
         ############ 
