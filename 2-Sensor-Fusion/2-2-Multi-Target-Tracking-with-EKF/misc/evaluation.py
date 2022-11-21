@@ -336,7 +336,7 @@ def plot_rmse(
                 constrained_layout=True
     )
     # Set the figure title
-    s1 = f'Root Mean Square Error \ncomputed over frames {150}-{200} in Sequence {2}'
+    s1 = f'Root Mean Square Error \ncomputed over frames {0}-{200} in Sequence {1}'
     plt.suptitle(s1, fontsize=22)
     plot_empty = True
     ### Loop over all tracks
@@ -418,7 +418,7 @@ def plot_rmse(
     else:
         # Configure the figure legend
         plt.legend(loc='center left',
-            shadow=True, fontsize='xx-large', bbox_to_anchor=(0.85, 0.05)
+            shadow=True, fontsize='xx-large', bbox_to_anchor=(0.85, 0.75)
         )
         # Set the x- and y-axis labels
         plt.xlabel('time [s]', fontsize=18)
