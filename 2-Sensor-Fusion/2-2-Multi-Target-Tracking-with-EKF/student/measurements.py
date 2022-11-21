@@ -45,6 +45,87 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 # Importing the camera / LiDAR sensor configuration parameters
 import misc.params as params
 
+        
+class Measurement(object):
+    '''The Measurement class.
+
+    :param t: the measurement timestamp w.r.t. the current frame id and
+        the elapsed time `dt`.
+    :param sensor: the Sensor instance from which this measurement was
+        generated, its `name` attribute can be one of ['camera', 'lidar'].
+    :param z: the measurement vector containing the position and velocity
+        estimates as measured by the sensor.
+    :param R: the measurement noise covariance matrix.
+    :param width: the estimated width of the measured object.
+    :param length: the estimated length of the measured object.
+    :param height: the estimated height of the measured object.
+    :param yaw: the heading angle of the bounding box in radians, i.e.,
+        the angle required to rotate +x to the surface normal of the box
+        normalised to [-pi, pi).
+    '''
+
+    def __init__(self,
+            num_frame: int,
+            z: Union[np.ndarray, np.matrix],
+            sensor: 'Sensor'
+    ):
+        """Initialises a new Measurement instance.
+
+        :param num_frame: the frame id from which this measurement was captured.
+        :param z: the raw measurement vector.
+        :param sensor: the Sensor instance from which this measurement was
+            generated, its `name` attribute can be one of ['camera', 'lidar'].
+        """
+
+        ### Create the measurement instance
+        # Set the timestamp
+        self.t = (num_frame - 1) * params.dt
+        # Set the sensor type that generated this measurement
+        self.sensor = sensor
+        ### Configure the sensor-specific parameters
+        if sensor.name == 'lidar':
+            # Load the LiDAR standard deviation values
+            sigma_lidar_x = params.sigma_lidar_x
+            sigma_lidar_y = params.sigma_lidar_y
+            sigma_lidar_z = params.sigma_lidar_z
+            # Initialise the measurement vector
+            self.z = np.zeros((sensor.dim_meas, 1))
+            # Set the state vector position estimate
+            self.z[0] = z[0]
+            self.z[1] = z[1]
+            self.z[2] = z[2]
+            # Initialise the measurement noise covariance matrix 
+            self.R = np.matrix([
+                [sigma_lidar_x**2, 0., 0.],
+                [0., sigma_lidar_y**2, 0.], 
+                [0., 0., sigma_lidar_z**2]
+            ])
+            # Set the estimates
+            self.width = z[4]
+            self.length = z[5]
+            self.height = z[3]
+            # Set the yaw angle
+            self.yaw = z[6]
+        elif sensor.name == 'camera':
+            # Load the camera standard deviation values
+            sigma_cam_i = params.sigma_cam_i
+            sigma_cam_j = params.sigma_cam_j
+            # Initialise the measurement vector
+            self.z = np.zeros((sensor.dim_meas, 1))
+            # Set the state vector position estimate
+            self.z[0] = z[0]
+            self.z[1] = z[1]
+            # Initialise the measurement noise covariance matrix
+            self.R = np.matrix([
+                [sigma_cam_i**2, 0.],
+                [0., sigma_cam_j**2]
+            ])
+            # Set the estimates of the bounding box dimensions
+            self.width = z[2]
+            self.length = z[3]
+        else:
+            raise ValueError(f"Invalid sensor type '{sensor.name}'")
+
 
 class Sensor(object):
     '''The Sensor class.
@@ -315,84 +396,3 @@ class Sensor(object):
             return meas_list
         else:
             raise ValueError(f"Invalid sensor type '{self.name}'")
-
-        
-class Measurement(object):
-    '''The Measurement class.
-
-    :param t: the measurement timestamp w.r.t. the current frame id and
-        the elapsed time `dt`.
-    :param sensor: the Sensor instance from which this measurement was
-        generated, its `name` attribute can be one of ['camera', 'lidar'].
-    :param z: the measurement vector containing the position and velocity
-        estimates as measured by the sensor.
-    :param R: the measurement noise covariance matrix.
-    :param width: the estimated width of the measured object.
-    :param length: the estimated length of the measured object.
-    :param height: the estimated height of the measured object.
-    :param yaw: the heading angle of the bounding box in radians, i.e.,
-        the angle required to rotate +x to the surface normal of the box
-        normalised to [-pi, pi).
-    '''
-
-    def __init__(self,
-            num_frame: int,
-            z: Union[np.ndarray, np.matrix],
-            sensor: Sensor
-    ):
-        """Initialises a new Measurement instance.
-
-        :param num_frame: the frame id from which this measurement was captured.
-        :param z: the raw measurement vector.
-        :param sensor: the Sensor instance from which this measurement was
-            generated, its `name` attribute can be one of ['camera', 'lidar'].
-        """
-
-        ### Create the measurement instance
-        # Set the timestamp
-        self.t = (num_frame - 1) * params.dt
-        # Set the sensor type that generated this measurement
-        self.sensor = sensor
-        ### Configure the sensor-specific parameters
-        if sensor.name == 'lidar':
-            # Load the LiDAR standard deviation values
-            sigma_lidar_x = params.sigma_lidar_x
-            sigma_lidar_y = params.sigma_lidar_y
-            sigma_lidar_z = params.sigma_lidar_z
-            # Initialise the measurement vector
-            self.z = np.zeros((sensor.dim_meas, 1))
-            # Set the state vector position estimate
-            self.z[0] = z[0]
-            self.z[1] = z[1]
-            self.z[2] = z[2]
-            # Initialise the measurement noise covariance matrix 
-            self.R = np.matrix([
-                [sigma_lidar_x**2, 0., 0.],
-                [0., sigma_lidar_y**2, 0.], 
-                [0., 0., sigma_lidar_z**2]
-            ])
-            # Set the estimates
-            self.width = z[4]
-            self.length = z[5]
-            self.height = z[3]
-            # Set the yaw angle
-            self.yaw = z[6]
-        elif sensor.name == 'camera':
-            # Load the camera standard deviation values
-            sigma_cam_i = params.sigma_cam_i
-            sigma_cam_j = params.sigma_cam_j
-            # Initialise the measurement vector
-            self.z = np.zeros((sensor.dim_meas, 1))
-            # Set the state vector position estimate
-            self.z[0] = z[0]
-            self.z[1] = z[1]
-            # Initialise the measurement noise covariance matrix
-            self.R = np.matrix([
-                [sigma_cam_i**2, 0.],
-                [0., sigma_cam_j**2]
-            ])
-            # Set the estimates of the bounding box dimensions
-            self.width = z[2]
-            self.length = z[3]
-        else:
-            raise ValueError(f"Invalid sensor type '{sensor.name}'")
