@@ -305,18 +305,16 @@ class Sensor(object):
             measurement object created from sensor reading `z`.  
         """
 
-        ### Generate a new measurement instance
-        ############
-        # TODO Step 4: remove restriction to lidar in order to include camera as well
-        ############
-        ### Add the measurement to the list
-        if self.name == 'lidar':
+        ### Generate a new measurement
+        if self.name in {'lidar', 'camera'}:
+            # Create a new Measurement instance with reference to Sensor self
             meas = Measurement(num_frame, z, self)
+            # Add the measurement to the list
             meas_list.append(meas)
-        return meas_list
-        ############
-        # END student code
-        ############ 
+            # Return the updated list
+            return meas_list
+        else:
+            raise ValueError(f"Invalid sensor type '{self.name}'")
 
         
 class Measurement(object):
