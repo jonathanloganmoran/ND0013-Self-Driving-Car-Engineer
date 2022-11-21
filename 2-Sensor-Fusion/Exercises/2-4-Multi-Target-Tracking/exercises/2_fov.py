@@ -89,7 +89,7 @@ class Camera(object):
         # Obtain the position coordinates of the object in vehicle frame
         _p_veh = x[0:3]
         # Convert to homogeneous coordinates
-        _p_veh = np.vstack([_p_sens, np.newaxis])
+        _p_veh = np.vstack([_p_veh, np.newaxis])
         _p_veh[3] = 1
         # Construct the vehicle-to-sensor transformation
         _p_sens = self.veh_to_sens @ _p_veh
