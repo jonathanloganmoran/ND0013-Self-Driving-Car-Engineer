@@ -43,6 +43,8 @@ from student.measurements import Measurement, Sensor
 from student.trackmanagement import Track, TrackManagement
 
 
+
+
 class Association(object):
     '''The Association class.
 
@@ -204,7 +206,7 @@ class Association(object):
         # Here we obtain the Jacobian assuming a liDAR sensor measurement
         _H = meas.sensor.get_H(track.x)
         # Computing the residual
-        gamma = meas.z - _H @ track.x
+        gamma = meas.z - meas.sensor.get_hx(track.x)
         # Computing the covariance of the residual w.r.t. measurement noise
         _S = KF.S(track, meas, _H)
         ### Calculate the Mahalanobis distance

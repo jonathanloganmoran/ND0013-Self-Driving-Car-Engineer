@@ -144,7 +144,7 @@ exec_data = ['pcl_from_rangeimage']
 exec_detection = []
 # Set the tracking executions to perform, can be any of the following:
 # ['perform_tracking']
-exec_tracking = ['perform_tracking', 'make_tracking_movie']
+exec_tracking = ['perform_tracking']
 # Set the visualisation executions to perform;
 # Can be any number of the following:
 #     ['show_range_image', 'show_bev', 'show_pcl',
@@ -152,7 +152,7 @@ exec_tracking = ['perform_tracking', 'make_tracking_movie']
 #      'show_objects_in_bev_labels_in_camera', 'show_tracks',
 #      'show_detection_performance', 'make_tracking_movie'
 #     ]
-exec_visualization = ['show_tracks']
+exec_visualization = ['show_tracks', 'make_tracking_movie']
 # Initialise the execution list for each component
 # If a `Segmentation fault` error occurs, change these to positional arguments
 exec_list = make_exec_list(
