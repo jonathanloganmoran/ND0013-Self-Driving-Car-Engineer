@@ -120,8 +120,8 @@ class Sensor(object):
 
 
     def in_fov(self,
-            x: Union[np.ndarray, np.matrix]:
-    ): -> bool
+            x: Union[np.ndarray, np.matrix]
+    ) -> bool:
         """Checks if the given object `x` is within the sensor field of view.
 
         :param x: the object state vector to obtain the coordinates from,
