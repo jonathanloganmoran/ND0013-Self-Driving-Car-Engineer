@@ -131,15 +131,29 @@ class Sensor(object):
         """
 
         ### Transform the track state position into sensor frame
-        # check if an object x can be seen by this sensor
-        ############
-        # TODO Step 4: implement a function that returns True if x lies in the sensor's field of view, 
-        # otherwise False.
-        ############
-        return True
-        ############
-        # END student code
-        ############ 
+        # Obtain the position coordinates of the object in vehicle frame
+        _p_veh = x[0:3]
+        # Convert to homogeneous coordinates
+        _p_veh = np.vstack([_p_veh, np.newaxis])
+        _p_veh[3] = 1
+        # Construct the vehicle-to-sensor transformation
+        _p_sens = self.veh_to_sens @ _p_veh
+        # Obtain the position coordinates of the object in sensor frame
+        p_x, p_y, _ = _p_sens[0:3]
+        ### Check if the object at tracked position can be seen by the sensor
+        # Calculate the angle offset of the object w.r.t. the sensor frame
+        if p_x == 0:
+            # Make sure that the divisor is not zero
+            raise ZeroDivisionError(e1) 
+        alpha = math.atan(p_y / p_x)
+        # Check if the angle offset is within the camera opening angle
+        # Not assuming the FOV is symmetric
+        if np.min(self.fov) <= alpha <= np.max(self.fov):
+            # Object is within view of the sensor
+            return True
+        else:
+            # Object is not in view of the sensor
+            return False
              
     def get_hx(self,
             x: Union[np.ndarray, np.matrix]
