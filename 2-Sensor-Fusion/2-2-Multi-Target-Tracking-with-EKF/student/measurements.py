@@ -144,6 +144,7 @@ class Sensor(object):
         # Calculate the angle offset of the object w.r.t. the sensor frame
         if p_x == 0:
             # Make sure that the divisor is not zero
+            e1 = f"Invalid coordinates (sensor frame) '{_p_sens.tolist()}'"
             raise ZeroDivisionError(e1) 
         alpha = math.atan(p_y / p_x)
         # Check if the angle offset is within the camera opening angle
@@ -166,12 +167,17 @@ class Sensor(object):
             the given `x`.
         """
 
-        ### Calculate the non-linear measurement expectation value   
+        ### Calculate the non-linear measurement expectation value
+        # Here the LiDAR sensor model is linear, so we transform the measurement
+        # into homogeneous coordinates in sensor frame
         if self.name == 'lidar':
-            pos_veh = np.ones((4, 1)) # homogeneous coordinates
-            pos_veh[0:3] = x[0:3] 
-            pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to lidar coordinates
-            return pos_sens[0:3]
+            # Construct the homogeneous coordinate system
+            _p_veh = np.vstack([x[0:3], np.newaxis])
+            _p_veh[3] = 1 
+            # Transform from vehicle-to-sensor coordinates
+            _p_sens = self.veh_to_sens @ _p_veh
+            # Return the position estimate in LiDAR coordinate frame
+            return _p_sens[0:3]
         elif self.name == 'camera':
             ############
             # TODO Step 4: implement nonlinear camera measurement function h:
@@ -180,10 +186,21 @@ class Sensor(object):
             # - make sure to not divide by zero, raise an error if needed
             # - return h(x)
             ############
-            pass
-            ############
-            # END student code
-            ############ 
+            # Construct the homogeneous coordinate system
+            _p_veh = np.vstack([x[0:3], np.newaxis])
+            _p_veh[3] = 1
+            # Transform from vehicle-to-sensor coordinates
+            _p_sens = self.veh_to_sens @ _p_veh
+            # Project into the image space
+            if _p_sens[0, 0] == 0:
+                # Make sure that the divisor is not zero
+                e1 = f"Invalid coordinates (sensor frame) '{_p_sens.tolist()}'"
+                raise ZeroDivisionError(e1)
+            else:
+                # Project the coordinates into the image space
+                i = self.c_i - self.f_i * _p_sens[1, 0] / _p_sens[0, 0]
+                j = self.c_j - self.f_j * _p_sens[2, 0] / _p_sens[0, 0]
+                return np.matrix([[i], [j]])
     
     def get_H(self,
             x: Union[np.ndarray, np.matrix]
@@ -219,9 +236,8 @@ class Sensor(object):
                 R[0, 0] * x[0] + R[0, 1] * x[1] + R[0, 2] * x[2] + T[0] == 0
             ):
                 # Raise the error and return the vector `x` for debugging
-                _x = x.tolist()
-                e1 = f'DivideByZeroError — Jacobian not defined for this {_x}!'
-                raise NameError(e1)
+                e1 = f'Jacobian not defined for this {x.tolist()}!'
+                raise ZeroDivisionError(e1)
             else:
                 H[0, 0] = self.f_i * (-R[1, 0] / (
                     R[0, 0] * x[0] + R[0, 1] * x[1] + R[0, 2] * x[2] + T[0]
