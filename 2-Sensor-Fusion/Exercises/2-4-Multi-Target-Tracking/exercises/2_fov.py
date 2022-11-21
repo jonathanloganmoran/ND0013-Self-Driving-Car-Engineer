@@ -42,7 +42,7 @@ class Camera(object):
     :param fov: the opening angle (i.e., field of view) of the camera sensor.
     :param sens_to_veh: the coordinate transformation matrix from the
         sensor frame to the vehicle frame (i.e., the extrinsics matrix).
-    :param veh_to_sen: the coordinate transformation matrix from the
+    :param veh_to_sens: the coordinate transformation matrix from the
         vehicle frame to the sensor frame.
     '''
 
@@ -86,17 +86,17 @@ class Camera(object):
         """
 
         ### Transform the track state position coordinates into sensor frame
-        # Obtain the position coordinates of the object in sensor frame
-        _p_sens = x[0:3]
+        # Obtain the position coordinates of the object in vehicle frame
+        _p_veh = x[0:3]
         # Convert to homogeneous coordinates
-        _p_sens = np.vstack([_p_sens, np.newaxis])
-        _p_sens[3] = 1
+        _p_veh = np.vstack([_p_sens, np.newaxis])
+        _p_veh[3] = 1
         # Construct the vehicle-to-sensor transformation
-        _p_veh = self.veh_to_sens @ _p_sens
+        _p_sens = self.veh_to_sens @ _p_veh
         # Obtain the position coordinates of the object in sensor frame
-        p_x, p_y, _ = _p_veh[0:3]
+        p_x, p_y, _ = _p_sens[0:3]
         ### Check if the object at tracked position can be seen by the sensor
-        # Calculate the angle offset of the object w.r.t. the vehicle frame
+        # Calculate the angle offset of the object w.r.t. the sensor frame
         if p_x == 0:
             # Make sure that the divisor is not zero
             raise ZeroDivisionError
