@@ -27,11 +27,7 @@
 import numpy as np
 import os
 import sys
-from typing import Union
-
-### Simple Waymo Open Dataset Reader library
-# Used for the `CameraCalibration` and `LidarCalibration` typing hints
-from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
+from typing import List, Union
 
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
@@ -40,6 +36,10 @@ SCRIPT_DIR = os.path.dirname(
     os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__)))
 )
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+### Simple Waymo Open Dataset Reader library
+# Used for the `CameraCalibration` and `LidarCalibration` typing hints
+from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2
 
 ### Measurement model imports
 # Importing the camera / LiDAR sensor configuration parameters
@@ -66,7 +66,7 @@ class Sensor(object):
     def __init__(self,
             name: str,
             calib: Union[
-                dataset_pb2.CameraCalibration, dataset_pb2.LidarCalibration
+                dataset_pb2.CameraCalibration, dataset_pb2.LaserCalibration
             ]
     ):
         """Initialises a new Sensor instance.
