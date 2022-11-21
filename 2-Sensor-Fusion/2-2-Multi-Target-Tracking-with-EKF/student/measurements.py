@@ -322,15 +322,17 @@ class Measurement(object):
 
     :param t: the measurement timestamp w.r.t. the current frame id and
         the elapsed time `dt`.
-    :param sensor: the name of the sensor type as a string, can be one of
-        ['camera', 'lidar'].
+    :param sensor: the Sensor instance from which this measurement was
+        generated, its `name` attribute can be one of ['camera', 'lidar'].
     :param z: the measurement vector containing the position and velocity
         estimates as measured by the sensor.
     :param R: the measurement noise covariance matrix.
-    :param width: 
-    :param length:
-    :param height:
-    :param yaw:
+    :param width: the estimated width of the measured object.
+    :param length: the estimated length of the measured object.
+    :param height: the estimated height of the measured object.
+    :param yaw: the heading angle of the bounding box in radians, i.e.,
+        the angle required to rotate +x to the surface normal of the box
+        normalised to [-pi, pi).
     '''
 
     def __init__(self,
@@ -342,8 +344,8 @@ class Measurement(object):
 
         :param num_frame: the frame id from which this measurement was captured.
         :param z: the raw measurement vector.
-        :param sensor: the sensor name from which this measurement was captured,
-            can be one of ['camera', 'lidar'].
+        :param sensor: the Sensor instance from which this measurement was
+            generated, its `name` attribute can be one of ['camera', 'lidar'].
         """
 
         ### Create the measurement instance
@@ -376,10 +378,21 @@ class Measurement(object):
             # Set the yaw angle
             self.yaw = z[6]
         elif sensor.name == 'camera':
-            ############
-            # TODO Step 4: initialize camera measurement including z and R 
-            ############
-            pass
-            ############
-            # END student code
-            ############ 
+            # Load the camera standard deviation values
+            sigma_cam_i = params.sigma_cam_i
+            sigma_cam_j = params.sigma_cam_j
+            # Initialise the measurement vector
+            self.z = np.zeros((sensor.dim_meas, 1))
+            # Set the state vector position estimate
+            self.z[0] = z[0]
+            self.z[1] = z[1]
+            # Initialise the measurement noise covariance matrix
+            self.R = np.matrix([
+                [sigma_cam_i**2, 0.],
+                [0., sigma_cam_j**2]
+            ])
+            # Set the estimates of the bounding box dimensions
+            self.width = z[2]
+            self.length = z[3]
+        else:
+            raise ValueError(f"Invalid sensor type '{sensor.name}'")
