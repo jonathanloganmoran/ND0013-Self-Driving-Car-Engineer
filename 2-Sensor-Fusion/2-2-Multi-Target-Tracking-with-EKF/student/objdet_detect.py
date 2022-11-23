@@ -49,7 +49,7 @@ from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 # For midterm project, uncomment the following:
 REL_RESULTS = 'midterm'
 # For final project, uncomment the following:
-REL_RESULTS = 'final'
+# REL_RESULTS = 'final'
 
 ### Setting the sequence id (file number)
 # Must match what is set in `loop_over_dataset.py`

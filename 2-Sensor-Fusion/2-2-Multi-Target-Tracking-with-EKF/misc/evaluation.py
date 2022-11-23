@@ -461,21 +461,20 @@ def make_movie(
     """
     
     # Obtain the images from the folder pointed to by `path`
-    images = [img for img in sorted(os.listdir(os.path.dirname(path))) if img.endswith(".png")]
-    frame = cv2.imread(os.path.join(path, images[0]))
+    base_dir = os.path.relpath(os.path.dirname(path))
+    images = [img for img in sorted(os.listdir(base_dir)) if img.endswith(".png")]
+    frame = cv2.imread(os.path.join(base_dir, images[0]))
     height, width, layers = frame.shape
     # Create a 10 fps video and save it in the folder pointed to by `path`
-    # Create the output subdirectory (if it does not already exist)
-    os.makedirs(os.path.dirname(fp_out), exist_ok=True)
     video = cv2.VideoWriter(
         filename=path,
         fourcc=0,
         fps=10,
-        frameSize=(width,height)
+        frameSize=(width, height)
     )
     for image in images:
         # Write each image to the file
-        fname = os.path.join(path, image)
+        fname = os.path.join(base_dir, image)
         video.write(cv2.imread(fname))
         # Remove the frame from the folder
         os.remove(fname)
