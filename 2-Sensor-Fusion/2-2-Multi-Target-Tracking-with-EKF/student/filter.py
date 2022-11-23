@@ -148,7 +148,7 @@ class Filter(object):
         _Q = self.Q()
         ### Project the state estimate and covariance into the next time-step
         # Assuming a zero contribution due to an external motion model
-        _x = self.F @ track.x
+        _x = _F @ track.x
         # Adding uncertainty to the object motion model due to
         # e.g., unexpected braking / acceleration via covariance `Q` 
         _P = np.matmul(_F @ track.P, _F.T) + _Q
