@@ -111,11 +111,23 @@ Another challenge of using multi-modal data was the need to construct many coord
 
 #### Results
 
-<img src="figures/report/2022-11-21-Figure-3-Evaluation-RMSE.png" width="90%" height="90%" alt="Figure 3. The Root Mean Square Error (RMSE) calculated from the final Multi-Target Tracking programme evaluated on a sequence from the Waymo Open Dataset.">
+##### Root Mean Square Error (RMSE) for Single-Target Tracking
+
+<img src="figures/report/2022-11-21-Figure-3-Single-Target-Evaluation-RMSE.png" width="90%" height="90%" alt="Figure 3. The Root Mean Square Error (RMSE) calculated from the Single-Target Tracking programme evaluated on a sequence from the Waymo Open Dataset.">
 
 $$
 \begin{align}
-\textrm{Figure 3. The Root Mean Square Error (RMSE) calculated from the Multi-Target Tracking (MTT) programme evaluated on a sequence from the Waymo Open Dataset.}
+\textrm{Figure 3. The Root Mean Square Error (RMSE) calculated from the Single-Target Tracking programme evaluated on a sequence from the Waymo Open Dataset.}
+\end{align}
+$$
+
+##### Root Mean Square Error (RMSE) for Multi-Target Tracking
+
+<img src="figures/report/2022-11-21-Figure-4-Multi-Target-Evaluation-RMSE.png" width="90%" height="90%" alt="Figure 3. The Root Mean Square Error (RMSE) calculated from the final Multi-Target Tracking programme evaluated on a sequence from the Waymo Open Dataset.">
+
+$$
+\begin{align}
+\textrm{Figure 4. The Root Mean Square Error (RMSE) calculated from the Multi-Target Tracking (MTT) programme evaluated on a sequence from the Waymo Open Dataset.}
 \end{align}
 $$
 
