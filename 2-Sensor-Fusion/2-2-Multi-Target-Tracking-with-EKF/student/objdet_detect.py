@@ -4,7 +4,9 @@
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# Purpose of this file : Detect 3D objects in point clouds using deep learning.
+# Purpose of this file : Implements the 3D object detection pipeline with
+#                        functions to load and initialise a PyTorch model,
+#                        helper functions to configure the model parameters.
 #
 # You should have received a copy of the Udacity license with this program.
 #
@@ -16,6 +18,7 @@
 # ------------------------------------------------------------------------------
 
 ### General package imports
+from datetime import datetime
 import easydict
 import numpy as np
 import torch
@@ -42,10 +45,19 @@ from tools.objdet_models.resnet.utils.evaluation_utils import post_processing
 from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
 
+### Setting relative path to 'results' folder
+# For midterm project, uncomment the following:
+REL_RESULTS = 'midterm'
+# For final project, uncomment the following:
+REL_RESULTS = 'final'
+
+### Setting the sequence id (file number)
+# Must match what is set in `loop_over_dataset.py`
+SEQUENCE_ID = 1
+
 ### Load model-related parameters into an `EasyDict` (ID_S3_EX1)
 def load_configs_model(
-        model_name: str='darknet',
-        configs: easydict.EasyDict=None
+        model_name: str='darknet', configs: easydict.EasyDict=None
 ) -> easydict.EasyDict:
     """Loads the model configurations into an `EasyDict` instance.
 
@@ -79,7 +91,14 @@ def load_configs_model(
         # The folder name to use for saving logs, trained models, outputs, etc.
         configs.saved_fn = 'darknet'
         # The subfolder to save current model outputs in '../results/{saved_fn}'
-        configs.rel_results_folder = 'results_sequence_1_darknet'
+        if REL_RESULTS == 'midterm':
+            # For the midterm project, use:
+            # Make sure to update the Sequence in the following path to match
+            # `SEQUENCE_ID` in `loop_over_dataset.py`
+            configs.rel_results_folder = f"results_sequence_{SEQUENCE_ID}_darknet"
+        elif REL_RESULTS == 'final':
+            # For the final project, use:
+            configs.saved_fn = ''
         # The number of samples to use in each mini-batch
         configs.batch_size = 4
         configs.cfgfile = os.path.join(
@@ -122,7 +141,14 @@ def load_configs_model(
         # The folder name to use for saving logs, trained models, outputs, etc.
         configs.saved_fn = 'fpn-resnet'    # Equivalent to 'fpn_resnet_18'
         # The subfolder to save current model outputs in '../results/{saved_fn}'
-        configs.rel_results_folder = 'results_sequence_1_resnet'
+        if REL_RESULTS == 'midterm':
+            # For the midterm project, use:
+            # Make sure to update the Sequence in the following path to match
+            # `SEQUENCE_ID` in `loop_over_dataset.py`
+            configs.rel_results_folder = f"results_sequence_{SEQUENCE_ID}_resnet"
+        elif REL_RESULTS == 'final':
+            # For the final project, use:
+            configs.rel_results_folder = ''
         # The path to the pre-trained model
         configs.pretrained_path = configs.pretrained_filename
         # Number of convolutional layers to use
@@ -151,8 +177,6 @@ def load_configs_model(
         configs.save_test_output = False
         # Type of test output (can be one of: ['image', 'video'])
         configs.output_format = 'image'
-        # The video filename to use (if the output format is 'video')
-        configs.output_video_fn = 'out_fpn_resnet'
         # The width of the output
         configs.output_width = 608
         configs.pin_memory = True
@@ -204,8 +228,19 @@ def load_configs_model(
     # Path to the subfolder in 'results' for the current run of this model
     if configs.save_test_output:
         configs.result_dir = os.path.join(
-            configs.root_dir, 'results', 
-            configs.saved_fn, configs.rel_results_folder
+            configs.root_dir, 'results',
+            # For midterm project, leave uncommented
+            # configs.saved_fn,
+            configs.rel_results_folder
+    )
+    # The video filepath to use (if the output format is 'video')
+    # Note that the following filename is only date-unique, will
+    # need to be changed to 'HH-MM-SS' if overwrites are a concern
+    fname_out = datetime.now().strftime(
+        "%Y-%m-%d-Output-1-Tracking-Results.avi"
+    )
+    configs.output_video_fp = os.path.join(
+        configs.root_dir, 'out', configs.arch, fname_out
     )
     ### Configurations for training on either GPU vs. CPU
     configs.no_cuda = True # if true, cuda is not used
@@ -218,8 +253,7 @@ def load_configs_model(
 
 ### Load all object detection parameters into an `EasyDict` instance (ID_S3_EX2)
 def load_configs(
-        model_name: str='fpn_resnet',
-        configs: easydict.EasyDict=None
+        model_name: str='fpn_resnet', configs: easydict.EasyDict=None
 ) -> easydict.EasyDict:
     """Returns the modified `EasyDict` instance with model parameters.
 
@@ -307,8 +341,7 @@ def create_model(
 
 ### Detect trained objects in Bird's-Eye View map (ID_S3_EX2)
 def detect_objects(
-        input_bev_maps: List[np.ndarray],
-        model: torch.nn.Module,
+        input_bev_maps: List[np.ndarray], model: torch.nn.Module,
         configs: easydict.EasyDict
 ) -> List[list]:
     """Perform inference and post-process the object detections.

@@ -19,6 +19,7 @@
 ### General package imports
 import copy
 import cv2
+from datetime import datetime
 import google.protobuf    # For typing hints
 import math
 import matplotlib
@@ -428,11 +429,23 @@ while True:
                     configs_det
                 )
                 if 'make_tracking_movie' in exec_list:
-                    # Save tracking results to file
-                    fname = f"{results_fullpath}/tracking{cnt_frame:03d}.png"
-                    print(f"Saving frame '{fname}'")
-                    fig.suptitle(f'Tracking of Vehicles in Sequence {SEQUENCE_ID}')
-                    fig.savefig(fname)
+                    if configs_det.output_video_fp is not None:
+                        # Set the pre-configured path to the saved output frame
+                        DIR_OUT = os.path.dirname(configs_det.output_video_fp)
+                    else:
+                        # Path is not configured, create an output directory
+                        DIR_OUT = 'out'
+                    os.makedirs(DIR_OUT, exist_ok=True)
+                    # Set the output filename
+                    fname_out = datetime.now().strftime(
+                        "%Y-%m-%d-Tracking"
+                    )
+                    fname_out += f"-Sequence-{SEQUENCE_ID}-Frame-{cnt_frame:03d}.png"
+                    # Set the absolute file path
+                    fp_out = os.path.join(DIR_OUT, fname_out)
+                    print(f"Saving frame to '{fname_out}'")
+                    # Save the current frame for output video
+                    fig.savefig(fp_out)
         ### Completing one loop
         # Increment the frame counter
         cnt_frame = cnt_frame + 1
@@ -450,5 +463,15 @@ if 'show_tracks' in exec_list:
     # Evaluate tracking results by plotting RMSE for all tracks
     plot_rmse(manager, all_labels)
 if 'make_tracking_movie' in exec_list:
+    if configs_det.output_video_fp:
+        DIR_OUT = os.path.dirname(configs_det.output_video_fp)
+    else:
+        # Create an output directory (should match location of output frames)
+        DIR_OUT = 'out'
+        os.makedirs(DIR_OUT, exist_ok=True)
+    fname_out = datetime.now().strftime(
+        "%Y-%m-%d-Tracking-Results"
+    )
+    fname_out += f"-Sequence-{SEQUENCE_ID}-Frames-{show_only_frames[0]}-{show_only_frames[1]}.avi"
     # Output the tracking results to a movie file
-    make_movie(results_fullpath)
+    make_movie(os.path.join(DIR_OUT, fname_out))

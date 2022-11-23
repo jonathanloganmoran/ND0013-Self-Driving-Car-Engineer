@@ -43,8 +43,6 @@ from student.measurements import Measurement, Sensor
 from student.trackmanagement import Track, TrackManagement
 
 
-
-
 class Association(object):
     '''The Association class.
 

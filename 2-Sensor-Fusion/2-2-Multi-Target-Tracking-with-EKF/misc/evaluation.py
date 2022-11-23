@@ -43,21 +43,6 @@ import os
 import sys
 from typing import List, Tuple, TypeVar
 
-### Creating some not-so-long custom variable types for typing hints
-try:
-    # The list of laser / camera detections type
-    RepeatedCompositeContainer = TypeVar(
-        google.protobuf.pyext._message.RepeatedCompositeContainer
-    )
-except (ModuleNotFoundError, AttributeError):
-    # Out-of-date or missing `protobuf` library
-    # Defaulting to generic nested list type
-    RepeatedCompositeContainer = TypeVar(
-        List[list]
-    )
-# The bounding box label type
-BoxLabel = TypeVar(label_pb2.Label.Box)
-
 ### Add project directory to PYTHONPATH to enable relative imports
 # Alternatively, use the `pip install ..` script with setuptools
 PACKAGE_PARENT = '..'
@@ -73,6 +58,21 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import label_pb2
 # Imports for typing hints
 from student.measurements import Measurement, Sensor
 from student.trackmanagement import Track, TrackManagement
+
+### Creating some not-so-long custom variable types for typing hints
+try:
+    # The list of laser / camera detections type
+    RepeatedCompositeContainer = TypeVar(
+        google.protobuf.pyext._message.RepeatedCompositeContainer
+    )
+except (ModuleNotFoundError, AttributeError):
+    # Out-of-date or missing `protobuf` library
+    # Defaulting to generic nested list type
+    RepeatedCompositeContainer = TypeVar(
+        List[list]
+    )
+# The bounding box label type
+BoxLabel = TypeVar(label_pb2.Label.Box)
 
 
 def plot_tracks(
@@ -428,11 +428,26 @@ def plot_rmse(
             # If using a GUI backend, display the plot in a new window
             plt.show()
         else:
-            # Using a non-GUI backend, save the figure to an image file
-            fname_out = datetime.now().strftime(
-                            "%Y-%m-%d-Figure-1-Evaluation-RMSE.png"
-            )
-            plt.savefig(fname_out)
+            # Skip rendering the window for non-GUI backend
+            pass
+        ### Save the figure to a `.png` file
+        # Set the filename
+        # Note that this is only date-unique, i.e., if overwriting is a
+        # concern, add e.g., HH-MM-SS formatting to filename here
+        fname_out = datetime.now().strftime(
+            "%Y-%m-%d-Output-1-Detection-Performance-Evaluation-RMSE.png"
+        )
+        if configs_det is not None:
+            # Fetch the configured path to the output directory 
+            DIR_OUT = os.path.dirname(configs_det.output_video_fp)
+        else:
+            # Set the path to the output directory
+            DIR_OUT = os.path.join(PACKAGE_PARENT, 'out')
+        os.makedirs(DIR_OUT, exist_ok=True)
+        # Create the full path to the save file
+        fp_out = os.path.join(DIR_OUT, fname_out)
+        # Save the figure to an image file
+        plt.savefig(fp_out)
 
 
 def make_movie(
@@ -440,17 +455,20 @@ def make_movie(
 ):
     """Creates an animation of the tracking results for the given files.
 
-    :param path: the absolute path to the subfolder containing the images
-        to render in an animation file ('.avi' extension).
+    :param path: the absolute path of the filename to save the output
+        video to. Should point to the subfolder which contains the individual
+        frames to create the video with.
     """
     
     # Obtain the images from the folder pointed to by `path`
-    images = [img for img in sorted(os.listdir(path)) if img.endswith(".png")]
+    images = [img for img in sorted(os.listdir(os.path.dirname(path))) if img.endswith(".png")]
     frame = cv2.imread(os.path.join(path, images[0]))
     height, width, layers = frame.shape
     # Create a 10 fps video and save it in the folder pointed to by `path`
+    # Create the output subdirectory (if it does not already exist)
+    os.makedirs(os.path.dirname(fp_out), exist_ok=True)
     video = cv2.VideoWriter(
-        filename=os.path.join(path, 'my_tracking_results.avi'),
+        filename=path,
         fourcc=0,
         fps=10,
         frameSize=(width,height)

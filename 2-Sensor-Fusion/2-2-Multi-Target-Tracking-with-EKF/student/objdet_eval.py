@@ -151,7 +151,8 @@ def measure_detection_performance(
 
 ### Evaluate object detection performance based on all frames (ID_S4_EX3)
 def compute_performance_stats(
-        det_performance_all: List[list]
+        det_performance_all: List[list],
+        configs_det: easydict.EasyDict=[]
 ):
     """Computes and visualises the evaluation metrics given the detection scores.
 
@@ -161,6 +162,8 @@ def compute_performance_stats(
 
     :param det_performance_all: the nested list of detection scores,
         assumed to be computed with `measure_detection_performance`.
+    :param configs_det: optional, the `EasyDict` instance containing the
+        filepath to save the ouput.
     """
 
     ### Extract the performance metric objects from the list
@@ -234,10 +237,16 @@ def compute_performance_stats(
     if matplotlib.rcParams['backend'] != 'agg':
         # If using a GUI backend, render the figure
         plt.show()
-    # Save the figure to a `.png` file
-    DIR_OUT = os.path.join(PACKAGE_PARENT, 'out')
-    os.makedirs(DIR_OUT, exist_ok=True)
+    ### Save the figure to a `.png` file
+    # Set the filename
     fname_out = datetime.now().strftime("%Y-%m-%d-Output-1-Detection-Performance-Metrics.png")
+    if configs_det is not None:
+        # Fetch the configured path to the output directory 
+        DIR_OUT = os.path.dirname(configs_det.output_video_fp)
+    else:
+        # Set the path to the output directory
+        DIR_OUT = os.path.join(PACKAGE_PARENT, 'out')
+    os.makedirs(DIR_OUT, exist_ok=True)
     fp_out = os.path.join(DIR_OUT, fname_out)
     plt.savefig(fp_out)
 
