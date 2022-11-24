@@ -12,7 +12,16 @@ From Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree program
 
 
 ## Introduction
-In this project you will apply the skills you have gained in this course to implement a sensor fusion system capable of tracking multiple vehicles over time. You will be provided a dataset of real-world 3D LiDAR detections extracted from the driving scenes in the [Waymo Open Dataset](https://waymo.com/open) [1]. In this project you will be fusing the LiDAR detections with the camera detections obtained from your object detection net in [Project 2.1](). You will then use these fused measurements to perform multi-target tracking with your very own non-linear [extended Kalman filter](https://en.wikipedia.org/wiki/Extended_Kalman_filter). Together with a comprehensive track management and data association module, your programme should be able to successfully track vehicles across suburban driving environments. Let's get started!
+
+<img src="out/report/2022-11-23-Output-7-Step-4-Multi-Target-Sensor-Fusion-Tracking-Results-Sequence-1-Frames-0-200.gif" width="90%" height="90%" alt="Figure 1. Results of the final multi-target tracking (MTT) programme with camera-LiDAR sensor fusion evaluated on frames [0, 200] in Sequence 1 from the Waymo Open Dataset.">
+
+$$
+\begin{align}
+\textrm{Figure 1. Results of the multi-target tracking (MTT) programme with camera-LiDAR sensor fusion evaluated on frames [0, 200] in Sequence 1 from the Waymo Open Dataset.}
+\end{align}
+$$
+
+In this project you will apply the skills you have gained in this course to implement a sensor fusion system capable of tracking multiple vehicles over time. You will be provided a dataset of real-world 3D LiDAR detections extracted from the driving scenes in the [Waymo Open Dataset](https://waymo.com/open) [1]. In this project you will be fusing the LiDAR detections with the camera detections obtained from your object detection net in [Project 2.1](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data). You will then use these fused measurements to perform multi-target tracking with your very own non-linear [extended Kalman filter](https://en.wikipedia.org/wiki/Extended_Kalman_filter). Together with a comprehensive track management and data association module, your programme should be able to successfully track vehicles across suburban driving environments. Let's get started!
 
 ## Prerequisites
 ### Extended Kalman Filter (EKF)
