@@ -177,7 +177,7 @@ class Association(object):
 
         ### Compute the inverse of the Chi-square cumulative distribution func.
         #   i.e., the inverse cdf using the percent point function
-        ppf = chi2.ppf(p=params.gating_threshold, df=sensor.dim_meas) 
+        ppf = chi2.ppf(q=params.gating_threshold, df=sensor.dim_meas) 
         ### Check the given Mahalanobis distance against the limit
         if dist_mh < ppf:
             # High likelihood this is a true measurement inside the gate

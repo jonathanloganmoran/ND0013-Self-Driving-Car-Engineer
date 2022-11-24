@@ -93,14 +93,12 @@ class Track(object):
         _R_sens = meas.R
         # Construct the position estimation error covariance
         self.P[0:3, 0:3] = np.matmul(_M_rot @ _R_sens, _M_rot.T)
-        # Initialise the velocity estimation error covariance
-        self.P[3:6, 3:6] = np.array(np.identity(n=3))  
         # Set the velocity estimation covariance values along the diagonal
         # to something large, since we cannot directly measure velocity;
         # Here we set the estimation error covariance entries for velocity in 3D
-        self.P[3, 3] = params.sigma_p44**2
-        self.P[4, 4] = params.sigma_p55**2
-        self.P[5, 5] = params.sigma_p66**2
+        self.P[3:6, 3:6] = np.diag(
+            [params.sigma_p44**2, params.sigma_p55**2, params.sigma_p66**2]
+        )
         # Set the track state to the starting state
         self.state = 'initialized'
         # Set the track score
@@ -163,7 +161,6 @@ class Track(object):
             M_rot = meas.sensor.sens_to_veh
             self.yaw = np.arccos(
                 M_rot[0, 0] * np.cos(meas.yaw) + M_rot[0, 1] * np.sin(meas.yaw)
-
             )
 
 
@@ -265,7 +262,8 @@ class TrackManagement(object):
             # Skipping update, no measurements in list
             pass
         ### Delete all tracks marked for deletion during sweep
-        _ = [self.delete_track(track) for track in tracks_to_delete]
+        for tracks in tracks_to_delete:
+            self.delete_track(track)
         ### Initialise a new track for each unassigned measurement
         for j in unassigned_meas:
             # Here we only initialise new tracks for LiDAR measurements
