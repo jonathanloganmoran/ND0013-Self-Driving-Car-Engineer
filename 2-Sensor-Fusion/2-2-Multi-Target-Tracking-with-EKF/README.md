@@ -32,8 +32,8 @@ In this project you will apply the skills you have gained in this course to impl
 * ✅ [Derive vehicle-to-sensor and sensor-to-vehicle coordinate transformation matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
 
 ### Improving Performance
-* ⬜️ [Evaluate the tracking results with e.g., Root Mean Square Error (RMSE)]() — completed in Project 2.2!
-* ⬜️ [Handle object occlusions with e.g., occlusion reasoning / probabilistic methods]() — completed in Project 2.2!
+* ✅ [Evaluate the tracking results with e.g., Root Mean Square Error (RMSE)]() — completed in Project 2.2!
+* ✅ [Handle object occlusions with e.g., occlusion reasoning / probabilistic methods]() — completed in Project 2.2!
 
 ## File Descriptions
 
