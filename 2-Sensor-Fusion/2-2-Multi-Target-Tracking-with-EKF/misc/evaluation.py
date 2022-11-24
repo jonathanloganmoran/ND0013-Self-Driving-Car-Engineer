@@ -211,13 +211,13 @@ def plot_tracks(
             corners_3D = np.array([x_corners, y_corners, z_corners])
             ### Transform the coordinates from image to world coordinates
             # Compute the rotation matrix around the z-axis
-            R = np.matrix([
+            R = np.array([
                     [np.cos(yaw), np.sin(yaw), 0.],
                     [-np.sin(yaw), np.cos(yaw), 0.],
                     [0., 0., 1.]
             ])
             # Transform the coordinates with a rotation around z-axis
-            corners_3D = R * corners_3D
+            corners_3D = R @ corners_3D
             # Translate the corner coordinates
             corners_3D += np.array([x, y, z]).reshape((3, 1))
             # print ( 'corners_3d', corners_3D)

@@ -67,7 +67,7 @@ class Measurement(object):
 
     def __init__(self,
             num_frame: int,
-            z: Union[np.ndarray, np.matrix],
+            z: np.ndarray,
             sensor: 'Sensor'
     ):
         """Initialises a new Measurement instance.
@@ -96,7 +96,7 @@ class Measurement(object):
             self.z[1] = z[1]
             self.z[2] = z[2]
             # Initialise the measurement noise covariance matrix 
-            self.R = np.matrix([
+            self.R = np.array([
                 [sigma_lidar_x**2, 0., 0.],
                 [0., sigma_lidar_y**2, 0.], 
                 [0., 0., sigma_lidar_z**2]
@@ -117,7 +117,7 @@ class Measurement(object):
             self.z[0] = z[0]
             self.z[1] = z[1]
             # Initialise the measurement noise covariance matrix
-            self.R = np.matrix([
+            self.R = np.array([
                 [sigma_cam_i**2, 0.],
                 [0., sigma_cam_j**2]
             ])
@@ -172,7 +172,7 @@ class Sensor(object):
             # Initialise the sensor-to-vehicle transformation matrix
             # Here the identity matrix is used since LiDAR measurements are
             # already given in vehicle coordinate frame
-            self.sens_to_veh = np.matrix(
+            self.sens_to_veh = np.array(
                     np.identity(n=4)
             )
             # The angular field of view of the LidAR sensor (radians)
@@ -183,7 +183,7 @@ class Sensor(object):
             self.dim_meas = 2
             # The sensor-to-vehicle transformation matrix
             # Here we convert the extrinsic calibration matrix to Numpy `matrix`
-            self.sens_to_veh = np.matrix(
+            self.sens_to_veh = np.array(
                     calib.extrinsic.transform
             ).reshape(4, 4)
             # The focal length
@@ -202,7 +202,7 @@ class Sensor(object):
 
 
     def in_fov(self,
-            x: Union[np.ndarray, np.matrix]
+            x: np.ndarray
     ) -> bool:
         """Checks if the given object `x` is within the sensor field of view.
 
@@ -239,8 +239,8 @@ class Sensor(object):
             return False
              
     def get_hx(self,
-            x: Union[np.ndarray, np.matrix]
-    ) -> np.matrix:
+            x: np.ndarray
+    ) -> np.ndarray:
         """Implements the non-linear camera measurement function.
 
         :param x: the track state vector used to calculate the expectation value.
@@ -275,11 +275,11 @@ class Sensor(object):
                 # Project the coordinates into the image space
                 i = self.c_i - self.f_i * _p_sens[1, 0] / _p_sens[0, 0]
                 j = self.c_j - self.f_j * _p_sens[2, 0] / _p_sens[0, 0]
-                return np.matrix([[i], [j]])
+                return np.array([[i], [j]])
     
     def get_H(self,
-            x: Union[np.ndarray, np.matrix]
-    ) -> Union[np.ndarray, np.matrix]:
+            x: np.ndarray
+    ) -> np.ndarray:
         """Implements the linearised camera measurement function.
 
         The non-linear camera measurement function $h(\mathrm{x})$ is linearised
@@ -298,7 +298,7 @@ class Sensor(object):
 
         ### Calculate the Jacobian at the expansion point `x`
         # Initialise the Jacobian
-        H = np.matrix(np.zeros((self.dim_meas, params.dim_state)))
+        H = np.array(np.zeros((self.dim_meas, params.dim_state)))
         # Obtain the rotation matrix
         R = self.veh_to_sens[0:3, 0:3]
         # Obtain the translation vector
@@ -368,7 +368,7 @@ class Sensor(object):
 
     def generate_measurement(self,
             num_frame: int,
-            z: Union[np.ndarray, np.matrix],
+            z: np.ndarray,
             meas_list: List[Measurement]
     ) -> List[Measurement]:
         """Initialises a new Measurement instance and returns it in a list.

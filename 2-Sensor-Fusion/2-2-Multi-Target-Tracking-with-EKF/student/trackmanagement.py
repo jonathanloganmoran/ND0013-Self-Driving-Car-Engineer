@@ -122,19 +122,19 @@ class Track(object):
         self.t = meas.t
 
     def set_x(self,
-            x: np.matrix
+            x: np.ndarray
     ):
         """Sets the state vector estimate to the given object."""
         self.x = x
         
     def set_P(self,
-            P: np.matrix
+            P: np.ndarray
     ):
         """Sets the estimation error covariance to the given object."""
         self.P = P  
         
     def set_t(self,
-            t: np.matrix
+            t: np.ndarray
     ):
         """Sets the translation vector instance to the given object."""
         self.t = t
