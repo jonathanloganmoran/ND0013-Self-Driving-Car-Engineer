@@ -99,8 +99,10 @@ class Association(object):
             for z_j, measurement in enumerate(meas_list):
                 # Compute the Mahalanobis distance
                 dist = self.calc_mhd(track, measurement, KF)
-                # Update the entry in the matrix with the distance value
-                self.association_matrix[x_i, z_j] = dist
+                # Check distance is within validation gate
+                if self.gating(dist):
+                    # Update the entry in the matrix with the distance value
+                    self.association_matrix[x_i, z_j] = dist
 
     def get_closest_track_and_meas(self
     ) -> Tuple[Track, Measurement]:
