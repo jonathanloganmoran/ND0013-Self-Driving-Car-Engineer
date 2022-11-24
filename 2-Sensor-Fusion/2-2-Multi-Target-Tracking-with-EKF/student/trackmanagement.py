@@ -67,7 +67,7 @@ class Track(object):
         """Initialises a new Track instance.
 
         :param meas: the LiDAR measurement to associate with this track.
-        :param id: the unique id to assign this track.
+        :param _id: the unique id to assign this track.
         """
 
         print('creating track no.', _id)
@@ -169,7 +169,7 @@ class TrackManagement(object):
 
     :param N: the current number of tracks managed by this instance.
     :param track_list: the list of current (active) tracks.
-    :param result_list: the 
+    :param result_list: the list of tracks used for evaluation.
     :param last_id: the track id of the last track to be added.
     '''
 

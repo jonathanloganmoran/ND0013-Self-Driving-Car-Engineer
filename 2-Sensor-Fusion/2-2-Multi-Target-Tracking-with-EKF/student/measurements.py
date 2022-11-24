@@ -261,13 +261,6 @@ class Sensor(object):
             # Return the position estimate in LiDAR coordinate frame
             return _p_sens[0:3]
         elif self.name == 'camera':
-            ############
-            # TODO Step 4: implement nonlinear camera measurement function h:
-            # - transform position estimate from vehicle to camera coordinates
-            # - project from camera to image coordinates
-            # - make sure to not divide by zero, raise an error if needed
-            # - return h(x)
-            ############
             # Construct the homogeneous coordinate system
             _p_veh = np.vstack([x[0:3], np.newaxis])
             _p_veh[3] = 1
