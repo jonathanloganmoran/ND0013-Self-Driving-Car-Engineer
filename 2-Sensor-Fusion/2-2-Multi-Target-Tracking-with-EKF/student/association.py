@@ -100,7 +100,7 @@ class Association(object):
                 # Compute the Mahalanobis distance
                 dist = self.calc_mhd(track, measurement, KF)
                 # Check distance is within validation gate
-                if self.gating(dist):
+                if self.gating(dist, measurement.sensor):
                     # Update the entry in the matrix with the distance value
                     self.association_matrix[x_i, z_j] = dist
 
