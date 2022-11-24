@@ -22,7 +22,7 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 
 ### Projects
 * ✅ 2.1: [3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data);
-* ⬜️ [2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/2-2-MTT-with-EKF/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF) — in progress! 🎉
+* ✅ [2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF).
 
 
 ### Exercises

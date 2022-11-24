@@ -7,7 +7,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 
 ### Courses
 * ✅ [Course 1: Computer Vision](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision)
-* ⬜️ [Course 2: Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion) — in progress! 🎉
+* ✅ [Course 2: Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion)
 * ⬜️ Course 3: Localization
 * ⬜️ Course 4: Planning
 * ⬜️ Course 5: Control
@@ -17,7 +17,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 ### Projects
 * ✅ [Project 1.1: Object Detection in Urban Environments (2D)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision/1-1-Object-Detection-in-Urban-Environments)
 * ✅ [Project 2.1: 3D Object Detection with LiDAR Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data)
-* ⬜️ [Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/2-2-MTT-with-EKF/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF) — in progress! 🎉
+* ✅ [Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF)
 * ⬜️ Project 3.1: Scan Matching Localization
 * ⬜️ Project 4.1: Motion Planning and Decision Making for Autonomous Vehicles
 * ⬜️ Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles

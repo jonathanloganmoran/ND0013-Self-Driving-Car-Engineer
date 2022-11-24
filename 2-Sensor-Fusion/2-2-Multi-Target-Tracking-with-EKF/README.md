@@ -25,24 +25,24 @@ In this project you will apply the skills you have gained in this course to impl
 
 ## Prerequisites
 ### Extended Kalman Filter (EKF)
-* ✅ [Understand the differences between Kalman filters in 1- and 2-D](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
-* ✅ [Formulate the measurement / state transition functions and motion models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
+* ✅ [Understand the differences between Kalman filters in 1- and 2-D](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
+* ✅ [Formulate the measurement / state transition functions and motion models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
 * ✅ [Derive the estimation error / measurement / process noise covariance matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
-* ✅ [Implement the Extended Kalman Filter with predict / update steps](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
+* ✅ [Implement the Extended Kalman Filter with predict / update steps](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
 
 ### Multi-Target Tracking (MTT)
-* ✅ [Implement the data association module with Single Nearest Neighbor (SNN) algorithm](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
-* ✅ [Use validation gating with Mahalanobis distance estimation error covariance](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
-* ✅ [Implement a track management module](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [Implement the data association module with Single Nearest Neighbor (SNN) algorithm](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [Use validation gating with Mahalanobis distance estimation error covariance](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [Implement a track management module](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
 
 ### Sensor Fusion
-* ✅ [Obtain bounding box predictions with a 3D object detection net](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-1-3D-Object-Detection-with-LiDAR-Data/2022-11-06-Project-Writeup.md);
-* ✅ [Implement a non-linear measurement camera measurement model](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
-* ✅ [Derive vehicle-to-sensor and sensor-to-vehicle coordinate transformation matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/2-2-MTT-with-EKF/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [Obtain bounding box predictions with a 3D object detection net](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/2022-11-21-Project-Writeup.md);
+* ✅ [Implement a non-linear measurement camera measurement model](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [Derive vehicle-to-sensor and sensor-to-vehicle coordinate transformation matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
 
 ### Improving Performance
-* ✅ [Evaluate the tracking results with e.g., Root Mean Square Error (RMSE)]() — completed in Project 2.2!
-* ✅ [Handle object occlusions with e.g., occlusion reasoning / probabilistic methods]() — completed in Project 2.2!
+* ✅ [Evaluate the tracking results with e.g., Root Mean Square Error (RMSE)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/2022-11-21-Project-Writeup.md) — completed in Project 2.2!
+* ✅ [Handle object occlusions with e.g., occlusion reasoning / probabilistic methods](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/2022-11-21-Project-Writeup.md) — completed in Project 2.2!
 
 ## File Descriptions
 
@@ -75,27 +75,27 @@ See [Project 1.1: Object Detection in Urban Environments](https://github.com/jon
 ## Tasks
 
 ### Extended Kalman Filter (EKF)
-* ✅ [Implement the predict / update steps of the EKF](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/filter.py);
-* ✅ [Implement the state transition function, process noise covariance, and residual covariance matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/filter.py);
+* ✅ [Implement the predict / update steps of the EKF](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/filter.py);
+* ✅ [Implement the state transition function, process noise covariance, and residual covariance matrices](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/filter.py);
 
 
 ### Multi-Target Tracking (MTT)
-* ✅ [Create a `Track` class with track state / scoring, estimation error covariances and track attributes](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
-* ✅ [Create a `TrackManagement` class that implements data association, track initialisation and deletion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
-* ✅ [Improve SNN algorithm performance with validation gating](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
+* ✅ [Create a `Track` class with track state / scoring, estimation error covariances and track attributes](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
+* ✅ [Create a `TrackManagement` class that implements data association, track initialisation and deletion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
+* ✅ [Improve SNN algorithm performance with validation gating](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/trackmanagement.py);
 
 
 ### Sensor Fusion
-* ✅ [Create a `Sensor` class for the state estimation attributes](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/measurements.py);
-* ✅ [Create a `Sensor` class which implements the linear LiDAR and non-linear camera measurement models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/measurements.py);
-* ✅ [Evaluate the single- and multi-target tracking performance and plot the RMSE]().
+* ✅ [Create a `Sensor` class for the state estimation attributes](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/measurements.py);
+* ✅ [Create a `Sensor` class which implements the linear LiDAR and non-linear camera measurement models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/measurements.py);
+* ✅ [Evaluate the single- and multi-target tracking performance and plot the RMSE](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/2022-11-21-Project-Writeup.md).
 
 
 ### Configuring the programme
 
 #### Initialising the parameters
 
-In order to make use of this programme, several parameters must be modified inside the [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/loop_over_dataset.py) and [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/objdet_detect.py) files.
+In order to make use of this programme, several parameters must be modified inside the [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/loop_over_dataset.py) and [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/objdet_detect.py) files.
 
 In [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/loop_over_dataset.py), these include:
 ```
@@ -108,7 +108,7 @@ exec_tracking                       List[str]     Multi-target tracking function
 exec_visualization                  List[str]     Vsualisation functions to execute.
 ```
 
-In [`objdet_detect.py`](), these include:
+In [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/objdet_detect.py), these include:
 ```
 REL_RESULTS                         int           Name of the project version from which to load 'results' from (can be either 'midterm' or 'final').
 SEQUENCE_ID                         int           Sequence number of the data filename to load from the Waymo Open Dataset (can be either '1', '2', or '3'); must match `loop_over_dataset.py`.
@@ -131,13 +131,13 @@ exec_tracking = ['perform_tracking']
 exec_visualization = ['make_traking_movie']
 ```
 
-The above configuration will plot the object tracks side-by-side with the 3D bounding boxes detected in each frame of the selected Sequence file. The results are returned in a `.avi` video file saved at the file location specified in `configs.output_video_fp`. You may change this to a different output path by modifying the corresponding attribute in the [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/objdet_detect.py) file.
+The above configuration will plot the object tracks side-by-side with the 3D bounding boxes detected in each frame of the selected Sequence file. The results are returned in a `.avi` video file saved at the file location specified in `configs.output_video_fp`. You may change this to a different output path by modifying the corresponding attribute in the [`objdet_detect.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/student/objdet_detect.py) file.
 
 In order to perform single-object tracking, I suggest changing the `configs_det.lim_y` range from e.g., `[-25, 25]` to something more narrow, e.g., `[-5, 15]`, to restrict the field of view of the `'TOP'` LiDAR sensor unit. This works well with the Sequence 2 file when setting `show_only_frames = [65, 100]`.
 
 ##### Evaluating the tracking performance
 
-In order to evaluate the RMSE performance of the tracking programme, modify the execution lists inside [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/cd84889d6711ff450d4b8306a741113b0faca50f/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/loop_over_dataset.py) as follows:
+In order to evaluate the RMSE performance of the tracking programme, modify the execution lists inside [`loop_over_dataset.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF/loop_over_dataset.py) as follows:
 
 ```
 exec_data = []
@@ -157,7 +157,7 @@ References
 * [2] Konstantinova, P. et al. A Study of a Target Tracking Algorithm Using Global Nearest Neighbor Approach. CompSysTech '03: Proceedings of the 4th International Conference on Computer Systems and Technologies. Association of Computing Machinery. pp.290-295. 2003. [doi:10.1145/973620.973668](https://doi.org/10.1145/973620.973668).
 
 Helpful resources:
-* [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb` by J. L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/81b3a9eed386bd71d53f83931f0d5ff6c8ee497d/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
-* [`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb` by J. L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/81b3a9eed386bd71d53f83931f0d5ff6c8ee497d/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb` by J. L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
+* [`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb` by J. L. Moran | GitHub](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
 * [`07-Kalman-Filter-Math.ipynb` by R. Labbe | GitHub](https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/07-Kalman-Filter-Math.ipynb);
 * [Introduction to Data Association by B. Collins | Lecture Slides](https://www.cse.psu.edu/~rtc12/CSE598C/datassocPart1.pdf).
