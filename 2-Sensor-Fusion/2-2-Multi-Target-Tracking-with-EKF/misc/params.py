@@ -30,6 +30,8 @@ q = 3
 confirmed_threshold = 0.8
 # Track score threshold to delete 'confirmed' tracks
 delete_threshold = 0.6
+# Track score threshold to delete 'initialized' tracks
+delete_init_threshold = 0.17
 # Number of frames in window for track score calculation
 window = 6
 # Covariance threshold in `px` or `py` to delete highly uncertain tracks

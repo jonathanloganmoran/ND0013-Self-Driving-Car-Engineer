@@ -210,13 +210,6 @@ class TrackManagement(object):
             associated with a track.
         :param meas_list: the list of measurements from this current time-step.
         """
-        ############
-        # TODO Step 2: implement track management:
-        # - decrease the track score for unassigned tracks
-        # - delete tracks if the score is too low or P is too big
-        #   (check params.py for parameters that might be helpful, but
-        # feel free to define your own parameters)
-        ############
 
         ### Instantiate a list of tracks to delete
         tracks_to_delete = []
@@ -239,8 +232,7 @@ class TrackManagement(object):
                     elif (
                         track.state in {'initialized', 'initialised', 'tentative'}
                     ):
-                        # TODO: move into `params` file
-                        threshold = 0.17
+                        threshold = params.delete_init_threshold
                     else:
                         # Track state not recognised
                         raise ValueError(f"Invalid track state '{track.state}'")
