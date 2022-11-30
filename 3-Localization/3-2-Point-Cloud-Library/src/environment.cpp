@@ -54,8 +54,13 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     );
     // Generate a new Lidar sensor scan
     pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud = lidar->scan();
-    // Render the point cloud instance
-    renderRays(viewer, lidar->position, pointCloud);
+    // Render the Lidar laser rays
+    // renderRays(viewer, lidar->position, pointCloud);
+    // Render the laser returns (the point cloud)
+    renderPointCloud(viewer,
+                     pointCloud,
+                     "High-Res Point Cloud (added noise; returns with 5m range removed)"
+    );
 }
 
 
