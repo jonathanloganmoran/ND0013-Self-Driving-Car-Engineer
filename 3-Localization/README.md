@@ -14,8 +14,8 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Demo Notebooks
-* ⬜️ [`2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/3.1/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb) — in progress! 🎉;
-* ⬜️ [`2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/3.1/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb) — in progress! 🎉.
+* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb);
+* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb).
 
 
 ### Projects
@@ -23,7 +23,9 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Exercises
-* ⬜️ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/3.1/3-Localization/3-1-Markov-Localization) — in progress! 🎉
+* ⬜️ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Markov-Localization/exercises);
+* ⬜️ [3.2: Point Cloud Library (PCL)]() — in progress! 🎉;
+* More info coming soon...
 
 
 ### Course Contents
