@@ -52,7 +52,10 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
         cars,
         groundSlope
     );
-    // TODO:: Create point processor
+    // Generate a new Lidar sensor scan
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud = lidar->scan();
+    // Render the point cloud instance
+    renderRays(viewer, lidar->position, pointCloud);
 }
 
 

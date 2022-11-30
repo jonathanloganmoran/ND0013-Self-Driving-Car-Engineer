@@ -119,6 +119,10 @@ struct Lidar
 		// pcl uses boost smart pointers for cloud pointer so we don't have to worry about manually freeing the memory
 	}
 
+	/* Generates a new scan of the environment, i.e., a simulated point cloud. 
+	 * Uses the `rayCast` function from Point Cloud Library (PCL).
+	 * returns: cloud, a one dimensional unorganised point cloud `.pcl` object.
+	 */
 	pcl::PointCloud<pcl::PointXYZ>::Ptr scan()
 	{
 		cloud->points.clear();
