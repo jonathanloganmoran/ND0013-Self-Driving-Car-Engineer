@@ -83,7 +83,7 @@ void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& vi
 }
 
 
-int main (int argc, char** argv)
+int main(int argc, char** argv)
 {
     std::cout << "starting enviroment" << std::endl;
 
