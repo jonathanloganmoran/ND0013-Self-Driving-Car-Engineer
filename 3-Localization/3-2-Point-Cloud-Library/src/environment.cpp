@@ -44,11 +44,15 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // RENDER OPTIONS
     bool renderScene = true;
     std::vector<Car> cars = initHighway(renderScene, viewer);
-    
-    // TODO:: Create lidar sensor 
-
+    // SENSOR SPECIFICATIONS
+    float groundSlope = 0.0;    // Angle of ground w.r.t. horizon 
+    // Create a new `Lidar` instance on the heap
+    // Stored on the heap since we expect PCL data > 2MB 
+    Lidar *lidar = new Lidar(
+        cars,
+        groundSlope
+    );
     // TODO:: Create point processor
-  
 }
 
 
