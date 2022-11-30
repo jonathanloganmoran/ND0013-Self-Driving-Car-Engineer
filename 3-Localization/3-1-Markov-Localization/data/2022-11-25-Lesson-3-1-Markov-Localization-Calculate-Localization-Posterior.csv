@@ -1,0 +1,9 @@
+pseudo_position (x),P(location),P(observation | location),Raw P(location | observation),Normalized P(location | observation)
+1,1.67E-02,0.00E+00,0.00E+00,0.00E+00
+2,3.86E-02,6.99E-03,NULL,2.59E-02
+3,4.90E-02,8.52E-02,4.18E-03,4.01E-01
+4,3.86E-02,NULL,5.42E-03,5.21E-01
+5,1.69E-02,3.13E-02,5.31E-04,5.10E-02
+6,6.51E-03,9.46E-04,6.16E-06,NULL
+7,NULL,3.87E-06,6.55E-08,6.29E-06
+8,3.86E-02,0.00E+00,0.00E+00,0.00E+00
