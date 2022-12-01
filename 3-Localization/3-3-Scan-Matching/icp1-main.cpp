@@ -11,7 +11,6 @@
  * ----------------------------------------------------------------------------
  */
 
-
 #include "helper.h"
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   			// TicToc
