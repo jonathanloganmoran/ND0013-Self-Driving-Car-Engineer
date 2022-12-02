@@ -27,7 +27,7 @@ Eigen::Matrix4d transform2D(
 		double xt,
 		double yt
 ) {
-	Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity ();
+	Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity();
 	matrix(0, 3) = xt;
 	matrix(1, 3) = yt;
 	matrix(0, 0) = cos(theta);
@@ -163,7 +163,7 @@ void renderPath(
 				Point(cloud->points[index].x,
 					  cloud->points[index].y
 				),
-				name + to_string(previous),
+				name + std::to_string(previous),
 				color
 		);
 		previous++;

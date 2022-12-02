@@ -13,8 +13,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#ifndef "HELPERS_H_"
-#define "HELPERS_H_"
+#ifndef HELPER_H_
+#define HELPER_H_
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -208,7 +208,7 @@ struct LineSegment {
     		intersection.y = (my/mx) * intersection.x + b;
     		return (Contains(intersection.x, min, max)
 					&& Contains(intersection.x, line.min, line.max
-			);
+			));
     	}
     }
     void Print() {
@@ -246,7 +246,7 @@ struct Lidar{
 
 	// Perform a scan of the environment with known walls	
 	pcl::PointCloud<pcl::PointXYZ>::Ptr scan(
-			vector<LineSegment> walls
+			std::vector<LineSegment> walls
 	) {
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new PointCloudT);
 		double deltaTheta = (2 * pi) / double(res);
@@ -262,16 +262,16 @@ struct Lidar{
 				// UNCOMMENT TO PRINT TRUTH VALUE IF TRUE
 				// std::cout << "Is vertical" << endl;
 				double yb = sin(angle) * range;
-				double minb = min(y, yb);
-				double maxb = max(y, yb);
+				double minb = std::min(y, yb);
+				double maxb = std::max(y, yb);
 				ray = LineSegment(1, 0, x, minb, maxb);
 			}
 			else {
 				double m = ceil(tan(angle) * 1000) / 1000;
 				double b = y - x * m;
 				double xb = cos(angle) * range;
-				double minb = min(x, xb);
-				double maxb = max(x, xb);
+				double minb = std::min(x, xb);
+				double maxb = std::max(x, xb);
 				ray = LineSegment(m, 1, b, minb, maxb);
 			}
 			double closetDist = range;
@@ -320,4 +320,4 @@ struct Lidar{
 };
 
 
-#endif	// HELPERS_H_
+#endif	// HELPER_H_

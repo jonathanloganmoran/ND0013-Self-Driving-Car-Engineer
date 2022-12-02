@@ -77,7 +77,7 @@ Eigen::Matrix4d ICP(
 		*source,
 		*sourceTransformed,
 		startingPoseTransform
-	)
+	);
 	// TODO: complete the ICP function and return the corrected transform
 	// Start a `TicToc` time tracking instance to profile the ICP algorithm
 	pcl::console::TicToc time;
@@ -94,22 +94,22 @@ Eigen::Matrix4d ICP(
 	icp.setEuclideanFitnessEpsilon(kEuclideanFitnessEpsilonICP);
 	icp.setRANSACOutlierRejectionThreshold(kRANSACOutlierRejectionThresholdICP);
 	// Perform the alignment with ICP
-	PointCloudT::Ptr outputICP(new PointCloud T);
+	PointCloudT::Ptr outputICP(new PointCloudT);
 	icp.align(*outputICP);
 	std::cout << "Finished ICP alignment in " << time.toc() << " ms" << "\n";
-	std::cout << "ICP converged: " << icp.hasConverged();
-	std::cout << ", Fitness score: " << icp.getFitnessScore();
+	std::cout << "ICP converged: " << std::boolalpha << icp.hasConverged();
+	std::cout << ", Fitness score: " << icp.getFitnessScore() << "\n";
 	// Check if ICP algorithm converged
 	if (icp.hasConverged()) {
 		// Get the final transformation matrix and apply it to starting pose
 		transformation_matrix = icp.getFinalTransformation().cast<double>();
 		transformation_matrix = transformation_matrix * startingPoseTransform;
-		return transformation_matrix
+		return transformation_matrix;
 	}
 	else {
 		std::cout << "WARNING: ICP did not converge" << "\n";
+		return transformation_matrix;
 	}
-	return transformation_matrix;
 }
 
 
@@ -132,7 +132,7 @@ int main() {
 	double upperX = 5;
 	double lowerY = -5;
 	double upperY = 5;
-	vector<LineSegment> room;
+	std::vector<LineSegment> room;
 	LineSegment top(0, 1, upperY, lowerX, upperX);
 	room.push_back(top);
 	LineSegment bottom(0, 1, lowerY, lowerX, upperX);
@@ -155,7 +155,7 @@ int main() {
 	cout << "Map captured " << map->points.size() << " points" << "\n";
 	/*** Moving the robot around the room ***/
 	// Part 1. Localise from single step
-	vector<Vect2> movement = {Vect2(0.5, pi / 12)};
+	std::vector<Vect2> movement = {Vect2(0.5, pi / 12)};
 	// Part 2. TODO: Localise after several steps
 	bool runPart2 = false;						  // Change to true for Part 2
 	if (runPart2) {
@@ -187,7 +187,7 @@ int main() {
 		cout << "Scan captured " << scan->points.size() << " points" << "\n";
 		// Render the resulting LiDAR point cloud
 		renderPointCloud(
-			viewer, scan, "scan_" + to_string(count), Color(1, 0, 0)
+			viewer, scan, "scan_" + std::to_string(count), Color(1, 0, 0)
 		);
 		// Perform the ICP localisation algorithm and obtain the transform
 		// TODO: Set the iteration count to something greater than zero
