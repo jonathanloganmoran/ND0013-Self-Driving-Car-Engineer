@@ -156,14 +156,14 @@ int main() {
 	/*** Moving the robot around the room ***/
 	// Part 1. Localise from single step
 	std::vector<Vect2> movement = {Vect2(0.5, pi / 12)};
-	// Part 2. TODO: Localise after several steps
-	bool runPart2 = true;						  // Change to true for Part 2
+	// Part 2. Localise after several steps
+	bool runPart2 = false;						  // Change to true for Part 2
 	if (runPart2) {
 		movement.push_back(Vect2(0.8, pi / 10));
 		movement.push_back(Vect2(1.0, pi / 6));
 	}
-	// Part 3. TODO: Localise after moving around entire room at random
-	bool runPart3 = false;						  // Change to true for Part 3
+	// Part 3. Localise after moving around entire room at random
+	bool runPart3 = true;						  // Change to true for Part 3
 	if (runPart3) {
 		srand(time(0));
 		for(int i = 0; i < 10; i++){
@@ -191,7 +191,7 @@ int main() {
 		);
 		// Perform the ICP localisation algorithm and obtain the transform
 		// TODO: Set the iteration count to something greater than zero
-		unsigned int num_iter = 0;
+		unsigned int num_iter = 50;
 		Eigen::Matrix4d transform = ICP(map, scan, location, num_iter);
 		// Get the pose estimate from the ICP transform
 		Pose estimate = getPose(transform);
@@ -202,7 +202,13 @@ int main() {
 		);
 		// Render the transformed scan in the PCL Viewer
 		// TODO: Perform the transformation on the scan with ICP result
-		// TODO: Render the ground-truth pose
+		PointCloudT::Ptr transformedScan(new PointCloudT);
+		pcl::transformPointCloud(*scan, *transformedScan, transform);
+		renderPointCloud(viewer,
+						 transformedScan,
+						 "ICP_Scan_" + std::to_string(count),
+						 Color(0, 1, 0)
+		);
 		count++;
 	}
 	// Display the ground-truth poses versus the estimated poses
