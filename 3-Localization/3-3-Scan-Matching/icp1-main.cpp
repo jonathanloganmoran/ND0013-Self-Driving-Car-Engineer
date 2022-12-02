@@ -18,16 +18,41 @@
 #include <sstream>
 
 
-/* Performs the 2D Iterative Closest Point (ICP) algorithm.
- * The rotation and translation between the starting `target` pose and the next
- * `source` pose is iteratively estimated, and the sum of squared difference
- * between the coordinates of the matched pairs. Here a 'pair' refers to the
- * set of point-to-point correspondences between the `target` and `source` PCL. 
- * Here we return the `transformation_matrix`, i.e., the matrix of estimated
- * translation and rotation components from `target` to `source`.
+/*** Define the ICP hyperparameters ***/
+// The maximum correspondence distance between `source` and `target`
+// i.e., correspondences with higher distances will be ignored
+const static double kMaxCorrespondenceDistanceICP = 1.0;  		// Metres (m)
+// The maximum number of ICP iterations to perform before termination
+const static int kMaximumIterationsICP = 60;
+// The maximum epsilon threshold between previous transformation and current
+// estimated transformation, i.e., difference must be smaller than this value
+const static double kTransformationEpsilonICP = 1e-2;
+// The maximum sum of Euclidean squared errors between two consecutive steps
+// before algorithm is considered to be converged, i.e., threshold value
+const static double kEuclideanFitnessEpsilonICP = 1e-3;
+// The inlier distance threshold for the internal RANSAC outlier rejection loop
+// Note: a point is considered an inlier if the distance between `target` and
+// transformed `source` is smaller than inlier dist. threshold (default: 0.05m)
+const static double kRANSACOutlierRejectionThresholdICP = 1.0;  // Metres (m)
+
+/* Implements the 2D Iterative Closest Point (ICP) algorithm.
+ * 
+ * The ICP algorithm is provided in the Point Cloud Library (PCL) which uses
+ * the Singular Value Decomposition (SVD) to estimate the transformation.
+ * 
+ * The rotation and translation between the `target` and `source` point clouds
+ * are iteratively estimated. The ICP algorithm from the PCL library minimises
+ * the sum of Euclidean squared errors between the coordinates of the matched
+ * pairs. Here a pair is a set of point-to-point correspondences between the
+ * `target` and `source` point cloud points.
+ *  
+ * After the ICP algorithm converges (or a maximum number of iterations have
+ * been reached), the `transformation_matrix` is returned. This 4x4 matrix
+ * contains the estimated translation and rotation components from the
+ * `source` to `target` points.
  *
- * @param   target		  Reference PCL instance to align.
- * @param   source		  Next PCL instance from which to recover the transform.
+ * @param   target		  Next PCL instance from which to recover the transform.
+ * @param   source		  Reference point cloud instance to align to `target`.
  * @param   startingPose  Initial robot pose at time $t=0$.
  * @param   iterations	  Number of maximum iterations to perform.
  * @returns transformation_matrix
@@ -38,11 +63,53 @@ Eigen::Matrix4d ICP(
 		Pose startingPose,
 		int iterations
 ){
-	// Before ICP implementation : Return the identity matrix (no transform) 
+	// Initialise the output matrix as the identity matrix
 	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+	// Construct the 2D transformation matrix from the `startingPose`
+	Eigen::Matrix4d startingPoseTransform = transform2D(
+		startingPose.theta,
+		startingPose.position.x,
+		startingPose.position.y
+	);
+	// Transform the `source` point cloud by `startingPose`
+	PointCloudT::Ptr sourceTransformed(new PointCloudT);
+	pcl::transformPointCloud(
+		*source,
+		*sourceTransformed,
+		startingPoseTransform
+	)
 	// TODO: complete the ICP function and return the corrected transform
+	// Start a `TicToc` time tracking instance to profile the ICP algorithm
+	pcl::console::TicToc time;
+	time.tic();
+	// Instantiate the ICP class
+	pcl::IterativeClosestPoint<PointT, PointT> icp;
+	// Set the input source and target point clouds
+	icp.setInputSource(source);
+	icp.setInputTarget(target);
+	// Set the ICP hyperparameters
+	icp.setMaxCorrespondenceDistance(kMaxCorrespondenceDistanceICP);
+	icp.setMaximumIterations(kMaximumIterationsICP);
+	icp.setTransformationEpsilon(kTransformationEpsilonICP);
+	icp.setEuclideanFitnessEpsilon(kEuclideanFitnessEpsilonICP);
+	icp.setRANSACOutlierRejectionThreshold(kRANSACOutlierRejectionThresholdICP);
+	// Perform the alignment with ICP
+	PointCloudT::Ptr outputICP(new PointCloud T);
+	icp.align(*outputICP);
+	std::cout << "Finished ICP alignment in " << time.toc() << " ms" << "\n";
+	std::cout << "ICP converged: " << icp.hasConverged();
+	std::cout << ", Fitness score: " << icp.getFitnessScore();
+	// Check if ICP algorithm converged
+	if (icp.hasConverged()) {
+		// Get the final transformation matrix and apply it to starting pose
+		transformation_matrix = icp.getFinalTransformation().cast<double>();
+		transformation_matrix = transformation_matrix * startingPoseTransform;
+		return transformation_matrix
+	}
+	else {
+		std::cout << "WARNING: ICP did not converge" << "\n";
+	}
 	return transformation_matrix;
-
 }
 
 
@@ -52,7 +119,7 @@ Eigen::Matrix4d ICP(
  * We assume the estimated starting pose and the robot's ground-truth starting
  * pose are relatively close.
  */
-int main(){
+int main() {
 	/*** Initialising the sensor and environment variables ***/
 	// Initialise a new PCL Viewer instance to render the environment / scans
 	pcl::visualization::PCLVisualizer::Ptr viewer(

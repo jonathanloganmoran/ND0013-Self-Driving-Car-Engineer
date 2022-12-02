@@ -21,7 +21,7 @@
 #include <math.h>
 #include <vector>
 
-
+// Using `PointT`, `PointCloudT` to abstract type for later 3D implementation
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
