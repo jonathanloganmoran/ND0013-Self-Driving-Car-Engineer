@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------------
  * Lesson "3.3: Scan Matching Algorithms"
- * Copyright (c) Aaron Brown, Tiffany Huang and Maximilian Muffert.
+ * Authors     : Aaron Brown, Tiffany Huang and Maximilian Muffert.
  *
- * Modified by: Jonathan L. Moran (jonathan.moran107@gmail.com)
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
  * Purpose of this file: Helper functions used to perform and visualise the 
  * 						 simulated 2D environment and LiDAR scans. Also defines

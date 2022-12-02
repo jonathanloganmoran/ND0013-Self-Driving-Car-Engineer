@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------------
  * Lesson "3.3: Scan Matching Algorithms"
- * Copyright (c) Aaron Brown, Tiffany Huang and Maximilian Muffert.
+ * Authors     : Aaron Brown, Tiffany Huang and Maximilian Muffert.
  *
- * Modified by: Jonathan L. Moran (jonathan.moran107@gmail.com)
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
  * Purpose of this file: Implements the 2-D Iterative Closest Points (ICP)
  * 						 algorithm, i.e., the scan matching algorithm used to
