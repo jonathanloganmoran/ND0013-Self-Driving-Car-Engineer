@@ -33,15 +33,15 @@ const double pi = M_PI;
  *
  * @struct  Point
  * @brief   2D `Point` object storing `x` and `y` coordinates as doubles.
- * @var		x	position along the x-axis.
- * @var		y	position along the y-axis.
+ * @var		x	Position along the x-axis.
+ * @var		y	Position along the y-axis.
  */
 struct Point {
 	double x;
 	double y;
 
-	Point():
-		x(0), y(0){}
+	Point()
+		: x(0), y(0) {}
 	Point(double setX, double setY)
 		: x(setX), y(setY) {}
 	void Print() {
@@ -55,9 +55,9 @@ struct Point {
  * @struct  Pose
  * @brief   Stores the 2D position as a `Point` with coordinates in `x`, `y`
  * 			along with the orientation angle `theta` as a type `double`.
- * @var		x		position along the x-axis.
- * @var		y		position along the y-axis.
- * @var 	theta	orientation angle (radians).
+ * @var		x		Position along the x-axis.
+ * @var		y		Position along the y-axis.
+ * @var 	theta	Orientation angle (radians).
  */
 struct Pose {
 	Point position;
@@ -72,8 +72,8 @@ struct Pose {
  * 
  * @struct	Vec2
  * @brief	Represents 2D vector object with magnitude `mag` and angle `theta`.
- * @var		mag		magnitude of the vector.
- * @var		theta	angle of the vector.
+ * @var		mag		Magnitude of the vector.
+ * @var		theta	Angle of the vector.
  */
 struct Vect2 {
 	double mag;
@@ -83,22 +83,24 @@ struct Vect2 {
 		: mag(setMag), theta(setTheta) {}
 };
 
+
 /* Defines the RGB `Color` object.
  * 
  * @struct 	Color
  * @brief 	Represents a RGB color with normalised values in range [0, 1].
- * @var	 	r	desired value for the 'red' channel.
- * @var		g	desired value for the 'green' channel.
- * @var 	b	desired value for the 'blue' channel.  
+ * @var	 	r	Value for the 'red' channel.
+ * @var		g	Value for the 'green' channel.
+ * @var 	b	Value for the 'blue' channel.  
  */
 struct Color {
-        float r;
-		float g;
-		float b;
+    float r;
+	float g;
+	float b;
 
-        Color(float setR, float setG, float setB)
-                : r(setR), g(setG), b(setB) {}
+    Color(float setR, float setG, float setB)
+        : r(setR), g(setG), b(setB) {}
 };
+
 
 /*** Forward declarations ***/
 // The 4x4 2D transformation matrix
@@ -139,6 +141,7 @@ void renderPath(
 		Color color
 );
 
+
 /* Defines the `LineSegment` object.
  * 
  * @struct	LineSegment
@@ -150,11 +153,11 @@ void renderPath(
  * @var 	max		TODO.
  */
 struct LineSegment {
-		double my;
-		double mx;
-		double b;
-		double min;		// (x{mx=1}/y{mx=0}) interval
-		double max;
+	double my;
+	double mx;
+	double b;
+	double min;		// (x{mx=1}/y{mx=0}) interval
+	double max;
 
 	LineSegment(float setMy,
 				double setMx,
@@ -215,6 +218,7 @@ struct LineSegment {
 
 };
 
+
 /* Defines the simulated `Lidar` sensor and its properties.  
  *
  * @struct 	Lidar
@@ -226,11 +230,11 @@ struct LineSegment {
  * @var		res		angular resolution (radians) of the simulated Lidar sensor. 
  */
 struct Lidar{
-		double x;
-		double y;
-		double theta;
-		double range;
-		int res;
+	double x;
+	double y;
+	double theta;
+	double range;
+	int res;
 
 	Lidar(double setX,
 		  double setY,
@@ -247,6 +251,7 @@ struct Lidar{
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new PointCloudT);
 		double deltaTheta = (2 * pi) / double(res);
 		double residue = .1 * deltaTheta;
+		// Loop stopping condition
 		double maxAngle = theta + 2 * pi - residue;
 		for (double angle = theta; angle < maxAngle; angle += deltaTheta) {
 			LineSegment ray;
@@ -313,5 +318,6 @@ struct Lidar{
 		y += step * sin(theta);
 	}
 };
+
 
 #endif	// HELPERS_H_

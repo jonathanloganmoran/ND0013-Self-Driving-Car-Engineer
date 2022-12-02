@@ -39,7 +39,7 @@ Eigen::Matrix4d ICP(
 		int iterations
 ){
 	// Before ICP implementation : Return the identity matrix (no transform) 
-	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
+	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
 	// TODO: complete the ICP function and return the corrected transform
 	return transformation_matrix;
 
@@ -144,7 +144,7 @@ int main(){
 	renderPointCloud(viewer, locator, "locator", Color(0, 0, 1), 6);
 	renderPath(viewer, locator, "locPath", Color(0, 0, 1));
 	while (!viewer->wasStopped()) {
-		viewer->spinOnce ();
+		viewer->spinOnce();
 	}
 	return 0;
 }
