@@ -78,7 +78,7 @@ Eigen::Matrix4d ICP(
 		*sourceTransformed,
 		startingPoseTransform
 	);
-	// TODO: complete the ICP function and return the corrected transform
+	// Complete the ICP function and return the corrected transform
 	// Start a `TicToc` time tracking instance to profile the ICP algorithm
 	pcl::console::TicToc time;
 	time.tic();
@@ -190,20 +190,21 @@ int main() {
 			viewer, scan, "scan_" + std::to_string(count), Color(1, 0, 0)
 		);
 		// Perform the ICP localisation algorithm and obtain the transform
-		// TODO: Set the iteration count to something greater than zero
+		// Set the iteration count to something greater than zero
 		unsigned int num_iter = 50;
 		Eigen::Matrix4d transform = ICP(map, scan, location, num_iter);
 		// Get the pose estimate from the ICP transform
 		Pose estimate = getPose(transform);
-		// TODO: Save the estimate location and use it as starting pose
-		// 		 for the ICP algorithm at the next time-step
+		// Save the estimate location and use it as starting pose
+		// for the ICP algorithm at the next time-step
+		location = estimate;
 		locator->points.push_back(
 			PointT(estimate.position.x, estimate.position.y, 0)
 		);
-		// Render the transformed scan in the PCL Viewer
-		// TODO: Perform the transformation on the scan with ICP result
+		// Perform the transformation on the scan with ICP result
 		PointCloudT::Ptr transformedScan(new PointCloudT);
 		pcl::transformPointCloud(*scan, *transformedScan, transform);
+		// Render the transformed scan in the PCL Viewer
 		renderPointCloud(viewer,
 						 transformedScan,
 						 "ICP_Scan_" + std::to_string(count),
