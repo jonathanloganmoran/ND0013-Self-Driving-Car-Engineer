@@ -17,9 +17,9 @@
 
 /* Returns a 4x4 transformation matrix given the 2D pose information.
  *
- * @param 	theta   angle of rotation about the x-axis (robot heading).
- * @param 	xt	 	position along the x-axis.
- * @param 	yt	 	position along the y-axis.
+ * @param 	theta   Angle of rotation about the x-axis (robot heading).
+ * @param 	xt	 	Position along the x-axis.
+ * @param 	yt	 	Position along the y-axis.
  * @returns matrix  4x4 transformation matrix.
  */
 Eigen::Matrix4d transform2D(
@@ -58,7 +58,7 @@ Pose getPose(
 
 /* Prints the 4x4 transformation matrix.
  *
- * @param	matrix	the 4x4 transformation matrix to print to the console.
+ * @param	matrix	4x4 transformation matrix to print to the console.
  */
 void print4x4Matrix(
 		const Eigen::Matrix4d& matrix
@@ -84,9 +84,9 @@ void print4x4Matrix(
   *
   * @param	viewer		PCL Viewer instance to update.
   * @param	cloud		PCL object to render onto the `viewer`.
-  * @param 	name		string `id` label to assign to the rendered point cloud.
+  * @param 	name		String `id` label to assign to the rendered point cloud.
   * @param 	color		RGB-valued `Color` instance used to render the PCL.
-  * @param	renderSize	point size `value` to set.
+  * @param	renderSize	Point size `value` to set.
   */
 void renderPointCloud(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,
@@ -115,11 +115,11 @@ void renderPointCloud(
 
 /* Renders the simulated LiDAR point return as ray instance.
  *
- * @param 	viewer	PCL Viewer instance to update.
- * @param 	p1		starting 2D `Point` of the ray to draw.
- * @param 	p2		ending 2D `Point` of the ray to draw.
- * @param 	name	string `id` label to assign to the rendered line.
- * @param 	color	RGB-valued `Color` instance used to render the line.
+ * @param 	viewer		PCL Viewer instance to update.
+ * @param 	p1			Starting 2D `Point` of the ray to draw.
+ * @param 	p2			Ending 2D `Point` of the ray to draw.
+ * @param 	name		String `id` label to assign to the rendered line.
+ * @param 	color		RGB-valued `Color` instance used to render the line.
  */
 void renderRay(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,

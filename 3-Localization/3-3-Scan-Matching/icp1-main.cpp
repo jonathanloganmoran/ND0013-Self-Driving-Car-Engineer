@@ -26,10 +26,10 @@
  * Here we return the `transformation_matrix`, i.e., the matrix of estimated
  * translation and rotation components from `target` to `source`.
  *
- * @param   target		  reference PCL instance to align.
- * @param   source		  next PCL instance from which to recover the transform.
- * @param   startingPose  initial robot pose at time $t=0$.
- * @param   iterations	  number of maximum iterations to perform.
+ * @param   target		  Reference PCL instance to align.
+ * @param   source		  Next PCL instance from which to recover the transform.
+ * @param   startingPose  Initial robot pose at time $t=0$.
+ * @param   iterations	  Number of maximum iterations to perform.
  * @returns transformation_matrix
  */
 Eigen::Matrix4d ICP(

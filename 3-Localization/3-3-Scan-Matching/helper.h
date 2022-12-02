@@ -33,8 +33,8 @@ const double pi = M_PI;
  *
  * @struct  Point
  * @brief   2D `Point` object storing `x` and `y` coordinates as doubles.
- * @var		x	Position along the x-axis.
- * @var		y	Position along the y-axis.
+ * @var		x		Position along the x-axis.
+ * @var		y		Position along the y-axis.
  */
 struct Point {
 	double x;
@@ -88,9 +88,9 @@ struct Vect2 {
  * 
  * @struct 	Color
  * @brief 	Represents a RGB color with normalised values in range [0, 1].
- * @var	 	r	Value for the 'red' channel.
- * @var		g	Value for the 'green' channel.
- * @var 	b	Value for the 'blue' channel.  
+ * @var	 	r		Value for the 'red' channel.
+ * @var		g		Value for the 'green' channel.
+ * @var 	b		Value for the 'blue' channel.  
  */
 struct Color {
     float r;
@@ -146,9 +146,9 @@ void renderPath(
  * 
  * @struct	LineSegment
  * @brief  	Stores the components of a line given in slope-intercept form.
- * @var 	my		slope along the y-axis.
- * @var 	mx		slope along the x-axis.
- * @var		b		intercept of the line evaluated at `y(mx=1)`, `x(mx=0)`.
+ * @var 	my		Slope along the y-axis.
+ * @var 	mx		Slope along the x-axis.
+ * @var		b		Intercept of the line evaluated at `y(mx=1)`, `x(mx=0)`.
  * @var		min		TODO.
  * @var 	max		TODO.
  */
@@ -223,11 +223,11 @@ struct LineSegment {
  *
  * @struct 	Lidar
  * @brief	Simulated Lidar sensor with pose in reference to global frame.
- * @var		x		position of the sensor along the x-axis in global frame.
- * @var		y		position of the sensor along the y-axis in global frame.
- * @var		theta	orientation of the sensor (radians) in global frame.
- * @var		range	maximum distance (metres) to limit returns from Lidar scan.
- * @var		res		angular resolution (radians) of the simulated Lidar sensor. 
+ * @var		x		Position of the sensor along the x-axis in global frame.
+ * @var		y		Position of the sensor along the y-axis in global frame.
+ * @var		theta	Orientation of the sensor (radians) in global frame.
+ * @var		range	Maximum distance (metres) to limit returns from Lidar scan.
+ * @var		res		Angular resolution (radians) of the simulated Lidar sensor. 
  */
 struct Lidar{
 	double x;
