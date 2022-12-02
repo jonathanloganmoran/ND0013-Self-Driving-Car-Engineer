@@ -157,7 +157,7 @@ int main() {
 	// Part 1. Localise from single step
 	std::vector<Vect2> movement = {Vect2(0.5, pi / 12)};
 	// Part 2. TODO: Localise after several steps
-	bool runPart2 = false;						  // Change to true for Part 2
+	bool runPart2 = true;						  // Change to true for Part 2
 	if (runPart2) {
 		movement.push_back(Vect2(0.8, pi / 10));
 		movement.push_back(Vect2(1.0, pi / 6));
