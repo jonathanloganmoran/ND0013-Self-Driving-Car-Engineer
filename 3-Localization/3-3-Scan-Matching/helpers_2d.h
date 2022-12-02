@@ -4,17 +4,19 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
- * Purpose of this file: Header file for the helper functions used to perform
- * 						 and visualise the simulated 2D environment and LiDAR
- * 						 scans. Here the `Point`, `Pose`, `Color`, `Lidar`,
- * 						 `Move` structs, among others, are defined and intended
- * 						 to be used with the Point Cloud Library (PCL) and the
- * 						 Iterative Closest Points (ICP) algorithm.
+ * Purpose of this file: Header file for the 2D Helper functions used to
+ * 						 perform the simulated LiDAR scans and visualise the
+ * 						 2D environment. Here the `Point`, `Pose`, and
+ * 						 `transform2D` matrix are given in 2D coordinate space.
+ * 						 The objects defined here are intended to be used with
+ * 						 the Point Cloud Library (PCL) in order to compute the
+ * 					     Iterative Closest Point (ICP) algorithm.
  * ----------------------------------------------------------------------------
  */
 
-#ifndef HELPER_H_
-#define HELPER_H_
+
+#ifndef HELPERS_2D_H_
+#define HELPERS_2D_H_
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -320,4 +322,4 @@ struct Lidar{
 };
 
 
-#endif	// HELPER_H_
+#endif	// HELPERS_2D_H_

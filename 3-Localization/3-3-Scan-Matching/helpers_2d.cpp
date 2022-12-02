@@ -4,15 +4,18 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
- * Purpose of this file: Helper functions used to perform and visualise the 
- * 						 simulated 2D environment and LiDAR scans. Also defines
- * 						 the matrices needed to store and estimate the robot
- * 						 pose using Iterative Closest Point (ICP) algorithm.
+ * Purpose of this file: 2D Helper functions used to perform the simulated 
+ * 					     LiDAR scans and visualise the 2D environment. Here
+ * 					     the `transform2D` matrix and `getPose` functions
+ * 						 assume a 2D coordinate space. The objects defined here
+ * 						 are intended to be used with the Point Cloud Library
+ * 						 (PCL) in order to compute the Iterative Closest Point
+ * 						 (ICP) algorithm.
  * ----------------------------------------------------------------------------
  */
 
 
-#include "helper.h"
+#include "helpers_2d.h"
 
 
 /* Returns a 4x4 transformation matrix given the 2D pose information.
@@ -38,7 +41,7 @@ Eigen::Matrix4d transform2D(
 }
 
 
-/* Returns the pose vector extracted from the input transformation matrix.
+/* Returns the 2D pose vector extracted from the input transformation matrix.
  *
  * @param 	matrix	4x4 transformation matrix.
  * @returns pose	3x1 pose vector.
@@ -140,7 +143,7 @@ void renderRay(
 }
 
 
-/* Renders the robot 'path' from one pose to the next.
+/* Renders the robot 'path' from one 2D pose to the next.
  *
  * @param	viewer		PCL Viewer instance to update.
  * @param	cloud		PCL object to render onto the `viewer`.

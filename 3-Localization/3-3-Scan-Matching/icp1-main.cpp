@@ -11,7 +11,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "helper.h"
+
+#include "helpers_2d.h"						// 2D Helper functions
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   			// TicToc
 #include <string>
