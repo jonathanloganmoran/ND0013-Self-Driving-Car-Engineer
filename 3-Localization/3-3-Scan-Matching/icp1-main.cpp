@@ -21,19 +21,26 @@
 /*** Define the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
 // i.e., correspondences with higher distances will be ignored
-const static double kMaxCorrespondenceDistanceICP = 1.0;  		// Metres (m)
-// The maximum number of ICP iterations to perform before termination
-const static int kMaximumIterationsICP = 60;
+// Should be sufficiently large s.t. all points are considered.
+// Rule of thumb: set to max distance between two points in the point clouds.
+const static double kMaxCorrespondenceDistanceICP = 5;  		// Metres (m)
+// The maximum number of ICP iterations to perform before termination.
+// Should be large enough to ensure the algorithm has sufficient time to
+// converge. Rule of thumb: set to twice the number of points in the PCL.
+const static int kMaximumIterationsICP = 120;
 // The maximum epsilon threshold between previous transformation and current
-// estimated transformation, i.e., difference must be smaller than this value
-const static double kTransformationEpsilonICP = 1e-2;
+// estimated transformation. Rule of thumb: set between 1e-4 and 1e-8.
+const static double kTransformationEpsilonICP = 1e-4;
 // The maximum sum of Euclidean squared errors between two consecutive steps
-// before algorithm is considered to be converged, i.e., threshold value
-const static double kEuclideanFitnessEpsilonICP = 1e-3;
+// before algorithm is considered to be converged.
+// Rule of thumb: set between 1 and 10.
+const static double kEuclideanFitnessEpsilonICP = 2;
 // The inlier distance threshold for the internal RANSAC outlier rejection loop
 // Note: a point is considered an inlier if the distance between `target` and
-// transformed `source` is smaller than inlier dist. threshold (default: 0.05m)
-const static double kRANSACOutlierRejectionThresholdICP = 1.0;  // Metres (m)
+// transformed `source` is smaller than inlier distance threshold.
+// Default: 0.05m, Rule of thumb: set between 0.2 and 0.3 m. 
+const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
+
 
 /* Implements the 2D Iterative Closest Point (ICP) algorithm.
  * 
