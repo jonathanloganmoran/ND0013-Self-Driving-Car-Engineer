@@ -33,7 +33,7 @@ const double pi = M_PI;
 
 /* Defines the 2D `Point` object.
  *
- * @struct  Point
+ * @struct  Point	"helpers_2d.h"
  * @brief   2D `Point` object storing `x` and `y` coordinates as doubles.
  * @var		x		Position along the x-axis.
  * @var		y		Position along the y-axis.
@@ -47,19 +47,19 @@ struct Point {
 	Point(double setX, double setY)
 		: x(setX), y(setY) {}
 	void Print() {
-		cout << "x: " << x << " y: " << y << endl;
+		std::cout << "x: " << x << " y: " << y << "\n";
 	}
 };
 
 
 /* Defines the 2D `Pose` object.
  *
- * @struct  Pose
+ * @struct  Pose			"helpers_2d.h"
  * @brief   Stores the 2D position as a `Point` with coordinates in `x`, `y`
  * 			along with the orientation angle `theta` as a type `double`.
- * @var		x		Position along the x-axis.
- * @var		y		Position along the y-axis.
- * @var 	theta	Orientation angle (radians).
+ * @var		position.x		Position along the x-axis.
+ * @var		position.y		Position along the y-axis.
+ * @var 	theta			Orientation angle (radians).
  */
 struct Pose {
 	Point position;
@@ -72,7 +72,7 @@ struct Pose {
 
 /* Defines the 2D `Vec2D` object. 
  * 
- * @struct	Vec2
+ * @struct	Vec2	"helpers_2d.h"
  * @brief	Represents 2D vector object with magnitude `mag` and angle `theta`.
  * @var		mag		Magnitude of the vector.
  * @var		theta	Angle of the vector.
@@ -251,18 +251,18 @@ struct Lidar{
 			std::vector<LineSegment> walls
 	) {
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new PointCloudT);
-		double deltaTheta = (2 * pi) / double(res);
+		double deltaTheta = (2 * M_PI) / double(res);
 		double residue = .1 * deltaTheta;
 		// Loop stopping condition
-		double maxAngle = theta + 2 * pi - residue;
+		double maxAngle = theta + 2 * M_PI - residue;
 		for (double angle = theta; angle < maxAngle; angle += deltaTheta) {
 			LineSegment ray;
 			// UCOMMENT TO PRINT THE ANGLE
 			// std::cout << "Angle " << angle << "\n";
 			// Check if the angle is vertical
-			if (ceil(tan(angle - pi / 2) * 1000) / 1000 == 0) {
+			if (ceil(tan(angle - M_PI / 2) * 1000) / 1000 == 0) {
 				// UNCOMMENT TO PRINT TRUTH VALUE IF TRUE
-				// std::cout << "Is vertical" << endl;
+				// std::cout << "Is vertical" << "\n";
 				double yb = sin(angle) * range;
 				double minb = std::min(y, yb);
 				double maxb = std::max(y, yb);
