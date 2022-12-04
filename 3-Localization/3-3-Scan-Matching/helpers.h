@@ -35,7 +35,9 @@ typedef pcl::PointCloud<PointT> PointCloudT;
  * @brief   Prints the coordinate values to the console.
  */
 class Point {
-    virtual void Print();
+public:
+    virtual ~Point() {}
+    virtual void Print() {}
 };
 
 
@@ -46,15 +48,18 @@ class Point {
  * @param   y   Position along the y-axis.     
  */
 class Point2D : public Point {
+public:
     double x;
     double y;
     
-    Point()
+    ~Point2D() override {}
+    Point2D()
         : x(0), y(0) {}
-    Point(double setX, double setY)
+    Point2D(double setX, double setY)
         : x(setX), y(setY) {}
-    virtual void Print() override {
-        std::cout << "x: " << x << " y: " << y << "\n";
+    void Print() override {
+        std::cout << "x: " << x;
+        std::cout << " y: " << y << "\n";
     }
 };
 
@@ -67,84 +72,23 @@ class Point2D : public Point {
  * @param   z   Position along the z-axis.
  */
 class Point3D : public Point {
+public:
     double x;
     double y;
     double z;
 
-    Point()
+    ~Point3D() override {}
+    Point3D()
         : x(0), y(0), z(0) {}
-    Point(double setX, double setY, double setZ)
+    Point3D(double setX, double setY, double setZ)
         : x(setX), y(setY), z(setZ) {}
-    virtual void Print() override {
-        std::cout << "x : " << x << " y: " << y << " z : " << z << "\n";
+    void Print() override {
+        std::cout << "x : " << x;
+        std::cout << " y: " << y;
+        std::cout << " z : " << z << "\n";
     }
-}
-
-
-/* Base class defining the `Pose` object in either 2D or 3D.
- * 
- * Example usage:
- *  ```cpp
- *      // Initialise the 2D and 3D points derived from `Point` class
- *      Point2D p2d(1.0, 2.0);
- *      Point3D p3d(1.0, 2.0, 3.0);
- *      // Initialise the 2D and 3D `Pose` objects
- *      Pose pose1(&p2d, 0.0);
- *      Pose pose2(&p3d, 0.0);
- *  ```
- * 
- * @struct  Pose    "helpers.h"
- * @brief   Stores the derived `2DPoint` or `3DPoint` class instance
- *          along with the orientation angle `theta` as type `double`.
- * @var     position    Position in either 2D or 3D.
- * @var     theta       Orientation angle in radians.
- */
-class Pose {
-    Point* position;
 };
 
-
-/* Derived `Pose` class representing position and orientation in 3D.
- *
- * @class   Pose3D      "helpers.h"
- * @brief   Stores the pose (position and orientation) in 3D.
- * @param	position	Position in 3D as a `Point3D` object.
- * @param   rotation    Rotation in 3D as a `Rotation` object.
- * @func    operator-
- * @brief   Overloads subtract operator to subtract two `Pose3D` objects.
- */
-class Pose3D : public Pose {
-    Rotate rotation;
-
-	Pose(Point* setPos, Rotate setRotation)
-		: position(setPos), rotation(setRotation) {}
-    Pose operator-(const Pose& p) {
-        Pose result(
-            Point(position.x - p.position.x,
-                  position.y - p.position.y, position.z - p.position.z
-            ),
-            Rotate(rotation.yaw - p.rotation.yaw,
-                   rotation.pitch - p.rotation.pitch,
-                   rotation.roll - p.rotation.roll
-            )
-        );
-        return result;    
-};
-
-
-/* Derived `Pose` class representing position and orientation in 2D.
- *
- * @class   Pose2D      "helpers.h"
- * @brief   Stores the pose (position and orientation) in 2D.
- * @param	position	Position in 2D as a `Point2D` object.
- * @param   rotation    Rotation in 2D as a `double` value.
- */
-class Pose2D : public Pose {
-    double theta;
-
-    Pose(Point* setPos, double setTheta)
-        : position(setPos), theta(setTheta) {}
-};
 
 
 /* Defines the 3D rotation angles.
@@ -162,7 +106,7 @@ class Pose2D : public Pose {
  * @var     pitch   Angle of rotation about the y-axis.
  * @var     roll    Angle of rotation about the x-axis.
  */
-struct Rotate{
+struct Rotate {
 	double yaw;
     double pitch;
     double roll;
@@ -173,11 +117,94 @@ struct Rotate{
 	Rotate(double setYaw, double setPitch, double setRoll)
 		: yaw(setYaw), pitch(setPitch), roll(setRoll) {}
 
-	void Print(){
+	void Print() {
 		std::cout << "yaw: " << yaw;
-                  << " pitch: " << pitch;
-                  << " roll: " << roll << "\n";
+        std::cout << " pitch: " << pitch;
+        std::cout << " roll: " << roll << "\n";
 	}
+};
+
+
+/* Base class defining the `Pose` object in either 2D or 3D.
+ * 
+ * @class   Pose    "helpers.h"
+ * @brief   Defines the abstract base class for the 2D or 3D pose instance.
+ * @func    void    `Pose::Print()`
+ * @brief   Prints the coordinates and rotation angle(s) to the console.
+ */
+class Pose {
+public:
+    virtual ~Pose() {}
+    virtual void Print() {}
+};
+
+
+/* Derived `Pose` class representing position and orientation in 2D.
+ *
+ * Example usage:
+ *  ```cpp
+ *      // Initialise the 2D point derived from `Point` class
+ *      Point2D p2d(1.0, 2.0);
+ *      // Initialise the 2D `Pose` object
+ *      Pose2D pose(p2d, 0.0);
+ *  ```
+ * @class   Pose2D      "helpers.h"
+ * @brief   Stores the pose (position and orientation) in 2D.
+ * @param	position	Position in 2D as a `Point2D` object.
+ * @param   rotation    Rotation in 2D as a `double` value.
+ */
+class Pose2D : public Pose {
+public:
+    Point2D position;
+    double theta;
+
+    ~Pose2D() override {}
+    Pose2D(Point2D setPos, double setTheta)
+        : position(setPos), theta(setTheta) {}
+    void Print() override {
+        position.Print();
+        std::cout << " theta: " << theta << "\n";
+    }
+};
+
+
+/* Derived `Pose` class representing position and orientation in 3D.
+ *
+ * Example usage:
+ *  ```cpp
+ *      // Initialise the 3D point derived from `Point` class
+ *      Point3D p3d(1.0, 2.0, 3.0);
+ *      // Initialise the 3D `Pose` object
+ *      Pose3D pose(p3d, Rotate(0.0, 1.0, 2.0));
+ *  ```
+ * @class   Pose3D      "helpers.h"
+ * @brief   Stores the pose (position and orientation) in 3D.
+ * @param	position	Position in 3D as a `Point3D` object.
+ * @param   rotation    Rotation in 3D as a `Rotation` object.
+ * @func    Pose3D      operator-
+ * @brief   Overloads subtract operator to subtract two `Pose3D` objects.
+ */
+class Pose3D : public Pose {
+public:
+    Point3D position;
+    Rotate rotation;
+
+    ~Pose3D() override {}
+	Pose3D(Point3D setPos, Rotate setRotation)
+		: position(setPos), rotation(setRotation) {}
+    Pose3D operator-(const Pose3D& p) {
+        Pose3D result(
+            Point3D(position.x - p.position.x,
+                    position.y - p.position.y,
+                    position.z - p.position.z
+            ),
+            Rotate(rotation.yaw - p.rotation.yaw,
+                   rotation.pitch - p.rotation.pitch,
+                   rotation.roll - p.rotation.roll
+            )
+        );
+        return result;
+    }
 };
 
 
@@ -231,8 +258,12 @@ Eigen::Matrix4d transform2D(
 		double xt,
 		double yt
 );
-// Function to extract the pose vector from the 4x4 transformation matrix
-Pose getPose(
+// Function to extract the 3D pose vector from the 4x4 transformation matrix
+Pose3D getPose3D::getPose(
+		Eigen::Matrix4d matrix
+);
+// Function to extract the 2D pose vector from the 4x4 transformation matrix
+Pose2D getPose2D::getPose(
 		Eigen::Matrix4d matrix
 );
 // Function to print the 4x4 transformation matrix values
@@ -250,8 +281,8 @@ void renderPointCloud(
 // Function to draw a line in the PCL Viewer instance
 void renderRay(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,
-		Point p1,
-		Point p2,
+		Point2D p1,
+		Point2D p2,
 		std::string name,
 		Color color
 );
@@ -305,7 +336,7 @@ struct LineSegment {
 		// Returns true if `p1` is between `p2` and `p3`
     	return (p2 <= p1) && (p1 <= p3);
     }
-    bool Intersect(LineSegment line, Point& intersection) {
+    bool Intersect(LineSegment line, Point2D& intersection) {
     	if ((my / mx) == (line.my / line.mx)) {
     		// Lines do not intersect or are parallel
     		return false;
@@ -334,8 +365,8 @@ struct LineSegment {
     	}
     }
     void Print() {
-    	std::cout << "my: " << my << " mx: " << mx << " b: " << b
-				  << " min: " << min << " max: " << max << "\n";
+    	std::cout << "my: " << my << " mx: " << mx << " b: " << b;
+	    std::cout << " min: " << min << " max: " << max << "\n";
     }
 
 };
@@ -398,7 +429,7 @@ struct Lidar{
 			}
 			double closetDist = range;
 			//Point cPoint;
-            Point2D cpoint;
+            Point2D cPoint;
 			for (LineSegment wall : walls) {
 				//Point point;
                 Point2D point;

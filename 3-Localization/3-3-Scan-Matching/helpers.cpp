@@ -17,14 +17,28 @@
 #include "helpers.h"
 
 
-Eigen::Matrix4d transform3D(double yaw, double pitch, double roll, double xt, double yt, double zt){
-
-	Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity ();
-
+/* Returns a 4x4 transformation matrix given the 3D pose information.
+ *
+ * @param 	yaw     Angle of rotation about the z-axis.
+ * @param 	pitch   Angle of rotation about the y-axis.
+ * @param 	roll    Angle of rotation about the x-axis (heading).
+ * @param 	xt	 	Position along the x-axis.
+ * @param 	yt	 	Position along the y-axis.
+ * @param 	zt	 	Position along the z-axis.
+ * @returns matrix  4x4 transformation matrix.
+ */
+Eigen::Matrix4d transform3D(
+        double yaw, 
+        double pitch, 
+        double roll, 
+        double xt, 
+        double yt, 
+        double zt
+){
+	Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity();
 	matrix(0, 3) = xt;
 	matrix(1, 3) = yt;
 	matrix(2, 3) = zt;
-
 	matrix(0, 0) = cos(yaw) * cos(pitch);
 	matrix(0, 1) = cos(yaw) * sin(pitch) * sin(roll) - sin(yaw) * cos(roll);
 	matrix(0, 2) = cos(yaw) * sin(pitch) * cos(roll) + sin(yaw) * sin(roll);
@@ -34,7 +48,6 @@ Eigen::Matrix4d transform3D(double yaw, double pitch, double roll, double xt, do
 	matrix(2, 0) = -sin(pitch);
 	matrix(2, 1) = cos(pitch) * sin(roll);
 	matrix(2, 2) = cos(pitch) * cos(roll);
-
 	return matrix;
 }
 
@@ -64,61 +77,67 @@ Eigen::Matrix4d transform2D(
 
 namespace getPose2D {
 /* Returns the 2D pose vector extracted from the input transformation matrix.
+ *
  * Example usage:
  * ```cpp
- *     getPose2D::getPose();
+ *     getPose2D::getPose(matrix);
  * ```
- *
  * @param 	matrix	4x4 transformation matrix.
- * @returns pose	3x1 pose vector as a `Pose::Pose2D` instance containing
- *                  the `Point::Point2D` `position` and `theta` orientation.
+ * @returns pose	3x1 pose vector as a `Pose2D` instance containing
+ *                  the `Point2D` `position` and `theta` orientation.
  */
 Pose getPose(
 		Eigen::Matrix4d matrix
 ) {
-    // Initialise a `Pose2D` instance with argument types `Point2D`, `double`
-	Pose* pose(
+	Pose2D pose(
 		// Here we extract the `(xt, yt, theta)` values and return a 2D pose
 		// Note: a transformation (azimuth correction) is needed to obtain
 		// the angle $\theta$ from its 2D components along the y- and x-axes.
-		&Point(matrix(0, 3), matrix(1, 3)),     // `Point2D` type
-        atan2(matrix(1, 0), matrix(0, 0))       // `double` type
+		Point2D(matrix(0, 3), matrix(1, 3)),
+        atan2(matrix(1, 0), matrix(0, 0))
 	);
 	return pose;
 }
-}
+}  // namespace getPose2D
 
 
 namespace getPose3D {
 /* Returns the 3D pose extracted from the input transformation matrix.
+ *
  * Example usage:
  * ```cpp
- *     getPose3D::getPose();
+ *     getPose3D::getPose(matrix);
  * ```
- *
  * @param 	matrix	4x4 transformation matrix.
- * @returns pose	The `Pose::Pose3D` instance containing the `Point::Point3D`
- *                  position and the `Rotation` matrix.
+ * @returns pose	The `Pose3D` instance containing the `Point3D`
+ *                  `position` and the `Rotation` matrix.
  */
 Pose getPose(
         Eigen::Matrix4d matrix
 ) {
-    // Initialise a `Pose3D` instance with argument types `Point3D`, `Rotation`
-	Pose* pose(
-        // Initialise a 3D Point of type `Point3D`
-        &Point(matrix(0, 3), matrix(1, 3), matrix(2, 3)),
-        // Initialise a rotation matrix of type `Rotation`
+    Pose3D pose(
+        // Get the 3D position
+        Point3D(
+            matrix(0, 3),
+            matrix(1, 3),
+            matrix(2, 3)
+        ),
+        // Compute the rotation angles using azimuth correction
         Rotate(
-            atan2(matrix(1, 0), matrix(0, 0)),
+            atan2(
+                matrix(1, 0), 
+                matrix(0, 0)),
             atan2(
                 -matrix(2, 0),
-                sqrt(matrix(2, 1) * matrix(2, 1) + matrix(2, 2) * matrix(2, 2))
+                sqrt(
+                    matrix(2, 1) * matrix(2, 1) + matrix(2, 2) * matrix(2, 2))
+                ),
             atan2(matrix(2, 1), matrix(2, 2))
-            ),
-        ));
+        )
+    );
 	return pose;
 }
-}
+}  // namespace getPose3D
 
 
 /* Prints the 4x4 transformation matrix.
@@ -181,15 +200,15 @@ void renderPointCloud(
 /* Renders the simulated LiDAR point return as ray instance.
  *
  * @param 	viewer		PCL Viewer instance to update.
- * @param 	p1			Starting 2D `Point` of the ray to draw.
- * @param 	p2			Ending 2D `Point` of the ray to draw.
+ * @param 	p1			Starting `Point2D` of the ray to draw.
+ * @param 	p2			Ending `Point2D` of the ray to draw.
  * @param 	name		String `id` label to assign to the rendered line.
  * @param 	color		RGB-valued `Color` instance used to render the line.
  */
 void renderRay(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,
-		Point p1,
-		Point p2,
+		Point2D p1,
+		Point2D p2,
 		std::string name,
 		Color color
 ) {
@@ -222,10 +241,10 @@ void renderPath(
 	for (int index = previous + 1; index < cloud->points.size(); index++) {
 		renderRay(
 				viewer,
-				Point(cloud->points[previous].x,
+				Point2D(cloud->points[previous].x,
 					  cloud->points[previous].y
 				),
-				Point(cloud->points[index].x,
+				Point2D(cloud->points[index].x,
 					  cloud->points[index].y
 				),
 				name + std::to_string(previous),

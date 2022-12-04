@@ -12,7 +12,7 @@
  */
 
 
-#include "helpers_2d.h"						// 2D Helper functions
+#include "helpers.h"						// 2D Helper functions
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   			// TicToc
 #include <string>
@@ -68,7 +68,8 @@ const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
 Eigen::Matrix4d ICP(
 		PointCloudT::Ptr target,
 		PointCloudT::Ptr source,
-		Pose startingPose,
+		//Pose startingPose,
+		Pose2D startingPose,
 		int iterations
 ){
 	// Initialise the output matrix as the identity matrix
@@ -163,12 +164,12 @@ int main() {
 	cout << "Map captured " << map->points.size() << " points" << "\n";
 	/*** Moving the robot around the room ***/
 	// Part 1. Localise from single step
-	std::vector<Vect2> movement = {Vect2(0.5, pi / 12)};
+	std::vector<Vect2> movement = {Vect2(0.5, M_PI / 12)};
 	// Part 2. Localise after several steps
 	bool runPart2 = false;						  // Change to true for Part 2
 	if (runPart2) {
-		movement.push_back(Vect2(0.8, pi / 10));
-		movement.push_back(Vect2(1.0, pi / 6));
+		movement.push_back(Vect2(0.8, M_PI / 10));
+		movement.push_back(Vect2(1.0, M_PI / 6));
 	}
 	// Part 3. Localise after moving around entire room at random
 	bool runPart3 = true;						  // Change to true for Part 3
@@ -176,13 +177,13 @@ int main() {
 		srand(time(0));
 		for(int i = 0; i < 10; i++){
 			double mag = 0.5 * ((double) rand() / (RAND_MAX)) + 0.5;
-			double angle = pi / 8 * ((double) rand() / (RAND_MAX)) + pi / 8;
+			double angle = M_PI / 8 * ((double) rand() / (RAND_MAX)) + M_PI / 8;
 			movement.push_back(Vect2(mag, angle));
 		}
 	}
 	// Render the map instance
 	renderPointCloud(viewer, map, "map", Color(0, 0, 1));
-	Pose location(Point(0, 0), 0);
+	Pose2D location(Point2D(0, 0), 0);
 	PointCloudT::Ptr scan;
 	int count = 0;
 	// Execute robot move, generate new LiDAR scans, and perform localisation
@@ -192,7 +193,7 @@ int main() {
 		poses->points.push_back(PointT(lidar.x, lidar.y, 0));
 		// Generate a new scan of the room with the LiDAR sensor
 		scan = lidar.scan(room);
-		cout << "Scan captured " << scan->points.size() << " points" << "\n";
+		std::cout << "Scan captured " << scan->points.size() << " points" << "\n";
 		// Render the resulting LiDAR point cloud
 		renderPointCloud(
 			viewer, scan, "scan_" + std::to_string(count), Color(1, 0, 0)
@@ -202,7 +203,7 @@ int main() {
 		unsigned int num_iter = 50;
 		Eigen::Matrix4d transform = ICP(map, scan, location, num_iter);
 		// Get the pose estimate from the ICP transform
-		Pose estimate = getPose(transform);
+		Pose2D estimate = getPose2D::getPose(transform);
 		// Save the estimate location and use it as starting pose
 		// for the ICP algorithm at the next time-step
 		location = estimate;
