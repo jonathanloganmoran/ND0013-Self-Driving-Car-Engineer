@@ -197,11 +197,27 @@ void renderPointCloud(
 }
 
 
-void renderPointCloudI(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, std::string name)
-{
-	// Select color based off of cloud intensity
-	pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> intensity_distribution(cloud,"intensity");
-  	viewer->addPointCloud<pcl::PointXYZI>(cloud, intensity_distribution, name);
+/* Renders the point cloud with intensity values onto the PCL Viewer canvas.
+ *
+ * @param  viewer       PCL Viewer instance to update.
+ * @param  cloud        PCL object to render onto the `viewer`.
+ * @param  name         String `id` label to assign to the rendered point cloud.
+ */
+void renderPointCloudI(
+    pcl::visualization::PCLVisualizer::Ptr& viewer, 
+    const pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, 
+    std::string name
+) {
+	// Create colour palette based off LiDAR intensity values
+	pcl::visualization::PointCloudColorHandlerGenericField<
+        pcl::PointXYZI
+    > intensity_distribution(cloud, "intensity");
+    // Render the point cloud
+  	viewer->addPointCloud<pcl::PointXYZI>(
+        cloud,
+        intensity_distribution, 
+        name
+    );
 }
 
 

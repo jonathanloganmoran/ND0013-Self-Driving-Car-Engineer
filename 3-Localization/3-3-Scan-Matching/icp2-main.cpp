@@ -4,7 +4,7 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
- * Purpose of this file: Main entry into the localisation programme. Here the
+ * Purpose of this file: Main entry into the scan matching programme. Here the
  *                       Iterative Closest Point (ICP) algorithm performs the
  *                       association using a KD Tree search on centred vectors.
  *                       The translation and rotation parameters between two
@@ -365,13 +365,12 @@ Eigen::Matrix4d ICP(
 }
 
 
-/* Entry point into the localisation programme using ICP scan matching.
+/* Runs the ICP scan matching programme.
  * 
  * Here we use the optimised radius search algorithm to span a KD Tree and
  * compute the association pairs from each point cloud with the closest
  * distance. The associations are used to align the point clouds and recover a
  * transformation between the set of points that minimises the error.
- *   
  */
 int main() {
 	pcl::visualization::PCLVisualizer::Ptr viewer(

@@ -21,6 +21,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <math.h>
+#include <string>
+#include <sstream>
 #include <vector>
 
 // Using `PointT`, `PointCloudT` to abstract type for either 2D / 3D points
