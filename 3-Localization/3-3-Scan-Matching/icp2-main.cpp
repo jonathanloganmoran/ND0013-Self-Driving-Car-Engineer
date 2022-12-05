@@ -327,6 +327,13 @@ Eigen::Matrix4d ICP(
     Eigen::Matrix2d W = Eigen::Matrix2d::Identity();
     Eigen::MatrixXd S = Y * X.transpose() * W;
   	// Form the product for singular value decomposition (SVD)
+    // We can assume the optimal rotation matrix `R` is composed only of
+    // singular vectors and scaling factors associated with non-zero singular
+    // values of `S`, which allows us to use the `Eigen::ComputeThinU` and
+    // `Eigen::ComputeThinV` since additional singular values and vectors of
+    // `S` are not needed. However, if we wanted to reconstruct `S` from the
+    // SVD, i.e., `S = U * S * V^T`, then we use `Eigen::ComputeFullV` .. to
+    // ensure all singular values / vectors are included in the computation.
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(
         S, Eigen::ComputeFullU | Eigen::ComputeFullV
     );
