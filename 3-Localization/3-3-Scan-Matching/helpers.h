@@ -208,6 +208,82 @@ public:
 };
 
 
+
+
+/* Base class defining the `Pair` object in either 2D or 3D.
+ * 
+ * @class   Pair    "helpers.h"
+ * @brief   Defines the abstract base class for the 2D or 3D pair of points.
+ * @func    void    `Pose::Print()`
+ * @brief   Prints the coordinates of each 3D point in the pair.
+ */
+class Pair {
+public:
+    virtual ~Pair() {}
+    virtual void Print() {}
+};
+
+
+/* Derived `Pair` class representing a pair of two points in 2D.
+ *
+ * Example usage:
+ *  ```cpp
+ *      // Initialise the two 2D points derived from `Point` class
+ *      Point2D p2d1(1.0, 2.0);
+ *      Point2D p2d2(3.0, 4.0);
+ *      // Initialise the 2D `Pair` object
+ *      Pair2D pair(p2d1, p2d2);
+ *  ```
+ * @class   Pair2D      "helpers.h"
+ * @brief   Stores the pair of the two 2D points.
+ * @param	p1	        First point in the pair as a `Point2D` instance.
+ * @param   rotation    Second point in the pair as a `Point2D` instance.
+ */
+class Pair2D : public Pair {
+public:
+    Point2D p1;
+    Point2D p2;
+
+    ~Pair2D() override {}
+    Pair2D(Point2D setP1, Point2D setP2)
+        : p1(setP1), p2(setP2) {}
+    void Print() override {
+        p1.Print();
+        p2.Print();
+    }
+};
+
+
+/* Derived `Pair` class representing a pair of two points in 3D.
+ *
+ * Example usage:
+ *  ```cpp
+ *      // Initialise the two 3D points derived from `Point` class
+ *      Point3D p3d1(1.0, 2.0, 3.0);
+ *      Point3D p3d2(4.0, 5.0, 6.0);
+ *      // Initialise the 3D `Pair` object
+ *      Pair3D pair(p3d1, p3d2);
+ *  ```
+ * @class   Pair3D      "helpers.h"
+ * @brief   Stores the pair of the two 3D points.
+ * @param	p1	        First point in the pair as a `Point3D` instance.
+ * @param   rotation    Second point in the pair as a `Point3D` instance.
+ */
+class Pair3D : public Pair {
+public:
+    Point3D p1;
+    Point3D p2;
+
+    ~Pair3D() override {}
+    Pair3D(Point3D setP1, Point3D setP2)
+        : p1(setP1), p2(setP2) {}
+    void Print() override {
+        p1.Print();
+        p2.Print();
+    }
+};
+
+
 /* Defines the 2D `Vec2D` object. 
  * 
  * @struct	Vec2	"helpers.h"
