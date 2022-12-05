@@ -155,7 +155,7 @@ double Score(
  * @param   target          Set of points in the target point cloud.
  * @param   source          Set of points in the source point cloud.
  * @param   initTransform   Rotation and translation of the starting pose. 
- * @param   dist            Maximum distance to consider for an association.
+ * @param   dist            Radius of sphere bounding all `source` neighbours.
  * @returns associations    Set of the closest matching index in `target` for
  *                          each point given in the transformed `source`.
  */
@@ -164,19 +164,37 @@ std::vector<int> NN(
         PointCloudT::Ptr source,
         Eigen::Matrix4d initTransform,
         double dist
-){
-	
+) {
 	std::vector<int> associations;
-
-	// TODO: complete this function which returns a vector of target indicies that correspond to each source index inorder.
-	// E.G. source index 0 -> target index 32, source index 1 -> target index 5, source index 2 -> target index 17, ... 
-
-	// TODO: create a KDtree with target as input
-
-	// TODO: transform source by initTransform
-
-	// TODO loop through each transformed source point and using the KDtree find the transformed source point's nearest target point. Append the nearest point to associaitons 
-
+    // Transform the `source` by the `startingPose`
+    PointCloudT::Ptr transformSource(new PointCloudT);
+    pcl::transformPointCloud(*source, *transformSource, initTransform);
+	// Create a KD Tree with `target` as input
+    pcl::KdTreeFLANN<PointT> kdTree;
+    // Perform raidus search over the KD Tree to compute the associations
+    int idx_source = 0;
+    for  (int i = 0; i < transformSource->points.size(); i++) {
+        PointT sourcePoint = transformSource->points[i];
+        // Initialise the neighbouring point indices and squared distances
+        vector<int> targetIdxSearch;
+        vector<float> targetRadiusSquaredDistance;
+        // Search the KD Tree for all nearest neighbours for the given query 
+        int nNeighbours = kdtree.radiusSearch(
+            sourcePoint,
+            dist,
+            targetIdxSearch;
+            targetRadiusSquaredDistances
+        );
+        if (nNeighbours > 0) {
+            // Append the nearest neighbour found
+            associations.push_back(targetIdxSearch[0]);
+        }
+        else {
+            // Set to `-1`, i.e., no neighbours found
+            // TODO: remove all entries with these 'null' values
+            associations.push_back(-1)
+        }
+    }
 	return associations;
 }
 
