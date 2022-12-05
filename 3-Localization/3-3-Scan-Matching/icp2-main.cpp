@@ -294,18 +294,18 @@ Eigen::Matrix4d ICP(
         viewer
     );
   	// Create 2x1 matrices `P`, `Q` which represent mean point of pairs 1, 2
-    Eigen::MatrixXd P(2, 1);            // Can also use `Eigen::Vector2d`
-    Eigen::MatrixXd Q(2, 1);
-    P << Eigen::MatrixXd::Zero(2, 1);
-    Q << Eigen::MatrixXd::Zero(2, 1);
+    Eigen::Vector2d P(2, 1);
+    Eigen::Matrix2d Q(2, 1);
+    P << Eigen::Vector2d::Zero(2, 1);
+    Q << Eigen::Vector2d::Zero(2, 1);
     // Loop over the association pairs
   	for (Pair2D pair : pairs) {
         // Set the `transformSource`point coordinates
-        P(0, 0) += pair.p1.x;
-        P(1, 0) += pair.p2.y;
+        P(0) += pair.p1.x;
+        P(1) += pair.p2.y;
         // Set the corresponding `target` point coordinates
-        Q(0, 0) += pair.p2.x;
-        Q(1, 0) += pair.p2.y;
+        Q(0) += pair.p2.x;
+        Q(1) += pair.p2.y;
     }
     P /= associations.size();
     Q /= associations.size();
@@ -316,11 +316,11 @@ Eigen::Matrix4d ICP(
         // Get the point association pair
         Pair2D pair = pairs[i];
         // Set the `transformSource` point coordinates
-        X(0, i) = pair.p1.x - P(0, 0);
-        X(1, i) = pair.p1.y - P(1, 0);
+        X(0, i) = pair.p1.x - P(0);
+        X(1, i) = pair.p1.y - P(1);
         // Set the `target` point coordinates
-        Y(0, i) = pair.p2.x - Q(0, 0);
-        Y(1, i) = pair.p2.y - Q(1, 0);
+        Y(0, i) = pair.p2.x - Q(0);
+        Y(1, i) = pair.p2.y - Q(1);
     }
   	// Create matrix `S` using Eq. 3 from the `svd_rot.pdf`
     // Here `W` is the identity matrix since all weights have value `1`
@@ -335,7 +335,7 @@ Eigen::Matrix4d ICP(
     // SVD, i.e., `S = U * S * V^T`, then we use `Eigen::ComputeFullV` .. to
     // ensure all singular values / vectors are included in the computation.
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(
-        S, Eigen::ComputeFullU | Eigen::ComputeFullV
+        S, Eigen::ComputeThinV | Eigen::ComputeThinV
     );
     Eigen::Matrix2d U = svd.matrixU();
     Eigen::Matrix2d V = svd.matrixV();
@@ -349,17 +349,17 @@ Eigen::Matrix4d ICP(
     Eigen::MatrixXd R = V * M * U.transpose();
     // Create vector `t`, i.e., the optimal translation,
     // using Eq. 5 from `svd_rot.pdf`
-    Eigen::MatrixXd t = Q - R * P;
+    Eigen::Vector2d t = Q - R * P;
   	// Set the `transformationMatrix` based on recovered `R` and `t`
     transformationMatrix(0, 0) = R(0, 0);
     transformationMatrix(0, 1) = R(0, 1);
     transformationMatrix(1, 0) = R(1, 0);
     transformationMatrix(1, 1) = R(1, 1);
-    transformationMatrix(0, 3) = t(0, 0);
-    transformationMatrix(1, 3) = t(1, 0);
+    transformationMatrix(0, 3) = t(0);
+    transformationMatrix(1, 3) = t(1);
     // Return the estimated transformation matrix
     // transformed by the `startingPose`
-    transformationMatrix = transformationMarix * initTransform;
+    transformationMatrix *= initTransform;
   	return transformationMatrix;
 }
 
