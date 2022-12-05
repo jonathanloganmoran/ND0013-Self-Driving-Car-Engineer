@@ -26,6 +26,9 @@
 // Using `PointT`, `PointCloudT` to abstract type for either 2D / 3D points
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
+// Using `PointTI`, `PointCloudTI` to store 3D position and intensity values
+typedef pcl::PointXYZI PointTI;
+typedef pcl::PointCloud<PointTI> PointCloudTI;
 
 
 /* Abstract base class for `Point` object.
