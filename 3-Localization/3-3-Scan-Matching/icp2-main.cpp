@@ -377,10 +377,10 @@ int main() {
     );
 	// Load target
 	PointCloudT::Ptr target(new PointCloudT);
-  	pcl::io::loadPCDFile("target.pcd", *target);
+  	pcl::io::loadPCDFile("../target.pcd", *target);
 	// Load source
 	PointCloudT::Ptr source(new PointCloudT);
-  	pcl::io::loadPCDFile("source.pcd", *source);
+  	pcl::io::loadPCDFile("../source.pcd", *source);
 	renderPointCloud(viewer, target, "target", Color(0, 0, 1));
 	renderPointCloud(viewer, source, "source", Color(1, 0, 0));
 	viewer->addText("Score", 200, 200, 32, 1.0, 1.0, 1.0, "score", 0);
