@@ -200,14 +200,34 @@ std::vector<Pair> PairPoints(
         PointCloudT::Ptr source, 
         bool render, 
         pcl::visualization::PCLVisualizer::Ptr& viewer
-)
-
+) {
 	std::vector<Pair> pairs;
-
-	// TODO: loop through each source point and using the corresponding associations append a Pair of (source point, associated target point)
-
-	return pairs;
+    int idx_source = 0;
+    for (PointT point : source->points) {
+        // Get the corresponding point in `associations`
+        int idx_target = associations[i];
+        if (idx_target >= 0) {
+            PointT association = (*target)[idx_target];
+            if (render) {
+                viewer->removeShape(std::to_string(idx_source));
+                renderRay(viewer,
+                          Point2D(point.x, point.y),
+                          Point2D(association.x, association.y),
+                          std::to_string(idx_source),
+                          Color(0, 1, 0)
+                );
+            }
+            pairs.push_back(Pair2D(
+                Point2D(point.x, point.y),
+                Point2D(association.x, association.y)
+            ));
+        }
+        idx_source++;
+    }
+    return pairs;
 }
+
+
 /* Performs the Iterative Closest Point (ICP) algorithm.
  *
  * Recovers the transformation matrix between the points in the source and
@@ -244,6 +264,8 @@ Eigen::Matrix4d ICP(
     );
     PointCloudT::Ptr transformSource(new PointCloudT);
     pcl::transformPointCloud(*source, *transformSource, initTransform);
+    // Compute the pairs (associations) between the two point clouds
+    vector<Pair2D> pairs = PairPoints()
   	// Create 2x1 matrices `P`, `Q` which represent mean point of pairs 1, 2
     Eigen::MatrixXd P;
     Eigen::MatrixXd Q;
