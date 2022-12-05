@@ -334,14 +334,18 @@ Eigen::Matrix4d transform2D(
 		double xt,
 		double yt
 );
-// Function to extract the 3D pose vector from the 4x4 transformation matrix
-Pose3D getPose3D::getPose(
+namespace getPose3D {
+// Function to extract the 3D pose from the 4x4 transformation matrix
+Pose3D getPose(
 		Eigen::Matrix4d matrix
 );
+}  // namespace getPose3D
+namespace getPose2D {
 // Function to extract the 2D pose vector from the 4x4 transformation matrix
-Pose2D getPose2D::getPose(
+Pose2D getPose(
 		Eigen::Matrix4d matrix
 );
+}  // namespace getPose2D
 // Function to print the 4x4 transformation matrix values
 void print4x4Matrix (
 		const Eigen::Matrix4d& matrix

@@ -171,19 +171,20 @@ std::vector<int> NN(
     pcl::transformPointCloud(*source, *transformSource, initTransform);
 	// Create a KD Tree with `target` as input
     pcl::KdTreeFLANN<PointT> kdTree;
+    kdTree.setInputCloud(target);
     // Perform raidus search over the KD Tree to compute the associations
     int idx_source = 0;
     for  (int i = 0; i < transformSource->points.size(); i++) {
         PointT sourcePoint = transformSource->points[i];
         // Initialise the neighbouring point indices and squared distances
-        vector<int> targetIdxSearch;
-        vector<float> targetRadiusSquaredDistance;
+        std::vector<int> targetIdxSearch;
+        std::vector<float> targetRadiusSquaredDistance;
         // Search the KD Tree for all nearest neighbours for the given query 
-        int nNeighbours = kdtree.radiusSearch(
+        int nNeighbours = kdTree.radiusSearch(
             sourcePoint,
             dist,
-            targetIdxSearch;
-            targetRadiusSquaredDistances
+            targetIdxSearch,
+            targetRadiusSquaredDistance
         );
         if (nNeighbours > 0) {
             // Append the nearest neighbour found
@@ -191,8 +192,8 @@ std::vector<int> NN(
         }
         else {
             // Set to `-1`, i.e., no neighbours found
-            // TODO: remove all entries with these 'null' values
-            associations.push_back(-1)
+            // TODO: remove all entries with `-1` values
+            associations.push_back(-1);
         }
     }
 	return associations;
@@ -212,26 +213,28 @@ std::vector<int> NN(
  * @param   render          If True, the associations are displayed.
  * @returns viewer          PCL Viewer instance to display the associations.
  */
-std::vector<Pair> PairPoints(
+std::vector<Pair2D> PairPoints(
         std::vector<int> associations, 
         PointCloudT::Ptr target, 
         PointCloudT::Ptr source, 
         bool render, 
         pcl::visualization::PCLVisualizer::Ptr& viewer
 ) {
-	std::vector<Pair> pairs;
-    int idx_source = 0;
-    for (PointT point : source->points) {
+	std::vector<Pair2D> pairs;
+    for (int i = 0; i < source->points.size(); i++) {
+    //for (PointT point : source->points) {
+        PointT point = source->points[i];
         // Get the corresponding point in `associations`
         int idx_target = associations[i];
         if (idx_target >= 0) {
             PointT association = (*target)[idx_target];
             if (render) {
-                viewer->removeShape(std::to_string(idx_source));
+                // Remove shape `i` in `source` 
+                viewer->removeShape(std::to_string(i));
                 renderRay(viewer,
                           Point2D(point.x, point.y),
                           Point2D(association.x, association.y),
-                          std::to_string(idx_source),
+                          std::to_string(i),
                           Color(0, 1, 0)
                 );
             }
@@ -240,7 +243,6 @@ std::vector<Pair> PairPoints(
                 Point2D(association.x, association.y)
             ));
         }
-        idx_source++;
     }
     return pairs;
 }
@@ -283,19 +285,19 @@ Eigen::Matrix4d ICP(
     PointCloudT::Ptr transformSource(new PointCloudT);
     pcl::transformPointCloud(*source, *transformSource, initTransform);
     // Compute the pairs (associations) between the two point clouds
-    visualise_pairs = true;         // Updates PCL Viewer if true
-    vector<Pair2D> pairs = PairPoints(
+    bool visualisePairs = true;         // Updates PCL Viewer if true
+    std::vector<Pair2D> pairs = PairPoints(
         associations,
         target,
         transformSource,
-        visualise_pairs,
+        visualisePairs,
         viewer
     );
   	// Create 2x1 matrices `P`, `Q` which represent mean point of pairs 1, 2
     Eigen::MatrixXd P;
     Eigen::MatrixXd Q;
-    P << Eigen::MatrixXd::Zeros(2, 1);
-    Q << Eigen::MatrixXd::Zeros(2, 1);
+    P << Eigen::MatrixXd::Zero(2, 1);
+    Q << Eigen::MatrixXd::Zero(2, 1);
     // Loop over the association pairs
   	for (Pair2D pair : pairs) {
         // Set the `transformSource`point coordinates
@@ -312,7 +314,7 @@ Eigen::Matrix4d ICP(
     Eigen::MatrixXd Y(2, pairs.size());
     for (int i = 0; i < pairs.size(); i++) {
         // Get the point association pair
-        Pair2D pair = pairs[i]
+        Pair2D pair = pairs[i];
         // Set the `transformSource` point coordinates
         X(0, i) = pair.p1.x - P(0);
         X(1, i) = pair.p1.y - P(1);
@@ -422,7 +424,7 @@ int main() {
                 1, 
                 viewer
             );
-			pose = getPose(transform);
+			pose = getPose3D::getPose(transform);
   			pcl::transformPointCloud(
                 *source, 
                 *transformedScan, 
@@ -479,7 +481,7 @@ int main() {
                 "usource", 
                 Color(0, 1, 1)
             );
-			std::vector<Pair3D> pairs = PairPoints(
+			std::vector<Pair2D> pairs = PairPoints(
                 associations, 
                 target, 
                 transformedScan, 

@@ -86,7 +86,7 @@ namespace getPose2D {
  * @returns pose	3x1 pose vector as a `Pose2D` instance containing
  *                  the `Point2D` `position` and `theta` orientation.
  */
-Pose getPose(
+Pose2D getPose(
 		Eigen::Matrix4d matrix
 ) {
 	Pose2D pose(
@@ -112,7 +112,7 @@ namespace getPose3D {
  * @returns pose	The `Pose3D` instance containing the `Point3D`
  *                  `position` and the `Rotation` matrix.
  */
-Pose getPose(
+Pose3D getPose(
         Eigen::Matrix4d matrix
 ) {
     Pose3D pose(
