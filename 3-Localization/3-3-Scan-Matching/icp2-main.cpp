@@ -272,7 +272,6 @@ Eigen::Matrix4d ICP(
         int iterations,
         pcl::visualization::PCLVisualizer::Ptr& viewer
 ) {
-  	Eigen::Matrix4d transformationMatrix = Eigen::Matrix4d::Identity();
     // Transform the `source` point cloud by the `startingPose`
     Eigen::Matrix4d initTransform = transform3D(
         startingPose.rotation.yaw,
@@ -351,6 +350,8 @@ Eigen::Matrix4d ICP(
     // using Eq. 5 from `svd_rot.pdf`
     Eigen::Vector2d t = Q - R * P;
   	// Set the `transformationMatrix` based on recovered `R` and `t`
+    Eigen::Matrix4d transformationMatrix;
+    transformationMatrix << Eigen::MatrixXd::Identity(4, 4);
     transformationMatrix(0, 0) = R(0, 0);
     transformationMatrix(0, 1) = R(0, 1);
     transformationMatrix(1, 0) = R(1, 0);
@@ -404,6 +405,7 @@ int main() {
                 pose.position.y, 
                 pose.position.z
             );
+            // Transform `source` point cloud into `target` frame 
 			PointCloudT::Ptr transformedScan(new PointCloudT);
   			pcl::transformPointCloud(
                 *source,
@@ -423,6 +425,7 @@ int main() {
             else {
 				associations = bestAssociations;
             }
+            // Transform estimate from `source` to `target` frame
 			Eigen::Matrix4d transform = ICP(
                 associations,
                 target, 
