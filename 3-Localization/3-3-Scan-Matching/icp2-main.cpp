@@ -265,40 +265,63 @@ Eigen::Matrix4d ICP(
     PointCloudT::Ptr transformSource(new PointCloudT);
     pcl::transformPointCloud(*source, *transformSource, initTransform);
     // Compute the pairs (associations) between the two point clouds
-    vector<Pair2D> pairs = PairPoints()
+    visualise_pairs = true;         // Updates PCL Viewer if true
+    vector<Pair2D> pairs = PairPoints(
+        associations,
+        target,
+        transformSource,
+        visualise_pairs,
+        viewer
+    );
   	// Create 2x1 matrices `P`, `Q` which represent mean point of pairs 1, 2
     Eigen::MatrixXd P;
     Eigen::MatrixXd Q;
     P << Eigen::MatrixXd::Zeros(2, 1);
     Q << Eigen::MatrixXd::Zeros(2, 1);
-  	for (int i = 0; i < associations.size(); i++) {
-        P(0, 0) += transformSource->points[i].x;
-        P(1, 0) += transformSource->points[i].y;
-        Q(0, 0) += target->points[associations[i]].x;
-        Q(0, 1) += target->points[associations[i]].y;
+    // Loop over the association pairs
+  	for (Pair2D pair : pairs) {
+        // Set the `transformSource`point coordinates
+        P(0, 0) += pair.p1.x;
+        P(1, 0) += pair.p2.y;
+        // Set the corresponding `target` point coordinates
+        Q(0, 0) += pair.p2.x;
+        Q(0, 1) += pair.p2.y;
     }
     P /= associations.size();
     Q /= associations.size();
     // Create 2xn matrices `X`, `Y` where `n` is the number of pairs
-    Eigen::MatrixXd X;
-    Eigen::MatrixXd Y;
-    for (int i = 0; i < associations.size(): i++) {
-        X(0, i) = transformSource->points[i].x - P(0);
-        X(1, i) = transformSource->points[i].y - P(1);
-        Y(0, i) = target->points[associations[i]].x - Q(0);
-        Y(1, i) = target->points[associations[i]].y - Q(1);
+    Eigen::MatrixXd X(2, pairs.size());
+    Eigen::MatrixXd Y(2, pairs.size());
+    for (int i = 0; i < pairs.size(); i++) {
+        // Get the point association pair
+        Pair2D pair = pairs[i]
+        // Set the `transformSource` point coordinates
+        X(0, i) = pair.p1.x - P(0);
+        X(1, i) = pair.p1.y - P(1);
+        // Set the `target` point coordinates
+        Y(0, i) = pair.p2.x - Q(0);
+        Y(1, i) = pair.p2.y - Q(1);
     }
   	// Create matrix `S` using Eq. 3 from the `svd_rot.pdf`
     // Here `W` is the identity matrix since all weights have value `1`
     Eigen::Matrix2d W = Eigen::Matrix2d::Identity();
     Eigen::MatrixXd S = Y * X.transpose() * W;
-  	// Create matrix `R`, i.e., the optimal rotation
-    // using Eq. 4 from `svd_rot.pdf` and taking the SVD of `S`
+  	// Form the product for singular value decomposition (SVD)
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(
-        S, Eigen::ComputeThinU | Eigen::ComputeThinV
+        S, Eigen::ComputeFullU | Eigen::ComputeFullV
     );
+    Eigen::Matrix2d U = svd.matrixU();
+    Eigen::Matrix2d V = svd.matrixV();
+    // Create matrix `M`, i.e., the reflection
+    Eigen::MatrixXd M;
+    M.setIdentity(V.cols(), V.cols());
+    // Compute the matrix determinant 
+    M(V.cols() - 1, V.cols() - 1) = (V * U.transpose()).determinant();
+    // Create matrix `R`, i.e., the optimal rotation
+    // using Eq. 4 from `svd_rot.pdf` and taking the SVD of `S`
+    Eigen::MatrixXd R = svd.matrixV() * M * svd.matrixU().transpose();
     // Create vector `t`, i.e., the optimal translation,
-    // using Eq. 5 from `svd_rot.pdf` 
+    // using Eq. 5 from `svd_rot.pdf`
     Eigen::Vector2d t = Q - R * P;
   	// Set the `transformationMatrix` based on recovered `R` and `t`
     transformationMatrix(0, 0) = R(0, 0);
@@ -308,8 +331,11 @@ Eigen::Matrix4d ICP(
     transformationMatrix(0, 3) = t(0);
     transformationMatrix(1, 3) = t(1);
     // Return the estimated transformation matrix
+    // transformed by the `startingPose`
+    transformationMatrix *= initTransform;
   	return transformationMatrix;
 }
+
 
 /* Entry point into the localisation programme using ICP scan matching.
  * 
