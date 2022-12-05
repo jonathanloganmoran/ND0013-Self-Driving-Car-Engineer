@@ -400,8 +400,12 @@ struct LineSegment {
 	)
         	: my(setMy), mx(setMx), b(setB), min(setMin), max(setMax) {
 		if (setMy == 0 and setMx == 0) {
+            // Handle divide-by-zero
 			my = 0;
 			mx = 1;
+		}
+		if (setMy == 1 and setMx == 0) {
+			// Handle possible divide-by-zero
 		}
     }
     LineSegment()
@@ -482,7 +486,9 @@ struct Lidar{
 			std::vector<LineSegment> walls
 	) {
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new PointCloudT);
+        // Resolution of each step
 		double deltaTheta = (2 * M_PI) / double(res);
+        // Residue prevents angle from being overlapped at 2*pi
 		double residue = .1 * deltaTheta;
 		// Loop stopping condition
 		double maxAngle = theta + 2 * M_PI - residue;
