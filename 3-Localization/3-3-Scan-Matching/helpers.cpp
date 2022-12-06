@@ -293,7 +293,7 @@ void renderPath(
 ) {
 	int previous = 0;
 	for (int index = previous + 1; index < cloud->points.size(); index++) {
-		renderRay(
+		renderRay2D::renderRay(
 				viewer,
 				Point2D(cloud->points[previous].x,
 					  cloud->points[previous].y
