@@ -24,7 +24,7 @@
  */
 
 
-#include "helper.h"
+#include "helpers.h"
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   					// TicToc time-tracking
 
@@ -115,7 +115,7 @@ double Probability(
 		Eigen::MatrixXd Q, 
 		Eigen::MatrixXd S
 ) {
-	return exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
+	return std::exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
 }
 
 /* Initialises the constant size `Cell` instance in a discretised grid. 
@@ -174,7 +174,7 @@ struct Grid{
 	double res;
 	int width;
 	int height;
-	vector<vector<Cell>> grid;
+	std::vector<std::vector<Cell>> grid;
 	
 	Grid(double setRes,
 		 int setWidth,
@@ -186,7 +186,7 @@ struct Grid{
 		// Discretise the area of the `Grid` into
 		// unit length `Cell` instances
 		for (int r = 0; r < height * 2; r++) {
-			vector<Cell> row;
+			std::vector<Cell> row;
 			for (int c = 0; c < width * 2; c++) {
 				// Create each `Cell` instance in the current `row`
 				row.push_back(Cell());
@@ -344,6 +344,8 @@ Cell PDF(
  * @param  g_previous	Estimated gradient to update. 
  * @param  H_previous	Estimated Hessian to update.
  */
+// Using `Derived` type to handle intermediate matrices
+template<typename Derived>
 void NewtonsMethod(
 		PointT point, 
 		double theta, 
@@ -362,12 +364,12 @@ void NewtonsMethod(
 	// Calculate matrix `q` from `X` and `Q` (Eq. 8)
 	Eigen::MatrixXd q = X - Q;
 	// Calculate the 1x1 exponential matrix `s` (Eq. 9)
-	Eigen::MatriXd s(1, 1);
-	s << -exp((-q.transpose() * S_inverse * q) / 2);
+	Eigen::MatrixXd s(1, 1);
+	s << -std::exp((-q.transpose() * S_inverse * q) / 2);
 	// Calculate the three 2x1 partial derivative matrices (Eqs. 10, 11)
-	Eigen::MatrixX q_p1(2, 1);		// Partial derivative w.r.t. `x`
-	Eigen::MatrixX q_p2(2, 1);		// Partial derivative w.r.t. `y`
-	Eigen::MatrixX q_p3(2, 1);		// Partial derivative w.r.t. `theta`
+	Eigen::MatrixXd q_p1(2, 1);		// Partial derivative w.r.t. `x`
+	Eigen::MatrixXd q_p2(2, 1);		// Partial derivative w.r.t. `y`
+	Eigen::MatrixXd q_p3(2, 1);		// Partial derivative w.r.t. `theta`
 	q_p1(0, 0) = 1;
 	q_p1(1, 0) = 0;
 	q_p2(0, 0) = 0;
@@ -375,7 +377,7 @@ void NewtonsMethod(
 	q_p3(0, 0) = -X(0, 0) * sin(theta) - X(1, 0) * cos(theta);  
 	q_p3(1, 0) = X(1, 0) * cos(theta) - X(1, 0) * sin(theta);
 	// Calculate the 2x1 second-order partial derivatives matrix (Eq. 13)
-	Eigen::MatrixX q_pp(2, 1);
+	Eigen::MatrixXd q_pp(2, 1);
 	q_pp(0, 0) = -X(0, 0) * cos(theta) + X(1, 0) * sin(theta);
 	q_pp(1, 0) = -X(0, 0) * sin(theta) - X(1, 0) * cos(theta);
 	// Calculate the gradient `g` (Eq. 10)
@@ -578,6 +580,8 @@ double computeStepLength(
  * @param	 maxIt		Number of Hessian update steps to perform .
  * @returns  H_prime    Hessian assumed to be positive definite.
  */
+// Using `Derived` type to handle intermediate matrices
+template<typename Derived>
 double PosDef(
 		Eigen::MatrixBase<Derived>& A, 
 		double start, 
@@ -778,7 +782,7 @@ int main() {
 		PointCloudTI::Ptr pdf(new PointCloudTI);
 		int res = 10;
 		// TODO: Convert loop iterator into `int` units
-		for (double y = -gridH * gridRes; y <= gridH * gridR; y += gridR / double(res)) {
+		for (double y = -gridH * gridR; y <= gridH * gridR; y += gridR / double(res)) {
 			for (double x = -gridW * gridR; x <= gridW * gridR; x += gridR / double(res)) {
 				Eigen::MatrixXd X(2, 1);
 				X(0, 0) = x;
