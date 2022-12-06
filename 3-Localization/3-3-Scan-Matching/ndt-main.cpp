@@ -10,17 +10,16 @@
  * 						 clouds. The NDT uses Newton's method to iteratively
  * 						 compute the roots of the differentiable piecewise loss
  * 						 function. The two point clouds are discretised s.t.
- * 						 each cell is defined by a mean and covariance. The
- * 						 probability density function evaluated at a location
- * 						 $x$ within the cell is given as a normal distribution.
- * 						 The Euclidean transformation matrix is formed by
- * 						 optimising the parameters of the transform which maps
- * 						 the `target` point cloud to the `first` using the
- * 						 gradient-based Newton's method.
+ * 						 each cell follows a normal distribution and therefore
+ * 						 is defined by a mean and covariance. The Euclidean
+ * 						 transformation matrix is formed by optimising the
+ * 						 parameters of the transform which maps the `target`
+ * 						 point cloud to the `source` using the gradient-based
+ * 						 Newton's method framed as a maximisation problem.
  * 
  * Note : The objects defined here are intended to be used with the Point
  *        Cloud Library (PCL) and Eigen libraries in order to compute the
- *        Iterative Closest Point (ICP) algorithm.
+ *        Normal Distributions Transform (NDT) algorithm.
  * ----------------------------------------------------------------------------
  */
 
@@ -29,7 +28,7 @@
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   					// TicToc time-tracking
 
-// Using `Derived` type to handle matrices
+// Using `Derived` type to handle intermediate matrices
 template<typename Derived>
 
 /*** Define the starting variables as global variables ***/
@@ -54,43 +53,43 @@ void keyboardEventOccurred(
     //         pcl::visualization::PCLVisualizer
     //     >*>(viewer_void
     // );
-	if (event.getKeySym() == "Right" && event.keyDown()){
+	if (event.getKeySym() == "Right" && event.keyDown()) {
 		update = true;
 		upose.position.x += 0.1;
   	}
-	else if (event.getKeySym() == "Left" && event.keyDown()){
+	else if (event.getKeySym() == "Left" && event.keyDown()) {
 		update = true;
 		upose.position.x -= 0.1;
   	}
-  	if (event.getKeySym() == "Up" && event.keyDown()){
+  	if (event.getKeySym() == "Up" && event.keyDown()) {
 		update = true;
 		upose.position.y += 0.1;
   	}
-	else if (event.getKeySym() == "Down" && event.keyDown()){
+	else if (event.getKeySym() == "Down" && event.keyDown()) {
 		update = true;
 		upose.position.y -= 0.1;
   	}
-	else if (event.getKeySym() == "k" && event.keyDown()){
+	else if (event.getKeySym() == "k" && event.keyDown()) {
 		update = true;
 		upose.rotation.yaw += 0.1;
 		while( upose.rotation.yaw > 2 * M_PI)
 			upose.rotation.yaw -= 2 * M_PI;  
   	}
-	else if (event.getKeySym() == "l" && event.keyDown()){
+	else if (event.getKeySym() == "l" && event.keyDown()) {
 		update = true;
 		upose.rotation.yaw -= 0.1;
 		while( upose.rotation.yaw < 0)
 			upose.rotation.yaw += 2 * M_PI; 
   	}
-	else if (event.getKeySym() == "space" && event.keyDown()){
+	else if (event.getKeySym() == "space" && event.keyDown()) {
 		matching = true;
 		update = false;
   	}
-	else if (event.getKeySym() == "n" && event.keyDown()){
+	else if (event.getKeySym() == "n" && event.keyDown()) {
 		pose = upose;
 		std::cout << "Set New Pose" << "\n";
   	}
-	else if (event.getKeySym() == "b" && event.keyDown()){
+	else if (event.getKeySym() == "b" && event.keyDown()) {
 		std::cout << "Do ICP With Best Associations" << "\n";
 		matching = true;
 		update = true;
@@ -100,44 +99,67 @@ void keyboardEventOccurred(
 
 /* Returns the probability of the given point w.r.t. its mean and stdev.
  *
- * @param    X		TODO.
- * @param    Q		TODO.
- * @param    S		TODO.
- * @returns  
+ * The probability of measuring a sample at 2D point `X` contained in a
+ * respective `Cell` is given by evaluating the the normal distribution (ND)
+ * 		$\mathcal{N} \sim \left(q, \Sigma\right)$,
+ * at the given position `X`. The ND is parameterised by the mean `Q` and
+ * covariance `S` matrices in two dimensions `x` and `y`.
+ * 
+ * @param    X		Position to obtain the probability of.
+ * @param    Q		Mean value of coordinates in `x` and `y` within a `Cell`.
+ * @param    S		Covariance matrix belonging to the ND of the`Cell`.
+ * @returns  probability
  */
-double Probability(Eigen::MatrixXd X, Eigen::MatrixXd Q, Eigen::MatrixXd S){
-	// TODO: calculate the probibility of the point given mean and standard deviation
-	return 0;
+double Probability(
+		Eigen::MatrixXd X, 
+		Eigen::MatrixXd Q, 
+		Eigen::MatrixXd S
+) {
+	return exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
 }
 
-
-/* TODO. 
+/* Initialises the constant size `Cell` instance in a discretised grid. 
  *
  * @struct  Cell	"ndt-main.cpp"
- * @var		cloud	Point cloud to discretise.
- * @var		Q		TODO.
- * @var		S		TODO.
+ * @var		cloud	Cluster of points from the discretised point cloud.
+ * @var		Q		Mean value of the cell, a 2x1 vector with average `x`, `y`.
+ * @var		S		Covariance matrix, confidence that point belongs to `Cell`.
  */
-struct Cell{
+struct Cell {
 	PointCloudT::Ptr cloud;
 	Eigen::MatrixXd Q;
 	Eigen::MatrixXd S;
 
-	Cell(){
+	Cell() {
 		PointCloudT::Ptr input(new PointCloudT);
 		cloud = input;
-		Q = Eigen::MatrixXd::Zero(2,1);
-		S = Eigen::MatrixXd::Zero(2,2);
+		// Initialise the mean and covariance matrices
+		Q = Eigen::MatrixXd::Zero(2, 1);	// Mean
+		S = Eigen::MatrixXd::Zero(2, 2);    // Covariance
 	}
 };
 
 
-/* TODO.
+/* Implements the overlapping `Grid` of `Cells` (Biber, 2003).
+ * 
+ * Here a `Grid` is a unit of subdivided area within a discretised point cloud.
+ * Each `Grid` is a set of overlapping `Cells` containing a subset of points
+ * from the total point cloud. The `Grid` is implemented to minimise the effect
+ * of discretisation s.t. each 2D point falls into the overlapping `Cells`
+ * within the `Grid`. Each `Cell` is a square of dimensions `res` x `res`, and
+ * each `Grid` is of size (2 * `width`) x (2 * `height`).
+ * 
+ * For example, a cell `res` of 3 and a grid `width` = `height` = 2 will result
+ * in a set of 4 overlapping cells, each with dimensions 3 x 3 inside a grid of
+ * size 4 x 4. The three overlapping cells are offset from the first in the
+ * lower-left origin of the grid by a shift of floor(`res` / 2), i.e., 1 unit
+ * to the right and/or 1 unit upwards. The probability density of a given point
+ * inside the `Grid` is therefore the sum of the densities of all four cells.
  *
  * @struct   Grid		Represents a discretised region of the point cloud.
- * @var      res		Resolution of the grid cell.
- * @var	     width		The width of the discretised area in the grid.
- * @var      height		The height of the discretised area in the grid.
+ * @var      res		Resolution of each `Cell` (its width and height).
+ * @var	     width		The half-width of the overlapping `Grid`.
+ * @var      height		The half-height of the overlapping `Grid`.
  * @var      grid		Vector of `Cell` instances in the grid.
  * @func     void		`Grid::addPoint(PointT point)`
  * @brief    Adds given `point` to the `grid` if within the boundary limits.
@@ -149,12 +171,11 @@ struct Cell{
  * @brief    Returns the probability value of the given `point` in grid frame.
  */
 struct Grid{
-	// each cell is a square res x res and total grid size is (2 x width) x (2 x height)
 	double res;
 	int width;
 	int height;
 	vector<vector<Cell>> grid;
-	// Create a new `grid` instance from given dimensions
+	
 	Grid(double setRes,
 		 int setWidth,
 		 int setHeight
@@ -162,61 +183,71 @@ struct Grid{
 		res = setRes;
 		width = setWidth;
 		height = setHeight;
+		// Discretise the area of the `Grid` into
+		// unit length `Cell` instances
 		for (int r = 0; r < height * 2; r++) {
 			vector<Cell> row;
 			for (int c = 0; c < width * 2; c++) {
+				// Create each `Cell` instance in the current `row`
 				row.push_back(Cell());
 			}
+			// Append the discretised `row` to the `grid` list
 			grid.push_back(row);
 		}
 	}
 	// Adds a given `point` to the `grid` if within the grid boundary limits
 	void addPoint(PointT point) {
-		//cout << point.x << "," << point.y << endl;
-		int c = int((point.x + width * res  ) / res);
-		int r = int((point.y + height * res ) / res);
-		//cout << r << "," << c << endl;
+		// UNCOMMENT TO PRINT COORDINATES OF POINT TO ADD
+		// std::cout << point.x << "," << point.y << "\n";
+		// Compute the coordinates of the `Cell` to store the `point`
+		int c = int((point.x + width * res ) / res);
+		int r = int((point.y + height * res) / res);
+		// UNCOMMENT TO PRINT ROW / COLUMN OF CELL
+		// std::cout << r << "," << c << "\n";
 		if ((c >= 0 && c < width * 2)
 			 && (r >= 0 && r < height * 2)
 		) {
+			// Add the `point` to the `Cell` points cluster
 			grid[r][c].cloud->points.push_back(point);
 		}
 	}
-	// Initialise the `grid` mean and variance
+	// Initialise the `grid` mean and covariance
 	void Build() {
 		for (int r = 0; r < height * 2; r++) {
 			for (int c = 0; c < width * 2; c++) {
 				PointCloudT::Ptr input = grid[r][c].cloud;
+				// 1. For each `Cell` that contains at least three points
 				if (input->points.size() > 2) {
-					// Calculate the mean
+					// 2. Calculate the mean values of coordinates `x`, `y`
 					Eigen::MatrixXd Q(2, 1);
 					Q << Eigen::MatrixXd::Zero(2, 1);
 					for(PointT point : input->points){
 						Q(0, 0) += point.x;
 						Q(1, 0) += point.y;
 					}
-					Q(0, 0) = Q(0, 0) / input->points.size();
-					Q(1, 0) = Q(1,0) / input->points.size();
+					Q(0, 0) /= input->points.size();
+					Q(1, 0) /= input->points.size();
 					grid[r][c].Q = Q;
-					// Calculate sigma
+					// 3. Calculate the covariance matrix (sigma)
 					Eigen::MatrixXd S(2, 2);
 					S << Eigen::MatrixXd::Zero(2, 2);
 					for (PointT point : input->points) {
 						Eigen::MatrixXd X(2, 1);
 						X(0, 0) = point.x;
 						X(1, 0) = point.y;
+						// Compute the summed standard deviation
 						S += (X - Q) * (X - Q).transpose();
 					}
-					S(0, 0) = S(0, 0) / input->points.size();
-					S(0, 1) = S(0, 1) / input->points.size();
-					S(1, 0) = S(1, 0) / input->points.size();
-					S(1, 1) = S(1, 1) / input->points.size();
+					S(0, 0) /= input->points.size();
+					S(0, 1) /= input->points.size();
+					S(1, 0) /= input->points.size();
+					S(1, 1) /= input->points.size();
 					grid[r][c].S = S;
 				}
 			}
 		}
 	}
-	// Returns the `Cell` given by `point` in grid frame
+	// Returns the `Cell` in `grid` containing the `point`
 	Cell getCell(PointT point) {
 		int c = int((point.x + width * res) / res);
 		int r = int((point.y + height * res) / res);
@@ -225,13 +256,14 @@ struct Grid{
 		) {
 			return grid[r][c];
 		}
+		// Return empty `Cell` if `point` is out of bounds
 		return Cell();
 	}
-	// Returns the summed probability value in `Cell` given by `point` in grid
+	// Returns the summed probability of `point` in `grid`
 	double Value(PointT point) {
-		Eigen::MatrixXd X(2,1);
-		X(0,0) = point.x;
-		X(1,0) = point.y;
+		Eigen::MatrixXd X(2, 1);
+		X(0, 0) = point.x;
+		X(1, 0) = point.y;
 		double value = 0.0;
 		for (int r = 0; r < height * 2; r++) {
 			for (int c = 0; c < width * 2; c++) {
@@ -248,25 +280,28 @@ struct Grid{
 };
 
 
-/* TODO.
+/* Calculates the probability distribution function for an `input` point cloud.
  *
- * @param	 input
- * @param	 res
- * @param  	 viewer
- * @returns  cell
+ * @param	 input		Cluster of points from the discretised point cloud.
+ * @param	 res		Resolution of each `Cell` (its width and height).
+ * @param  	 viewer		PCL Viewer to update with distribution probabilities.
+ * @returns  cell		Cell updated with the distribution probabilities.
  */
 Cell PDF(
 		PointCloudT::Ptr input, 
 		int res, 
 		pcl::visualization::PCLVisualizer::Ptr& viewer
 ) {
-	// TODO: Calculate the 2 x 1 matrix Q, which is the mean of the input points
+	// Calculate the 2x1 matrix `Q`,
+	// i.e., the mean of the input points
 	Eigen::MatrixXd Q(2, 1);
 	Q << Eigen::MatrixXd::Zero(2, 1);
-	// TODO: Calculate the 2 x 2 matrix S, which is standard deviation of the input points
+	// Calculate the 2x2 covariance matrix `S`,
+	// i.e., standard deviation of input points
 	Eigen::MatrixXd S(2, 2);
 	S << Eigen::MatrixXd::Zero(2, 2);
 	PointCloudTI::Ptr pdf(new PointCloudTI);
+	// TODO: Change loop iterator to `int` type
 	for (double i = 0.0; i <= 10.0; i += 10.0 / double(res)) {
 		for (double j = 0.0; j <= 10.0; j += 10.0 / double(res)) {
 			Eigen::MatrixXd X(2, 1);
@@ -293,13 +328,21 @@ Cell PDF(
 }
 
 
-/* TODO.
+/* Implements the optimisation problem using Newton's algorithm.
  *
- * @param  point
- * @param  theta
- * @param  cell
- * @param  g_previous
- * @param  H_previous
+ * Determines the corresponding normal distributions for each mapped
+ * input `point` parameterised by estimate `theta`. The Newton's algorithm
+ * iteratively finds the parameters that minimise the function $f$ by solving
+ * 		$H\Delta p = -g$,
+ * s.t. $g$ is the transposed gradient of $f$ and $H$ is the Hessian of $f$.
+ * The solution to this linear system is an increment $\Delta p$, which is
+ * added to the previous estimates `g_previous`, `H_previous`.
+ * 
+ * @param  point		Point mapped into `target` point cloud.
+ * @param  theta		Initial value of parameter to estimate.
+ * @param  cell			`Cell` to compute the score of. 
+ * @param  g_previous	Estimated gradient to update. 
+ * @param  H_previous	Estimated Hessian to update.
  */
 void NewtonsMethod(
 		PointT point, 
@@ -308,30 +351,97 @@ void NewtonsMethod(
 		Eigen::MatrixBase<Derived>& g_previous, 
 		Eigen:: MatrixBase<Derived>& H_previous
 ) {
-	// TODO: Get the Q and S matrices from cell, invert S matrix
-	// TODO: make a 2 x 1 matrix from input point
-	// TODO: calculate matrix q from X and Q
-	// TODO: calculate the 3 2 x 1 partial derivative matrices
-	// each with respect to x, y, and theta
-	// TODO: calcualte the 1 x 1 exponential matrix which uses q, and S inverse
-	// TODO: calculate the matrix g which uses q, exponential, S inverse, and partial derivatives
-	Eigen::MatrixXd g(3,1);
-	g << Eigen::MatrixXd::Zero(3,1);
-    // TODO: calculate the 2 x 1 second order partial derivative matrix
-	// TODO: calculate the matrix H which uses q, exponential, S inverse, partial derivatives, and second order partial derivative
-	Eigen::MatrixXd H(3,3);
-	H << Eigen::MatrixXd::Zero(3,3);
+	// Get the mean and covariance matrices of the `cell`
+	Eigen::MatrixXd Q = cell.Q;
+	Eigen::MatrixXd S = cell.S;
+	Eigen::MatrixXd S_inverse = S.inverse();
+	// Construct a 2x1 matrix position from input `point`
+	Eigen::MatrixXd X(2, 1);
+	X(0, 0) = point.x;
+	X(1, 0) = point.y;
+	// Calculate matrix `q` from `X` and `Q` (Eq. 8)
+	Eigen::MatrixXd q = X - Q;
+	// Calculate the 1x1 exponential matrix `s` (Eq. 9)
+	Eigen::MatriXd s(1, 1);
+	s << -exp((-q.transpose() * S_inverse * q) / 2);
+	// Calculate the three 2x1 partial derivative matrices (Eqs. 10, 11)
+	Eigen::MatrixX q_p1(2, 1);		// Partial derivative w.r.t. `x`
+	Eigen::MatrixX q_p2(2, 1);		// Partial derivative w.r.t. `y`
+	Eigen::MatrixX q_p3(2, 1);		// Partial derivative w.r.t. `theta`
+	q_p1(0, 0) = 1;
+	q_p1(1, 0) = 0;
+	q_p2(0, 0) = 0;
+	q_p2(1, 0) = 1;
+	q_p3(0, 0) = -X(0, 0) * sin(theta) - X(1, 0) * cos(theta);  
+	q_p3(1, 0) = X(1, 0) * cos(theta) - X(1, 0) * sin(theta);
+	// Calculate the 2x1 second-order partial derivatives matrix (Eq. 13)
+	Eigen::MatrixX q_pp(2, 1);
+	q_pp(0, 0) = -X(0, 0) * cos(theta) + X(1, 0) * sin(theta);
+	q_pp(1, 0) = -X(0, 0) * sin(theta) - X(1, 0) * cos(theta);
+	// Calculate the gradient `g` (Eq. 10)
+	Eigen::MatrixXd g(3, 1);
+	g << Eigen::MatrixXd::Zero(3, 1);
+	g(0, 0) = (q.transpose() * S_inverse * q_p1) * s;
+	g(1, 0) = (q.transpose() * S_inverse * q_p2) * s;
+	g(2, 0) = (q.transpose() * S_inverse * q_p3) * s;
+	// Calculate the Hessian matrix `H`
+	H(0, 0) = (
+		-s * ((-q.transpose() * S_inverse * q_p1)
+		* (-q.transpose() * S_inverse * q_p1) 
+	 	+ (-q_p1.transpose() * Si * q_p1))
+	)
+	H(0, 1) = (
+		-s * ((-q.transpose() * S_inverse * q_p1)
+		* (-q.transpose() * S_inverse * q_p) 
+	 	+ (-q_p2.transpose() * Si * q_p1))
+	)
+	H(0, 2) = (
+		-s * ((-q.transpose() * S_inverse * q_p1)
+		* (-q.transpose() * S_inverse * q_p3) 
+	 	+ (-q_p3.transpose() * Si * q_p1))
+	)
+	H(1, 0) = (
+		-s * ((-q.transpose() * S_inverse * q_p2)
+		* (-q.transpose() * S_inverse * q_p1) 
+	 	+ (-q_p1.transpose() * Si * q_p2))
+	)
+	H(1, 1) = (
+		-s * ((-q.transpose() * S_inverse * q_p2)
+		* (-q.transpose() * S_inverse * q_p2) 
+	 	+ (-q_p2.transpose() * Si * q_p2))
+	)
+	H(1, 2) = (
+		-s * ((-q.transpose() * S_inverse * q_p2)
+		* (-q.transpose() * S_inverse * q_p3) 
+	 	+ (-q_p3.transpose() * Si * q_p2))
+	)
+	H(2, 0) = (
+		-s * ((-q.transpose() * S_inverse * q_p3)
+		* (-q.transpose() * S_inverse * q_p1) 
+	 	+ (-q_p1.transpose() * Si * q_p3))
+	)
+	H(2, 1) = (
+		-s * ((-q.transpose() * S_inverse * q_p3)
+		* (-q.transpose() * S_inverse * q_p2) 
+	 	+ (-q_p2.transpose() * Si * q_p3))
+	)
+	H(2, 2) = (
+		-s * ((-q.transpose() * S_inverse * q_p3)
+		* (-q.transpose() * S_inverse * q_p3) 
+	 	+ (-q.transpose() * Si * q_pp)
+		+ (-q_p3.transpose() * S_inverse * q_p3))
+	)
+	// Update the gradient and Hessian with this step increment
 	H_previous += H;
 	g_previous += g;
-
 }
 
 
-/* TODO.
+/* Computes the sum of the normal distributions in `grid`.
  *
- * @param	 cloud
- * @param	 grid
- * @returns  score
+ * @param	 cloud		Cluster of points from the discretised point cloud. 
+ * @param	 grid		Set of `Cell` to evaluate.
+ * @returns  score		The probability summed from each `Cell` PDF.  
  */
 double Score(
 		PointCloudT::Ptr cloud, 
@@ -348,14 +458,14 @@ double Score(
 }
 
 
-/* TODO. 
+/* Computes the score of the estimated transformation given by matrix `T`.
  *
- * @param 	 alpha 
- * @param 	 T 
- * @param 	 source 
- * @param 	 pose 
- * @param 	 grid 
- * @returns  score
+ * @param 	 alpha 		The estimated step size to scale the transform `T` by.
+ * @param 	 T 			Estimated transform between `source` and `target`.
+ * @param 	 source 	Point cloud to transform by matrix `T`.
+ * @param 	 pose 		Current pose to translate the matrix `T`. 
+ * @param 	 grid 		Set of discretised `Cell` instances. 
+ * @returns  score		Transform score, i.e., sum of `Cell` probabilities.
  */
 double AdjustmentScore(
 		double alpha, 
@@ -369,7 +479,7 @@ double AdjustmentScore(
 	pose.position.y += T(1, 0);
 	pose.rotation.yaw += T(2, 0);
 	while(pose.rotation.yaw > 2 * M_PI) {
-		pose.rotation.yaw -= 2*M_PI;
+		pose.rotation.yaw -= 2 * M_PI;
 	}
 	Eigen::Matrix4d transform = transform3D(
 		pose.rotation.yaw, 
@@ -394,12 +504,12 @@ double AdjustmentScore(
 
 /* Computes the step size $\alpha$ for the transform update. 
  * 
- * @param   T 		
- * @param   source 
- * @param   pose 
- * @param   grid 
- * @param   currScore 
- * @returns 
+ * @param   T 			Estimated transform between `source` and `target`.
+ * @param   source 		Point cloud to transform by matrix `T`.
+ * @param   pose 		Current pose to translate the matrix `T`.
+ * @param   grid 		Set of discretised `Cell` instances.
+ * @param   currScore 	Previous adjustment score to minimise.
+ * @returns weighted `alpha` value minimised over number of iterations.
  */ 
 double computeStepLength(
 		Eigen::MatrixXd T, 
@@ -456,11 +566,17 @@ double computeStepLength(
 
 
 /* Computes the positive definite form of the Hessian matrix.
+ * 
+ * Assumes that the `start` Hessian `H` is not positive definite 
+ * s.t. $f(p)$ will initially decrease in the direction of $\Delta p$.
+ * Therefore, we replace $H$ with $H^{\prime} = H + \lambda I$, with
+ * $\lambda$ (`increment * count`) chosen such that $H^{\prime}$ is
+ * safely positive definite.
  *
- * @param	 start		Initial value of the transform.
+ * @param	 start		Initial value of the Hessian.
  * @param	 increment  Step size w.r.t. the change in $\Delta p$.
- * @param	 maxIt		TODO.
- * @returns  T			Transform updated w.r.t. the current iteration.
+ * @param	 maxIt		Number of Hessian update steps to perform .
+ * @returns  H_prime    Hessian assumed to be positive definite.
  */
 double PosDef(
 		Eigen::MatrixBase<Derived>& A, 
@@ -482,14 +598,28 @@ double PosDef(
 			pass = true;
 		}
 	}
-	return  start + increment * count;
+	return start + increment * count;
 }
 
 
-/* Runs the NDT scan matching algorithm.
+/* Performs and visualises the NDT scan matching algorithm (Biber et al., 2003).
  *
+ * The `source.pcd` and `target.pcd` files are loaded from the local
+ * file system and visualised with the Point Cloud Library (PCL).
+ * The NDT algorithm is performed with an assumed `Cell` resolution of
+ * `3.0` and a grid width and height of 2 * `2.0`. Therefore each `grid`
+ * instance has dimensions (2 * 2.0)x(2 * 2.0) = 4x4 and is made up of
+ * a set of four overlapping 3x3 cells in each `grid`. The NDT algorithm
+ * assumes that the distribution of points contained in each `Cell` is
+ * described by a normal distribution parameterised by a mean $q$ and
+ * covariance $\Sigma$, in two dimensions `x` and `y`.
  * 
- *
+ * The two point clouds are registered (aligned) in an iterative process
+ * performed by Newton's algorithm. The corresponding adjustment score at
+ * each step is calculated as the sum of probabilities of a given point
+ * belonging to a respective `Cell` within the `grid`. While in nature
+ * this is a maximisation problem w.r.t. the adjustment score, we frame
+ * the optimisation steps as a minimisation for consistency with literature.
  */
 int main() {
 	// Set up the PCL Viewer instance
