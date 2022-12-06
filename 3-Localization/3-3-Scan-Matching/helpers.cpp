@@ -221,6 +221,7 @@ void renderPointCloudI(
 }
 
 
+namespace renderRay2D {
 /* Renders the simulated LiDAR point return as ray instance.
  *
  * @param 	viewer		PCL Viewer instance to update.
@@ -246,7 +247,36 @@ void renderRay(
 			name
 	);
 }
+}  // namespace renderRay2D
 
+
+namespace renderRayT {
+/* Renders the simulated LiDAR point return as ray instance.
+ *
+ * @param 	viewer		PCL Viewer instance to update.
+ * @param 	p1			Starting `PointT` of the ray to draw.
+ * @param 	p2			Ending `PointT` of the ray to draw.
+ * @param 	name		String `id` label to assign to the rendered line.
+ * @param 	color		RGB-valued `Color` instance used to render the line.
+ */
+void renderRay(
+		pcl::visualization::PCLVisualizer::Ptr& viewer,
+		PointT p1,
+		PointT p2,
+		std::string name,
+		Color color
+) {
+	// Draw a line segment from the start / end points and render onto Viewer 
+	viewer->addLine(
+			PointT(p1.x, p1.y, 0),
+			PointT(p2.x, p2.y, 0),
+			color.r,
+			color.g,
+			color.b,
+			name
+	);
+}
+}  // namespace renderRayT
 
 /* Renders the robot 'path' from one 2D pose to the next.
  *

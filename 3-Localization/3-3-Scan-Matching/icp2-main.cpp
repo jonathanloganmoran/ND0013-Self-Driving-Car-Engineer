@@ -231,7 +231,7 @@ std::vector<Pair2D> PairPoints(
             if (render) {
                 // Remove shape `i` in `source` 
                 viewer->removeShape(std::to_string(i));
-                renderRay(viewer,
+                renderRay2D::renderRay(viewer,
                           Point2D(point.x, point.y),
                           Point2D(association.x, association.y),
                           std::to_string(i),

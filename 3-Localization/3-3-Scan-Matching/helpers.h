@@ -363,7 +363,14 @@ void renderPointCloud(
 		Color color,
 		int renderSize=4
 );
+// Function to render the point cloud with probabilities in PCL Viewer instance
+void renderPointCloudI(
+    pcl::visualization::PCLVisualizer::Ptr& viewer, 
+    const pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, 
+    std::string name
+);
 // Function to draw a line in the PCL Viewer instance
+namespace renderRay2D {
 void renderRay(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,
 		Point2D p1,
@@ -371,6 +378,16 @@ void renderRay(
 		std::string name,
 		Color color
 );
+}  // namespace renderRay2D
+namespace renderRayT {
+void renderRay(
+		pcl::visualization::PCLVisualizer::Ptr& viewer,
+		PointT p1,
+		PointT p2,
+		std::string name,
+		Color color
+);
+}  // namespace RenderRayT
 // Function to render the robot 'path' from a set of positions
 void renderPath(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,

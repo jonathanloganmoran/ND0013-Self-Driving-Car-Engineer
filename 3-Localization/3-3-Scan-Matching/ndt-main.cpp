@@ -648,10 +648,10 @@ int main() {
 		input->points.push_back(PointT(5, 2, 0));
 		input->points.push_back(PointT(7, 5, 0));
 		// Render the cell border
-		renderRay(viewer, PointT(0,0,0), PointT(0,10,0), "left", Color(0,0,1));
-		renderRay(viewer, PointT(0,10,0), PointT(10,10,0), "top", Color(0,0,1));
-		renderRay(viewer, PointT(10,10,0), PointT(10,0,0), "right", Color(0,0,1));
-		renderRay(viewer, PointT(0,0,0), PointT(10,0,0), "bottom", Color(0,0,1));
+		renderRayT::renderRay(viewer, PointT(0,0,0), PointT(0,10,0), "left", Color(0,0,1));
+		renderRayT::renderRay(viewer, PointT(0,10,0), PointT(10,10,0), "top", Color(0,0,1));
+		renderRayT::renderRay(viewer, PointT(10,10,0), PointT(10,0,0), "right", Color(0,0,1));
+		renderRayT::renderRay(viewer, PointT(0,0,0), PointT(10,0,0), "bottom", Color(0,0,1));
 		// TODO: Finish writing the PDF function to visualise the 2D Guassian
 		Cell cell = PDF(input, 200, viewer);
 		// CANDO: Change the test `point` and observe the effect on convergece
@@ -701,7 +701,7 @@ int main() {
 				point.y + pointT.y,
 				1
 			);
-			renderRay(
+			renderRayT::renderRay(
 				viewer, 
 				point, 
 				point2, 
@@ -757,7 +757,7 @@ int main() {
 		float gridW = ndtGrid.width;
 		// TODO: Convert loop iterator into `int` units
 		for (double y = -gridH * gridR; y <= gridH * gridR; y += gridR) {
-			renderRay(
+			renderRayT::renderRay(
 				viewer, 
 				PointT(-gridW * gridR, y, 0), 
 				PointT(ndtGrid.width * ndtGrid.res,y,0),
@@ -769,7 +769,7 @@ int main() {
 		int colc = 0;
 		// TODO: Convert loop iterator into `int` units
 		for (double x = -gridW * gridR; x <= gridW * gridR; x += gridR) {
-			renderRay(
+			renderRayT::renderRay(
 				viewer, 
 				PointT(x, -gridH * gridR, 0), 
 				PointT(x, gridH * gridR, 0), 
