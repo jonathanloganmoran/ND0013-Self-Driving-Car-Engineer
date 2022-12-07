@@ -39,8 +39,12 @@ double kStartValue = 0;
 double kIncrementValue = 5.0;
 int kMaxIterations = 100;
 
-// TODO: Increase the iteration count to get convergence
-int kGradientIterations = 1;
+// CANDO: Increase the iteration count to get convergence
+int kGradientIterations = 20;
+
+// Part 1 : Visualise the probabilities of a single `grid` computed with PDF
+// If False, Part 2 is run over all `grid` instances in point cloud
+bool kRunPart1 = false;
 
 
 /* Event handler that updates the PCL Viewer state and point cloud pose. 
@@ -656,9 +660,7 @@ int main() {
 		keyboardEventOccurred, (void*)&viewer
 	);
 	/*** Perform the NDT algorithm ***/
-	// Part 1: Visualise the `Cell` computed from a PDF
-	bool runPart1 = true;
-	if (runPart1) {
+	if (kRunPart1) {
 		// Create `input` from set of 2D Cartesian coordinates (x, y)
 		// Each point is in the range [0, 10]
 		PointCloudT::Ptr input(new PointCloudT);
@@ -771,7 +773,7 @@ int main() {
 	else {
 		// Load `target` point cloud
 		PointCloudT::Ptr target(new PointCloudT);
-  		pcl::io::loadPCDFile("target.pcd", *target);
+  		pcl::io::loadPCDFile("../target.pcd", *target);
 		// Render the `target` point cloud onto the PCL Viewer
 		renderPointCloud(
 			viewer, 
@@ -846,7 +848,7 @@ int main() {
 		renderPointCloudI(viewer, pdf, "pdf");
 		// Load the `source` point cloud
 		PointCloudT::Ptr source(new PointCloudT);
-  		pcl::io::loadPCDFile("source.pcd", *source);
+  		pcl::io::loadPCDFile("../source.pcd", *source);
 		// Render the `source` point cloud
 		renderPointCloud(viewer, source, "source", Color(1,0,0));
 		double sourceScore = Score(source, ndtGrid);
