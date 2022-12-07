@@ -34,6 +34,14 @@ Pose3D upose = pose;
 bool matching = false;
 bool update = false;
 
+// Setting the positive definite variables
+double kStartValue = 0;
+double kIncrementValue = 5.0;
+int kMaxIterations = 100;
+
+// TODO: Increase the iteration count to get convergence
+int kGradientIterations = 1;
+
 
 /* Event handler that updates the PCL Viewer state and point cloud pose. 
  *
@@ -197,7 +205,7 @@ struct Grid{
 		// UNCOMMENT TO PRINT COORDINATES OF POINT TO ADD
 		// std::cout << point.x << "," << point.y << "\n";
 		// Compute the coordinates of the `Cell` to store the `point`
-		int c = int((point.x + width * res ) / res);
+		int c = int((point.x + width * res) / res);
 		int r = int((point.y + height * res) / res);
 		// UNCOMMENT TO PRINT ROW / COLUMN OF CELL
 		// std::cout << r << "," << c << "\n";
@@ -293,10 +301,24 @@ Cell PDF(
 	// i.e., the mean of the input points
 	Eigen::MatrixXd Q(2, 1);
 	Q << Eigen::MatrixXd::Zero(2, 1);
+	for (PointT point : input->points) {
+		Q(0, 0) += point.x;
+		Q(1, 0) += point.y;
+	}
+	Q /= input->points.size();
+	//Q(0, 0) /= input->points.size();
+	//Q(1, 0) /= input->points.size(); 
 	// Calculate the 2x2 covariance matrix `S`,
 	// i.e., standard deviation of input points
 	Eigen::MatrixXd S(2, 2);
 	S << Eigen::MatrixXd::Zero(2, 2);
+	for (PointT point : input->points) {
+		Eigen::MatrixXd X(2, 1);
+		X(0, 0) = point.x;
+		X(1, 0) = point.y;
+		S += (X - Q) * (X - Q).transpose();
+	}
+	S /= input->points.size();
 	PointCloudTI::Ptr pdf(new PointCloudTI);
 	// TODO: Change loop iterator to `int` type
 	for (double i = 0.0; i <= 10.0; i += 10.0 / double(res)) {
@@ -646,25 +668,47 @@ int main() {
 		input->points.push_back(PointT(5, 2, 0));
 		input->points.push_back(PointT(7, 5, 0));
 		// Render the cell border
-		renderRayT::renderRay(viewer, PointT(0,0,0), PointT(0,10,0), "left", Color(0,0,1));
-		renderRayT::renderRay(viewer, PointT(0,10,0), PointT(10,10,0), "top", Color(0,0,1));
-		renderRayT::renderRay(viewer, PointT(10,10,0), PointT(10,0,0), "right", Color(0,0,1));
-		renderRayT::renderRay(viewer, PointT(0,0,0), PointT(10,0,0), "bottom", Color(0,0,1));
-		// TODO: Finish writing the PDF function to visualise the 2D Guassian
+		renderRayT::renderRay(
+			viewer, 
+			PointT(0, 0, 0), 
+			PointT(0, 10, 0), 
+			"left", 
+			Color(0, 0, 1)
+		);
+		renderRayT::renderRay(
+			viewer, 
+			PointT(0, 10, 0),
+			PointT(10, 10, 0), 
+			"top", 
+			Color(0, 0, 1)
+		);
+		renderRayT::renderRay(
+			viewer, 
+			PointT(10, 10, 0), 
+			PointT(10, 0, 0), 
+			"right", 
+			Color(0, 0, 1)
+		);
+		renderRayT::renderRay(
+			viewer, 
+			PointT(0,0,0), 
+			PointT(10,0,0), 
+			"bottom", 
+			Color(0,0,1)
+		);
+		// Compute and visualise the probabilities from the PDF
 		Cell cell = PDF(input, 200, viewer);
 		// CANDO: Change the test `point` and observe the effect on convergece
 		PointT point(1,2,1);
 		input->points.push_back(
 			PointT(point.x, point.y, 1.0)
 		);
-		// TODO: Increase the iteration count to get convergence
-		int maxIter = 1;
-		for (int iteration = 0; iteration < maxIter; iteration++) { 
+		for (int iteration = 0; iteration < kGradientIterations; iteration++) { 
 			Eigen::MatrixXd g(3, 1);
 			g << Eigen::MatrixXd::Zero(3, 1);
 			Eigen::MatrixXd H(3, 3);
 			H << Eigen::MatrixXd::Zero(3, 3);
-			// TODO: Finish writing the `NewtonsMethod` function
+			// Perform the `NewtonsMethod` optimisation function
 			double theta = 0.0;
 			NewtonsMethod(
 				point,
@@ -673,22 +717,24 @@ int main() {
 				g, 
 				H
 			);
-			 // TODO: Change the increment and max values to nonzero values
-			double startValue = 0;
-			double incrementValue = 0.0;
-			int maxIterations = 0;
+			 // CANDO: Change the increment and max values to nonzero values
 			PosDef(
 				H,
-				startValue, 
-				incrementValue, 
-				maxIterations
+				kStartValue, 
+				kIncrementValue, 
+				kMaxIterations
 			);
-			// TODO: Calculate the 3x1 matrix `T` by using inverse Hessian `H` and `g`
-			// TODO: Calculate new point by transforming by the `T` matrix
+			// Calculate the 3x1 matrix `T` using positive definite `H`
+			Eigen::MatrixXd T = -H.inverse() * g;
+			// Calculate new point by transforming by the `T` matrix
 			// `T` has the form: [x translation, y translation, theta rotation]
-			// Values should be non-zero
-			// pointT(new x, new y, 1)
-			PointT pointT(0, 0, 1); 
+			double newX = (point.x * cos(T(2, 0)) - point.y * sin(T(2, 0)) 
+						   + T(0, 0) - point.x
+			);
+			double newY = (point.x * sin(T(2, 0)) + point.y * cos(T(2, 0)) 
+						    + T(1, 0) - point.y
+			);
+			PointT pointT(newX, newY, 1);
 			double magT = sqrt(pointT.x * pointT.x + pointT.y * pointT.y);
 			// CANDO: Change the step size value `maxDelta`
 			double maxDelta = 0.5;
@@ -827,15 +873,17 @@ int main() {
 						double theta = pose.rotation.yaw;
 						double x = pose.position.x;
 						double y = pose.position.y;
-						// TODO: Compute the point transform using translation
+						// Compute the point transform using translation
 						// matrix parameterised by `x`, `y`, `theta`
-						// Note: values should be non-zero
-						// pointTran(new x, new y, point.z)
-						PointT pointTran(
-							0, 
-							0, 
-							point.z
+						double newX = (
+							point.x * cos(theta) - point.y * sin(theta) + x
 						);
+						double newY = (
+							point.x * sin(theta) + point.y * cos(theta) + y
+						);
+						double newZ = point.z;
+						PointT pointTran(newX, newY, newZ);
+						// Re-compute Newton's method using transformed point
 						NewtonsMethod(
 							pointTran, 
 							theta, 
@@ -845,14 +893,20 @@ int main() {
 						);
 					}
 				}
-				// TODO: Change the increment and max to non-zero values
-				PosDef(H, 0, 0, 0);
+				// CANDO: Change the increment and max values
+				PosDef(
+					H, 
+					kStartValue, 
+					kIncrementValue,
+					kMaxIterations
+				);
+				// Compute the updated transformation
 				Eigen::MatrixXd T = -H.inverse() * g;
 				 // CANDO: Modify the `computeStepLength`
 				 // currently function is not optimised
 				double alpha = computeStepLength(
 					T, 
-					source, 
+					source,
 					pose, 
 					ndtGrid, 
 					currentScore
