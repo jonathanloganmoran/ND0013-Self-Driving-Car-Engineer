@@ -35,16 +35,16 @@ bool matching = false;
 bool update = false;
 
 // Setting the positive definite variables
-double kStartValue = 0;
-double kIncrementValue = 5.0;
-int kMaxIterations = 100;
+const static double kStartValue = 0;
+const static double kIncrementValue = 5.0;
+const static int kMaxIterations = 100;
 
 // CANDO: Increase the iteration count to get convergence
-int kGradientIterations = 20;
+const static int kGradientIterations = 20;
 
 // Part 1 : Visualise the probabilities of a single `grid` computed with PDF
 // If False, Part 2 is run over all `grid` instances in point cloud
-bool kRunPart1 = false;
+const static bool kRunPart1 = false;
 
 
 /* Event handler that updates the PCL Viewer state and point cloud pose. 
