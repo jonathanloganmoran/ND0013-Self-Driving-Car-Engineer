@@ -28,9 +28,6 @@
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   					// TicToc time-tracking
 
-// Using `Derived` type to handle intermediate matrices
-template<typename Derived>
-
 /*** Define the starting variables as global variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
 Pose3D upose = pose;
@@ -115,7 +112,7 @@ double Probability(
 		Eigen::MatrixXd Q, 
 		Eigen::MatrixXd S
 ) {
-	return std::exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
+	return exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
 }
 
 /* Initialises the constant size `Cell` instance in a discretised grid. 
@@ -365,7 +362,7 @@ void NewtonsMethod(
 	Eigen::MatrixXd q = X - Q;
 	// Calculate the 1x1 exponential matrix `s` (Eq. 9)
 	Eigen::MatrixXd s(1, 1);
-	s << -std::exp((-q.transpose() * S_inverse * q) / 2);
+	s << -exp((-q.transpose() * S_inverse * q)(0, 0) / 2);
 	// Calculate the three 2x1 partial derivative matrices (Eqs. 10, 11)
 	Eigen::MatrixXd q_p1(2, 1);		// Partial derivative w.r.t. `x`
 	Eigen::MatrixXd q_p2(2, 1);		// Partial derivative w.r.t. `y`
@@ -383,56 +380,57 @@ void NewtonsMethod(
 	// Calculate the gradient `g` (Eq. 10)
 	Eigen::MatrixXd g(3, 1);
 	g << Eigen::MatrixXd::Zero(3, 1);
-	g(0, 0) = (q.transpose() * S_inverse * q_p1) * s;
-	g(1, 0) = (q.transpose() * S_inverse * q_p2) * s;
-	g(2, 0) = (q.transpose() * S_inverse * q_p3) * s;
+	g(0, 0) = ((q.transpose() * S_inverse * q_p1) * s)(0, 0);
+	g(1, 0) = ((q.transpose() * S_inverse * q_p2) * s)(0, 0);
+	g(2, 0) = ((q.transpose() * S_inverse * q_p3) * s)(0, 0);
 	// Calculate the Hessian matrix `H`
+	Eigen::MatrixXd H(3, 3);
 	H(0, 0) = (
 		-s * ((-q.transpose() * S_inverse * q_p1)
 		* (-q.transpose() * S_inverse * q_p1) 
-	 	+ (-q_p1.transpose() * Si * q_p1))
-	)
+	 	+ (-q_p1.transpose() * S_inverse * q_p1))
+	)(0, 0);
 	H(0, 1) = (
 		-s * ((-q.transpose() * S_inverse * q_p1)
-		* (-q.transpose() * S_inverse * q_p) 
-	 	+ (-q_p2.transpose() * Si * q_p1))
-	)
+		* (-q.transpose() * S_inverse * q_p2) 
+	 	+ (-q_p2.transpose() * S_inverse * q_p1))
+	)(0, 0);
 	H(0, 2) = (
 		-s * ((-q.transpose() * S_inverse * q_p1)
 		* (-q.transpose() * S_inverse * q_p3) 
-	 	+ (-q_p3.transpose() * Si * q_p1))
-	)
+	 	+ (-q_p3.transpose() * S_inverse * q_p1))
+	)(0, 0);
 	H(1, 0) = (
 		-s * ((-q.transpose() * S_inverse * q_p2)
 		* (-q.transpose() * S_inverse * q_p1) 
-	 	+ (-q_p1.transpose() * Si * q_p2))
-	)
+	 	+ (-q_p1.transpose() * S_inverse * q_p2))
+	)(0, 0);
 	H(1, 1) = (
 		-s * ((-q.transpose() * S_inverse * q_p2)
 		* (-q.transpose() * S_inverse * q_p2) 
-	 	+ (-q_p2.transpose() * Si * q_p2))
-	)
+	 	+ (-q_p2.transpose() * S_inverse * q_p2))
+	)(0, 0);
 	H(1, 2) = (
 		-s * ((-q.transpose() * S_inverse * q_p2)
 		* (-q.transpose() * S_inverse * q_p3) 
-	 	+ (-q_p3.transpose() * Si * q_p2))
-	)
+	 	+ (-q_p3.transpose() * S_inverse * q_p2))
+	)(0, 0);
 	H(2, 0) = (
 		-s * ((-q.transpose() * S_inverse * q_p3)
 		* (-q.transpose() * S_inverse * q_p1) 
-	 	+ (-q_p1.transpose() * Si * q_p3))
-	)
+	 	+ (-q_p1.transpose() * S_inverse * q_p3))
+	)(0, 0);
 	H(2, 1) = (
 		-s * ((-q.transpose() * S_inverse * q_p3)
 		* (-q.transpose() * S_inverse * q_p2) 
-	 	+ (-q_p2.transpose() * Si * q_p3))
-	)
+	 	+ (-q_p2.transpose() * S_inverse * q_p3))
+	)(0, 0);
 	H(2, 2) = (
 		-s * ((-q.transpose() * S_inverse * q_p3)
 		* (-q.transpose() * S_inverse * q_p3) 
-	 	+ (-q.transpose() * Si * q_pp)
+	 	+ (-q.transpose() * S_inverse * q_pp)
 		+ (-q_p3.transpose() * S_inverse * q_p3))
-	)
+	)(0, 0);
 	// Update the gradient and Hessian with this step increment
 	H_previous += H;
 	g_previous += g;
@@ -473,7 +471,7 @@ double AdjustmentScore(
 		double alpha, 
 		Eigen::MatrixXd T, 
 		PointCloudT::Ptr source, 
-		Pose pose, 
+		Pose3D pose, 
 		Grid grid
 ) {
 	T *= alpha;
@@ -516,11 +514,11 @@ double AdjustmentScore(
 double computeStepLength(
 		Eigen::MatrixXd T, 
 		PointCloudT::Ptr source, 
-		Pose pose, 
+		Pose3D pose, 
 		Grid grid, 
 		double currScore
 ) {
-	double maxParam = max(max(T(0, 0), T(1, 0)), T(2, 0));
+	double maxParam = std::max(std::max(T(0, 0), T(1, 0)), T(2, 0));
 	double mlength = 1.0;
 	if (maxParam > 0.2) {
 		mlength =  0.1 / maxParam;
