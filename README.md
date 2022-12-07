@@ -37,6 +37,14 @@ The following topics are covered in course projects:
 * Build and experiment with state-of-the-art 3D object detection nets;
 * And so much more ... (see [2-Sensor-Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion) for full list of course topics).
 
+##### Course 3: Localization
+* Master robot localisation from one-dimensional motion models to three-dimensional point cloud maps;
+* Master the fundamentals of Bayes' theorem and the Markov assumption applied to robot localisation;
+* Implement Markov localisation to perform 1D object tracking in C++;
+* Write and optimise two scan matching algorithms in C++: Iterative Closest Point (ICP) and Normal Distributions Transform (NDT);
+* Apply the scan matching algorithms to simulated LiDAR point clouds processed with the Point Cloud Library (PCL);
+* And so much more ... (see [3-Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization) for full list of course topics).
+
 
 
 ### Material
@@ -57,4 +65,5 @@ Lectures:
 ### Other resources
 Companion code:
 * [Object Detection in an Urban Environment | Starter code](https://github.com/udacity/nd013-c1-vision-starter);
-* [Sensor Fusion and Tracking | Starter code](https://github.com/udacity/nd013-c2-fusion-starter).
+* [Sensor Fusion and Tracking | Starter code](https://github.com/udacity/nd013-c2-fusion-starter);
+* [SFND Lidar Obstacle Detection | Starter code](https://github.com/udacity/SFND_Lidar_Obstacle_Detection).
