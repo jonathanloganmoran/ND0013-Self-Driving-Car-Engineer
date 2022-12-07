@@ -23,6 +23,13 @@
 #include <string>
 #include <sstream>
 
+/*** Define the programme execution flags ***/
+// CANDO: Set the desired programme steps to perform
+// Perform Step 2 : Localisation with ICP after several time-steps
+const static bool runPart2 = true;
+// Perform Step 3 : Localisation with ICP after complete random walk 
+const static bool runPart3 = true;
+
 
 /*** Define the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
@@ -171,13 +178,11 @@ int main() {
 	// Part 1. Localise from single step
 	std::vector<Vect2> movement = {Vect2(0.5, M_PI / 12)};
 	// Part 2. Localise after several steps
-	bool runPart2 = false;						  // Change to true for Part 2
 	if (runPart2) {
 		movement.push_back(Vect2(0.8, M_PI / 10));
 		movement.push_back(Vect2(1.0, M_PI / 6));
 	}
 	// Part 3. Localise after moving around entire room at random
-	bool runPart3 = true;						  // Change to true for Part 3
 	if (runPart3) {
 		srand(time(0));
 		for(int i = 0; i < 10; i++){
