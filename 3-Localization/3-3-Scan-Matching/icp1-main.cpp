@@ -6,8 +6,13 @@
  *
  * Purpose of this file: Implements the 2-D Iterative Closest Points (ICP)
  * 						 algorithm, i.e., the scan matching algorithm used to
- * 						 localise a simulated robot in a 2D environment using
- * 						 laser scan data from a single simulated LiDAR sensor.
+ * 						 register (align) a set of points in a `source` and
+ * 						 `target` point cloud by recovering the translation
+ * 						 and rotation between the points. The results of the
+ * 						 ICP algorithm (i.e., the transformation matrix) will
+ * 						 be used to perform local localisation of a simulated
+ * 						 robot in a 2D environment using laser scan data 
+ * 						 obtained from a single simulated LiDAR sensor.
  * ----------------------------------------------------------------------------
  */
 

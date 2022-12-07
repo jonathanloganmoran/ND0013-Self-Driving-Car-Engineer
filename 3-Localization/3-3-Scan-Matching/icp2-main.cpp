@@ -28,6 +28,7 @@
 #include <sstream>
 
 
+/*** Define the starting variables as global variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
 Pose3D upose = pose;
 std::vector<int> associations;
@@ -49,7 +50,7 @@ bool update = false;
  * @param   event   `KeyboardEvent` containing the pressed key.
  * @param   viewer  PCL Viewer instance from which the event was created.
  */
-void keyboardEventOccurred(
+void KeyboardEventOccurred(
         const pcl::visualization::KeyboardEvent &event,
         void* viewer
 ) {
@@ -379,7 +380,7 @@ int main() {
   	viewer->setBackgroundColor(0, 0, 0);
   	viewer->addCoordinateSystem(1.0);
 	viewer->registerKeyboardCallback(
-        keyboardEventOccurred,
+        KeyboardEventOccurred,
         (void*)&viewer
     );
 	// Load target

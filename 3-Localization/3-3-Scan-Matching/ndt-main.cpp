@@ -52,7 +52,7 @@ const static bool kRunPart1 = false;
  * @param   event   `KeyboardEvent` containing the pressed key.
  * @param   viewer  PCL Viewer instance from which the event was created.
  */
-void keyboardEventOccurred(
+void KeyboardEventOccurred(
         const pcl::visualization::KeyboardEvent &event,
         void* viewer
 ) {
@@ -537,7 +537,7 @@ double AdjustmentScore(
  * @param   currScore 	Previous adjustment score to minimise.
  * @returns weighted `alpha` value minimised over number of iterations.
  */ 
-double computeStepLength(
+double ComputeStepLength(
 		Eigen::MatrixXd T, 
 		PointCloudT::Ptr source, 
 		Pose3D pose, 
@@ -657,7 +657,7 @@ int main() {
   	viewer->setBackgroundColor(0, 0, 0);
   	viewer->addCoordinateSystem(1.0);
 	viewer->registerKeyboardCallback(
-		keyboardEventOccurred, (void*)&viewer
+		KeyboardEventOccurred, (void*)&viewer
 	);
 	/*** Perform the NDT algorithm ***/
 	if (kRunPart1) {
@@ -904,9 +904,9 @@ int main() {
 				);
 				// Compute the updated transformation
 				Eigen::MatrixXd T = -H.inverse() * g;
-				 // CANDO: Modify the `computeStepLength`
+				 // CANDO: Modify the `ComputeStepLength`
 				 // currently function is not optimised
-				double alpha = computeStepLength(
+				double alpha = ComputeStepLength(
 					T, 
 					source,
 					pose, 
