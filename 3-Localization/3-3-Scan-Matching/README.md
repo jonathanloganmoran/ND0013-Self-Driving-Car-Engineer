@@ -192,12 +192,13 @@ root@foobar:/home/workspace/build/# ./icp
 Note that if running on the Udacity VM, any PCL visualisations will appear only the remote desktop; if you work in the workspace IDE you will need to click on the "Desktop" button in the bottom right, and only run the executable from the terminal within the remote desktop to view them.
 
 
-### 2.3. Creating the Normal Distributions Transform (NDT) Algorithm
+## 2.3. Creating the Normal Distributions Transform (NDT) Algorithm
 
 In this final Exercise 3.3 of Lesson 3.3 we implement the [Normal Distributions Transform](https://en.wikipedia.org/wiki/Normal_distributions_transform) (NDT) algorithm. Like the previous two ICP programmes, we implement the NDT to perform scan matching of the `source` and `target` point clouds. However, the NDT algorithm uses a very different approach to estimating the transformation (registration) between these two point clouds. By discretising the point cloud sets into individual `grid` instances, we are able to represent the distributions of points within each of the overlapping `Cells` making up each `grid` as a [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution) parameterised by the point clusters' mean and covariance values. Using the [probability density function](https://en.wikipedia.org/wiki/Probability_density_function) (PDF), we can evaluate the probability of a given point residing inside the respective `grid` as the sum of individual probabilities calculated for each overlapping `Cell` within the `grid`. Assuming the [multi-variate case](https://en.wikipedia.org/wiki/Multivariate_normal_distribution), we use the [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method) to compute the roots of the error function relating the two point cloud sets. This non-linear error function is computed as the [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance), which is minimised using the Newton's method algorithm in order to estimate the parameters of the transformation matrix (i.e., the rotation, translation and scaling) between the two point clouds. By iteratively computing the second-order partial derivatives of this error function w.r.t. the transformation parameters (i.e., the Hessian), and the vector of first-order partial derivatives (i.e., the gradient), we can determine the direction of steepest descent towards the region of convergence along the non-linear error function. This results in a more accurate and quicker determination of the transformation parameters used to match the first `source` point cloud with the second `target` point cloud (ref: [here](https://beta.openai.com/playground/p/K5nm6To3fDhvDx6SneduIGv0?model=text-davinci-003)).
 
 The NDT algorithm and its respective formulas were referenced explicitly from Biber et al., 2003 [2].
 
+### Running and compiling the programme
 
 #### Part One: Visualising the Normal Distribution
 
@@ -252,6 +253,41 @@ $$
 \textrm{Figure 5. Output 2 from the `ndt-main.cpp` programme — manual alignment with corresponding NDT alignment score of the user-inputted transformation.}
 \end{align}
 $$
+
+#### Configuring `CMake`
+You must compile the programme before it is executable. To do so, first configure line 14 of the [`CMakeLists.txt`]() file. Set the line to the following:
+
+```cpp
+// In CMakeLists.txt:
+set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
+```
+where `{FILENAME OF MAIN}` should be [`ndt-main.cpp`](), and `{FILENAME OF HELPERS}` should be [`helpers.cpp`]().
+
+Note that the [`helpers.cpp`]() and [`helpers.h`]() files contain signficant modifications to the original files provided by Udacity. These modifications were added to allow the compatibility of various functions and classes across the three Exercise files.
+
+#### Creating the executable
+
+To create the executable file, first make sure that you have created a `build` folder inside the project directory. Then, navigate to the `build` folder and execute the following command:
+
+```console
+root@foobar:/home/workspace/build/# cmake ..
+```
+
+If on the Udacity VM, this will initialise the build script located in the project root directory at the path `/home/workspace/`. 
+
+Now, from inside the `build` folder, run:
+```console
+root@foobar:/home/workspace/build/# make
+```
+to build the programme files.
+
+Once compiled succesfully, you should see in the `build` folder an object file named `ndt.o`. To run the programme, execute the following:
+
+```console
+root@foobar:/home/workspace/build/# ./ndt
+```
+
+Note that if running on the Udacity VM, any PCL visualisations will appear only the remote desktop; if you work in the workspace IDE you will need to click on the "Desktop" button in the bottom right, and only run the executable from the terminal within the remote desktop to view them.
 
 This concludes the Exercises from Lesson 3.3: Creating Scan Matching Algorithms.
 
