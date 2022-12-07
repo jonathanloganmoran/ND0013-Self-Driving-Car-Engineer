@@ -11,7 +11,7 @@ add_definitions(-std=c++14 -O3)
 set(CXX_FLAGS "-pthread -fPIC")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-set(sources icp2-main.cpp helpers.cpp)
+set(sources ndt-main.cpp helpers.cpp)
 
 find_package(PCL 1.2 REQUIRED)
 

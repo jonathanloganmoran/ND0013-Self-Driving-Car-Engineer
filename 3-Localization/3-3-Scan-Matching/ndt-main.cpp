@@ -112,7 +112,7 @@ double Probability(
 		Eigen::MatrixXd Q, 
 		Eigen::MatrixXd S
 ) {
-	return exp(-((X - Q).transpose() * S.inverse() * (X - Q)) / 2);
+	return exp(-((X - Q).transpose() * S.inverse() * (X - Q))(0, 0) / 2);
 }
 
 /* Initialises the constant size `Cell` instance in a discretised grid. 
