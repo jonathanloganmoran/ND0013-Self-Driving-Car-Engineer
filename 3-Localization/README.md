@@ -7,10 +7,13 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Course Objectives
-* Develop a strong intuition of robotic localization;
-* Derive the Bayes' Filter using a Markov assumption;
-* Implement the Iterative Closest Point (ICP) and Normal Distributions Transform (NDT) scan matching algorithms;
-* Localize a simulated vehicle with LiDAR point cloud data in the [CARLA Simulator](https://carla.org/). 
+* Master robot localisation from one-dimensional motion models to three-dimensional point cloud maps;
+* Study the [bicycle motion model](https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/BicycleModel.html) to improve on the [previous lesson's]() linear motion model assumption;
+* Master the fundamentals of the [Bayes' theorem](https://en.wikipedia.org/wiki/Bayes%27_theorem) applied to robot localisation;
+* Implement [Markov localisation](https://en.wikipedia.org/wiki/Markov_property) to perform 1D object tracking in C++;
+* Implement two scan matching algorithms: [Iterative Closest Point](https://en.wikipedia.org/wiki/Iterative_closest_point) (ICP) and [Normal Distributions Transform](https://en.wikipedia.org/wiki/Normal_distributions_transform) (NDT) in C++;
+* Use the [Point Cloud Library](https://en.wikipedia.org/wiki/Point_Cloud_Library) (PCL) in C++ to build these scan matching algorithms and apply them to simulated LiDAR point cloud data;
+* Localise a simulated vehicle with LiDAR sesning using the 3D point cloud map obtained from the [CARLA Simulator](https://carla.org/).
 
 
 ### Demo Notebooks
@@ -25,7 +28,7 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 ### Exercises
 * ✅ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Markov-Localization/exercises);
 * ✅ [3.2: Point Cloud Library (PCL)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-2-Point-Cloud-Library);
-* ⬜️ [3.3: Scan Matching Algorithms]() — in progress! 🎉;
+* ✅ [3.3: Scan Matching Algorithms]();
 * More info coming soon...
 
 
