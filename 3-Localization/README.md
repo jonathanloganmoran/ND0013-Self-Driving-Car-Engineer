@@ -8,7 +8,7 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 ### Course Objectives
 * Master robot localisation from one-dimensional motion models to three-dimensional point cloud maps;
-* Study the [bicycle motion model](https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/BicycleModel.html) to improve on the [previous lesson's]() linear motion model assumption;
+* Study the [bicycle motion model](https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/BicycleModel.html) to improve on the [previous course's](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion) linear motion model assumption;
 * Master the fundamentals of the [Bayes' theorem](https://en.wikipedia.org/wiki/Bayes%27_theorem) applied to robot localisation;
 * Implement [Markov localisation](https://en.wikipedia.org/wiki/Markov_property) to perform 1D object tracking in C++;
 * Implement two scan matching algorithms: [Iterative Closest Point](https://en.wikipedia.org/wiki/Iterative_closest_point) (ICP) and [Normal Distributions Transform](https://en.wikipedia.org/wiki/Normal_distributions_transform) (NDT) in C++;
@@ -28,7 +28,7 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 ### Exercises
 * ✅ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Markov-Localization/exercises);
 * ✅ [3.2: Point Cloud Library (PCL)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-2-Point-Cloud-Library);
-* ✅ [3.3: Scan Matching Algorithms]();
+* ✅ [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-3-Scan-Matching);
 * More info coming soon...
 
 
