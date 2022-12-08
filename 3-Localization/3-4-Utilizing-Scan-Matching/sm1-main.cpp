@@ -38,8 +38,12 @@
 #include <ctime>
 
 /*** Defining the programme parameters ***/
+// Set the user input state and name of registration algorithm to use
 enum Registration{Off, Icp};
+// Set the user input state to 'Off' (i.e., no input offset entered)
 Registration matching = Off;
+// Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
+const static int kNumInputScansToLoad = 1;
 
 /*** Defining the initial state variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
@@ -323,6 +327,31 @@ struct Tester{
 };
 
 
+/* Loads the set of point cloud scans into the given vector.  
+ *
+ * Assumes that the scans exist in the current working directory
+ * and have a uniform naming convention 'scan' postfixed with the
+ * respective scan number, i.e., 'scan1'. All point cloud object
+ * files are assumed to have the Point Cloud Library `pcd`
+ * extension.
+ * 
+ * @param  scans	Address of vector to store the scans in.
+ * @param  num		Number of scans to load from filesystem.
+ */
+void loadScans(
+		vector<PointCloudT>& scans, 
+		int num
+) {
+	for (int i = 0; i < num; i++) {
+		// Get the next scan 'i' in the current working directory
+		std::string inputFileName = "scan" + std::to_string(i + 1) + ".pcd";
+		PointCloudT::Ptr inputPCD(new PointCloudT);
+		pcl::io::loadPCDFile(inputFileName, *inputPCD);
+		scans.push_back(inputPCD);
+	}
+}
+
+
 /* Runs and visualises the scan matching registration programme.
  * 
  * Here the point clouds are loaded from the local filesystem and visualised
@@ -391,31 +420,29 @@ int main() {
 		0.7, 
 		viewer
 	);
+	// Create list to store '*.pcd' files from current working directory
 	std::vector<PointCloudT> scans;
-	// TODO: Get all existing input scans and append to vector
-	// ......
-	// Load first input scan
-	PointCloudT::Ptr scanCloud(new PointCloudT);
-  	pcl::io::loadPCDFile(
-		"scan1.pcd", 
-		*scanCloud
+	// Load the input '*.pcd' files (point cloud `source` scans)
+	loadScans(
+		scans,
+		kNumInputScansToLoad
 	);
-	scans.push_back(scanCloud);
-	// TODO: Create voxel filter for input scan and save to `cloudFiltered`
-	// ......
+	// Create a voxel filter to downsample the input point cloud scans
 	pcl::VoxelGrid<PointT> voxelGrid;
+	// Downsample the first input scan
 	voxelGrid.setInputCloud(scans[0]);
+	// Here we create 3D cuboid filter with equal dimensions (`lx`, `ly`, `lz`)
 	voxelGrid.setLeafSize(
 		kLeafSizeVoxelGrid, 
 		kLeafSizeVoxelGrid, 
 		kLeafSizeVoxelGrid
 	);
-	// Create a voxelised representation of the `source` point cloud
+	// Create a voxelised (downsampled) representation of `source` point cloud
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered(
 		new pcl::PointCloud<PointT>
 	);
 	voxelGrid.filter(*cloudFiltered);
-	// Get the `target` point cloud from the user-entered offset 
+	// Get the `target` point cloud from the user-entered offset
 	PointCloudT::Ptr transformedScan(new PointCloudT);
 	Tester tester;
 	while (!viewer->wasStopped()) {
