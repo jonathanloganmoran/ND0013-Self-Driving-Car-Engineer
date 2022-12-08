@@ -68,6 +68,12 @@ const static double kEuclideanFitnessEpsilonICP = 2;
 // Default: 0.05m, Rule of thumb: set between 0.2 and 0.3 m. 
 const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
 
+/*** Set voxel grid hyperparameters ***/
+// Resolution of each 3D voxel ('box') used to downsample the point cloud
+// Here we assume a cuboid, i.e., each of the sides (`lx`, `ly`, `lz`) have
+// the same dimensions according to what is set here (in metres).
+const static double kLeafSizeVoxelGrid = 0.5;
+
 
 /* Event handler that updates the PCL Viewer state and point cloud pose. 
  *
@@ -157,9 +163,9 @@ Eigen::Matrix4d ICP(
 		startingPose.rotation.yaw,
 		startingPose.rotation.pitch,
 		startingPose.rotation.roll,
-		startingPose.position.xt,
-		startingPose.position.yt,
-		startingPose.position.zt
+		startingPose.position.x,
+		startingPose.position.y,
+		startingPose.position.z
 	)
 	// Transform the `source` point cloud by the `startingPose`
 	PointCloudT::Ptr sourceTransformed(new PointCloudT);
@@ -385,23 +391,35 @@ int main() {
 		0.7, 
 		viewer
 	);
-	// Load `source` input scan
+	std::vector<PointCloudT> scans;
+	// TODO: Get all existing input scans and append to vector
+	// ......
+	// Load first input scan
 	PointCloudT::Ptr scanCloud(new PointCloudT);
   	pcl::io::loadPCDFile(
 		"scan1.pcd", 
 		*scanCloud
 	);
+	scans.push_back(scanCloud);
+	// TODO: Create voxel filter for input scan and save to `cloudFiltered`
+	// ......
+	pcl::VoxelGrid<PointT> voxelGrid;
+	voxelGrid.setInputCloud(scans[0]);
+	voxelGrid.setLeafSize(
+		kLeafSizeVoxelGrid, 
+		kLeafSizeVoxelGrid, 
+		kLeafSizeVoxelGrid
+	);
 	// Create a voxelised representation of the `source` point cloud
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered(
 		new pcl::PointCloud<PointT>
 	);
-	// TODO: Remove this line
-	cloudFiltered = scanCloud;
-	// TODO: Create voxel filter for input scan and save to `cloudFiltered`
-	// ......
+	voxelGrid.filter(*cloudFiltered);
+	// Get the `target` point cloud from the user-entered offset 
 	PointCloudT::Ptr transformedScan(new PointCloudT);
 	Tester tester;
 	while (!viewer->wasStopped()) {
+		// Compute the 3D transformation matrix of the starting pose
 		Eigen::Matrix4d transform = transform3D(
 			pose.rotation.yaw, 
 			pose.rotation.pitch, 
@@ -410,21 +428,29 @@ int main() {
 			pose.position.y, 
 			pose.position.z
 		);
+		// If the user-entered transform is not aligned with original
 		if (matching != Off) {
+			// Using the ICP algorithm, align the offset `target` and `source`
 			if (matching == Icp) {
-				 //TODO: Change the number of ICP iterations to positive number
+				// TODO: Change number of ICP iterations to positive number
 				transform = ICP(mapCloud,
 								cloudFiltered, 
 								pose, 
 								0
 				);
 			}
-  			pose = getPose(transform);
+			// Compute the pose for this transformation 
+  			pose = getPose3D::getPose(transform);
+			// Run displacement animation 
 			if (!tester.Displacement(pose)) {
 				if (matching == Icp) {
+					// Print confirmation that ICP was performed
 					std::cout << " Done testing ICP" << "\n";
 				}
+				// Reset the user-entered displacement tracker
 				tester.Reset();
+				// Compute the estimation error between the ground-truth pose
+				// and the ICP estimated alignment from the user-entered pose
 				double poseError = sqrt(
 					(truePose[0].position.x - pose.position.x) 
 					* (truePose[0].position.x - pose.position.x) 
@@ -432,14 +458,18 @@ int main() {
 					* (truePose[0].position.y - pose.position.y)
 				);
 				std::cout << "Pose error: " << poseError << "\n";
+				// Update the flag to allow for new user-entered pose
 				matching = Off;
 			}
 		}
+		// Compute the transformation between the `source` point cloud
+		// and the `target` pose from the user-entered displacement
   		pcl::transformPointCloud(
 			*cloudFiltered, 
 			*transformedScan, 
 			transform
 		);
+		// Update the PCL Viewer with the new transformation
 		viewer->removePointCloud("scan");
 		renderPointCloud(
 			viewer, 
@@ -447,6 +477,7 @@ int main() {
 			"scan", 
 			Color(1, 0, 0)
 		);
+		// Remove the objects associated with the first scan (i.e., `scans[0]`)
 		viewer->removeShape("box1");
 		viewer->removeShape("boxFill1");
 		drawCar(
