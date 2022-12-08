@@ -44,6 +44,8 @@ enum Registration{Off, Icp};
 Registration matching = Off;
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
 const static int kNumInputScansToLoad = 1;
+// Set the base path relative to CWD where '.pcd' files are stored
+const static std::string kBasePath = "../"
 
 /*** Defining the initial state variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
@@ -344,9 +346,13 @@ void loadScans(
 ) {
 	for (int i = 0; i < num; i++) {
 		// Get the next scan 'i' in the current working directory
+		std::string basePath = "../"
 		std::string inputFileName = "scan" + std::to_string(i + 1) + ".pcd";
 		PointCloudT::Ptr inputPCD(new PointCloudT);
-		pcl::io::loadPCDFile(inputFileName, *inputPCD);
+		pcl::io::loadPCDFile(
+			basePath + inputFileName, 
+			*inputPCD
+		);
 		scans.push_back(inputPCD);
 	}
 }
@@ -390,14 +396,15 @@ int main() {
 		0, 
 		1
 	);
-	// Load the point cloud map and render it onto the PCL Viewer
+	// Load the starting point cloud map and render it onto the PCL Viewer
+	std::string inputFileName = "map.pcd"; 
 	PointCloudT::Ptr mapCloud(new PointCloudT);
   	pcl::io::loadPCDFile(
-		"map.pcd", 
+		kBasePath + inputFileName, 
 		*mapCloud
 	);
   	std::cout << "Loaded " << mapCloud->points.size();
-	std::cout << " data points from 'map.pcd'" << "\n";
+	std::cout << " data points from '" + inputFileName + "'" << "\n";
 	renderPointCloud(
 		viewer, 
 		mapCloud, 
@@ -420,9 +427,9 @@ int main() {
 		0.7, 
 		viewer
 	);
-	// Create list to store '*.pcd' files from current working directory
+	// Create list to store '*.pcd' files from local filesystem
 	std::vector<PointCloudT> scans;
-	// Load the input '*.pcd' files (point cloud `source` scans)
+	// Load the input '*.pcd' files (the `source` point cloud scans)
 	loadScans(
 		scans,
 		kNumInputScansToLoad

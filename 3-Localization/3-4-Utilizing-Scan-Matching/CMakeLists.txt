@@ -11,7 +11,7 @@ add_definitions(-std=c++14 -O3)
 set(CXX_FLAGS "-pthread -fPIC -DNDEBUG -Wextra")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS} -Wl,-Bstatic -lboost_filesystem -Wl,-Bdynamic")
 
-set(sources sm1-main.cpp helper.cpp)
+set(sources sm1-main.cpp helpers.cpp)
 
 find_package(PCL 1.2 REQUIRED)
 
