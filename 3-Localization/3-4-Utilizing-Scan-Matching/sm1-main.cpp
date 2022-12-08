@@ -45,6 +45,29 @@ Registration matching = Off;
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
 Pose savedPose = pose;
 
+/*** Define the ICP hyperparameters ***/
+// The maximum correspondence distance between `source` and `target`
+// i.e., correspondences with higher distances will be ignored
+// Should be sufficiently large s.t. all points are considered.
+// Rule of thumb: set to max distance between two points in the point clouds.
+const static double kMaxCorrespondenceDistanceICP = 5;  		// Metres (m)
+// The maximum number of ICP iterations to perform before termination.
+// Should be large enough to ensure the algorithm has sufficient time to
+// converge. Rule of thumb: set to twice the number of points in the PCL.
+const static int kMaximumIterationsICP = 120;
+// The maximum epsilon threshold between previous transformation and current
+// estimated transformation. Rule of thumb: set between 1e-4 and 1e-8.
+const static double kTransformationEpsilonICP = 1e-4;
+// The maximum sum of Euclidean squared errors between two consecutive steps
+// before algorithm is considered to be converged.
+// Rule of thumb: set between 1 and 10.
+const static double kEuclideanFitnessEpsilonICP = 2;
+// The inlier distance threshold for the internal RANSAC outlier rejection loop
+// Note: a point is considered an inlier if the distance between `target` and
+// transformed `source` is smaller than inlier distance threshold.
+// Default: 0.05m, Rule of thumb: set between 0.2 and 0.3 m. 
+const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
+
 
 /* Event handler that updates the PCL Viewer state and point cloud pose. 
  *
@@ -117,20 +140,68 @@ void KeyboardEventOccurred(
  *
  * @param    target			Reference point cloud to align the `source` to.
  * @param    source			Starting point cloud to align to the `target`.
- * @param    startingPose   Pose to transform the `source` point cloud by.
+ * @param    startingPose   3D pose to transform the `source` point cloud by.
  * param     iterations		Maximum number of iterations to run ICP for.
  * @returns  transformation_matrix
  */
 Eigen::Matrix4d ICP(
 		PointCloudT::Ptr target, 
 		PointCloudT::Ptr source, 
-		Pose startingPose, 
+		Pose3D startingPose, 
 		int iterations
 ) {
+	// Initialising the output as the 4x4 identity matrix
   	Eigen::Matrix4d transformationMatrix = Eigen::Matrix4d::Identity();
-  	// TODO: Implement the PCL ICP function and return the correct transformation matrix
-  	// .....
-  	return transformationMatrix;
+  	// Construct the 2D transformation matrix from the `startingPose`
+	Eigen::Matrix4d startingPoseTransform = transform3D(
+		startingPose.rotation.yaw,
+		startingPose.rotation.pitch,
+		startingPose.rotation.roll,
+		startingPose.position.xt,
+		startingPose.position.yt,
+		startingPose.position.zt
+	)
+	// Transform the `source` point cloud by the `startingPose`
+	PointCloudT::Ptr sourceTransformed(new PointCloudT);
+	pcl::transformPointCloud(
+		*source,
+		*sourceTransformed,
+		startingPoseTransform
+	)
+	/*** Compute the scan matching registration with the ICP algorithm ***/
+	// Start a `TicToc` time tracking instance to profile the ICP algorithm
+	pcl::console::TicToc time;
+	time.tic();
+	// Instantiate the ICP class
+	pcl::IterativeClosestPoint<PointT, PointT> icp;
+	// Set the input `source` and `target` point clouds
+	icp.setInputSource(source);
+	icp.setInputTarget(target);
+	// Set the ICP hyperparameters
+	icp.setMaxCorrespondenceDistance(kMaxCorrespondenceDistanceICP);
+	icp.setMaximumIterations(kMaximumIterationsICP);
+	icp.setTransformationEpsilon(kTransformationEpsilonICP);
+	icp.setEuclideanFitnessEpsilon(kEuclideanFitnessEpsilonICP);
+	icp.setRANSACOutlierRejectionThreshold(kRANSACOutlierRejectionThresholdICP);
+	// Perform the registration (alignment) with ICP
+	PointCloudT::Ptr outputICP(new PointCloudT);
+	icp.align(*outputICP);
+	std::cout << "Finished ICP alignment in " << time.toc() << " ms" << "\n";
+	std::cout << "ICP converged: " << std::boolalpha << icp.hasConverged();
+	std::cout << ", Fitness score: " << icp.getFitnessScore() << "\n";
+	// Check if ICP algorithm converged
+	if (icp.hasConverged()) {
+		// Get estimated transformation matrix
+		transformationMatrix = icp.getFinalTransformation().cast<double>();
+		// Transform the estimated matrix into `startingPose` coordinate frame
+		transformationMatrix *= startingPoseTransform;
+		return transformationMatrix;
+	}
+	else {
+		std::cout << "WARNING: ICP did not converge" << "\n";
+		// Return the identity matrix (i.e., apply no transformation)
+		return transformationMatrix
+	}
 }
 
 
