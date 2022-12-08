@@ -241,6 +241,16 @@ struct Color {
 };
 
 
+/* Defines the bounding box object.
+ * 
+ * @struct  BoxQ			"helpers.h"
+ * @brief	Represents the 3D bounding box.
+ * @var		bboxTransform 	Pose in (x, y, z).
+ * @var		bboxQuaternion	Rotation quaternion values in (w, x, y, z).
+ * @var		cube_length		Length of the bounding box.
+ * @var		cube_width		Width of the bounding box.
+ * @var		cube_height		Height of the bounding box.
+ */
 struct BoxQ
 {
     Eigen::Vector3f bboxTransform;
@@ -279,10 +289,6 @@ Pose2D getPose(
 		Eigen::Matrix4d matrix
 );
 }  // namespace getPose2D
-// Function to print the 4x4 transformation matrix values
-void print4x4Matrix (
-		const Eigen::Matrix4d& matrix
-);
 // Function to render the point cloud in a PCL Viewer instance
 void renderPointCloud(
 		pcl::visualization::PCLVisualizer::Ptr& viewer,
@@ -324,10 +330,32 @@ void renderPath(
 		Color color
 );
 
-
-double getDistance(Point p1, Point p2);
-double minDistance(Point p1, vector<Point> points);
-void print4x4Matrixf (const Eigen::Matrix4f & matrix);
+// Function to return the distance between two 3D points
+namespace getDistance3D {
+double getDistance(
+		Point3D p1,
+		Point3D p2
+);
+}  // namespace getDistance3D
+namespace minDistance3D {
+// Function to compute the minimum distance between one and a set of 3D points  
+double minDistance(
+		Point3D p1, 
+		std::vector<Point3D> points
+);
+}  // namespace minDistance3D
+namespace print4x4Matrix4d {
+// Function to print the 4x4 transformation matrix decimal values
+void print4x4Matrix (
+		const Eigen::Matrix4d& matrix
+);
+}  // namespace print4x4Matrix4d
+namespace print4x4Matrix4f {
+// Function to print the 4x4 transformation matrix floating-point values
+void print4x4Matrixf(
+		const Eigen::Matrix4f & matrix
+);
+}  // namespace print4x4Matrix4f
 Eigen::Quaternionf getQuaternion(float theta);
 void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, BoxQ box, int id, Color color, float opacity);
 

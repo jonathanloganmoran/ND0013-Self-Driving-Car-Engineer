@@ -139,23 +139,53 @@ Pose2D getPose(
 }  // namespace getPose2D
 
 
-double getDistance(Point p1, Point p2){
-	return sqrt( (p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y) + (p1.z-p2.z)*(p1.z-p2.z) );
+namespace getDistance3D {
+/* Returns the Euclidean distance between two 3D points. 
+ *
+ * @param    p1		First point to compute distance between. 
+ * @param    p2		Second point to compute distance between.
+ * @returns  dist	Distance between the two 3D points.
+ */
+double getDistance(
+		Point3D p1, 
+		Point3D p2
+) {
+	return sqrt(
+		(p1.x - p2.x) * (p1.x - p2.x) 
+		+ (p1.y - p2.y) * (p1.y - p2.y) 
+		+ (p1.z - p2.z) * (p1.z - p2.z)
+	);
 }
+}  // namespace getDistance3D
 
-double minDistance(Point p1, vector<Point> points){
-	if(points.size() > 0){
+
+namespace minDistance3D {
+/* Returns the shortest distance between a single point and all points in list.
+ *  
+ * @param	 p1		3D point to compute the distance from.
+ * @param	 points	Set of 3D points to compute the shortest distance to.
+ * @returns  dist	Distance from `p1` to closest point in `points` list.
+ */
+double minDistance(
+		Point3D p1, 
+		std::vector<Point3D> points
+) {
+	if (points.size() > 0) {
 		double dist = getDistance(p1, points[0]);
-		for(uint index = 1; index < points.size(); index++){
+		for (uint index = 1; index < points.size(); index++) {
 			double newDist = getDistance(p1, points[index]);
-			if( newDist < dist)
+			if (newDist < dist) {
 				dist = newDist;
+			}
 		}
 		return dist;
 	}
 	return -1;
 }
+}  // namespace minDistance3D
 
+
+namespace print4x4Matrixd {
 /* Prints the 4x4 transformation matrix.
  *
  * @param	matrix	4x4 transformation matrix to print to the console.
@@ -178,16 +208,33 @@ void print4x4Matrix(
 			matrix (0, 3), matrix (1, 3), matrix (2, 3)
 	);
 }
+}  // namespace print4x4Matrix4d
 
 
-void print4x4Matrixf (const Eigen::Matrix4f & matrix){
-  printf ("Rotation matrix :\n");
-  printf ("    | %6.3f %6.3f %6.3f | \n", matrix (0, 0), matrix (0, 1), matrix (0, 2));
-  printf ("R = | %6.3f %6.3f %6.3f | \n", matrix (1, 0), matrix (1, 1), matrix (1, 2));
-  printf ("    | %6.3f %6.3f %6.3f | \n", matrix (2, 0), matrix (2, 1), matrix (2, 2));
-  printf ("Translation vector :\n");
-  printf ("t = < %6.3f, %6.3f, %6.3f >\n\n", matrix (0, 3), matrix (1, 3), matrix (2, 3));
+namespace print4x4Matrix4f {
+/* Prints the 4x4 transformation floating-point matrix.
+ *
+ * @param	matrix	4x4 transformation matrix to print to the console.
+ */
+void print4x4Matrix(
+		const Eigen::Matrix4f& matrix
+) {
+	printf("Rotation matrix :\n");
+  	printf("    | %6.3f %6.3f %6.3f | \n", 
+  			matrix (0, 0), matrix (0, 1), matrix (0, 2)
+  	);
+  	printf("R = | %6.3f %6.3f %6.3f | \n",
+			matrix (1, 0), matrix (1, 1), matrix (1, 2)
+	);
+  	printf("    | %6.3f %6.3f %6.3f | \n",
+			matrix (2, 0), matrix (2, 1), matrix (2, 2)
+	);
+  	printf("Translation vector :\n");
+  	printf("t = < %6.3f, %6.3f, %6.3f >\n\n",
+			matrix (0, 3), matrix (1, 3), matrix (2, 3)
+	);
 }
+}  // namespace print4x4Matrix4f
 
 
  /* Renders the point cloud instance onto the PCL Viewer canvas.
@@ -283,9 +330,18 @@ void renderPath(
 }
 
 
-// angle around z axis
-Eigen::Quaternionf getQuaternion(float theta)
-{
+/* Computes the quaternion floating-point representation of angle theta.
+ *  
+ * Quaternions describe the rotation and orientation of 3D objects in a
+ * compact, efficient and stable spherical interpolation representation.
+ * They have the form: $w + (x * i) + (y * j) + (z * k)$.
+ *
+ * @param	 theta	Rotation angle to convert to quaternion form.
+ * @returns  q		Floating-point quaternion as `Eigen::Quaternionf` object.
+ */
+Eigen::Quaternionf getQuaternion(
+		float theta
+) {
 	Eigen::Matrix3f rotation_mat;
 	rotation_mat << 
 	cos(theta), -sin(theta), 0,
@@ -296,23 +352,80 @@ Eigen::Quaternionf getQuaternion(float theta)
 	return q;
 }
 
-void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, BoxQ box, int id, Color color, float opacity)
-{
-    if(opacity > 1.0)
-    	opacity = 1.0;
-    if(opacity < 0.0)
-        opacity = 0.0;
-    std::string cube = "box"+std::to_string(id);
-    viewer->addCube(box.bboxTransform, box.bboxQuaternion, box.cube_length, box.cube_width, box.cube_height, cube);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, color.r, color.g, color.b, cube);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cube);
 
-    std::string cubeFill = "boxFill"+std::to_string(id);
-    viewer->addCube(box.bboxTransform, box.bboxQuaternion, box.cube_length, box.cube_width, box.cube_height, cubeFill);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cubeFill);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, color.r, color.g, color.b, cubeFill);
-    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity*0.3, cubeFill);
+/* Renders the bounding box onto the PCL Viewer.
+ * 
+ * @param  viewer	PCL Viewer instance to render the bounding box onto.
+ * @param  box		Bounding box to render.
+ * @param  id		Object integer `id`.
+ * @param  color	RGB-formatted `Color` object to render the bbox with.
+ * @oaran  opacity  Value of opacity to render the bbox with in range [0, 1]. 
+ */
+void renderBox(
+		pcl::visualization::PCLVisualizer::Ptr& viewer, 
+		BoxQ box, 
+		int id, 
+		Color color, 
+		float opacity
+) {
+    if (opacity > 1.0) {
+    	opacity = 1.0;
+	}
+    if (opacity < 0.0) {
+        opacity = 0.0;
+	}
+	std::string cubeLabel = "box" + std::to_string(id)
+    viewer->addCube(
+		box.bboxTransform, 
+		box.bboxQuaternion, 
+		box.cube_length, 
+		box.cube_width, 
+		box.cube_height, 
+		cubeLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_REPRESENTATION, 
+		pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, 
+		cubeLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_COLOR, 
+		color.r, 
+		color.g, 
+		color.b, 
+		cubeLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_OPACITY, 
+		opacity, 
+		cubeLabel
+	);
+    std::string cubeFillLabel = "boxFill" + std::to_string(id);
+    viewer->addCube(
+		box.bboxTransform, 
+		box.bboxQuaternion, 
+		box.cube_length, 
+		box.cube_width, 
+		box.cube_height, 
+		cubeFillLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_REPRESENTATION, 
+		pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, 
+		cubeFillLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_COLOR, 
+		color.r, 
+		color.g, 
+		color.b, 
+		cubeFillLabel
+	);
+    viewer->setShapeRenderingProperties(
+		pcl::visualization::PCL_VISUALIZER_OPACITY, 
+		opacity * 0.3, 
+		cubeFillLabel
+	);
 }
 
 
