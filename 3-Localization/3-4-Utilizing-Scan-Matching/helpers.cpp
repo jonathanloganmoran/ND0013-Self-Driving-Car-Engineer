@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Lesson "3.3: Utilizing Scan Matching"
+ * Lesson "3.4: Utilizing Scan Matching"
  * Authors     : Aaron Brown, Tiffany Huang and Maximilian Muffert.
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)

@@ -329,9 +329,8 @@ void renderPath(
 		std::string name,
 		Color color
 );
-
-// Function to return the distance between two 3D points
 namespace getDistance3D {
+// Function to return the distance between two 3D points
 double getDistance(
 		Point3D p1,
 		Point3D p2
@@ -357,7 +356,14 @@ void print4x4Matrixf(
 );
 }  // namespace print4x4Matrix4f
 Eigen::Quaternionf getQuaternion(float theta);
-void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, BoxQ box, int id, Color color, float opacity);
+// Function to render a given bounding box onto the PCL Viewer
+void renderBox(
+		pcl::visualization::PCLVisualizer::Ptr& viewer, 
+		BoxQ box, 
+		int id, 
+		Color color, 
+		float opacity
+);
 
 
 /* Defines the `LineSegment` object.
