@@ -25,7 +25,7 @@
  */
 
 
-#include "helper.h"
+#include "helpers.h"
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid.h>
@@ -48,6 +48,10 @@ const static std::string kBasePath = "../";
 // Note: scans assumed to be numbered consecutively starting with 'scan1.pcd'
 const static int kNumInputScansToLoad = 1;
 
+/*** Setting the initial state variables ***/
+Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
+Pose3D savedPose = pose;
+
 /*** Defining the NDT hyperparameters ***/
 // The maximum number of NDT iterations to perform before termination.
 // Each iteration the NDT algorithm attempts to improve the accuracy of the
@@ -55,11 +59,20 @@ const static int kNumInputScansToLoad = 1;
 // decrease or increase depending on size and complexity of data set.
 const static int kMaximumIterationsNDT = 50;
 // The step size taken for each iteration of the NDT algorithm.
-// Used to determine how much the transformation matrix is updated at
-// each iteration. A larger step size will lead to faster convergence,
-// but may lead to inaccurate results. Default: 0.1, Rule of thumb:
-// decrease if NDT is coverging too quickly.
-const static double kStepSizeNDT = 0.05;
+// Used in the More-Thuente line search to determine how much the
+// transformation matrix is updated at each iteration. A larger step size
+//  will lead to faster convergence, but may lead to inaccurate results. 
+// Default: 0.1, Rule of thumb: decrease if NDT is coverging too quickly.
+const static double kStepSizeNDT = 1.0;
+// The transformation epsilon threshold for the NDT algorithm.
+// The maximum epsilon threshold between the previous and current estimated  
+// transformation. Rule of thumb: set between 1e-4 and 1e-8.
+const static double kTransformationEpsilonNDT = 1e-4;
+// The resolution of the NDT `VoxelGridCovariance`
+// i.e., the resolution side length of the 3D voxel to use for discretisation
+// in the NDT algorithm. Here we assume a cubioid, i.e., each of the sides
+// (`lx`, `ly`, `lz`) have the same dimensions according to what is set here.
+const static double kVoxelGridCovarianceNDT = 0.5;
 
 /*** Setting voxel grid hyperparameters ***/
 // Resolution of each 3D voxel ('box') used to downsample the point cloud
@@ -68,54 +81,77 @@ const static double kStepSizeNDT = 0.05;
 const static double kLeafSizeVoxelGrid = 0.5;
 
 
-Pose pose(Point(0,0,0), Rotate(0,0,0));
-Pose savedPose = pose;
-void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void* viewer)
-{
-	if (event.getKeySym() == "Right" && event.keyDown()){
+/* Event handler that updates the PCL Viewer state and point cloud pose. 
+ *
+ * @param   event   `KeyboardEvent` containing the pressed key.
+ * @param   viewer  PCL Viewer instance from which the event was created.
+ */
+void KeyboardEventOccurred(
+        const pcl::visualization::KeyboardEvent &event,
+        void* viewer
+) {
+  	// boost::shared_ptr<
+    //     pcl::visualization::PCLVisualizer
+    // > viewer = *static_cast<boost::shared_ptr<
+    //         pcl::visualization::PCLVisualizer
+    //     >*>(viewer_void
+    // );
+	if (event.getKeySym() == "Right" && event.keyDown()) {
 		matching = Off;
 		pose.position.x += 0.1;
   	}
-	else if (event.getKeySym() == "Left" && event.keyDown()){
+	else if (event.getKeySym() == "Left" && event.keyDown()) {
 		matching = Off;
 		pose.position.x -= 0.1;
   	}
-  	else if (event.getKeySym() == "Up" && event.keyDown()){
+  	if (event.getKeySym() == "Up" && event.keyDown()) {
 		matching = Off;
 		pose.position.y += 0.1;
   	}
-	else if (event.getKeySym() == "Down" && event.keyDown()){
+	else if (event.getKeySym() == "Down" && event.keyDown()) {
 		matching = Off;
 		pose.position.y -= 0.1;
   	}
-	else if (event.getKeySym() == "k" && event.keyDown()){
+	else if (event.getKeySym() == "k" && event.keyDown()) {
 		matching = Off;
 		pose.rotation.yaw += 0.1;
-		while( pose.rotation.yaw > 2*pi)
-			pose.rotation.yaw -= 2*pi; 
+		while (pose.rotation.yaw > 2 * M_PI) {
+			pose.rotation.yaw -= 2 * M_PI;
+		}
   	}
-	else if (event.getKeySym() == "l" && event.keyDown()){
+	else if (event.getKeySym() == "l" && event.keyDown()) {
 		matching = Off;
 		pose.rotation.yaw -= 0.1;
-		while( pose.rotation.yaw < 0)
-			pose.rotation.yaw += 2*pi; 
+		while (pose.rotation.yaw < 0) {
+			pose.rotation.yaw += 2 * M_PI;
+		} 
   	}
-	else if(event.getKeySym() == "n" && event.keyDown()){
+	// IMPLEMENTED IN `sm1-main.cpp`:
+	// else if (event.getKeySym() == "i" && event.keyDown()) {
+	// 	matching = Icp;
+  	// }
+	else if (event.getKeySym() == "n" && event.keyDown()) {
 		matching = Ndt;
-	}
-	else if(event.getKeySym() == "space" && event.keyDown()){
+  	}
+	else if (event.getKeySym() == "space" && event.keyDown()) {
 		matching = Off;
 		pose = savedPose;
-	}
-	else if(event.getKeySym() == "x" && event.keyDown()){
+  	}
+	else if (event.getKeySym() == "x" && event.keyDown()) {
 		matching = Off;
 		savedPose = pose;
-	}
-
+  	}
 }
 
 
 /* Implements the Normal Distributions Transform (NDT) algorithm.
+ *
+ * The 3D Normal Distributions Transform (NDT) in Point Cloud Library (PCL)
+ * implements the Magnussen, M. et al., 2009 paper titled
+ * <b> The Three-Dimensional Normal-Distributions Transform — an Efficient
+ * Representation for Registration, Surface Analysis, and Loop Detection.
+ * PhD thesis, Örebro Studies in Technology, 36(1):1-201. Örebro universitet.
+ * 2009. </b>
  *
  * Returns the estimated transformation (i.e., rotation and translation)
  * between the `source` and `target` point clouds. The transformation
@@ -186,137 +222,339 @@ Eigen::Matrix4d NDT(
 
 }
 
-void drawCar(Pose pose, int num, Color color, double alpha, pcl::visualization::PCLVisualizer::Ptr& viewer){
 
+/* Creates and renders a bounding box instance to represent the car dimensions.
+ *
+ * @param  pose		3D pose of the object to surround with bounding box.
+ * @param  num		Unique integer `id` to assign the bounding box object.
+ * @param  color	RGB-formatted `Color` instance to render the bbox with.
+ * @param  alpha	Opacity value to render the bbox with, in range [0, 1].
+ * @param  viewer	PCL Viewer instance to render the vehicle bbox onto.
+ */
+void DrawCar(
+		Pose3D pose, 
+		int num, 
+		Color color, 
+		double alpha, 
+		pcl::visualization::PCLVisualizer::Ptr& viewer
+) {
 	BoxQ box;
-	box.bboxTransform = Eigen::Vector3f(pose.position.x, pose.position.y, 0);
-    box.bboxQuaternion = getQuaternion(pose.rotation.yaw);
-    box.cube_length = 4;
+	// Store the 3D pose as 3x1 vector of Cartesian coordinates
+	box.bboxTransform = Eigen::Vector3f(
+		pose.position.x, 
+		pose.position.y, 
+		0
+	);
+	// Computing the quaternion form of the rotation given by yaw angle 
+    box.bboxQuaternion = getQuaternion(
+		pose.rotation.yaw
+	);
+    // Setting dimensions of the vehicle bounding box
+	box.cube_length = 4;
     box.cube_width = 2;
     box.cube_height = 2;
-	renderBox(viewer, box, num, color, alpha);
+	renderBox(
+		viewer, 
+		box, 
+		num, 
+		color, 
+		alpha
+	);
 }
 
-struct Tester{
 
-	Pose pose;
+/* Stores the user-entered displacement over time.
+ *
+ * @struct	Tester		  "sm1-main.cpp"
+ * @brief	Stores the displacement history of the vehicle entered by the user.  
+ * @var		pose		  3D pose of the displacement.
+ * @var		init		  Whether or not it is the first time-step.
+ * @var		cycles		  Number of tracked displacements.
+ * @var 	timer		  Tracks time to move object to 3D pose `p`.
+ * @var		distThresh    Maxmium allowed distance of displacement.
+ * @var		angleThresh   Maxmimum allowed orientation of displacement.
+ * @var		distHistory   History of displacement distances.
+ * @var		angleHistory  History of displacement orientation angles.
+ */
+struct Tester {
+	// Initialise the starting displacement variables
+	Pose3D pose;
 	bool init = true;
 	int cycles = 0;
 	pcl::console::TicToc timer;
-
-	//thresholds
+	// Set the displacement thresholds
 	double distThresh = 1e-3;
 	double angleThresh = 1e-3;
+	// Initialise the displacement history vectors
+	std::vector<double> distHistory;
+	std::vector<double> angleHistory;
 
-	vector<double> distHistory;
-	vector<double> angleHistory;
-
-	void Reset(){
-		cout << "Total time: " << timer.toc () << " ms, Total cycles: " << cycles << endl;
+	Tester()
+		: pose(), init(), cycles(), timer(), distThresh(), 
+		  angleThresh(), distHistory(), angleHistory() {}
+	// Resets the displacement history
+	void Reset() {
+		std::cout << "Total time: " << timer.toc();
+		std::cout << " ms, Total cycles: " << cycles << "\n";
 		init = true;
 		cycles = 0;
 		distHistory.clear();
 		angleHistory.clear();
 	}
-
-	double angleMag( double angle){
-
-		return abs(fmod(angle+pi, 2*pi) - pi);
+	// Returns the magnitude of the input angle
+	double angleMag(double angle) {
+		return std::abs(
+			fmod(angle + M_PI, 2 * M_PI) - M_PI
+		);
 	}
-
-	bool Displacement( Pose p){
-
-		if(init){
+	// Updates the displacement history with the current Pose
+	bool Displacement(Pose3D p) {
+		if (init) {
 			timer.tic();
 			pose = p;
 			init = false;
 			return true;
 		}
-
-		Pose movement = p - pose;
-		double tdist = sqrt(movement.position.x * movement.position.x + movement.position.y * movement.position.y + movement.position.z * movement.position.z);
-		double adist = max( max( angleMag(movement.rotation.yaw), angleMag(movement.rotation.pitch)), angleMag(movement.rotation.roll) );
-
-		if(tdist > distThresh || adist > angleThresh){
+		Pose3D movement = p - pose;
+		double tdist = sqrt(
+			(movement.position.x * movement.position.x) 
+			+ (movement.position.y * movement.position.y) 
+			+ (movement.position.z * movement.position.z)
+		);
+		double adist = std::max(
+			std::max(angleMag(movement.rotation.yaw),
+					 angleMag(movement.rotation.pitch)
+			),
+			angleMag(movement.rotation.roll)
+		);
+		if (tdist > distThresh || adist > angleThresh) {
 			distHistory.push_back(tdist);
 			angleHistory.push_back(adist);
 			pose = p;
-
 			cycles++;
 			return true;
 		}
-		else
+		else {
 			return false;
-	
+		}
 	}
-
 };
 
-int main(){
 
-	pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-  	viewer->setBackgroundColor (0, 0, 0);
-	viewer->registerKeyboardCallback(keyboardEventOccurred, (void*)&viewer);
-	viewer->setCameraPosition(pose.position.x, pose.position.y, 60, pose.position.x+1, pose.position.y+1, 0, 0, 0, 1);
+/* Loads the set of point cloud scans into the given vector.  
+ *
+ * Assumes that the scans exist in the current working directory
+ * and have a uniform naming convention 'scan' postfixed with the
+ * respective scan number, i.e., 'scan1'. All point cloud object
+ * files are assumed to have the Point Cloud Library `pcd`
+ * extension.
+ * 
+ * @param  scans	Address of vector to store the scans in.
+ * @param  num		Number of scans to load from filesystem.
+ */
+void LoadScans(
+		std::vector<PointCloudT::Ptr>& scans, 
+		int num
+) {
+	for (int i = 0; i < num; i++) {
+		// Get the next scan 'i' in the current working directory
+		std::string inputFileName = "scan" + std::to_string(i + 1) + ".pcd";
+		PointCloudT::Ptr inputPCD(new PointCloudT);
+		int retVal;
+		retVal = pcl::io::loadPCDFile(
+			kBasePath + inputFileName, 
+			*inputPCD
+		);
+		if (retVal != -1) {
+			std::cout << "Successfully loaded '" << inputFileName <<"'" << "\n";
+			scans.push_back(inputPCD);
+		}
+		else {
+			std::cout << "Error loading '" << inputFileName << "'" << "\n";
+		}
+	}
+}
 
-	// Load map and display it
+
+/* Runs and visualises the NDT scan matching registration programme.
+ * 
+ * Here the point clouds are loaded from the local filesystem and visualised
+ * onto a PCL Viewer instance. The true pose of the `input` scan is defined,
+ * and the voxelised representation of the point cloud is computed.
+ * 
+ * Using the interactive PCL Viewer instance, the user is able to manually
+ * shift and scale the ground-truth bounding box to an offset pose using the
+ * `k`, `l`, left- and right-arrow keys (see `KeyboardEventOccurred` function).
+ * This manual offset is "scanned" with the simulated LiDAR sensor, which is
+ * used as the `target` point cloud to register the original `source` point
+ * cloud to with respect to.
+ * 
+ * Once the transformation has been computed by the PCL NDT algorithm,
+ * the PCL Viewer animates the estimated rotation and translation which results
+ * in the user-offset bounding box returning to a pose close to its original
+ * ground-truth location.
+ */
+int main() {
+	pcl::visualization::PCLVisualizer::Ptr viewer(
+		new pcl::visualization::PCLVisualizer("3D Viewer")
+	);
+  	viewer->setBackgroundColor(0, 0, 0);
+	viewer->registerKeyboardCallback(
+		KeyboardEventOccurred, 
+		(void*)&viewer
+	);
+	viewer->setCameraPosition(
+		pose.position.x, 
+		pose.position.y, 
+		60, 
+		pose.position.x + 1, 
+		pose.position.y + 1, 
+		0, 
+		0, 
+		0, 
+		1
+	);
+	// Load the starting point cloud map and render it onto the PCL Viewer
+	std::string inputFileName = "map.pcd"; 
 	PointCloudT::Ptr mapCloud(new PointCloudT);
-  	pcl::io::loadPCDFile("map.pcd", *mapCloud);
-  	cout << "Loaded " << mapCloud->points.size() << " data points from map.pcd" << endl;
-	renderPointCloud(viewer, mapCloud, "map", Color(0,0,1)); 
-
-	// True pose for the input scan
-	vector<Pose> truePose ={Pose(Point(2.62296,0.0384164,0), Rotate(6.10189e-06,0,0)), Pose(Point(4.91308,0.0732088,0), Rotate(3.16001e-05,0,0))};
-	drawCar(truePose[0], 0,  Color(1,0,0), 0.7, viewer);
-
-	// Load input scan
-	PointCloudT::Ptr scanCloud(new PointCloudT);
-  	pcl::io::loadPCDFile("scan1.pcd", *scanCloud);
-
-	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
-
-	cloudFiltered = scanCloud; // TODO: remove this line
-	//TODO: Create voxel filter for input scan and save to cloudFiltered
-	// ......
-
+	int retVal;
+  	retVal = pcl::io::loadPCDFile(
+		kBasePath + inputFileName, 
+		*mapCloud
+	);
+	if (retVal == -1) {
+		std::cout << "Error loading '" << inputFileName << "'" << "\n";
+		return retVal;
+	}
+  	std::cout << "Loaded " << mapCloud->points.size();
+	std::cout << " data points from '" + inputFileName + "'" << "\n";
+	renderPointCloud(
+		viewer, 
+		mapCloud, 
+		"map", 
+		Color(0, 0, 1)
+	);
+	// Define the ground-truth pose for the input scan
+	std::vector<Pose3D> truePose = {
+		Pose3D(Point3D(2.62296, 0.0384164, 0), 
+			   Rotate(6.10189e-06, 0, 0)
+		), 
+		Pose3D(Point3D(4.91308, 0.0732088, 0),
+			   Rotate(3.16001e-05, 0, 0)
+		)
+	};
+	DrawCar(
+		truePose[0], 
+		0, 
+		Color(1, 0, 0), 
+		0.7, 
+		viewer
+	);
+	// Create list to store '*.pcd' files from local filesystem
+	std::vector<PointCloudT::Ptr> scans;
+	// Load the input '*.pcd' files (the `source` point cloud scans)
+	LoadScans(
+		scans,
+		kNumInputScansToLoad
+	);
+	// Initialise and configure the NDT algorithm with static `target`
 	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
 	// Setting the NDT hyperparameters
 	ndt.setMaxIterations(kMaximumIterationsNDT);
 	ndt.setStepSize(kStepSizeNDT);
-	//TODO: Set resolution and point cloud target (map) for ndt
-	// ......
-
-	PointCloudT::Ptr transformed_scan (new PointCloudT);
+	ndt.setTransformationEpsilon(kTransformationEpsilonNDT);
+	ndt.setResolution(kVoxelGridCovarianceNDT);
+	// Configuring the `target` point cloud only once
+	ndt.setInputTarget(mapCloud);
+	// Create a voxel filter to downsample the input point cloud scans
+	pcl::VoxelGrid<PointT> voxelGrid;
+	// Downsample the first input scan
+	voxelGrid.setInputCloud(scans[0]);
+	// Here we create 3D cuboid filter with equal dimensions (`lx`, `ly`, `lz`)
+	voxelGrid.setLeafSize(
+		kLeafSizeVoxelGrid, 
+		kLeafSizeVoxelGrid, 
+		kLeafSizeVoxelGrid
+	);
+	// Create a voxelised (downsampled) representation of `source` point cloud
+	typename pcl::PointCloud<PointT>::Ptr cloudFiltered(
+		new pcl::PointCloud<PointT>
+	);
+	voxelGrid.filter(*cloudFiltered);
+	// Get the `target` point cloud from the user-entered offset
+	PointCloudT::Ptr transformedScan(new PointCloudT);
 	Tester tester;
-
-	while (!viewer->wasStopped())
-  	{
-		Eigen::Matrix4d transform = transform3D(pose.rotation.yaw, pose.rotation.pitch, pose.rotation.roll, pose.position.x, pose.position.y, pose.position.z);
-
-		if( matching != Off){
-			if( matching == Ndt)
-				transform = NDT(ndt, cloudFiltered, pose, 0); //TODO: change the number of iterations to positive number
-  			pose = getPose(transform);
-			if( !tester.Displacement(pose) ){
-				if(matching == Ndt)
-					cout << " Done testing NDT" << endl;
+	while (!viewer->wasStopped()) {
+		// Compute the 3D transformation matrix of the starting pose
+		Eigen::Matrix4d transform = transform3D(
+			pose.rotation.yaw, 
+			pose.rotation.pitch, 
+			pose.rotation.roll, 
+			pose.position.x, 
+			pose.position.y, 
+			pose.position.z
+		);
+		// If the user-entered transform is not aligned with original
+		if (matching != Off) {
+			// Using the NDT algorithm, align the offset `target` and `source`
+			if (matching == Ndt) {
+				// Here we set the number of NDT alignment steps to perform
+				// as a positive number (`kMaxmimumIterationsNDT`) 
+				transform = NDT(mapCloud,
+								cloudFiltered, 
+								pose, 
+								kMaximumIterationsNDT
+				);
+			}
+			// Compute the pose for this transformation 
+  			pose = getPose3D::getPose(transform);
+			// Run displacement animation 
+			if (!tester.Displacement(pose)) {
+				if (matching == Ndt) {
+					// Print confirmation that NDT was performed
+					std::cout << " Done testing NDT" << "\n";
+				}
+				// Reset the user-entered displacement tracker
 				tester.Reset();
-				double pose_error = sqrt( (truePose[0].position.x - pose.position.x) * (truePose[0].position.x - pose.position.x) + (truePose[0].position.y - pose.position.y) * (truePose[0].position.y - pose.position.y) );
-				cout << "pose error: " << pose_error << endl;
+				// Compute the estimation error between the ground-truth pose
+				// and the NDT estimated alignment from the user-entered pose
+				double poseError = sqrt(
+					(truePose[0].position.x - pose.position.x) 
+					* (truePose[0].position.x - pose.position.x) 
+					+ (truePose[0].position.y - pose.position.y) 
+					* (truePose[0].position.y - pose.position.y)
+				);
+				std::cout << "Pose error: " << poseError << "\n";
+				// Update the flag to allow for new user-entered pose
 				matching = Off;
 			}
 		}
-		
-  		pcl::transformPointCloud (*cloudFiltered, *transformed_scan, transform);
+		// Compute the transformation between the `source` point cloud
+		// and the `target` pose from the user-entered displacement
+  		pcl::transformPointCloud(
+			*cloudFiltered, 
+			*transformedScan, 
+			transform
+		);
+		// Update the PCL Viewer with the new transformation
 		viewer->removePointCloud("scan");
-		renderPointCloud(viewer, transformed_scan, "scan", Color(1,0,0)	);
-
+		renderPointCloud(
+			viewer, 
+			transformedScan, 
+			"scan", 
+			Color(1, 0, 0)
+		);
+		// Remove the objects associated with the first scan (i.e., `scans[0]`)
 		viewer->removeShape("box1");
 		viewer->removeShape("boxFill1");
-		drawCar(pose, 1,  Color(0,1,0), 0.35, viewer);
-		
-  		viewer->spinOnce ();
+		DrawCar(
+			pose, 
+			1, 
+			Color(0,1,0), 
+			0.35, 
+			viewer
+		);
+  		viewer->spinOnce();
   	}
-
 	return 0;
 }
