@@ -40,12 +40,14 @@
 /*** Defining the programme parameters ***/
 // Set the user input state and name of registration algorithm to use
 enum Registration{Off, Icp};
-// Set the user input state to 'Off' (i.e., no input offset entered)
+// Set the starting user input state to 'Off' (i.e., no input offset entered yet)
 Registration matching = Off;
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
 const static int kNumInputScansToLoad = 1;
 // Set the base path relative to CWD where '.pcd' files are stored
 const static std::string kBasePath = "../";
+// Set number of ICP alignment steps to perform against the user-entered offset
+const static int kNumAlignmentStepsICP = 20;
 
 /*** Defining the initial state variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
@@ -474,11 +476,12 @@ int main() {
 		if (matching != Off) {
 			// Using the ICP algorithm, align the offset `target` and `source`
 			if (matching == Icp) {
-				// TODO: Change number of ICP iterations to positive number
+				// Here we set the number of ICP alignment steps to perform
+				// as a positive number (`kNumAlignmentStepsICP`) 
 				transform = ICP(mapCloud,
 								cloudFiltered, 
 								pose, 
-								0
+								kNumAlignmentStepsICP
 				);
 			}
 			// Compute the pose for this transformation 
