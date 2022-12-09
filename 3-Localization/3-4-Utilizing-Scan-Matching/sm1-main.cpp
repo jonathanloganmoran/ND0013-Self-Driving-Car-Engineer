@@ -38,7 +38,7 @@
 #include <ctime>
 
 /*** Defining the programme parameters ***/
-// Set the user input state and name of registration algorithm to use
+// Set the user input state and name of registration algorithm to use
 enum Registration{Off, Icp};
 // Set the starting user input state to 'Off' (i.e., no input offset entered yet)
 Registration matching = Off;
@@ -359,11 +359,17 @@ void loadScans(
 		// Get the next scan 'i' in the current working directory
 		std::string inputFileName = "scan" + std::to_string(i + 1) + ".pcd";
 		PointCloudT::Ptr inputPCD(new PointCloudT);
-		pcl::io::loadPCDFile(
+		int retVal;
+		retVal = pcl::io::loadPCDFile(
 			kBasePath + inputFileName, 
 			*inputPCD
 		);
-		scans.push_back(inputPCD);
+		if (retVal != -1) {
+			scans.push_back(inputPCD);
+		}
+		else {
+			std::cout << "Error loading '" << inputFileName << "'" << "\n";
+		}
 	}
 }
 
@@ -409,10 +415,15 @@ int main() {
 	// Load the starting point cloud map and render it onto the PCL Viewer
 	std::string inputFileName = "map.pcd"; 
 	PointCloudT::Ptr mapCloud(new PointCloudT);
-  	pcl::io::loadPCDFile(
+	int retVal;
+  	retVal = pcl::io::loadPCDFile(
 		kBasePath + inputFileName, 
 		*mapCloud
 	);
+	if (retVal == -1) {
+		std::cout << "Error loading '" << inputFileName << "'" << "\n";
+		return retVal;
+	}
   	std::cout << "Loaded " << mapCloud->points.size();
 	std::cout << " data points from '" + inputFileName + "'" << "\n";
 	renderPointCloud(
