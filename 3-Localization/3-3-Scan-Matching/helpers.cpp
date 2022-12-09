@@ -292,14 +292,14 @@ void renderPath(
 		Color color
 ) {
 	int previous = 0;
-	for (int index = previous + 1; index < cloud->points.size(); index++) {
+	for (unsigned int idx = previous + 1; idx < cloud->points.size(); idx++) {
 		renderRay2D::renderRay(
 				viewer,
 				Point2D(cloud->points[previous].x,
 					  cloud->points[previous].y
 				),
-				Point2D(cloud->points[index].x,
-					  cloud->points[index].y
+				Point2D(cloud->points[idx].x,
+					  cloud->points[idx].y
 				),
 				name + std::to_string(previous),
 				color
