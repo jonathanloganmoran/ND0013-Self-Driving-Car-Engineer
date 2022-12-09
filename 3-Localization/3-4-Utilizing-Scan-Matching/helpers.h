@@ -159,7 +159,7 @@ public:
 
     ~Pose2D() override {}
 	Pose2D()
-		: position(Point2D(0, 0)), rotation(0.0) {}
+		: position(Point2D(0, 0)), theta(0.0) {}
     Pose2D(Point2D setPos, double setTheta)
         : position(setPos), theta(setTheta) {}
     void Print() override {
