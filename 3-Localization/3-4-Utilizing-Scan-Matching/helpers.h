@@ -162,7 +162,16 @@ public:
 		: position(Point2D(0, 0)), theta(0.0) {}
     Pose2D(Point2D setPos, double setTheta)
         : position(setPos), theta(setTheta) {}
-    void Print() override {
+    Pose2D operator-(const Pose2D& p) {
+        Pose3D result(
+            Point2D(position.x - p.position.x,
+                    position.y - p.position.y
+            ),
+            theta - p.theta
+        );
+		return result;
+	}
+	void Print() override {
         position.Print();
         std::cout << " theta: " << theta << "\n";
     }
@@ -205,8 +214,12 @@ public:
                    rotation.pitch - p.rotation.pitch,
                    rotation.roll - p.rotation.roll
             )
+			return result;
         );
-        return result;
+	}
+	void Print() override {
+        position.Print();
+		rotation.Print();
     }
 };
 
