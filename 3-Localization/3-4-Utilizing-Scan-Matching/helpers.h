@@ -214,8 +214,8 @@ public:
                    rotation.pitch - p.rotation.pitch,
                    rotation.roll - p.rotation.roll
             )
-			return result;
         );
+		return result;
 	}
 	void Print() override {
         position.Print();
