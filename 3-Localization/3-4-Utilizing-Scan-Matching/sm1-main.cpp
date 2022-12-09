@@ -4,7 +4,7 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
- * Purpose of this file: Main entry into the scan matching programme.
+ * Purpose of this file: Main entry into the ICP scan matching programme.
  * 						 Here a simulated point cloud scan of the user-entered
  * 						 displacement (pose) of the vehicle is obtained. This
  * 						 point cloud is registered to the input scan of the
@@ -46,14 +46,12 @@ Registration matching = Off;
 const static int kNumInputScansToLoad = 1;
 // Set the base path relative to CWD where '.pcd' files are stored
 const static std::string kBasePath = "../";
-// Set number of ICP alignment steps to perform against the user-entered offset
-const static int kNumAlignmentStepsICP = 20;
 
-/*** Defining the initial state variables ***/
+/*** Setting the initial state variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
 Pose3D savedPose = pose;
 
-/*** Define the ICP hyperparameters ***/
+/*** Defining the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
 // i.e., correspondences with higher distances will be ignored
 // Should be sufficiently large s.t. all points are considered.
@@ -76,7 +74,7 @@ const static double kEuclideanFitnessEpsilonICP = 2;
 // Default: 0.05m, Rule of thumb: set between 0.2 and 0.3 m. 
 const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
 
-/*** Set voxel grid hyperparameters ***/
+/*** Defining the voxel grid hyperparameters ***/
 // Resolution of each 3D voxel ('box') used to downsample the point cloud
 // Here we assume a cuboid, i.e., each of the sides (`lx`, `ly`, `lz`) have
 // the same dimensions according to what is set here (in metres).
@@ -160,7 +158,7 @@ void KeyboardEventOccurred(
  * @param    source			Starting point cloud to align to the `target`.
  * @param    startingPose   3D pose to transform the `source` point cloud by.
  * param     iterations		Maximum number of iterations to run ICP for.
- * @returns  transformation_matrix
+ * @returns  transformationMatrix
  */
 Eigen::Matrix4d ICP(
 		PointCloudT::Ptr target, 
@@ -170,7 +168,7 @@ Eigen::Matrix4d ICP(
 ) {
 	// Initialising the output as the 4x4 identity matrix
   	Eigen::Matrix4d transformationMatrix = Eigen::Matrix4d::Identity();
-  	// Construct the 2D transformation matrix from the `startingPose`
+  	// Construct the 3D transformation matrix from the `startingPose`
 	Eigen::Matrix4d startingPoseTransform = transform3D(
 		startingPose.rotation.yaw,
 		startingPose.rotation.pitch,
@@ -197,7 +195,7 @@ Eigen::Matrix4d ICP(
 	icp.setInputTarget(target);
 	// Set the ICP hyperparameters
 	icp.setMaxCorrespondenceDistance(kMaxCorrespondenceDistanceICP);
-	icp.setMaximumIterations(kMaximumIterationsICP);
+	icp.setMaximumIterations(iterations);
 	icp.setTransformationEpsilon(kTransformationEpsilonICP);
 	icp.setEuclideanFitnessEpsilon(kEuclideanFitnessEpsilonICP);
 	icp.setRANSACOutlierRejectionThreshold(kRANSACOutlierRejectionThresholdICP);
@@ -375,7 +373,7 @@ void LoadScans(
 }
 
 
-/* Runs and visualises the scan matching registration programme.
+/* Runs and visualises the ICP scan matching registration programme.
  * 
  * Here the point clouds are loaded from the local filesystem and visualised
  * onto a PCL Viewer instance. The true pose of the `input` scan is defined,
@@ -489,11 +487,11 @@ int main() {
 			// Using the ICP algorithm, align the offset `target` and `source`
 			if (matching == Icp) {
 				// Here we set the number of ICP alignment steps to perform
-				// as a positive number (`kNumAlignmentStepsICP`) 
+				// as a positive number (`kMaxmimumIterationsICP`) 
 				transform = ICP(mapCloud,
 								cloudFiltered, 
 								pose, 
-								kNumAlignmentStepsICP
+								kMaximumIterationsICP
 				);
 			}
 			// Compute the pose for this transformation 
