@@ -193,7 +193,7 @@ Eigen::Matrix4d ICP(
 	// Instantiate the ICP class
 	pcl::IterativeClosestPoint<PointT, PointT> icp;
 	// Set the input `source` and `target` point clouds
-	icp.setInputSource(source);
+	icp.setInputSource(sourceTransformed);
 	icp.setInputTarget(target);
 	// Set the ICP hyperparameters
 	icp.setMaxCorrespondenceDistance(kMaxCorrespondenceDistanceICP);
