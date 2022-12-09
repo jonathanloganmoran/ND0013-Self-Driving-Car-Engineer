@@ -231,7 +231,7 @@ Eigen::Matrix4d ICP(
  * @param  alpha	Opacity value to render the bbox with, in range [0, 1].
  * @param  viewer	PCL Viewer instance to render the vehicle bbox onto.
  */
-void drawCar(
+void DrawCar(
 		Pose3D pose, 
 		int num, 
 		Color color, 
@@ -275,7 +275,7 @@ void drawCar(
  * @var		distHistory   History of displacement distances.
  * @var		angleHistory  History of displacement orientation angles.
  */
-struct Tester{
+struct Tester {
 	// Initialise the starting displacement variables
 	Pose3D pose;
 	bool init = true;
@@ -351,7 +351,7 @@ struct Tester{
  * @param  scans	Address of vector to store the scans in.
  * @param  num		Number of scans to load from filesystem.
  */
-void loadScans(
+void LoadScans(
 		std::vector<PointCloudT::Ptr>& scans, 
 		int num
 ) {
@@ -365,6 +365,7 @@ void loadScans(
 			*inputPCD
 		);
 		if (retVal != -1) {
+			std::cout << "Successfully loaded '" << inputFileName <<"'" << "\n";
 			scans.push_back(inputPCD);
 		}
 		else {
@@ -441,7 +442,7 @@ int main() {
 			   Rotate(3.16001e-05, 0, 0)
 		)
 	};
-	drawCar(
+	DrawCar(
 		truePose[0], 
 		0, 
 		Color(1, 0, 0), 
@@ -451,7 +452,7 @@ int main() {
 	// Create list to store '*.pcd' files from local filesystem
 	std::vector<PointCloudT::Ptr> scans;
 	// Load the input '*.pcd' files (the `source` point cloud scans)
-	loadScans(
+	LoadScans(
 		scans,
 		kNumInputScansToLoad
 	);
@@ -536,7 +537,7 @@ int main() {
 		// Remove the objects associated with the first scan (i.e., `scans[0]`)
 		viewer->removeShape("box1");
 		viewer->removeShape("boxFill1");
-		drawCar(
+		DrawCar(
 			pose, 
 			1, 
 			Color(0,1,0), 
