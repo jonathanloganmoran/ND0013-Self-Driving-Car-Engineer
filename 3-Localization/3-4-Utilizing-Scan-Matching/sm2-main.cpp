@@ -57,7 +57,7 @@ Pose3D savedPose = pose;
 // Each iteration the NDT algorithm attempts to improve the accuracy of the
 // transformation. Default: 150, Rule of thumb: start with default and
 // decrease or increase depending on size and complexity of data set.
-const static int kMaximumIterationsNDT = 50;
+const static int kMaximumIterationsNDT = 150;
 // The step size taken for each iteration of the NDT algorithm.
 // Used in the More-Thuente line search to determine how much the
 // transformation matrix is updated at each iteration. A larger step size
@@ -67,12 +67,12 @@ const static double kStepSizeNDT = 1.0;
 // The transformation epsilon threshold for the NDT algorithm.
 // The maximum epsilon threshold between the previous and current estimated  
 // transformation. Rule of thumb: set between 1e-4 and 1e-8.
-const static double kTransformationEpsilonNDT = 1e-4;
+const static double kTransformationEpsilonNDT = 1e-3;
 // The resolution of the NDT `VoxelGridCovariance`
 // i.e., the resolution side length of the 3D voxel to use for discretisation
 // in the NDT algorithm. Here we assume a cubioid, i.e., each of the sides
 // (`lx`, `ly`, `lz`) have the same dimensions according to what is set here.
-const static double kVoxelGridCovarianceNDT = 0.5;
+const static double kVoxelGridCovarianceNDT = 1.0;
 
 /*** Setting voxel grid hyperparameters ***/
 // Resolution of each 3D voxel ('box') used to downsample the point cloud
@@ -180,28 +180,27 @@ Eigen::Matrix4d NDT(
 ) {
 	// Initialising the output as the 4x4 identity matrix
   	Eigen::Matrix4d transformationMatrix = Eigen::Matrix4d::Identity();
-	// Construct the 2D transformation matrix from the `startingPose`
-	Eigen::Matrix4d startingPoseTransform = transform3D(
+	// Construct the initial 3D transformation matrix estimate
+	Eigen::Matrix4f initialGuess = transform3D(
 		startingPose.rotation.yaw,
 		startingPose.rotation.pitch,
 		startingPose.rotation.roll,
 		startingPose.position.x,
 		startingPose.position.y,
 		startingPose.position.z
-	);
-	// Transform the `source` point cloud by the `startingPose`
-	PointCloudT::Ptr sourceTransformed(new PointCloudT);
-	pcl::transformPointCloud(
-		*source,
-		*sourceTransformed,
-		startingPoseTransform
-	)
+	).cast<float>();
 	/*** Compute the scan matching registration with the NDT algorithm ***/
 	pcl::console::TicToc time;
 	time.tic();
+	// Setting the maximum iterations
+	ndt.setMaximumIterations(iterations);
+	// Set the input `source` point cloud
+	ndt.setInputSource(source);
 	// Perform the registration (alignment) with NDT
-	PointCloudT::Ptr outputNDT(new PointCloudT);
-	ndt.align(*outputNDT);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr outputNDT(
+		new pcl::PointCloud<pcl::PointXYZ>
+	);
+	ndt.align(*outputNDT, initialGuess);
 	std::cout << "Finished NDT alignment in " << time.toc() << " ms" << "\n";
 	std::cout << "NDT converged: " << std::boolalpha << ndt.hasConverged();
 	std::cout << ", Fitness score: " << ndt.getFitnessScore() << "\n";
@@ -209,9 +208,7 @@ Eigen::Matrix4d NDT(
 	if (ndt.hasConverged()) {
 		// Get the estimated transformation matrix
 		transformationMatrix = ndt.getFinalTransformation().cast<double>();
-		// Transform the estimated matrix into `startingPose` coordinate frame
-		transformationMatrix *= startingPoseTransform;
-		// Return estimated transformation matrix corrected by `startingPose`
+		// Return estimated transformation matrix
 		return transformationMatrix; 
 	}
   	else {
@@ -460,7 +457,6 @@ int main() {
 	// Initialise and configure the NDT algorithm with static `target`
 	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
 	// Setting the NDT hyperparameters
-	ndt.setMaxIterations(kMaximumIterationsNDT);
 	ndt.setStepSize(kStepSizeNDT);
 	ndt.setTransformationEpsilon(kTransformationEpsilonNDT);
 	ndt.setResolution(kVoxelGridCovarianceNDT);
@@ -500,7 +496,7 @@ int main() {
 			if (matching == Ndt) {
 				// Here we set the number of NDT alignment steps to perform
 				// as a positive number (`kMaxmimumIterationsNDT`) 
-				transform = NDT(mapCloud,
+				transform = NDT(ndt,
 								cloudFiltered, 
 								pose, 
 								kMaximumIterationsNDT
