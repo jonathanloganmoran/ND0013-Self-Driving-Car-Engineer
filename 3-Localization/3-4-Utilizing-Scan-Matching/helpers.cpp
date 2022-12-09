@@ -171,9 +171,9 @@ double minDistance(
 		std::vector<Point3D> points
 ) {
 	if (points.size() > 0) {
-		double dist = getDistance(p1, points[0]);
+		double dist = getDistance3D::getDistance(p1, points[0]);
 		for (uint index = 1; index < points.size(); index++) {
-			double newDist = getDistance(p1, points[index]);
+			double newDist = getDistance3D::getDistance(p1, points[index]);
 			if (newDist < dist) {
 				dist = newDist;
 			}
@@ -299,6 +299,35 @@ void renderRay(
 }  // namespace renderRayT
 
 
+namespace renderRay2D {
+/* Renders the simulated LiDAR point return as ray instance.
+ *
+ * @param 	viewer		PCL Viewer instance to update.
+ * @param 	p1			Starting `Point2D` of the ray to draw.
+ * @param 	p2			Ending `Point2D` of the ray to draw.
+ * @param 	name		String `id` label to assign to the rendered line.
+ * @param 	color		RGB-valued `Color` instance used to render the line.
+ */
+void renderRay(
+		pcl::visualization::PCLVisualizer::Ptr& viewer,
+		Point2D p1,
+		Point2D p2,
+		std::string name,
+		Color color
+) {
+	// Draw a line segment from the start / end points and render onto Viewer 
+	viewer->addLine(
+			PointT(p1.x, p1.y, 0),
+			PointT(p2.x, p2.y, 0),
+			color.r,
+			color.g,
+			color.b,
+			name
+	);
+}
+}  // namespace renderRay2D
+
+
 /* Renders the robot 'path' from one 2D pose to the next.
  *
  * @param	viewer		PCL Viewer instance to update.
@@ -317,10 +346,10 @@ void renderPath(
 		renderRay2D::renderRay(
 				viewer,
 				Point2D(cloud->points[previous].x,
-					  cloud->points[previous].y
+					    cloud->points[previous].y
 				),
 				Point2D(cloud->points[index].x,
-					  cloud->points[index].y
+					    cloud->points[index].y
 				),
 				name + std::to_string(previous),
 				color
@@ -374,7 +403,7 @@ void renderBox(
     if (opacity < 0.0) {
         opacity = 0.0;
 	}
-	std::string cubeLabel = "box" + std::to_string(id)
+	std::string cubeLabel = "box" + std::to_string(id);
     viewer->addCube(
 		box.bboxTransform, 
 		box.bboxQuaternion, 

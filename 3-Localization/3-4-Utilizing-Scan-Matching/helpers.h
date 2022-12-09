@@ -158,6 +158,8 @@ public:
     double theta;
 
     ~Pose2D() override {}
+	Pose2D()
+		: position(Point2D(0, 0)), rotation(0.0) {}
     Pose2D(Point2D setPos, double setTheta)
         : position(setPos), theta(setTheta) {}
     void Print() override {
@@ -189,6 +191,8 @@ public:
     Rotate rotation;
 
     ~Pose3D() override {}
+	Pose3D()
+		: position(Point3D(0, 0, 0)), rotation(Rotate(0, 0, 0)) {}
 	Pose3D(Point3D setPos, Rotate setRotation)
 		: position(setPos), rotation(setRotation) {}
     Pose3D operator-(const Pose3D& p) {

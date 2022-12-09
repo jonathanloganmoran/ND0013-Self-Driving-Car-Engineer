@@ -26,8 +26,8 @@
 
  
 #include "helpers.h"
-#include <pcl/io/pcd_io.h>
 #include <pcl/console/time.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ndt.h>
@@ -45,11 +45,11 @@ Registration matching = Off;
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
 const static int kNumInputScansToLoad = 1;
 // Set the base path relative to CWD where '.pcd' files are stored
-const static std::string kBasePath = "../"
+const static std::string kBasePath = "../";
 
 /*** Defining the initial state variables ***/
 Pose3D pose(Point3D(0, 0, 0), Rotate(0, 0, 0));
-Pose savedPose = pose;
+Pose3D savedPose = pose;
 
 /*** Define the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
@@ -115,12 +115,12 @@ void KeyboardEventOccurred(
 	else if (event.getKeySym() == "k" && event.keyDown()) {
 		matching = Off;
 		pose.rotation.yaw += 0.1;
-		while (upose.rotation.yaw > 2 * M_PI) {
-			upose.rotation.yaw -= 2 * M_PI;
+		while (pose.rotation.yaw > 2 * M_PI) {
+			pose.rotation.yaw -= 2 * M_PI;
 		}
   	}
 	else if (event.getKeySym() == "l" && event.keyDown()) {
-		update = true;
+		matching = Off;
 		pose.rotation.yaw -= 0.1;
 		while (pose.rotation.yaw < 0) {
 			pose.rotation.yaw += 2 * M_PI;
@@ -129,6 +129,10 @@ void KeyboardEventOccurred(
 	else if (event.getKeySym() == "i" && event.keyDown()) {
 		matching = Icp;
   	}
+	// NOT YET IMPLEMENTED:
+	// else if (event.getKeySym() == "n" && event.keyDown()) {
+	// 	matching = Ndt;
+  	// }
 	else if (event.getKeySym() == "space" && event.keyDown()) {
 		matching = Off;
 		pose = savedPose;
@@ -172,14 +176,14 @@ Eigen::Matrix4d ICP(
 		startingPose.position.x,
 		startingPose.position.y,
 		startingPose.position.z
-	)
+	);
 	// Transform the `source` point cloud by the `startingPose`
 	PointCloudT::Ptr sourceTransformed(new PointCloudT);
 	pcl::transformPointCloud(
 		*source,
 		*sourceTransformed,
 		startingPoseTransform
-	)
+	);
 	/*** Compute the scan matching registration with the ICP algorithm ***/
 	// Start a `TicToc` time tracking instance to profile the ICP algorithm
 	pcl::console::TicToc time;
@@ -212,7 +216,7 @@ Eigen::Matrix4d ICP(
 	else {
 		std::cout << "WARNING: ICP did not converge" << "\n";
 		// Return the identity matrix (i.e., apply no transformation)
-		return transformationMatrix
+		return transformationMatrix;
 	}
 }
 
@@ -282,6 +286,9 @@ struct Tester{
 	std::vector<double> distHistory;
 	std::vector<double> angleHistory;
 
+	Tester()
+		: pose(), init(), cycles(), timer(), distThresh(), 
+		  angleThresh(), distHistory(), angleHistory() {}
 	// Resets the displacement history
 	void Reset() {
 		std::cout << "Total time: " << timer.toc();
@@ -293,7 +300,9 @@ struct Tester{
 	}
 	// Returns the magnitude of the input angle
 	double angleMag(double angle) {
-		return abs(fmod(angle + M_PI, 2 * M_PI) - M_PI);
+		return std::abs(
+			fmod(angle + M_PI, 2 * M_PI) - M_PI
+		);
 	}
 	// Updates the displacement history with the current Pose
 	bool Displacement(Pose3D p) {
@@ -309,9 +318,9 @@ struct Tester{
 			+ (movement.position.y * movement.position.y) 
 			+ (movement.position.z * movement.position.z)
 		);
-		double adist = max(
-			max(angleMag(movement.rotation.yaw),
-				angleMag(movement.rotation.pitch)
+		double adist = std::max(
+			std::max(angleMag(movement.rotation.yaw),
+					 angleMag(movement.rotation.pitch)
 			),
 			angleMag(movement.rotation.roll)
 		);
@@ -341,16 +350,15 @@ struct Tester{
  * @param  num		Number of scans to load from filesystem.
  */
 void loadScans(
-		vector<PointCloudT>& scans, 
+		std::vector<PointCloudT::Ptr>& scans, 
 		int num
 ) {
 	for (int i = 0; i < num; i++) {
 		// Get the next scan 'i' in the current working directory
-		std::string basePath = "../"
 		std::string inputFileName = "scan" + std::to_string(i + 1) + ".pcd";
 		PointCloudT::Ptr inputPCD(new PointCloudT);
 		pcl::io::loadPCDFile(
-			basePath + inputFileName, 
+			kBasePath + inputFileName, 
 			*inputPCD
 		);
 		scans.push_back(inputPCD);
@@ -382,7 +390,7 @@ int main() {
 	);
   	viewer->setBackgroundColor(0, 0, 0);
 	viewer->registerKeyboardCallback(
-		keyboardEventOccurred, 
+		KeyboardEventOccurred, 
 		(void*)&viewer
 	);
 	viewer->setCameraPosition(
@@ -428,7 +436,7 @@ int main() {
 		viewer
 	);
 	// Create list to store '*.pcd' files from local filesystem
-	std::vector<PointCloudT> scans;
+	std::vector<PointCloudT::Ptr> scans;
 	// Load the input '*.pcd' files (the `source` point cloud scans)
 	loadScans(
 		scans,
