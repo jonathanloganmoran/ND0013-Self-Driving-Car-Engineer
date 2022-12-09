@@ -1,22 +1,72 @@
-// Udacity SDC C3 Localization
-// Dec 21 2020
-// Aaron Brown
+/* ----------------------------------------------------------------------------
+ * Lesson "3.4: Utilizing Scan Matching"
+ * Authors     : Aaron Brown, Tiffany Huang and Maximilian Muffert.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Main entry into the NDT scan matching programme.
+ * 						 Here a simulated point cloud scan of the user-entered
+ * 						 displacement (pose) of the vehicle is obtained. This
+ * 						 point cloud is registered to the input scan of the
+ * 						 vehicle's original ground-truth pose using the Point
+ * 						 Cloud Library (PCL) Normal Distributions Transform
+ * 						 (NDT) algorithm. The resulting transformation estimate
+ * 						 is used to compute the displacement between the
+ * 						 original and user-entered pose. The rotation and
+ * 						 translation of the offset to the vehicle's original
+ * 						 location is animated in the PCL Viewer.
+ * 
+ * Note : The objects defined here are intended to be used with the Point
+ *        Cloud Library (PCL) in order to perform scan matching.
+ * 
+ * WARNING: This programme is currently a work-in-progress. There is no 
+ * 			functionality at this time.
+ * ----------------------------------------------------------------------------
+ */
 
-using namespace std;
-#include <string>
+
+#include "helper.h"
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid.h>
-#include "helper.h"
-#include <sstream>
-#include <chrono> 
-#include <ctime> 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/console/time.h>
+#include <string>
+#include <sstream>
+#include <chrono> 
+#include <ctime> 
 
+/*** Defining the programme parameters ***/
+// Define the user input state and name of registration algorithms available
 enum Registration{ Off, Ndt};
+// Set the starting user input state to 'Off' (i.e., no input offset entered yet)
 Registration matching = Off;
+// Set the base path relative to CWD where '.pcd' files are stored
+const static std::string kBasePath = "../";
+// Set the number of `.pcd` files to load from root directory
+// Note: scans assumed to be numbered consecutively starting with 'scan1.pcd'
+const static int kNumInputScansToLoad = 1;
+
+/*** Defining the NDT hyperparameters ***/
+// The maximum number of NDT iterations to perform before termination.
+// Each iteration the NDT algorithm attempts to improve the accuracy of the
+// transformation. Default: 150, Rule of thumb: start with default and
+// decrease or increase depending on size and complexity of data set.
+const static int kMaximumIterationsNDT = 50;
+// The step size taken for each iteration of the NDT algorithm.
+// Used to determine how much the transformation matrix is updated at
+// each iteration. A larger step size will lead to faster convergence,
+// but may lead to inaccurate results. Default: 0.1, Rule of thumb:
+// decrease if NDT is coverging too quickly.
+const static double kStepSizeNDT = 0.05;
+
+/*** Setting voxel grid hyperparameters ***/
+// Resolution of each 3D voxel ('box') used to downsample the point cloud
+// Here we assume a cuboid, i.e., each of the sides (`lx`, `ly`, `lz`) have
+// the same dimensions according to what is set here (in metres).
+const static double kLeafSizeVoxelGrid = 0.5;
+
 
 Pose pose(Point(0,0,0), Rotate(0,0,0));
 Pose savedPose = pose;
@@ -64,14 +114,75 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void*
 
 }
 
-Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt, PointCloudT::Ptr source, Pose startingPose, int iterations){
 
-  	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
-
-  	// TODO: Implement the PCL NDT function and return the correct transformation matrix
-  	// .....
-  	
-  	return transformation_matrix;
+/* Implements the Normal Distributions Transform (NDT) algorithm.
+ *
+ * Returns the estimated transformation (i.e., rotation and translation)
+ * between the `source` and `target` point clouds. The transformation
+ * parameters are iteratively computed using the Point Cloud Library (PCL)
+ * implementation of the NDT algorithm.
+ * 
+ * Here the `ndt` object is the pre-initialised NDT object which has been
+ * set with the voxelised `target` point cloud. This is performed only once
+ * to reduce setup costs for successive `source` alignments sharing the same
+ * `target` pose to align with respect to. 
+ *   
+ * Note: the `source` point cloud is first transformed into the coordinate
+ * frame of the given `startingPose` before it is registered to the `target`.
+ * 
+ * @param  ndt			 Pre-initialised NDT class instance from PCL. 
+ * @param  source		 Starting point cloud to align to the `target`.
+ * @param  startingPose  3D pose to transform the `source` point cloud by.
+ * @param  iterations	 Maximum number of iterations to run NDT for.
+ * @returns transformationMatrix
+ */
+Eigen::Matrix4d NDT(
+		pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt, 
+		PointCloudT::Ptr source, 
+		Pose3D startingPose, 
+		int iterations
+) {
+	// Initialising the output as the 4x4 identity matrix
+  	Eigen::Matrix4d transformationMatrix = Eigen::Matrix4d::Identity();
+	// Construct the 2D transformation matrix from the `startingPose`
+	Eigen::Matrix4d startingPoseTransform = transform3D(
+		startingPose.rotation.yaw,
+		startingPose.rotation.pitch,
+		startingPose.rotation.roll,
+		startingPose.position.x,
+		startingPose.position.y,
+		startingPose.position.z
+	);
+	// Transform the `source` point cloud by the `startingPose`
+	PointCloudT::Ptr sourceTransformed(new PointCloudT);
+	pcl::transformPointCloud(
+		*source,
+		*sourceTransformed,
+		startingPoseTransform
+	)
+	/*** Compute the scan matching registration with the NDT algorithm ***/
+	pcl::console::TicToc time;
+	time.tic();
+	// Perform the registration (alignment) with NDT
+	PointCloudT::Ptr outputNDT(new PointCloudT);
+	ndt.align(*outputNDT);
+	std::cout << "Finished NDT alignment in " << time.toc() << " ms" << "\n";
+	std::cout << "NDT converged: " << std::boolalpha << ndt.hasConverged();
+	std::cout << ", Fitness score: " << ndt.getFitnessScore() << "\n";
+	// Check if NDT algorithm has converged
+	if (ndt.hasConverged()) {
+		// Get the estimated transformation matrix
+		transformationMatrix = ndt.getFinalTransformation().cast<double>();
+		// Transform the estimated matrix into `startingPose` coordinate frame
+		transformationMatrix *= startingPoseTransform;
+		// Return estimated transformation matrix corrected by `startingPose`
+		return transformationMatrix; 
+	}
+  	else {
+		std::cout << "WARNING: NDT did not converge" << "\n";
+		// Return the identity matrix (i.e., apply no transformation)
+		return transformationMatrix;
+	}
 
 }
 
@@ -169,6 +280,9 @@ int main(){
 	// ......
 
 	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
+	// Setting the NDT hyperparameters
+	ndt.setMaxIterations(kMaximumIterationsNDT);
+	ndt.setStepSize(kStepSizeNDT);
 	//TODO: Set resolution and point cloud target (map) for ndt
 	// ......
 
