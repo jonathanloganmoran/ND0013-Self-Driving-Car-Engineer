@@ -163,7 +163,7 @@ public:
     Pose2D(Point2D setPos, double setTheta)
         : position(setPos), theta(setTheta) {}
     Pose2D operator-(const Pose2D& p) {
-        Pose3D result(
+        Pose2D result(
             Point2D(position.x - p.position.x,
                     position.y - p.position.y
             ),
