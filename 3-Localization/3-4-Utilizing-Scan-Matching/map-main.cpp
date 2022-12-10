@@ -225,13 +225,15 @@ bool InEgoVehicleRange(
  *
  * @param  viewer	PCL Viewer instance to render the new pose in.
  * @param  vehicle	CARLA `Vehicle` instance generating a new transform.
+ * @param  pose     Pose to update w.r.t. the next `vehicle` transform. 
  * @param  poseRef	Last known 3D pose of the `vehicle`.
  * @param  controlStateHistory  Vector of previous `ControlState` instances.
  * */
 void UpdatePoseAndControl(
         pcl::visualization::PCLVisualizer::Ptr& viewer,
-        boost::static_pointer_cast<carla::client::Vehicle>& vehicle,
-        Pose3D& poseRef
+        auto& vehicle,
+        Pose3D& pose,
+        Pose3D& poseRef,
         std::vector<ControlState>& controlStateHistory
 ) {
     // Clear the PCL Viewer canvas
@@ -251,7 +253,7 @@ void UpdatePoseAndControl(
     DrawCar(
         pose,
         0,
-        Color(1, 0, 0);
+        Color(1, 0, 0),
         0.7,
         viewer
     );
@@ -259,16 +261,16 @@ void UpdatePoseAndControl(
     double theta = pose.rotation.yaw;
     double stheta = control.steer * M_PI / 4 + theta;
     viewer->removeShape("steer");
-    renderRay(
+    renderRayT::renderRay(
         viewer,
-        Point3D(pose.position.x + 2 * cos(theta),
-                pose.position.y + 2 * sin(theta),
-                pose.position.z
+        PointT(pose.position.x + 2 * cos(theta),
+               pose.position.y + 2 * sin(theta),
+               pose.position.z
 
         ),
-        Point3D(pose.position.x + 4 * cos(stheta),
-                pose.position.y + 4 * sin(stheta),
-                pose.position.z
+        PointT(pose.position.x + 4 * cos(stheta),
+               pose.position.y + 4 * sin(stheta),
+               pose.position.z
         ),
         "steer",
         Color(0, 1, 0)
@@ -382,12 +384,12 @@ int SavePointCloudToASCII(
  */
 int main() {
     /*** Initialise the CARLA Simulator ***/
-    auto client = carla::client::Client(
+    carla::client::Client client(
         "localhost",
         2000
     );
-    client.SetTimeout(5s);		// Seconds (s)
-    auto world = client.GetWorld();
+    client.SetTimeout(std::chrono::seconds(5));		// Seconds (s)
+    carla::client::World world = client.GetWorld();
     auto blueprint_library = world.GetBlueprintLibrary();
     auto vehicles = blueprint_library->Filter("vehicle");
     auto map = world.GetMap();
@@ -511,8 +513,12 @@ int main() {
     };
     while (!viewer->wasStopped () && !save_map) {
         while (fetchNewScan) {
-            std::this_thread::sleep_for(0.1s);	// Seconds (s)
-            world.Tick(1s);						// Seconds (s)
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(100)
+            );
+            world.Tick(
+                std::chrono::seconds(1)
+            );
         }
         if (refresh_view) {
             viewer->setCameraPosition(
@@ -531,6 +537,7 @@ int main() {
         UpdatePoseAndControl(
             viewer,
             vehicle,
+            pose,
             poseRef,
             controlStateHistory
         );
