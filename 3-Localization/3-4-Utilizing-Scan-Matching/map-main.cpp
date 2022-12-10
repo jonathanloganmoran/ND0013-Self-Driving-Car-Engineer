@@ -320,7 +320,7 @@ void ProcessScan(
 		pose.position.z
 	)
 	// Compute the minimum distance from this pose to all existing scans 
-	double minPoseDistanceToScans = minDistance(
+	double minPoseDistanceToScans = minDistance3D::minDistance(
 		posePosition,
 		scanPositions
 	);

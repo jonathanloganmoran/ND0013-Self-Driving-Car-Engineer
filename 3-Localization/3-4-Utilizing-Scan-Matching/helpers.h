@@ -224,6 +224,23 @@ public:
 };
 
 
+/* Defines the control state of the vehicle.
+ *
+ * @struct  ControlState 	"helpers.h"
+ * @brief	Represents the vehicle control state.
+ * @var		t	Throttle value of the vehicle.
+ * @var		s	Steer angle of the vehicle.
+ * @var		b	Brake state of the vehicle.			
+ */
+struct ControlState {
+	float t;
+	float s;
+	float b;
+
+	ControlState(float setT, float setS, float setB)
+		: t(setT), s(setS), b(setB) {}
+};
+
 /* Defines the 2D `Vec2D` object. 
  * 
  * @struct	Vec2	"helpers.h"
