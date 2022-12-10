@@ -55,6 +55,12 @@ const static double kMinimumDistanceLidarDetections = 8.0;
 // less than this threshold.
 const static double kMinimumDistanceBetweenScans = 5.0;
 
+/*** Setting voxel grid hyperparameters ***/
+// Resolution of each 3D voxel ('box') used to downsample the point cloud
+// Here we assume a cuboid, i.e., each of the sides (`lx`, `ly`, `lz`) have
+// the same dimensions according to what is set here (in metres).
+const static double kLeafSizeVoxelGrid = 0.5;
+
 /*** Setting the intial state variables ***/
 PointCloudT pclCloud;
 carla::client::Vehicle::Control control;
@@ -464,8 +470,14 @@ int main() {
             auto scan = boost::static_pointer_cast<
                 carla::sensor::data::LidarMeasurement
             >(data);
-            Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
-            // TODO: Set transform to pose using transform3D()
+            Eigen::Matrix4d transform = transform3D(
+                pose.rotation.yaw,
+                pose.rotation.pitch,
+                pose.rotation.roll,
+                pose.position.x,
+                pose.position.y,
+                pose.position.z
+            );
             for (auto detection : *scan) {
                 if (!InEgoVehicleRange(detection)) {
                     // Don't include points touching ego
@@ -475,8 +487,9 @@ int main() {
                         detection.point.z,
                         1
                     );
-                    // TODO: Multiply local_point by transform
-                    Eigen::Vector4d transform_point = local_point;
+                    Eigen::Vector4d transform_point = (
+                        transform * local_point
+                    );
                     pclCloud.points.push_back(
                         PointT(transform_point[0],
                                transform_point[1],
@@ -556,10 +569,20 @@ int main() {
         );
       }
     // Save and downsample the current point cloud map
-    // TODO: Downsample the map point cloud using a voxel filter
+    pcl::VoxelGrid<PointT> voxelGrid;
+    voxelGrid.setInputCloud(pclCloud);
+    voxelGrid.setLeafSize(
+        kLeafSizeVoxelGrid,
+        kLeafSizeVoxelGrid,
+        kLeafSizeVoxelGrid
+    );
+    typename pcl::PointCloud<PointT>::Ptr cloudFiltered(
+        new pcl::PointCloud<PointT>
+    );
+    voxelGrid.filter(*cloudFiltered);
     std::string pclOutputFilename = "my_map.pcd";
     SavePointCloudToASCII(
-        pclCloud,
+        *cloudFiltered,
         pclOutputFilename
     );
     return 0;
