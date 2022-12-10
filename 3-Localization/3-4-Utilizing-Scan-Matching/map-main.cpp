@@ -229,7 +229,7 @@ bool InEgoVehicleRange(
  * @param  poseRef	Last known 3D pose of the `vehicle`.
  * @param  controlStateHistory  Vector of previous `ControlState` instances.
  * */
-void updatePoseAndControl(
+void UpdatePoseAndControl(
 		pcl::visualization::PCLVisualizer::Ptr& viewer, 
 		boost::static_pointer_cast<carla::client::Vehicle>& vehicle,
 		Pose3D& poseRef
@@ -309,16 +309,16 @@ void ProcessScan(
 	Pose3D& pose,
 	std::vector<Point3D>& scanPositions
 ) {
-	if (newScan) {
+	if (fetchNewScan) {
 		// No new LiDAR scan to process
 		return;
 	}
 	// Get the 3D position information from this pose
-	Pose3D posePosition = Point3D(
+	Point3D posePosition(
 		pose.position.x,
 		pose.position.y,
 		pose.position.z
-	)
+	);
 	// Compute the minimum distance from this pose to all existing scans 
 	double minPoseDistanceToScans = minDistance3D::minDistance(
 		posePosition,
@@ -348,7 +348,7 @@ void ProcessScan(
  */
 int SavePointCloudToASCII(
 		PointCloudT& pclCloud,
-		str::string outputFilename
+		std::string outputFilename
 ) {
 	// Save the final point cloud map
 	PointCloudT::Ptr scanCloud(new PointCloudT);
@@ -387,7 +387,7 @@ int main() {
 		"localhost", 
 		2000
 	);
-	client.SetTimeout(5s);
+	client.SetTimeout(5s);		// Seconds (s)
 	auto world = client.GetWorld();
 	auto blueprint_library = world.GetBlueprintLibrary();
 	auto vehicles = blueprint_library->Filter("vehicle");
@@ -458,7 +458,7 @@ int main() {
 			   vehicle->GetTransform().rotation.roll * M_PI / 180
 		)
 	);
-	lidar->Listen([&new_scan, &lastScanTime, &pose, &viewer](auto data) {
+	lidar->Listen([&fetchNewScan, &lastScanTime, &pose, &viewer](auto data) {
 		if (fetchNewScan) {
 			auto scan = boost::static_pointer_cast<
 				carla::sensor::data::LidarMeasurement
@@ -466,7 +466,7 @@ int main() {
 			Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
 			// TODO: Set transform to pose using transform3D()
 			for (auto detection : *scan) {
-				if (!InVehicleRange(detection)) {
+				if (!InEgoVehicleRange(detection)) {
 					// Don't include points touching ego
 					Eigen::Vector4d local_point(
 						detection.point.x, 
@@ -512,8 +512,8 @@ int main() {
 	};
 	while (!viewer->wasStopped () && !save_map) {
 		while (fetchNewScan) {
-			std::this_thread::sleep_for(0.1s);
-			world.Tick(1s);
+			std::this_thread::sleep_for(0.1s);	// Seconds (s)
+			world.Tick(1s);						// Seconds (s)
 		}
 		if (refresh_view) {
 			viewer->setCameraPosition(
@@ -529,7 +529,7 @@ int main() {
 			);
 			refresh_view = false;
 		}
-		updatePoseAndControl(
+		UpdatePoseAndControl(
 			viewer,
 			vehicle,
 			poseRef,
@@ -551,7 +551,7 @@ int main() {
   	}
 	// Save and downsample the current point cloud map
 	// TODO: Downsample the map point cloud using a voxel filter
-	std::string pclOutputFilename = "my_map.pcd"
+	std::string pclOutputFilename = "my_map.pcd";
 	SavePointCloudToASCII(
 		pclCloud,
 		pclOutputFilename
