@@ -18,9 +18,6 @@
  * 
  * Note : The objects defined here are intended to be used with the Point
  *        Cloud Library (PCL) in order to perform scan matching.
- * 
- * WARNING: This programme is currently a work-in-progress. There is no 
- * 			functionality at this time.
  * ----------------------------------------------------------------------------
  */
 
