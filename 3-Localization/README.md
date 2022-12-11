@@ -22,14 +22,14 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Projects
-* ⬜️ 3.1: [Scan Matching Localization]().
+* ⬜️ 3.1: [Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization/) — in progress! 🎉
 
 
 ### Exercises
 * ✅ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-1-Markov-Localization/exercises);
 * ✅ [3.2: Point Cloud Library (PCL)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-2-Point-Cloud-Library);
 * ✅ [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-3-Scan-Matching);
-* More info coming soon...
+* ✅ [3.4: Utilizing Scan Matching](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching).
 
 
 ### Course Contents
