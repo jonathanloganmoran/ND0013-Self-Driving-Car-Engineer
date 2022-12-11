@@ -17,8 +17,8 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Demo Notebooks
-* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb);
-* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb).
+* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-1.ipynb);
+* ✅ [`2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-1-Markov-Localization/2022-11-25-Course-3-Localization-Exercises-Part-2.ipynb).
 
 
 ### Projects
@@ -26,9 +26,9 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Exercises
-* ✅ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Markov-Localization/exercises);
-* ✅ [3.2: Point Cloud Library (PCL)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-2-Point-Cloud-Library);
-* ✅ [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-3-Scan-Matching);
+* ✅ [3.1: Markov Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-1-Markov-Localization/exercises);
+* ✅ [3.2: Point Cloud Library (PCL)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-2-Point-Cloud-Library);
+* ✅ [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-3-Scan-Matching);
 * More info coming soon...
 
 

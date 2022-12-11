@@ -8,7 +8,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 
 ## 1. Introduction
-In this lesson we extend our work from [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-3-Scan-Matching) to implement the ICP and NDT we learned in order to perform [point-set registration](https://en.wikipedia.org/wiki/Point-set_registration) in three dimensions. Here we make use of the [Point Cloud Library](https://en.wikipedia.org/wiki/Point_Cloud_Library) (PCL) to store and process the simulated LiDAR point cloud scans. We also use the [Eigen (C++ library)](https://en.wikipedia.org/wiki/Eigen_(C%2B%2B_library)) to perform 3D transformations over the point clouds using the pose information obtained from the vehicle. These three exercises utilise the PCL visualiser to render the point clouds, and also allow for interaction with the user via keyboard input. The user is able to enter a desired pose which is offset from the starting location of the vehicle. This offset pose is scanned by the simulated LiDAR and used to form a "source" cloud from which to align to the original reference location of the vehicle (referred to here as the "target" point cloud).
+In this lesson we extend our work from [3.3: Scan Matching Algorithms](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/Exercises/3-3-Scan-Matching) to implement the ICP and NDT we learned in order to perform [point-set registration](https://en.wikipedia.org/wiki/Point-set_registration) in three dimensions. Here we make use of the [Point Cloud Library](https://en.wikipedia.org/wiki/Point_Cloud_Library) (PCL) to store and process the simulated LiDAR point cloud scans. We also use the [Eigen (C++ library)](https://en.wikipedia.org/wiki/Eigen_(C%2B%2B_library)) to perform 3D transformations over the point clouds using the pose information obtained from the vehicle. These three exercises utilise the PCL visualiser to render the point clouds, and also allow for interaction with the user via keyboard input. The user is able to enter a desired pose which is offset from the starting location of the vehicle. This offset pose is scanned by the simulated LiDAR and used to form a "source" cloud from which to align to the original reference location of the vehicle (referred to here as the "target" point cloud).
 
 By visualising the results of the alignment at each iteration, the user is able to see the ICP or NDT algorithm in action as their offset location becomes "aligned" with the vehicle. In this activity the user is also able to compare the runtime performance of either algorithm, noticing how quickly either converges.
 
@@ -40,7 +40,7 @@ $$
 ##### Loading the input scans
 In order to make use of this programme, you will need to have at minimum two point cloud files: the `map.pcd` and `scan1.pcd` files. These two files are provided to you in the Udacity workspace or in this repository. 
 
-Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`sm1-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/sm1-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
+Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`sm1-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/sm1-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
 
 ```cpp
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
@@ -55,7 +55,7 @@ where we indicate the path to the `.pcd` files relative to the CWD (here, that's
 ##### Setting the hyperparameters
 Before you compile and run the programme, you may want to adjust the ICP algorithm hyperparameters. These hyperparameters control the convergence of the transformation, and therefore should be set cautiously. Any unreasonable values here might result in an insufficient transformation estimate.
 
-We have inside the [`sm1-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/sm1-main.cpp) file:
+We have inside the [`sm1-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/sm1-main.cpp) file:
 ```cpp
 /*** Defining the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
@@ -85,7 +85,7 @@ For a complete list of the available hyperparameters to tune for the ICP algorit
 
 ##### Configuring CMAKE
 
-To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
+To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
 
 ```cpp
 set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
@@ -94,7 +94,7 @@ set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
 where `{FILENAME OF MAIN}` should be `sm1-main.cpp` and `{FILENAME OF HELPERS}` should be `helpers.cpp`.
 
 ##### Creating the executable
-To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
+To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
 
 ```console
 root@foobar:/home/workspace/# mkdir build
@@ -154,7 +154,7 @@ $$
 ##### Loading the input scans
 In order to make use of this programme, you will need to have at minimum two point cloud files: the `map.pcd` and `scan1.pcd` files. These two files are provided to you in the Udacity workspace or in this repository. 
 
-Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`sm2-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/sm2-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
+Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`sm2-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/sm2-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
 
 ```cpp
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
@@ -169,7 +169,7 @@ where we indicate the path to the `.pcd` files relative to the CWD (here, that's
 ##### Setting the hyperparameters
 Before you compile and run the programme, you may want to adjust the NDT algorithm hyperparameters. These hyperparameters control the convergence of the transformation, and therefore should be set cautiously. Any unreasonable values here might result in an insufficient transformation estimate.
 
-We have inside the [`sm2-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/sm2-main.cpp) file:
+We have inside the [`sm2-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/sm2-main.cpp) file:
 ```cpp
 /*** Defining the NDT hyperparameters ***/
 // The maximum number of NDT iterations to perform before termination.
@@ -197,7 +197,7 @@ const static double kVoxelGridCovarianceNDT = 1.0;
 For a complete list of the available hyperparameters to tune for the NDT algorithm, see the [`pcl::NormalDistributionsTransform` documentation](https://pointclouds.org/documentation/classpcl_1_1_normal_distributions_transform.html).
 
 ##### Configuring CMAKE
-To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
+To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
 
 ```cpp
 set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
@@ -206,7 +206,7 @@ set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
 where `{FILENAME OF MAIN}` should be `sm2-main.cpp` and `{FILENAME OF HELPERS}` should be `helpers.cpp`.
 
 ##### Creating the executable
-To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
+To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
 
 ```console
 root@foobar:/home/workspace/# mkdir build
@@ -262,7 +262,7 @@ $$
 ##### Loading the input scans
 In order to make use of this programme, you will need to have at minimum two point cloud files: the `map.pcd` and `scan1.pcd` files. These two files are provided to you in the Udacity workspace or in this repository. 
 
-Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`map-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/map-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
+Note that these files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`map-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/map-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path of your executable. We default to the following:
 
 ```cpp
 // Set the number of `.pcd` files to load from CWD (starting from 'scan1.pcd')
@@ -277,7 +277,7 @@ where we indicate the path to the `.pcd` files relative to the CWD (here, that's
 ##### Setting the hyperparameters
 In this exercise you can configure the parameters of the simulated LiDAR sensor in order to observe the effect of scan resolution, and also simulate a desired LiDAR refresh rate.
 
-In the [`map-main.cpp](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/map-main.cpp) file, we have:
+In the [`map-main.cpp](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/map-main.cpp) file, we have:
 
 ```cpp
 /*** Defining the programme parameters ***/
@@ -307,7 +307,7 @@ Here we advise you to adjust the maximum number of scan points to preserve in a 
 
 ##### Configuring CMAKE
 
-To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
+To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file to:
 
 ```cpp
 set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
@@ -316,7 +316,7 @@ set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
 where `{FILENAME OF MAIN}` should be `map-main.cpp` and `{FILENAME OF HELPERS}` should be `helpers.cpp`.
 
 ##### Creating the executable
-To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
+To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/CMakeLists.txt) file, first create a `build` folder inside the project root directory using the following command:
 
 ```console
 root@foobar:/home/workspace/# mkdir build
@@ -372,7 +372,7 @@ With the above steps completed, you are now able to successfully run the compile
 
 If you would like to reset the camera viewing angle, press the `a` key. This will re-centre the camera to a top-down orientation. You can also manually adjust the camera tilt using the left-click and drag mouse combination, or the camera pan using the scrollwheel click and drag motion. To zoom in, use the mouse scrollwheel in the desired direction.
 
-After driving around a bit, you will have a decent representation of the environment. To save this map to a `.pcd` file, simply press the `a` key. This will exit the programme and write the map to the `my_map.pcd` file inside the project root directory. You may also specify another filename to save this map under by setting the `pclOutputFilename` on line 583 of [`map-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-4-Utilizing-Scan-Matching/map-main.cpp) from `my_map.pcd` to whatever you desire. Note that the `.pcd` extension must be included in the filename, and that in the current implementation any existing `my_map.pcd` files will be overwritten by successive calls to the `SavePointCloudToASCII` function.
+After driving around a bit, you will have a decent representation of the environment. To save this map to a `.pcd` file, simply press the `a` key. This will exit the programme and write the map to the `my_map.pcd` file inside the project root directory. You may also specify another filename to save this map under by setting the `pclOutputFilename` on line 583 of [`map-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/Exercises/3-4-Utilizing-Scan-Matching/map-main.cpp) from `my_map.pcd` to whatever you desire. Note that the `.pcd` extension must be included in the filename, and that in the current implementation any existing `my_map.pcd` files will be overwritten by successive calls to the `SavePointCloudToASCII` function.
 
 
 The use of the mapping programme is demonstrated below:
