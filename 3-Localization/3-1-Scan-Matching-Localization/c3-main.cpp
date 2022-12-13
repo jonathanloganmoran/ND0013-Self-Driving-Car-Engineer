@@ -182,6 +182,39 @@ void SetLidarAttributes(
     );
 }
 
+
+/* Initialises the Normal Distributions Transform (NDT) algorithm.
+ *
+ * Here the NDT is configured with the given hyperparameter values
+ * and termination criteria. The input `target` point cloud is set
+ * as the map point cloud and is configured only once for the entire
+ * programme duration. This speeds up the iterative scan matching
+ * process by providing a robust and efficient initial estimate of
+ * the transformation parameters between the scan and the `target` map.
+ * This initial estimate serves as a starting point for the optimisation
+ * process, which is often faster and more accurate than starting from
+ * scratch. Additionally, pre-configuring the NDT helps reduce the search
+ * space, which can further speed up the scan matching process.
+ * 
+ * @param  ndt			Uninitialised NDT instance from PCL.
+ * @param  mapCloud		Fixed input `target` map point cloud. 
+ */
+void InitialiseNDT(
+	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>& ndt,
+	PointCloudT& mapCloud
+) {
+	// Set the NDT termination criteria
+	// Note: we set maximum iterations inside the `NDT` function itself
+	// ndt.setMaximumIterations(kMaximumIterationsNDT);
+	ndt.setTransformationEpsilon(kTransformationEpsilonNDT);
+	// Set the NDT hyperparameters
+	ndt.setStepSize(kStepSizeNDT);
+	ndt.setResolution(kVoxelGridCovarianceNDT);
+	// Set the fixed input point cloud
+	ndt.setInputTarget(mapCloud);
+}
+
+
 /* Checks if the given detection is within the vehicle bounds.
  *
  * This function returns `true` if a detection point has a sum of squared
@@ -519,17 +552,24 @@ Eigen::Matrix4d ICP(
  * parameters are iteratively computed using the Point Cloud Library (PCL)
  * implementation of the NDT algorithm.
  *
+ * Here the input `ndt` is the pre-initialised NDT instance whose parameters
+ * have been estimated with the `target` map cloud. This starting point serves
+ * as a robust and efficient initial estimate of the transformation parameters
+ * between the `target` map and the `source` scan provided as input here.
+ * The pre-initialisation of the NDT happens only once throughout the duration
+ * of the programme and is performed on start in the `InitialiseNDT` function.
+ *
  * Note: the `source` point cloud is first transformed into the coordinate
  * frame of the given `startingPose` before it is registered to the `target`.
  *
- * @param  target		 Reference point cloud to align the `source` to.
+ * @param  ndt		 	 Pre-configured NDT instance from Point Cloud Library.
  * @param  source		 Starting point cloud to align to the `target`.
  * @param  startingPose  3D pose to transform the `source` point cloud by.
  * @param  iterations	 Maximum number of iterations to run NDT for.
  * @returns transformationMatrix
  */
 Eigen::Matrix4d NDT(
-        PointCloudT::Ptr target,
+        pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt,
         PointCloudT::Ptr source,
         Pose3D startingPose,
         int iterations
@@ -548,17 +588,11 @@ Eigen::Matrix4d NDT(
     /*** Compute the scan matching registration with the NDT algorithm ***/
     pcl::console::TicToc time;
     time.tic();
-	// Initialise the NDT instance
-	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
-	// Setting the NDT hyperparameters
+	// Setting the NDT termination criteria
+	// Note: the other NDT hyperparameters are configured in `InitialiseNDT`
     ndt.setMaximumIterations(iterations);
-	ndt.setStepSize(kStepSizeNDT);
-	ndt.setTransformationEpsilon(kTransformationEpsilonNDT);
-	ndt.setResolution(kVoxelGridCovarianceNDT);
     // Set the input `source` point cloud
     ndt.setInputSource(source);
-	// Set the input `target` point cloud
-	ndt.setInputTarget(target);
     // Perform the registration (alignment) with NDT
     pcl::PointCloud<pcl::PointXYZ>::Ptr outputNDT(
         new pcl::PointCloud<pcl::PointXYZ>
@@ -582,8 +616,19 @@ Eigen::Matrix4d NDT(
 }
 
 
-/*
+/* Runs the localisation programme in the CARLA Simulator.
  *
+ * Assuming that a headless CARLA Simulator instance has been established,
+ * this programme localises the user-controlled vehicle using either the
+ * Iterative Closest Point (ICP) or Normal Distributions Transform (NDT)
+ * algorithm. Here the CARLA vehicle actor is initialised from the blueprint.
+ * An empty world is created and the provided `map.pcd` file is rendered. 
+ * 
+ * As the vehicle moves through the map, the estimated transformation matrix
+ * is used to compute an updated vehicle pose with each incoming scan from the
+ * simulated Lidar sensor. Each scan is processed to filter out (discard) any
+ * points assumed to be inside the range of the ego-vehicle. Any further scans
+ * are discarded once the generated map contains a sufficient number of points.  
  */
 int main() {
 	/*** Initialise the CARLA Simulator ***/
@@ -670,7 +715,14 @@ int main() {
 		viewer, 
 		mapCloud, 
 		"map", 
-		Color(0, 0, 1)); 
+		Color(0, 0, 1));
+	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
+	if (!USE_ICP) {
+		// If using the NDT scan matching algorithm,
+		// Initialise the discretised grid space distribution parameters
+		// Provides a robust initial estimate of the transformation parameters
+		InitialiseNDT(ndt, mapCloud);
+	}
 	// Initialising our downsampled point cloud map and incoming scan 
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered(
 		new pcl::PointCloud<PointT>
@@ -765,7 +817,7 @@ int main() {
 			}
 			// Done processing latest scan, set flag to fetch new scan
 			fetchNewScan = true;
-			// TODO: (Filter scan using voxel filter)
+			// Downsampling the point cloud using a voxel filter
 			pcl::VoxelGrid<PointT> voxelGrid;
 			voxelGrid.setInputCloud(scanCloud);
 			voxelGrid.setLeafSize(
@@ -783,15 +835,14 @@ int main() {
 				cloudFiltered,
 				pose,
 				kMaximumIterationsICP
-			) : NDT(
-				mapCloud,
-				cloudFiltered,
-				pose,
-				kMaximumIterationsNDT
+			) : NDT(ndt,
+					cloudFiltered,
+					pose,
+					kMaximumIterationsNDT
 			);
 			// Get the pose associated with this transformation estimate
 			pose = getPose3D::getPose(transformEstimate);
-			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
+			// Transforming the scan so it aligns with actual ego-vehicle pose
 			PointCloudT::Ptr correctedScan(new PointCloudT);
 			pcl::transformPointCloud(
 				*cloudFiltered,
@@ -799,7 +850,7 @@ int main() {
 				transformEstimate
 			);
 			viewer->removePointCloud("scan");
-			// TODO: Change `scanCloud` below to your transformed scan
+			// Rendering the estimated transform
 			renderPointCloud(
 				viewer, 
 				correctedScan,
