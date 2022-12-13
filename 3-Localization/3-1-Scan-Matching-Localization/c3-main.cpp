@@ -82,17 +82,17 @@ const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
 // Each iteration the NDT algorithm attempts to improve the accuracy of the
 // transformation. Default: 150, Rule of thumb: start with default and
 // decrease or increase depending on size and complexity of data set.
-const static int kMaximumIterationsNDT = 150;
+const static int kMaximumIterationsNDT = 95;
 // The step size taken for each iteration of the NDT algorithm.
 // Used in the More-Thuente line search to determine how much the
 // transformation matrix is updated at each iteration. A larger step size
 //  will lead to faster convergence, but may lead to inaccurate results.
 // Default: 0.1, Rule of thumb: decrease if NDT is coverging too quickly.
-const static double kStepSizeNDT = 1.0;
+const static double kStepSizeNDT = 0.1;
 // The transformation epsilon threshold for the NDT algorithm.
 // The maximum epsilon threshold between the previous and current estimated
 // transformation. Rule of thumb: set between 1e-4 and 1e-8.
-const static double kTransformationEpsilonNDT = 1e-3;
+const static double kTransformationEpsilonNDT = 1e-4;
 // The resolution of the NDT `VoxelGridCovariance`
 // i.e., the resolution side length of the 3D voxel to use for discretisation
 // in the NDT algorithm. Here we assume a cubioid, i.e., each of the sides
