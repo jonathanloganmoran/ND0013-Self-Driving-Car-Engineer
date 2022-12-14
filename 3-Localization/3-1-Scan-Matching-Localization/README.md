@@ -38,7 +38,7 @@ $$
 $$
 
 #### Running and compiling the programme
-To use the ICP algorithm in this project to perform scan matching, set line 43 inside [`c3-main.cpp`]() to:
+To use the ICP algorithm in this project to perform scan matching, set line 43 inside [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp) to:
 ```cpp
 /*** Defining the programme parameters ***/
 // Define the scan matching / registration algorithm to use
@@ -46,7 +46,7 @@ To use the ICP algorithm in this project to perform scan matching, set line 43 i
 const static bool USE_ICP = true;
 ```
 
-Also configurable inside [`c3-main.cpp`]() are several programme hyperparameters that affect the resolution of the generated point cloud map, as well as the LiDAR sensor parameters themselves. To start, we have:
+Also configurable inside [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp) are several programme hyperparameters that affect the resolution of the generated point cloud map, as well as the LiDAR sensor parameters themselves. To start, we have:
 
 ```cpp
 // Minimum distance of the LiDAR scan points to preserve (in metres).
@@ -72,7 +72,7 @@ in addition to the attributes provided by the [`carla::client::Sensor`](https://
 ##### Loading the input scans
 In order to make use of this programme, you will need to have at minimum one map point cloud: the `map-loop.pcd` file. This file is provided to you in the Udacity workspace or in this repository. 
 
-Note that any point cloud `.pcd` files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`c3-main.cpp`]() file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path containing your executable. By default (for `.pcd` files in project root), we set the relative base path on line 45 to the following:
+Note that any point cloud `.pcd` files should be placed in the root directory of the project. If you would like to store these files in a different directory, you must specify the path to the folder containing the files in the [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp) file. The path that you configure should be given relative to the current working directory, i.e., the `build/` path containing your executable. By default (for `.pcd` files in project root), we set the relative base path on line 45 to the following:
 
 ```cpp
 // Set the base path relative to CWD where '.pcd' files are stored
@@ -80,7 +80,7 @@ const static std::string kBasePath = "../";
 ```
 
 ##### Setting the hyperparameters
-The ICP algorithm has several termination criteria (labelled `1`-`3` inside [`c3-main.cpp`]()) whose values, among the other ICP hyperparameters, can be configured. These are:
+The ICP algorithm has several termination criteria (labelled `1`-`3` inside [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp)) whose values, among the other ICP hyperparameters, can be configured. These are:
 ```cpp
 /*** Defining the ICP hyperparameters ***/
 // The maximum correspondence distance between `source` and `target`
@@ -109,7 +109,7 @@ const static double kRANSACOutlierRejectionThresholdICP = 0.2;  // Metres (m)
 For a complete list of the available hyperparameters to tune for the ICP algorithm, see the [`pcl::IterativeClosestPoint` documentation](https://pointclouds.org/documentation/classpcl_1_1_iterative_closest_point.html).
 
 ##### Configuring CMAKE
-To build the programme, set line 14 of the [`CMakeLists.txt`]() file to:
+To build the programme, set line 14 of the [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/CMakeLists.txt) file to:
 
 ```cpp
 set(sources {FILENAME OF MAIN} {FILENAME OF HELPERS})
@@ -119,7 +119,7 @@ where `{FILENAME OF MAIN}` should be `c3-main.cpp` and `{FILENAME OF HELPERS}` s
 
 
 ##### Creating the executable
-To build the programme with the configured [`CMakeLists.txt`]() file, first create a `build` folder inside the project root directory (here that is `c3-project/`) using the following command:
+To build the programme with the configured [`CMakeLists.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/CMakeLists.txt) file, first create a `build` folder inside the project root directory (here that is `c3-project/`) using the following command:
 
 ```console
 root@foobar:/home/workspace/c3-project/# mkdir build
@@ -206,7 +206,7 @@ $$
 
 
 #### Running and compiling the programme
-Note that configuring the programme to perform NDT involves changing only the value of a boolean flag initialised on line 43 inside [`c3-main.cpp`]().
+Note that configuring the programme to perform NDT involves changing only the value of a boolean flag initialised on line 43 inside [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp).
 ```cpp
 // Define the scan matching / registration algorithm to use
 // If `USE_ICP` is set to `false`, then the NDT algorithm will be used
@@ -216,7 +216,7 @@ const static bool USE_ICP = false;
 **See Sect. 2.1. for all other build and execution steps.**
 
 ##### Setting the hyperparameters
-The NDT algorithm has several hyperparameters whose values can be configured inside [`c3-main.cpp`](). Of these, we experiment with the maximum allowed NDT iterations (`kMaximumIterationsNDT`) and the transformation step size (`kStepSizeNDT`). The number of maximum NDT iterations allowed before termination can be tweaked (i.e., increased) to yield more accurate transformation estimates at the expense of runtime performance. The transformation step size, which defines each step size taken during the optimisation process, can be tweaked (i.e., decreased) to yield more accurate transformation estimates at the expense of computational resources.   
+The NDT algorithm has several hyperparameters whose values can be configured inside [`c3-main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/c3-main.cpp). Of these, we experiment with the maximum allowed NDT iterations (`kMaximumIterationsNDT`) and the transformation step size (`kStepSizeNDT`). The number of maximum NDT iterations allowed before termination can be tweaked (i.e., increased) to yield more accurate transformation estimates at the expense of runtime performance. The transformation step size, which defines each step size taken during the optimisation process, can be tweaked (i.e., decreased) to yield more accurate transformation estimates at the expense of computational resources.   
 
 After several experiment runs, we settled on a trade-off between the maximum allowed NDT iterations (`kMaximumIterationsNDT`), and the transformation step size (`kStepSizeNDT`). To combat poor convergence times, we reduced the number of NDT iterations allowed from `120` to `80`. However, this yielded poor localisation performance as the NDT algorithm was unable to localise the vehicle within a $1.0$ metre maximum distance error over a total distance of only 6 metres. Thus, we arrived at a `kMaximumIterationsNDT` of `95`. We also substantially decreased the step size, which increased convergence time but produced a more accurate transformation estimate. With the following configuration, we were able to push the vehicle to a distance of over 60 metres through several complex maneuvers before performance degraded beyond the $1.0$ metre max error.
 
