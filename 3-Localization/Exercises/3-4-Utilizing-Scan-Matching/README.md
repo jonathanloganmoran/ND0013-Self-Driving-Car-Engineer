@@ -394,8 +394,8 @@ $$
 * Extract data from the CARLA Simulator to perform [Simultaneous Localisation and Mapping](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping) (SLAM).
 
 ## 4. Future Work
-* ⬜️ Use a different map in the CARLA Simulator;
-* ⬜️ Perform localisation and mapping using data extracted from the CARLA Simulator.
+* ✅ Use a different map in the CARLA Simulator — completed in [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization);
+* ✅ Perform localisation and mapping using data extracted from the CARLA Simulator — localisation completed in [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization).
 
 ## Credits
 This lesson was prepared by A. Brown, T. Huang, and M. Muffert of the Mercedes-Benz Research and Development of North America (MBRDNA), 2021 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).

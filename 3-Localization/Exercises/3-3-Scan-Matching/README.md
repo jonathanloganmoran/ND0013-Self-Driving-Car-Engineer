@@ -300,8 +300,8 @@ This concludes the Exercises from Lesson 3.3: Creating Scan Matching Algorithms.
 * Experiment with different implementation settings for the NDT algorithm (e.g., increasing cell resolution, adjusting number of gradient iterations, changing step size — notes from GPT [here](https://beta.openai.com/playground/p/AGoz2dlj4SqUYm2xl2LYzM9T?model=text-davinci-003)).
 
 ## 4. Future Work
-* ⬜️ Experiment with different ICP hyperparameters (e.g., fine-tune max correspondence distance and maximum ICP iterations to the point cloud dataset);
-* ⬜️ Experiment with different NDT implementation settings (e.g., increasing cell resolution, adjusting gradient iterations).
+* ✅ Experiment with different ICP hyperparameters (e.g., fine-tune max correspondence distance and maximum ICP iterations to the point cloud dataset) — completed in [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization);
+* ✅ Experiment with different NDT implementation settings (e.g., increasing cell resolution, adjusting gradient iterations) — completed in [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization).
 
 
 ## Credits

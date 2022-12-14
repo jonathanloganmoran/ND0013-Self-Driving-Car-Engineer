@@ -257,8 +257,9 @@ For a complete list of the available hyperparameters to tune for the NDT algorit
 * Experiment with NDT hyperparameters to improve accuracy and reduce time to converge. 
 
 ## 4. Future Work
+* ✅ Use extraction to move code outside `main` (i.e., create `SetActorsAndBlueprint`, `ProcessScan`, `UpdatePoseAndControl`, `UpdatePoseError` functions);
+* ⬜️ Re-organise [`helpers.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/helpers.cpp) and [`helpers.h`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/3-Localization/3-1-Scan-Matching-Localization/helpers.h) such that the implementation and header files follow proper conventions
 * ⬜️ Replace `auto` keyword declaration with explicit typing (note: [CARLA C++ API](https://carla.readthedocs.io/en/latest/ref_cpp/) uses templates and their own smart pointer implementation);
-* ⬜️ Use extraction to move code outside `main` (i.e., create `SetActorsAndBlueprint`, `ProcessScan`, `UpdatePoseAndControl`, `UpdatePoseError` functions);
 * ⬜️ Fine-tune the NDT algorithm hyperparameters.
 
 
