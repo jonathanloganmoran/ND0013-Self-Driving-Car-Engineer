@@ -1,0 +1,118 @@
+%% This BibTeX bibliography file was created using BibDesk.
+%% https://bibdesk.sourceforge.io/
+
+%% Created for Jonathan Moran at 2022-12-12 20:17:31 -0800 
+
+
+%% Saved with string encoding Unicode (UTF-8) 
+
+
+
+@inproceedings{10.1007/978-3-319-46475-6_47,
+	abstract = {We present an algorithm for fast global registration of partially overlapping 3D surfaces. The algorithm operates on candidate matches that cover the surfaces. A single objective is optimized to align the surfaces and disable false matches. The objective is defined densely over the surfaces and the optimization achieves tight alignment with no initialization. No correspondence updates or closest-point queries are performed in the inner loop. An extension of the algorithm can perform joint global registration of many partially overlapping surfaces. Extensive experiments demonstrate that the presented approach matches or exceeds the accuracy of state-of-the-art global registration pipelines, while being at least an order of magnitude faster. Remarkably, the presented approach is also faster than local refinement algorithms such as ICP. It provides the accuracy achieved by well-initialized local refinement algorithms, without requiring an initialization and at lower computational cost.},
+	address = {Cham},
+	author = {Zhou, Qian-Yi and Park, Jaesik and Koltun, Vladlen},
+	booktitle = {Computer Vision -- ECCV 2016},
+	date-added = {2022-12-12 20:17:28 -0800},
+	date-modified = {2022-12-12 20:17:28 -0800},
+	editor = {Leibe, Bastian and Matas, Jiri and Sebe, Nicu and Welling, Max},
+	isbn = {978-3-319-46475-6},
+	pages = {766--782},
+	publisher = {Springer International Publishing},
+	title = {Fast Global Registration},
+	year = {2016}}
+
+@article{121791,
+	abstract = {The authors describe a general-purpose, representation-independent method for the accurate and computationally efficient registration of 3-D shapes including free-form curves and surfaces. The method handles the full six degrees of freedom and is based on the iterative closest point (ICP) algorithm, which requires only a procedure to find the closest point on a geometric entity to a given point. The ICP algorithm always converges monotonically to the nearest local minimum of a mean-square distance metric, and the rate of convergence is rapid during the first few iterations. Therefore, given an adequate set of initial rotations and translations for a particular class of objects with a certain level of 'shape complexity', one can globally minimize the mean-square distance metric over all six degrees of freedom by testing each initial registration. One important application of this method is to register sensed data from unfixtured rigid objects with an ideal geometric model, prior to shape inspection. Experimental results show the capabilities of the registration algorithm on point sets, curves, and surfaces.},
+	author = {Besl, P.J. and McKay, Neil D.},
+	date-added = {2022-12-12 19:22:09 -0800},
+	date-modified = {2022-12-12 19:22:23 -0800},
+	doi = {10.1109/34.121791},
+	issn = {1939-3539},
+	journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+	month = {Feb},
+	number = {2},
+	pages = {239-256},
+	title = {A method for registration of 3-D shapes},
+	volume = {14},
+	year = {1992},
+	bdsk-url-1 = {https://doi.org/10.1109/34.121791}}
+
+@inproceedings{10.1117/12.57955,
+	abstract = {This paper describes a general purpose, representation independent method for the accurate and computationally efficient registration of 3-D shapes including free-form curves and surfaces. The method handles the full six-degrees of freedom and is based on the iterative closest point (ICP) algorithm, which requires only a procedure to find the closest point on a geometric entity to a given point. The ICP algorithm always converges monotonically to the nearest local minimum of a mean-square distance metric, and experience shows that the rate of convergence is rapid during the first few iterations. Therefore, given an adequate set of initial rotations and translations for a particular class of objects with a certain level of 'shape complexity', one can globally minimize the mean-square distance metric over all six degrees of freedom by testing each initial registration. For examples, a given 'model' shape and a sensed 'data' shape that represents a major portion of the model shape can be registered in minutes by testing one initial translation and a relatively small set of rotations to allow for the given level of model complexity. One important application of this method is to register sensed data from unfixtured rigid objects with an ideal geometric model prior to shape inspection. The described method is also useful for deciding fundamental issues such as the congruence (shape equivalence) of different geometric representations as well as for estimating the motion between point sets where the correspondences are not known. Experimental results show the capabilities of the registration algorithm on point sets, curves, and surfaces.},
+	author = {Paul J. Besl and Neil D. McKay},
+	booktitle = {Sensor Fusion IV: Control Paradigms and Data Structures},
+	date-added = {2022-12-12 19:19:53 -0800},
+	date-modified = {2022-12-12 19:19:53 -0800},
+	doi = {10.1117/12.57955},
+	editor = {Paul S. Schenker},
+	organization = {International Society for Optics and Photonics},
+	pages = {586 -- 606},
+	publisher = {SPIE},
+	title = {{Method for registration of 3-D shapes}},
+	url = {https://doi.org/10.1117/12.57955},
+	volume = {1611},
+	year = {1992},
+	bdsk-url-1 = {https://doi.org/10.1117/12.57955}}
+
+@article{Horn:87,
+	abstract = {Finding the relationship between two coordinate systems using pairs of measurements of the coordinates of a number of points in both systems is a classic photogrammetric task. It finds applications in stereophotogrammetry and in robotics. I present here a closed-form solution to the least-squares problem for three or more points. Currently various empirical, graphical, and numerical iterative methods are in use. Derivation of the solution is simplified by use of unit quaternions to represent rotation. I emphasize a symmetry property that a solution to this problem ought to possess. The best translational offset is the difference between the centroid of the coordinates in one system and the rotated and scaled centroid of the coordinates in the other system. The best scale is equal to the ratio of the root-mean-square deviations of the coordinates in the two systems from their respective centroids. These exact results are to be preferred to approximate methods based on measurements of a few selected points. The unit quaternion representing the best rotation is the eigenvector associated with the most positive eigenvalue of a symmetric 4 {\texttimes} 4 matrix. The elements of this matrix are combinations of sums of products of corresponding coordinates of the points.},
+	author = {Berthold K. P. Horn},
+	date-added = {2022-12-12 19:18:56 -0800},
+	date-modified = {2022-12-12 19:18:56 -0800},
+	doi = {10.1364/JOSAA.4.000629},
+	journal = {J. Opt. Soc. Am. A},
+	keywords = {Composite materials; Photogrammetry; Reflection},
+	month = {Apr},
+	number = {4},
+	pages = {629--642},
+	publisher = {Optica Publishing Group},
+	title = {Closed-form solution of absolute orientation using unit quaternions},
+	url = {https://opg.optica.org/josaa/abstract.cfm?URI=josaa-4-4-629},
+	volume = {4},
+	year = {1987},
+	bdsk-url-1 = {https://opg.optica.org/josaa/abstract.cfm?URI=josaa-4-4-629},
+	bdsk-url-2 = {https://doi.org/10.1364/JOSAA.4.000629}}
+
+@article{least-squares-umeyama,
+	abstract = {In many applications of computer vision, the following problem is encountered. Two point patterns (sets of points) (x/sub i/) and (x/sub i/); i&#x3D;1, 2, . . ., n are given in m-dimensional space, and the similarity transformation parameters (rotation, translation, and scaling) that give the least mean squared error between these point patterns are needed. Recently, K.S. Arun et al. (1987) and B.K.P. Horn et al. (1987) presented a solution of this problem. Their solution, however, sometimes fails to give a correct rotation matrix and gives a reflection instead when the data is severely corrupted. The proposed theorem is a strict solution of the problem, and it always gives the correct transformation parameters even when the data is corrupted.},
+	address = {Los Alamitos, CA, USA},
+	author = {S. Umeyama},
+	date-added = {2022-12-07 13:00:45 -0800},
+	date-modified = {2022-12-07 13:01:09 -0800},
+	doi = {10.1109/34.88573},
+	issn = {1939-3539},
+	journal = {IEEE Transactions on Pattern Analysis &amp; Machine Intelligence},
+	keywords = {pattern recognition; parameter estimation; two point patterns; computer vision;; transformation parameters; least mean squared error; computer vision; error analysis; least squares approximations; parameter estimation; pattern recognition},
+	month = {apr},
+	number = {04},
+	pages = {376-380},
+	publisher = {IEEE Computer Society},
+	title = {Least-Squares Estimation of Transformation Parameters Between Two Point Patterns},
+	volume = {13},
+	year = {1991},
+	bdsk-url-1 = {https://doi.org/10.1109/34.88573}}
+
+@inproceedings{biber2003normal,
+	abstract = {Matching 2D range scans is a basic component of many localization and mapping algorithms. Most scan match algorithms require finding correspondences between the used features, i.e. points or lines. We propose an alternative representation for a range scan, the normal distributions transform. Similar to an occupancy grid, we subdivide the 2D plane into cells. To each cell, we assign a normal distribution, which locally models the probability of measuring a point. The result of the transform is a piecewise continuous and differentiable probability density, that can be used to match another scan using Newton's algorithm. Thereby, no explicit correspondences have to be established. We present the algorithm in detail and show the application to relative position tracking and simultaneous localization and map building (SLAM). First results on real data demonstrate, that the algorithm is capable to map unmodified indoor environments reliable and in real time, even without using odometry data.},
+	author = {Biber, Peter and Stra{\ss}er, Wolfgang},
+	booktitle = {Proceedings 2003 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2003)(Cat. No. 03CH37453)},
+	date-added = {2022-12-07 12:46:59 -0800},
+	date-modified = {2022-12-07 12:47:41 -0800},
+	organization = {IEEE},
+	pages = {2743--2748},
+	title = {The normal distributions transform: A new approach to laser scan matching},
+	volume = {3},
+	year = {2003}}
+
+@techreport{sorkine2017least,
+	abstract = {This note summarizes the steps to computing the best-fitting rigid transformation that aligns two sets of corresponding points.},
+	author = {Sorkine-Hornung, Olga and Rabinovich, Michael},
+	date-modified = {2022-12-07 11:42:39 -0800},
+	institution = {Department of Computer Science, ETH Zurich},
+	journal = {Computing},
+	keywords = {Shape matching; Rigid alignment; Rotation; SVD},
+	pages = {1--5},
+	title = {Least-Squares Rigid Motion Using SVD},
+	type = {Technical note about the Procrustes problem},
+	year = {2017}}
