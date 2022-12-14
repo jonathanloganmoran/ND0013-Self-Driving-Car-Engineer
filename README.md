@@ -9,7 +9,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 * ✅ [Course 1: Computer Vision](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision)
 * ✅ [Course 2: Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion)
 * ✅ [Course 3: Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization)
-* ⬜️ Course 4: Planning
+* ⬜️ [Course 4: Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning) — in progress! 🎉
 * ⬜️ Course 5: Control
 
 
@@ -44,6 +44,14 @@ The following topics are covered in course projects:
 * Write and optimise two scan matching algorithms in C++: Iterative Closest Point (ICP) and Normal Distributions Transform (NDT);
 * Apply the scan matching algorithms to simulated LiDAR point clouds processed with the Point Cloud Library (PCL);
 * And so much more ... (see [3-Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization) for full list of course topics).
+
+##### Course 4: Planning
+* Design and implement weighted cost functions and behaviour planning systems in C++;
+* Perform structured trajectory generation in C++;
+* Implement the A* and Hybrid A* search algorithms in C++;
+* Use numerical approximation and discretisation to solve the Polynomial splines problem;
+* Generate optimal, feasible, collision-free paths;
+* And so much more ... (see [4-Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Planning) for full list of course topics).
 
 
 

@@ -39,7 +39,7 @@ Other topics covered in course lectures and reading material:
 
 #### Lesson 2: Trajectory Generation
 * Use the C++ [`Eigen`]() library to design candidate trajectories in C++;
-* Design and implement the $A^{*}$ and Hybrid $A^{*}$ search algorithms in C++;
+* Design and implement the [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) and Hybrid A* search algorithms in C++;
 * Perform trajectory matching and structured trajectory generation;
 * Implement the quintic and polynomial solvers in C++;
 * Study state-of-the-art path planning nets (e.g., [DeepTraffic](https://arxiv.org/abs/1801.02805)).
