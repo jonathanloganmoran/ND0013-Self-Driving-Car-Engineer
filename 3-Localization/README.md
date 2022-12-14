@@ -22,7 +22,7 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 
 ### Projects
-* ⬜️ 3.1: [Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization/) — in progress! 🎉
+* ✅ 3.1: [Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization/).
 
 
 ### Exercises
@@ -34,11 +34,22 @@ This is Course 3: Localization in the Self-Driving Car Engineer Nanodegree progr
 
 ### Course Contents
 The following topics are covered in course exercises:
-* More info coming soon...
+* Markov Localisation in C++;
+* Bayes' theorem with numerical examples;
+* Point Cloud Library (PCL) in C++;
+* Scan matching algorithms (ICP and NDT) in C++;
+* Localisation and mapping in CARLA Simulator. 
 
 
 Other topics covered in course lectures and reading material:
-* More info coming soon...
+* Markov assumption for motion model;
+* Deriving the recursive Bayes filter;
+* Gaussian normal distributions;
+* Kinematic Bicycle Motion model;
+* Coordinate systems and reference frames;
+* Transformation matrices;
+* Odometry, motion sensor data, wheel encoder edge cases;
+* Scan matching, alignment and mapping.
 
 
 ### Learning Outcomes
@@ -80,8 +91,8 @@ Datasets:
 * [Waymo Open Dataset: Perception](https://waymo.com/open/).
 
 Lectures:
-* TODO.
+* Lectures available offline on request.
 
 ### Other resources
 Companion code:
-* TODO.
+* [SFND Lidar Obstacle Detection | Starter code](https://github.com/udacity/SFND_Lidar_Obstacle_Detection).
