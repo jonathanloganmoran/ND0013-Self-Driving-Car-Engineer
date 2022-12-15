@@ -1,20 +1,30 @@
 #include "2_inefficiency_cost.h"
 
 
-/* TODO.
+/* Computes the inefficiency cost of the goal speed given lane changes. 
+ *
+ * Here the inefficiency cost increases when trajectories with either 
+ * `intended_lane` or `final_lane` have traffic moving slower than the
+ * `target_speed`. The speed of each lane is given as a unitless number
+ * indexed from the `lane_speeds` vector for each of the lane indices.
+ * 
+ * @param    target_speed   Desired speed (dimensionless) after manouevre. 
+ * @param    intended_lane  Index of lane intended for this manouevre.
+ * @param    final_lane     Index of lane immediately following manouevre.
+ * @param    lane_speeds    Set of current speeds for each lane by index.
+ * @returns  cost           Computed inefficiency cost for the trajectory.
  */
 double inefficiency_cost(
     int target_speed,
     int intended_lane,
     int final_lane,
-    cost std::vector<int>& lane_speeds
+    const std::vector<int>& lane_speeds
 ) {
-  // Cost becomes higher for trajectories with `intended_lane` and `final_lane`
-  // that have traffic slower than `target_speed`
-  /**
-   * TODO: Replace cost = 0 with an appropriate cost function.
-   */
-  double cost = 0;
-  return cost; 
+  // Compute the weighted change in speed from manouevres to target
+  double delta_s = 2.0 * target_speed;
+  delta_s = delta_s - lane_speeds[intended_lane] - lane_speeds[final_lane];
+  // Return the ratio of weighted change in speed to target speed
+  // i.e., `delta_s` is inversely proportional to the target speed.
+  double cost = delta_s / target_speed;
+  return cost;
 }
-
