@@ -8,9 +8,9 @@
  * `target_speed`. The speed of each lane is given as a unitless number
  * indexed from the `lane_speeds` vector for each of the lane indices.
  * 
- * @param    target_speed   Desired speed (dimensionless) after manouevre. 
- * @param    intended_lane  Index of lane intended for this manouevre.
- * @param    final_lane     Index of lane immediately following manouevre.
+ * @param    target_speed   Desired speed (dimensionless) after manoeuvre. 
+ * @param    intended_lane  Index of lane intended for this manoeuvre.
+ * @param    final_lane     Index of lane immediately following manoeuvre.
  * @param    lane_speeds    Set of current speeds for each lane by index.
  * @returns  cost           Computed inefficiency cost for the trajectory.
  */
@@ -20,7 +20,7 @@ double inefficiency_cost(
     int final_lane,
     const std::vector<int>& lane_speeds
 ) {
-  // Compute the weighted change in speed from manouevres to target
+  // Compute the weighted change in speed from manoeuvres to target
   double delta_s = 2.0 * target_speed;
   delta_s = delta_s - lane_speeds[intended_lane] - lane_speeds[final_lane];
   // Return the ratio of weighted change in speed to target speed

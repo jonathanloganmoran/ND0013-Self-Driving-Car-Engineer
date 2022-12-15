@@ -1,4 +1,7 @@
 #include "1_distance_cost.h"
+#include "2_inefficiency_cost.h"
+#include "3_road.h"
+#include "3_vehicle.h"
 
 #include <iostream>
 #include <vector>
@@ -19,19 +22,19 @@
  *  0 |                                                 x
  * --------------------------------------------------------------
  * 
- * Where we have a `goal_lane = 0`, and three possible manouevres to
+ * Where we have a `goal_lane = 0`, and three possible manoeuvres to
  * score in `intended_lane = 2` and `intended_lane = 1`. The distance
  * from `intended_lane = 2` to the `goal_lane = 0` can be e.g., 10m, 
  * while the distances from `intended_lane = 1` to the `goal_lane = 0`
  * can be 10m and e.g., 5m. 
  * 
- * Using our cost function, we want to give the two manouevres in lane 1 
+ * Using our cost function, we want to give the two manoeuvres in lane 1 
  * a lower cost score since they are closer laterally to the goal lane.
- * However, within lane 1, we want to give the manouevre farther away from
+ * However, within lane 1, we want to give the manoeuvre farther away from
  * the goal marker a lesser cost score (i.e., cost decreases as longitudinal
  * distance to goal increases). This is to factor in reaction time.
  * 
- * Therefore, the manouevre the highest cost will be for (2, 2, 10), i.e.,
+ * Therefore, the manoeuvre the highest cost will be for (2, 2, 10), i.e.,
  * position in lane 2 with no intended or final lane change closer to goal.
  * Assuming an intention to move into lane 1, i.e., (2, 1, 10), this will
  * be our second highest cost. The next highest will be for (1, 1, 5),
@@ -97,10 +100,73 @@ void test_inefficiency_cost() {
 }
 
 
+void test_behaviour_planner() {
+  // impacts default behavior for most states
+  int SPEED_LIMIT = 10;
+
+  // all traffic in lane (besides ego) follow these speeds
+  vector<int> LANE_SPEEDS = {6,7,8,9}; 
+
+  // Number of available "cells" which should have traffic
+  double TRAFFIC_DENSITY = 0.15;
+
+  // At each timestep, ego can set acceleration to value between 
+  //   -MAX_ACCEL and MAX_ACCEL
+  int MAX_ACCEL = 2;
+
+  // s value and lane number of goal.
+  vector<int> GOAL = {300, 0};
+
+  // These affect the visualization
+  int FRAMES_PER_SECOND = 4;
+  int AMOUNT_OF_ROAD_VISIBLE = 40;
+
+  Road road = Road(SPEED_LIMIT, TRAFFIC_DENSITY, LANE_SPEEDS);
+
+  road.update_width = AMOUNT_OF_ROAD_VISIBLE;
+
+  road.populate_traffic();
+
+  int goal_s = GOAL[0];
+  int goal_lane = GOAL[1];
+
+  // configuration data: speed limit, num_lanes, goal_s, goal_lane, 
+  //   and max_acceleration
+  int num_lanes = LANE_SPEEDS.size();
+  vector<int> ego_config = {SPEED_LIMIT,num_lanes,goal_s,goal_lane,MAX_ACCEL};
+   
+  road.add_ego(2,0, ego_config);
+  int timestep = 0;
+  
+  while (road.get_ego().s <= GOAL[0]) {
+    ++timestep;
+    if (timestep > 100) {
+      break;
+    }
+    road.advance();
+    road.display(timestep);
+    //time.sleep(float(1.0) / FRAMES_PER_SECOND);
+  }
+
+  Vehicle ego = road.get_ego();
+  if (ego.lane == GOAL[1]) {
+    cout << "You got to the goal in " << timestep << " seconds!" << endl;
+    if(timestep > 35) {
+      cout << "But it took too long to reach the goal. Go faster!" << endl;
+    }
+  } else {
+    cout << "You missed the goal. You are in lane " << ego.lane 
+         << " instead of " << GOAL[1] << "." << endl;
+  }
+}
+
+
 int main() {
     // EX 4.1.1: Tests goal distance cost function on pre-defined test cases
     test_goal_distance_cost();
     // EX 4.1.2: Tests inefficiency cost function on pre-defined test cases
     test_inefficiency_cost();
+    // EX 4.1.3: Tests the behaviour planner on pre-defined state variables
+    test_behaviour_planner();
     return 0;
 }
