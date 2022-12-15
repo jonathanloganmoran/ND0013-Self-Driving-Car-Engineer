@@ -1,4 +1,4 @@
-#include "cost.h"
+#include "1_cost.h"
 
 
 /* Computes the distance cost to the goal state including lane changes.

@@ -1,5 +1,5 @@
-#ifndef COST_H_
-#define COST_H_
+#ifndef 1_COST_H_
+#define 1_COST_H_
 
 
 #include <cmath>
@@ -26,4 +26,4 @@ double goal_distance_cost(
 );
 
 
-#endif  // COST_H
+#endif  // 1_COST_H
