@@ -1,6 +1,7 @@
 #include "1_distance_cost.h"
 
 #include <iostream>
+#include <vector>
 
 
 /* Tests the goal-distance cost function.
@@ -65,11 +66,36 @@ void test_goal_distance_cost() {
 }
 
 
-/* TODO.
+/* Tests the inefficiency cost function.
+ * Here the expectation is that the greater the change in speed
+ * from the target speed will result in a higher inefficiency cost.
+ * The higher the cost, the less desirable the trajectory. 
  */
 void test_inefficiency_cost() {
-    // TODO: Return the inefficiency cost score
+  // Target speed of our vehicle
+  int target_speed = 10;
+  // Lane speeds for each lane
+  std::vector<int> lane_speeds = {6, 7, 8, 9};
+  // Test cases used for grading - do not change.
+  double cost;
+  std::cout << "Costs for (intended_lane, final_lane):" << "\n";
+  std::cout << "---------------------------------------------------------" << "\n";
+  cost = inefficiency_cost(target_speed, 3, 3, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(3, 3)" << "\n";
+  cost = inefficiency_cost(target_speed, 2, 3, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(2, 3)" << "\n";
+  cost = inefficiency_cost(target_speed, 2, 2, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(2, 2)" << "\n";
+  cost = inefficiency_cost(target_speed, 1, 2, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(1, 2)" << "\n";
+  cost = inefficiency_cost(target_speed, 1, 1, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(1, 1)" << "\n";
+  cost = inefficiency_cost(target_speed, 0, 1, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(0, 1)" << "\n";
+  cost = inefficiency_cost(target_speed, 0, 0, lane_speeds);
+  std::cout << "The cost is " << cost << " for " << "(0, 0)" << "\n";
 }
+
 
 int main() {
     // EX 4.1.1: Tests goal distance cost function on pre-defined test cases
