@@ -65,8 +65,16 @@ void test_goal_distance_cost() {
 }
 
 
+/* TODO.
+ */
+void test_inefficiency_cost() {
+    // TODO: Return the inefficiency cost score
+}
+
 int main() {
     // EX 4.1.1: Tests goal distance cost function on pre-defined test cases
     test_goal_distance_cost();
-    return 1;
+    // EX 4.1.2: Tests inefficiency cost function on pre-defined test cases
+    test_inefficiency_cost();
+    return 0;
 }
