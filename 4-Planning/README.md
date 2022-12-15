@@ -11,15 +11,17 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Demo Notebooks
-* TODO.
+* ⬜️ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipyn`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.1/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb) — in progress! 🎉
 
 
 ### Projects
-* TODO.
+* ⬜️ 4.1: [Motion Planning and Decision Making for Autonomous Vehicles]().
 
 
 ### Exercises
-* TODO.
+* ⬜️ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.1/4-Planning/Exercises/4-1-Behavior-Planning) — in progress! 🎉;
+* ⬜️ [4.2: Trajectory Generation]();
+* ⬜️ [4.3: Motion Planning]().
 
 
 ### Course Contents
