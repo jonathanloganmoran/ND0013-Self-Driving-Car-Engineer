@@ -53,24 +53,28 @@ std::vector<Vehicle> Vehicle::choose_next_state(
 ) {
   // Get from the FSM the next possible states given the current
   std::vector<std::string> states = successor_states();
-  std::vector<float> costs;
+  float min_cost = INT_MAX;
+  std::vector<Vehicle> min_trajectory;
   for (std::string state : states) {
     std::vector<Vehicle> trajectory = generate_trajectory(
         state,
         predictions
     );
-    if (trajectory) {
+    if (trajectory.size()) {
       // Calculate the cost of this trajectory
       float cost = calculate_cost(
           vehicle
           predictions,
           trajectory
       ); 
-      costs.append(cost);
+      if (cost < min_cost) {
+        min_cost = cost;
+        min_trajectory = trajectory;
+      }
     }
   }
-  // Return the minimum cost value
-  return *min_element(costs.begin(), costs.end());
+  // Return the trajectory with the minimum cost value
+  return min_trajectory;
 }
 
 
