@@ -15,8 +15,6 @@
 #ifndef 3_VEHICLE_H_
 #define 3_VEHICLE_H_
 
-
-#include "3_costs.h"
 #include <algorithm>
 #include <iterator>
 #include <map>

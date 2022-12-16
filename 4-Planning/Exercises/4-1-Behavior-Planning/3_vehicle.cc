@@ -11,7 +11,7 @@
  * ----------------------------------------------------------------------------
  */
 
-
+#include "3_costs.h"
 #include "3_vehicle.h"
 
 
@@ -63,7 +63,7 @@ std::vector<Vehicle> Vehicle::choose_next_state(
     if (trajectory.size()) {
       // Calculate the cost of this trajectory
       float cost = calculate_cost(
-          vehicle
+          *this,
           predictions,
           trajectory
       ); 
@@ -205,7 +205,10 @@ std::vector<float> Vehicle::get_kinematics(
     }
   } 
   else {
-    new_velocity = std::min(max_velocity_accel_limit, this->target_speed);
+    new_velocity = std::min(
+        max_velocity_accel_limit, 
+        this->target_speed
+    );
   }
   // Compute new acceleration w.r.t. previous and new velocity
   // using the 1D kinematics equation for velocity where $t=1$
@@ -256,7 +259,7 @@ std::vector<Vehicle> Vehicle::keep_lane_trajectory(
     std::map<int, std::vector<Vehicle>>& predictions
 ) {
   // Generate a keep lane trajectory.
-  vector<Vehicle> trajectory = {
+  std::vector<Vehicle> trajectory = {
       Vehicle(lane, 
               this->s, 
               this->v, 
@@ -264,7 +267,7 @@ std::vector<Vehicle> Vehicle::keep_lane_trajectory(
               state
       )
   };
-  vector<float> kinematics = get_kinematics(
+  std::vector<float> kinematics = get_kinematics(
       predictions, 
       this->lane
   );

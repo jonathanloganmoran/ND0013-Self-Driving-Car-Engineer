@@ -13,15 +13,13 @@
 #ifndef 3_ROAD_H_
 #define 3_ROAD_H_
 
-
-#include "3_road.h"
 #include "3_vehicle.h"
+#include <iostream>
+#include <iterator>
 #include <map>
 #include <string>
 #include <sstream>
 #include <vector>
-#include <iostream>
-#include <iterator>
 
 
 /* Defines the highway environment and state-related variables and functions.

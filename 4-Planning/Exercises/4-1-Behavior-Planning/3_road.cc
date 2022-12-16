@@ -14,6 +14,9 @@
  */
 
 
+#include "3_road.h"
+
+
 /* Initialises a new highway environment.
  * 
  * @param  speed_limit      Fixed speed limit (ego-vehicle will not exceed).
