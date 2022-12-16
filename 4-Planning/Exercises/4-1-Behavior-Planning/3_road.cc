@@ -1,134 +1,203 @@
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-#include "road.h"
-#include "vehicle.h"
+/* ------------------------------------------------------------------------------
+ * Lesson "4.1: Behavior Planning"
+ * Authors     : Benjamin Ulmer and Tobias Roth of Mercedes-Benz R&D.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Implements the `Road` class which manages a simulated 
+ *                       highway environment and its state variables.
+ *                       The functions defined here are used by the trajectory
+ *                       planner to discover possible manoeuvres that minimise
+ *                       a set of objectives given the respective state of the
+ *                       ego- or shadowed vehicle.
+ * ----------------------------------------------------------------------------
+ */
 
-using std::map;
-using std::string;
-using std::vector;
 
-// Initializes Road
-Road::Road(int speed_limit, double traffic_density, vector<int> &lane_speeds) {
+/* Initialises a new highway environment.
+ * 
+ * @param  speed_limit      Fixed speed limit (ego-vehicle will not exceed).
+ * @param  traffic_density  Amount of traffic on road (not used yet).
+ * @param  lane_speeds      Current speed of vehicles in this lane.
+ * @var    num_lanes        Total number of lanes on highway.
+ * @var    camera_center    Half-width of camera view, positions the vehicle.
+ */
+Road::Road(
+    int speed_limit, 
+    double traffic_density, 
+    std::vector<int>& lane_speeds
+) {
   this->num_lanes = lane_speeds.size();
   this->lane_speeds = lane_speeds;
   this->speed_limit = speed_limit;
   this->density = traffic_density;
-  this->camera_center = this->update_width/2;
+  this->camera_center = this->update_width / 2;
 }
 
+// The destructor
 Road::~Road() {}
 
+
+/* Fetches the ego-vehicle state object from vector of current vehicles.
+ * 
+ * @returns a `Vehicle` state object belonging to the ego-vehicle.
+ */
 Vehicle Road::get_ego() {
   return this->vehicles.find(this->ego_key)->second;
 }
 
+
+/* Initialises the highway lanes with vehicles and sets their states.
+ */
 void Road::populate_traffic() {
-  int start_s = std::max(this->camera_center - (this->update_width/2), 0);
-
-  for (int l = 0; l < this->num_lanes; ++l) {
-    int lane_speed = this->lane_speeds[l];
+  int start_s = std::max(
+    this->camera_center - (this->update_width / 2), 
+    0
+  );
+  for (int lane = 0; lane < this->num_lanes; ++lane) {
+    int lane_speed = this->lane_speeds[lane];
     bool vehicle_just_added = false;
-
-    for (int s = start_s; s < start_s+this->update_width; ++s) {
+    for (int s = start_s; s < start_s + this->update_width; ++s) {
       if (vehicle_just_added) {
         vehicle_just_added = false;
       }
-      
-      if (((double) rand() / (RAND_MAX)) < this->density) {
-        Vehicle vehicle = Vehicle(l,s,lane_speed,0);
+      if (((double)rand() / (RAND_MAX)) < this->density) {
+        // If the randomly-chosen "density" is less than max density 
+        Vehicle vehicle = Vehicle(lane, 
+                                  s, 
+                                  lane_speed, 
+                                  0
+        );
+        // Set the vehicle state to keep 'constant speed'
         vehicle.state = "CS";
         this->vehicles_added += 1;
-        this->vehicles.insert(std::pair<int,Vehicle>(vehicles_added,vehicle));
+        this->vehicles.insert(
+            std::pair<int, Vehicle>(vehicles_added, vehicle)
+        );
         vehicle_just_added = true;
       }
     }
   }
 }
 
+
+/* Advances the environment to the next time-step.
+ *
+ * Here the trajectory predictions and current state are updated.
+ * Then, the next-best trajectory is selected and realised (i.e,
+ * the trajectory is roughly simulated to the next-state step).
+ */
 void Road::advance() {
-  map<int ,vector<Vehicle> > predictions;
-
-  map<int, Vehicle>::iterator it = this->vehicles.begin();
-
+  std::map<int, std::vector<Vehicle>> predictions;
+  std::map<int, Vehicle>::iterator it = this->vehicles.begin();
   while (it != this->vehicles.end()) {
     int v_id = it->first;
-    vector<Vehicle> preds = it->second.generate_predictions();
+    std::vector<Vehicle> preds = it->second.generate_predictions();
     predictions[v_id] = preds;
     ++it;
   }
-  
   it = this->vehicles.begin();
-
   while (it != this->vehicles.end()) {
     int v_id = it->first;
-    if (v_id == ego_key) {   
-      vector<Vehicle> trajectory = it->second.choose_next_state(predictions);
+    if (v_id == ego_key) {
+      // Update the ego-vehicle trajectories for the given predictions
+      std::vector<Vehicle> trajectory = it->second.choose_next_state(
+          predictions
+      );
       it->second.realize_next_state(trajectory);
-    } else {
+    }
+    else {
       it->second.increment(1);
     }
     ++it;
-  }   
+  } 
 }
 
-void Road::add_ego(int lane_num, int s, vector<int> &config_data) {
-  map<int, Vehicle>::iterator it = this->vehicles.begin();
 
+/* Updates the ego-vehicle state to the given lane and position.
+ * 
+ * @param  lane_num     Number of lane to place ego-vehicle in.
+ * @param  s            Position to place vehicle relative to goal.
+ * @param  config_data  Values for target speed, num. lanes, goal info, etc.
+ */
+void Road::add_ego(
+    int lane_num, 
+    int s, 
+    std::vector<int>& config_data
+) {
+  std::map<int, Vehicle>::iterator it = this->vehicles.begin();
   while (it != this->vehicles.end()) {
     int v_id = it->first;
     Vehicle v = it->second;
     if (v.lane == lane_num && v.s == s) {
+      // Remove the ego-vehicle at the previous state
       this->vehicles.erase(v_id);
     }
     ++it;
   }
-    
-  Vehicle ego = Vehicle(lane_num, s, this->lane_speeds[lane_num], 0);
+  // Create the new ego-vehicle state object
+  Vehicle ego = Vehicle(lane_num, 
+                        s, 
+                        this->lane_speeds[lane_num], 
+                        0
+  );
+  // Configure the new state with the given parameters
   ego.configure(config_data);
+  // Set the ego-vehicle state to 'keep lane'
   ego.state = "KL";
-  this->vehicles.insert(std::pair<int,Vehicle>(ego_key,ego));
+  // Insert the go-vehicle onto the "map"
+  this->vehicles.insert(
+      std::pair<int, Vehicle>(ego_key, ego)
+  );
 }
 
-void Road::display(int timestep) {
+
+/* Prints the highway environment for the given time-step number.
+ * 
+ * Here the lanes in the highway environment are represented as
+ * ASCII-valued strings. The ego-vehicle is represented with a unique
+ * ASCII-valued marker, and its distance away from the goal marker
+ * is printed.
+ *
+ * @param  timestep  Current time-step number to print.
+ */
+void Road::display(
+    int timestep
+) {
   Vehicle ego = this->vehicles.find(this->ego_key)->second;
   int s = ego.s;
-  string state = ego.state;
-
-  this->camera_center = std::max(s, this->update_width/2);
-  int s_min = std::max(this->camera_center - this->update_width/2, 0);
+  std::string state = ego.state;
+  this->camera_center = std::max(
+      s, 
+      this->update_width / 2
+  );
+  int s_min = std::max(
+      this->camera_center - this->update_width / 2, 
+      0
+  );
   int s_max = s_min + this->update_width;
-
-  vector<vector<string>> road;
-
+  std::vector<std::vector<std::string>> road;
   for (int i = 0; i < this->update_width; ++i) {
-    vector<string> road_lane;
+    std::vector<std::string> road_lane;
     for (int ln = 0; ln < this->num_lanes; ++ln) {
       road_lane.push_back("     ");
     }
     road.push_back(road_lane);
   }
-
-  map<int, Vehicle>::iterator it = this->vehicles.begin();
-
+  std::map<int, Vehicle>::iterator it = this->vehicles.begin();
   while (it != this->vehicles.end()) {
     int v_id = it->first;
     Vehicle v = it->second;
-
     if (s_min <= v.s && v.s < s_max) {
-      string marker = "";
-
+      std::string marker = "";
       if (v_id == this->ego_key) {
         marker = this->ego_rep;
-      } else {
+      } 
+      else {
         std::stringstream oss;
         std::stringstream buffer;
         buffer << " ";
         oss << v_id;
-
         for (int buffer_i = oss.str().length(); buffer_i < 3; ++buffer_i) {
           buffer << "0";
         }
@@ -139,32 +208,28 @@ void Road::display(int timestep) {
     }
     ++it;
   }
-    
   std::ostringstream oss;
-  oss << "+Meters ======================+ step: " << timestep << std::endl;
+  oss << "+Meters ======================+ step: " << timestep << "\n";
   int i = s_min;
-
   for (int lj = 0; lj < road.size(); ++lj) {
-    if (i%20 ==0) {
+    if (i % 20 ==0) {
       std::stringstream buffer;
       std::stringstream dis;
       dis << i;
-      
       for (int buffer_i = dis.str().length(); buffer_i < 3; ++buffer_i) {
         buffer << "0";
       }
-      
       oss << buffer.str() << dis.str() << " - ";
-    } else {
+    } 
+    else {
       oss << "      ";
     }          
     ++i;
     for (int li = 0; li < road[0].size(); ++li) {
       oss << "|" << road[lj][li];
     }
-      oss << "|";
-      oss << "\n";
+    oss << "|";
+    oss << "\n";
   }
-
   std::cout << oss.str();
 }
