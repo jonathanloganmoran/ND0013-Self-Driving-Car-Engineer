@@ -16,8 +16,8 @@
 
 /*** Setting weight values for cost functions ***/
 // TODO: Modify these values to something reasonable
-const float REACH_GOAL = 0;
-const float EFFICIENCY = 0;
+const float REACH_GOAL = std::pow(10, 6);
+const float EFFICIENCY = std::pow(10, 5);
 
 
 /* Computes the sum of the weighted cost functions for the current trajectory. 
