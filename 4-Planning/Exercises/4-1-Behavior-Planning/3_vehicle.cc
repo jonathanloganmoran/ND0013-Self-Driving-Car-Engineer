@@ -39,36 +39,38 @@ Vehicle::Vehicle(
 Vehicle::~Vehicle() {}
 
 
-// TODO
+/* Selects the most-optimal (lowest cost) trajectory from the FSM.
+ *
+ * The set of input `predictions` map vehicle ids to their pair of
+ * `Vehicle` states, one from the previous time-step and one from the current. 
+ * Each vehicle therefore has a set of two `Vehicle` states to consider.
+ * 
+ * @param    predictions  `Vehicle` states, each vehicle `id` has one pair. 
+ * @returns  Best (lowest cost) trajectory found in the next ego-vehicle state.
+ * */
 std::vector<Vehicle> Vehicle::choose_next_state(
     std::map<int, std::vector<Vehicle>>& predictions
 ) {
-  /**
-   * Here you can implement the transition_function code from the Behavior 
-   *   Planning Pseudocode classroom concept.
-   *
-   * @param A predictions map. This is a map of vehicle id keys with predicted
-   *   vehicle trajectories as values. Trajectories are a vector of Vehicle 
-   *   objects representing the vehicle at the current timestep and one timestep
-   *   in the future.
-   * @output The best (lowest cost) trajectory corresponding to the next ego 
-   *   vehicle state.
-   *
-   * Functions that will be useful:
-   * 1. successor_states - Uses the current state to return a vector of possible
-   *    successor states for the finite state machine.
-   * 2. generate_trajectory - Returns a vector of Vehicle objects representing 
-   *    a vehicle trajectory, given a state and predictions. Note that 
-   *    trajectory vectors might have size 0 if no possible trajectory exists 
-   *    for the state. 
-   * 3. calculate_cost - Included from cost.cpp, computes the cost for a trajectory.
-   *
-   * TODO: Your solution here.
-   */
-  /**
-   * TODO: Change return value here:
-   */
-  return generate_trajectory("KL", predictions);
+  // Get from the FSM the next possible states given the current
+  std::vector<std::string> states = successor_states();
+  std::vector<float> costs;
+  for (std::string state : states) {
+    std::vector<Vehicle> trajectory = generate_trajectory(
+        state,
+        predictions
+    );
+    if (trajectory) {
+      // Calculate the cost of this trajectory
+      float cost = calculate_cost(
+          vehicle
+          predictions,
+          trajectory
+      ); 
+      costs.append(cost);
+    }
+  }
+  // Return the minimum cost value
+  return *min_element(costs.begin(), costs.end());
 }
 
 
