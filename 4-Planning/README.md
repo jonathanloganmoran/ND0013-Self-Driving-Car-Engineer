@@ -7,11 +7,13 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Course Objectives
+* Design weighted cost functions and implement a behaviour planner in C++;
+* Use a [finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine) to model vehicle / environment states and transitions;
 * TODO.
 
 
 ### Demo Notebooks
-* ⬜️ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipyn`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.1/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb) — in progress! 🎉
+* ✅ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipyn`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.1/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb).
 
 
 ### Projects
@@ -19,16 +21,25 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Exercises
-* ⬜️ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.1/4-Planning/Exercises/4-1-Behavior-Planning) — in progress! 🎉;
+* ✅ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.1/4-Planning/Exercises/4-1-Behavior-Planning);
 * ⬜️ [4.2: Trajectory Generation]();
 * ⬜️ [4.3: Motion Planning]().
 
 
 ### Course Contents
 The following topics are covered in course exercises:
+* Behaviour Planning;
+* Vehicle and environment states;
+* State transition functions;
+* Cost functions for the self-driving car;
+* 1D vehicle kinematics;
 * More info coming soon...
 
 Other topics covered in course lectures and reading material:
+* Motion planner scheduling / cycle updates;
+* Finite-state machines;
+* State spaces for self-driving cars;
+* Feasability / safety / legality / comfort / efficiency trade-offs;
 * More info coming soon...
 
 
