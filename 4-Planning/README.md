@@ -9,11 +9,11 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 ### Course Objectives
 * Design weighted cost functions and implement a behaviour planner in C++;
 * Use a [finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine) to model vehicle / environment states and transitions;
-* TODO.
+* Implement a behaviour and motion planner in Python and C++.
 
 
 ### Demo Notebooks
-* ✅ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipyn`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.1/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb).
+* ✅ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipyn`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb).
 
 
 ### Projects
@@ -21,8 +21,8 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Exercises
-* ✅ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.1/4-Planning/Exercises/4-1-Behavior-Planning);
-* ⬜️ [4.2: Trajectory Generation]();
+* ✅ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/Exercises/4-1-Behavior-Planning);
+* ⬜️ [4.2: Trajectory Generation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.2/4-Planning/Exercises/4-2-Trajectory-Planning) — in progress! 🎉;
 * ⬜️ [4.3: Motion Planning]().
 
 
@@ -46,13 +46,13 @@ Other topics covered in course lectures and reading material:
 ### Learning Outcomes
 #### Lesson 1: Behavior Planning
 * Design high-level behaviour planning systems for the self-driving car;
-* Use Finite State Machines to model vehicle / environment states and transitions;
-* Design weighted cost functions in C++;
+* Use a [Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine) to model vehicle / environment states and transitions;
+* Design weighted [cost functions](https://en.wikipedia.org/wiki/Loss_function) in C++;
 * Implement a behaviour planner in C++.
 
 #### Lesson 2: Trajectory Generation
 * Use the C++ [`Eigen`]() library to design candidate trajectories in C++;
-* Design and implement the [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) and Hybrid A* search algorithms in C++;
+* Design and implement the [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) and Hybrid [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) search algorithms in C++;
 * Perform trajectory matching and structured trajectory generation;
 * Implement the quintic and polynomial solvers in C++;
 * Study state-of-the-art path planning nets (e.g., [DeepTraffic](https://arxiv.org/abs/1801.02805)).
