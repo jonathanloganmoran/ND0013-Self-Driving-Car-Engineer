@@ -1,3 +1,15 @@
+/* ------------------------------------------------------------------------------
+ * Lesson "4.1: Behavior Planning"
+ * Authors     : Benjamin Ulmer and Tobias Roth of Mercedes-Benz R&D.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Implements the distance-goal cost function used in the
+ *                       trajectory planner.
+ * ----------------------------------------------------------------------------
+ */
+
+
 #include "1_distance_cost.h"
 
 

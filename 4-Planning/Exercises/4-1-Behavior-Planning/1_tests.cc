@@ -1,3 +1,14 @@
+/* ------------------------------------------------------------------------------
+ * Lesson "4.1: Behavior Planning"
+ * Authors     : Benjamin Ulmer and Tobias Roth of Mercedes-Benz R&D.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Tests for the Exercises 4.1.1 through 4.1.3.
+ * ----------------------------------------------------------------------------
+ */
+
+
 #include "1_distance_cost.h"
 #include "2_inefficiency_cost.h"
 #include "3_road.h"
