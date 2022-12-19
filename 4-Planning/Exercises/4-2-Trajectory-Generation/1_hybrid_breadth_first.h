@@ -1,3 +1,14 @@
+/* ------------------------------------------------------------------------------
+ * Lesson "4.2: Trajectory Generation"
+ * Authors     : Sebastian Thrun, Emmanuel Boidot of Mercedes-Benz R&D.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Header file for the Hybrid A* search algorithm.
+ * ----------------------------------------------------------------------------
+ */
+
+
 #ifndef HYBRID_BREADTH_FIRST_H_
 #define HYBRID_BREADTH_FIRST_H_
 
