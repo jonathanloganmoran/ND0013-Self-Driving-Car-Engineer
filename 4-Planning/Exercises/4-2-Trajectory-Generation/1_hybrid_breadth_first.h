@@ -32,8 +32,8 @@ public:
   };
   // Path instance
   struct maze_path {
-    vector<vector<vector<int>>> closed;
-    vector<vector<vector<maze_s>>> came_from;
+    std::vector<std::vector<std::vector<int>>> states_closed;
+    std::vector<std::vector<std::vector<maze_s>>> states_came_from;
     maze_s final;
   };
   // Returns the corresponding 'stack' in 3D configuration space of the angle
@@ -50,7 +50,7 @@ public:
   );
   // Returns the path of nodes to the `final` from `start`
   std::vector<maze_s> reconstruct_path(
-      std::vector<std::vector<std::vector<maze_s>>>& came_from, 
+      std::vector<std::vector<std::vector<maze_s>>>& states_came_from, 
       std::vector<double> &start, HBF::maze_s& final
   );
   // Implements the breadth-first search algorithm
@@ -60,7 +60,10 @@ public:
       std::vector<int>& goal
   );
 private:
+  // Define the number of partitions to divide the control space into
+  // Here the control space refers to the direction of motion `theta`
   const int NUM_THETA_CELLS = 90;
+  // Define the bicycle motion model parameters
   const double SPEED = 1.45;
   const double LENGTH = 0.5;
 };
