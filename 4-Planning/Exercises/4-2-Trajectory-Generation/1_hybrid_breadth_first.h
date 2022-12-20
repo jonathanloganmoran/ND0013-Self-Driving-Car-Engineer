@@ -12,49 +12,58 @@
 #ifndef HYBRID_BREADTH_FIRST_H_
 #define HYBRID_BREADTH_FIRST_H_
 
+#include <math.h>
+#include <iostream>
 #include <vector>
 
-using std::vector;
 
 class HBF {
- public:
+public:
   // Constructor
   HBF();
-
   // Destructor
   virtual ~HBF();
-
-  // HBF structs
+  // State instance
   struct maze_s {
     int g;  // iteration
     double x;
     double y;
     double theta;
   };
-
+  // Path instance
   struct maze_path {
     vector<vector<vector<int>>> closed;
     vector<vector<vector<maze_s>>> came_from;
     maze_s final;
   };
-  
-  // HBF functions
-  int theta_to_stack_number(double theta);
-
-  int idx(double float_num);
-
-  vector<maze_s> expand(maze_s &state);
-
-  vector<maze_s> reconstruct_path(vector<vector<vector<maze_s>>> &came_from, 
-                                  vector<double> &start, HBF::maze_s &final);
-
-  maze_path search(vector<vector<int>> &grid, vector<double> &start, 
-                   vector<int> &goal);
-
- private:
+  // Returns the corresponding 'stack' in 3D configuration space of the angle
+  int theta_to_stack_number(
+      double theta
+  );
+  // Returns the corresponding grid index of the continuous position
+  int idx(
+      double float_num
+  );
+  // Expands the given state in the search space
+  std::vector<maze_s> expand(
+    maze_s& state
+  );
+  // Returns the path of nodes to the `final` from `start`
+  std::vector<maze_s> reconstruct_path(
+      std::vector<std::vector<std::vector<maze_s>>>& came_from, 
+      std::vector<double> &start, HBF::maze_s& final
+  );
+  // Implements the breadth-first search algorithm
+  maze_path search(
+      std::vector<std::vector<int>>& grid, 
+      std::vector<double>& start, 
+      std::vector<int>& goal
+  );
+private:
   const int NUM_THETA_CELLS = 90;
   const double SPEED = 1.45;
   const double LENGTH = 0.5;
 };
+
 
 #endif  // HYBRID_BREADTH_FIRST_H_
