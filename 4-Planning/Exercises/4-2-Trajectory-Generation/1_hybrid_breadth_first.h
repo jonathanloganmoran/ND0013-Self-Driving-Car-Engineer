@@ -8,15 +8,20 @@
  * ----------------------------------------------------------------------------
  */
 
-
 #ifndef HYBRID_BREADTH_FIRST_H_
 #define HYBRID_BREADTH_FIRST_H_
 
+#include <algorithm>
 #include <math.h>
 #include <iostream>
 #include <vector>
 
 
+/* The Hybrid A* with Breath-First Search.
+ *
+ * @class  HBF  "1_hybrid_breadth_first.h"
+ * @brief  Implements Hybrid A* (Dolgov et al., 2008) with breadth-first search.
+ */
 class HBF {
 public:
   // Constructor
@@ -29,7 +34,7 @@ public:
     double f;       // Heuristic evaluation cost (f-cost)
     double x;       
     double y;
-    double theta;
+    double theta;   // Continuous vehicle heading
   };
   // Path instance
   struct maze_path {
@@ -53,7 +58,8 @@ public:
   );
   // Expands the given state in the search space
   std::vector<maze_s> expand(
-    maze_s& state
+    maze_s& state,
+    std::vector<int>& goal
   );
   // Returns the path of nodes to the `final` from `start`
   std::vector<maze_s> reconstruct_path(

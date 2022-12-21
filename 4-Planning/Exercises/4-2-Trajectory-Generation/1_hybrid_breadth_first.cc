@@ -4,11 +4,16 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
  *
- * Purpose of this file: Implements the Hybrid A* search algorithm.
+ * Purpose of this file: Implements the Hybrid A* search (Dolgov et al., 2008).
  *                       Here a breadth-first search over the discretised map
- *                       space is performed which is guided by a continuous
- *                       vehicle control state. This guarantees kinematic
- *                       feasibility of the generated trajectory.
+ *                       space is performed. The search is guided by a cost / 
+ *                       heuristic function minimising the Manhattan distance
+ *                       to the goal position. The vehicle trajectories through
+ *                       the maze are given by a continuous control state which
+ *                       is modelled by the kinematic bicycle motion model for
+ *                       a discretised vehicle heading in range [0, 2*pi]. 
+ *                       This guarantees kinematic feasibility of the generated
+ *                       trajectory.
  * ----------------------------------------------------------------------------
  */
 
@@ -79,7 +84,8 @@ double HBF::heuristic(
  * @returns  next_states  Vector of expanded next-states.
  */
 std::vector<HBF::maze_s> HBF::expand(
-    HBF::maze_s& state
+    HBF::maze_s& state,
+    std::vector<int>& goal
 ) {
   double theta = state.theta;
   std::vector<HBF::maze_s> next_states;
@@ -142,13 +148,11 @@ std::vector< HBF::maze_s> HBF::reconstruct_path(
 
 /* Implements the breadth-first search algorithm.
  *
- * NOTE: currently the BFS does not include a heuristic function
- * evaluation and is therefore inefficient. Here we assume a 2D `grid`
- * environment s.t. each position on the grid corresponds to an integer
- * value "0" for free space, or "1" for obstacle.
+ * Here the BFS includes a heuristic function evaluation which minimises
+ * the Manhattan distance from a current state to the goal position.
  * 
- * TODO is a modification of the BFS to perform heuristic evaluation
- * as in Hybrid A* search.
+ * A 2D input `grid` map is given s.t. each position on the grid corresponds
+ * to an integer value "0" for free-space, or "1" for obstacle.
  *
  * @param    grid   Binary-valued (1: obtacle, 0: free space) grid space in 2D.
  * @param    start  State (2D position and heading) to begin search from.
@@ -160,7 +164,7 @@ HBF::maze_path HBF::search(
     std::vector<double>& start, 
     std::vector<int>& goal
 ) {
-  // TODO: Add heuristics and convert this function into hybrid A*
+  // Add heuristics and convert this function into hybrid A*
   // Initialise the 3D maps from the discretised heading angle and 2D `grid`
   std::vector<std::vector<std::vector<int>>> states_closed(
     NUM_THETA_CELLS, 
@@ -178,7 +182,7 @@ HBF::maze_path HBF::search(
   int g = 0;
   maze_s state;
   state.g = g;
-  state.f = heuristic(start.x, start.y, goal)
+  state.f = g + heuristic(start[0], start[1], goal);
   state.x = start[0];
   state.y = start[1];
   state.theta = theta;
@@ -201,8 +205,6 @@ HBF::maze_path HBF::search(
     // TODO: Replace vector with `std::deque` (optimised for pop from front)
     maze_s current = states_opened[0];
     states_opened.erase(states_opened.begin());
-    // int x = current.x;
-    // int y = current.y;
     // Check if the goal has been reached
     if (
       (idx(current.x) == goal[0]) 
@@ -217,7 +219,7 @@ HBF::maze_path HBF::search(
       return path;
     }
     // Get the set of next-possible states
-    std::vector<maze_s> next_state = expand(current);
+    std::vector<maze_s> next_state = expand(current, goal);
     for (int i = 0; i < next_state.size(); ++i) {
       // Explore each next-state 
       int next_g = next_state[i].g;
