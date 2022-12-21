@@ -25,8 +25,9 @@ public:
   virtual ~HBF();
   // State instance
   struct maze_s {
-    int g;  // iteration
-    double x;
+    int g;          // Node iterations (g-cost)
+    double f;       // Heuristic evaluation cost (f-cost)
+    double x;       
     double y;
     double theta;
   };
@@ -39,6 +40,12 @@ public:
   // Returns the corresponding 'stack' in 3D configuration space of the angle
   int theta_to_stack_number(
       double theta
+  );
+  // Computes the Manhattan distance heuristic
+  double heuristic(
+      double x,
+      double y,
+      std::vector<int>& goal
   );
   // Returns the corresponding grid index of the continuous position
   int idx(

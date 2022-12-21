@@ -57,6 +57,22 @@ int HBF::idx(
 }
 
 
+/* Computes the Manhattan distance to the goal state.
+ *
+ * @param    x      Current position along the x-axis.
+ * @param    y      Current position along the y-axis.
+ * @param    goal   Goal state with desired position.
+ * @returns  goal
+ */
+double HBF::heuristic(
+    double x, 
+    double y,
+    std::vector<int>& goal 
+) {
+  return fabs(x - goal[0]) + fabs(y - goal[1]);
+}
+
+
 /* Expands the given state in the search space. 
  *
  * @param    state        Starting state to expand from.
@@ -65,27 +81,24 @@ int HBF::idx(
 std::vector<HBF::maze_s> HBF::expand(
     HBF::maze_s& state
 ) {
-  // Get the starting state variables
-  int g = state.g;
-  double x = state.x;
-  double y = state.y;
   double theta = state.theta;
-  // Incremeent the g-cost for the heuristic evaluation
-  int next_g = g + 1;
   std::vector<HBF::maze_s> next_states;
+  // Create trajectories using the kinematic bicycle motion model
   for (int i = -35; i < 40; i += 5) {
     double delta_i = double(i);
     // Convert degrees to radians
     double delta_rad = M_PI / 180.0 * delta_i;
     double omega = SPEED / LENGTH * tan(delta_rad);
     double next_theta = theta + omega;
+    // Normalise theta in range [0, 2*pi]
     if (next_theta < 0) {
       next_theta += 2 * M_PI;
     }
-    double next_x = x + SPEED * cos(theta);
-    double next_y = y + SPEED * sin(theta);
+    double next_x = state.x + SPEED * cos(theta);
+    double next_y = state.y + SPEED * sin(theta);
     HBF::maze_s next_state;
-    next_state.g = next_g;
+    next_state.g = state.g + 1;
+    next_state.f = next_state.g + heuristic(next_x, next_y, goal);
     next_state.x = next_x;
     next_state.y = next_y;
     next_state.theta = next_theta;
@@ -130,7 +143,9 @@ std::vector< HBF::maze_s> HBF::reconstruct_path(
 /* Implements the breadth-first search algorithm.
  *
  * NOTE: currently the BFS does not include a heuristic function
- * evaluation and is therefore inefficient. 
+ * evaluation and is therefore inefficient. Here we assume a 2D `grid`
+ * environment s.t. each position on the grid corresponds to an integer
+ * value "0" for free space, or "1" for obstacle.
  * 
  * TODO is a modification of the BFS to perform heuristic evaluation
  * as in Hybrid A* search.
@@ -146,6 +161,7 @@ HBF::maze_path HBF::search(
     std::vector<int>& goal
 ) {
   // TODO: Add heuristics and convert this function into hybrid A*
+  // Initialise the 3D maps from the discretised heading angle and 2D `grid`
   std::vector<std::vector<std::vector<int>>> states_closed(
     NUM_THETA_CELLS, 
     std::vector<std::vector<int>>(grid[0].size(), 
@@ -156,16 +172,17 @@ HBF::maze_path HBF::search(
     std::vector<std::vector<maze_s>>(grid[0].size(), 
     std::vector<maze_s>(grid.size()))
   );
-  // Create a new starting `State`
+  // Create a new starting `maze_s` state
   double theta = start[2];
   int stack = theta_to_stack_number(theta);
   int g = 0;
   maze_s state;
   state.g = g;
+  state.f = heuristic(start.x, start.y, goal)
   state.x = start[0];
   state.y = start[1];
   state.theta = theta;
-  // Close the visited `State` tuple
+  // Close the visited state tuple
   states_closed[stack][idx(state.x)][idx(state.y)] = 1;
   // Add the visited state to the trajectory history
   states_came_from[stack][idx(state.x)][idx(state.y)] = state;
@@ -175,17 +192,21 @@ HBF::maze_path HBF::search(
   bool finished = false;
   // Explore the remaining states in `opened`
   while(!states_opened.empty()) {
-    // TODO: Sort by ascending f-value as given by the heuristic function
+    // Sort by ascending f-value as given by the heuristic function
+    sort(states_opened.begin(), states_opened.end(), 
+      [&](maze_s s1, maze_s s2) {
+        return s1.f < s2.f;
+    });
     // Then, get the state with the lowest f-value
-    // For now, we grab the first element
+    // TODO: Replace vector with `std::deque` (optimised for pop from front)
     maze_s current = states_opened[0];
     states_opened.erase(states_opened.begin());
-    int x = current.x;
-    int y = current.y;
+    // int x = current.x;
+    // int y = current.y;
     // Check if the goal has been reached
     if (
-      (idx(x) == goal[0]) 
-      && (idx(y) == goal[1])
+      (idx(current.x) == goal[0]) 
+      && (idx(current.y) == goal[1])
     ) {
       std::cout << "Found path to goal in " << total_closed;
       std::cout << " expansions" << "\n";
