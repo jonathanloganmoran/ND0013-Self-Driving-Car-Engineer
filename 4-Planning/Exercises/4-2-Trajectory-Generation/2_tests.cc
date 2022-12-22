@@ -9,6 +9,7 @@
  */
 
 #include "1_hybrid_breadth_first.h"
+#include "2_jerk_minimising_trajectory.h"
 #include <iostream>
 #include <vector>
 
@@ -79,5 +80,37 @@ void test_hybrid_breadth_first() {
       std::cout << "x " << step.x << "\n";
       std::cout << "y " << step.y << "\n";
       std::cout << "theta " << step.theta << "\n";
+  }
+}
+
+
+/* Tests the quintic polynomial solver using the test cases in `2_grader.h`.
+ *
+ * The `JMT` function in `2_jerk_minimising_trajectory.cc` returns the six
+ * coefficient values corresponding to the quintic polynomial of the minimised
+ * jerk trajectory. The matrix equation $Ax = b$ is solved using the inverse of
+ * the matrix $A$ which is assumed to exist.
+ * 
+ * This helper function tests the returned coefficient values against the
+ * expected values up to a deviation amount `epsilon` defined in `2_grader.h`.
+ */
+void test_jerk_minimising_trajectory() {
+  // Create the test cases
+  std::vector<test_case> tc = create_tests();
+  bool total_correct = true;
+  for (int i = 0; i < tc.size(); ++i) {
+    std::vector<double> jmt = JMT(
+        tc[i].start,
+        tc[i].end,
+        tc[i].T
+    );
+    bool correct = close_enough(jmt, answers[i]);
+    total_correct &= correct;
+  }
+  if (!total_correct) {
+    std::cout << "Try again!" << "\n";
+  }
+  else {
+    std::cout << "Nice work!" << "\n";
   }
 }
