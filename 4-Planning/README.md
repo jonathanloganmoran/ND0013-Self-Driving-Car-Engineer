@@ -13,9 +13,9 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Demo Notebooks
-* ✅ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.2/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb);
-* ✅ [`2022-12-19-Course-4-Planning-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.2/4-Planning/Exercises/2022-12-19-Course-4-Planning-Exercises-Part-2.ipynb);
-* ✅ [`2022-12-23-Course-4-Planning-Exercises-Part-3.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/4.2/4-Planning/Exercises/2022-12-23-Course-4-Planning-Exercises-Part-3.ipynb).
+* ✅ [`2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/Exercises/2022-12-14-Course-4-Planning-Exercises-Part-1.ipynb);
+* ✅ [`2022-12-19-Course-4-Planning-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/Exercises/2022-12-19-Course-4-Planning-Exercises-Part-2.ipynb);
+* ✅ [`2022-12-23-Course-4-Planning-Exercises-Part-3.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/Exercises/2022-12-23-Course-4-Planning-Exercises-Part-3.ipynb).
 
 
 ### Projects
@@ -24,7 +24,7 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 ### Exercises
 * ✅ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/Exercises/4-1-Behavior-Planning);
-* ✅ [4.2: Trajectory Generation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/4.2/4-Planning/Exercises/4-2-Trajectory-Generation);
+* ✅ [4.2: Trajectory Generation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/Exercises/4-2-Trajectory-Generation);
 * ⬜️ [4.3: Motion Planning]().
 
 
