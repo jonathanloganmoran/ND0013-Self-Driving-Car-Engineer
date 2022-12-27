@@ -121,5 +121,7 @@ void test_generate_offset_goals(
 int main() {
   // Exercise 4.3.1: Simpson's Rule
   test_simpsons_rule();
+  // Exercise 4.3.2: Goal Offset Path Planning
+  test_generate_offset_goals();
   return 0;
 }
