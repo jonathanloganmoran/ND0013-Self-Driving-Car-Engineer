@@ -9,6 +9,7 @@
  */
 
 #include "1_simpsons_rule.h"
+#include "2_offset_goals.h"
 #include <iostream>
 #include <vector>
 
@@ -40,6 +41,80 @@ void test_simpsons_rule() {
     fabs(expected - integral_result) < epsilon ? "PASS" : "FAIL"
   ) << "\n";
   std::cout << "Result: " << integral_result << "\n";
+}
+
+
+/* Tests the goal-offset generator function.
+ * 
+ * Here the deviation from the given `offset_goal` is computed. 
+ * The number of unique path deviations to compute is defined as `_num_goals`
+ * inside the `2_offset_goals.h` file. The deviation for each waypoint is
+ * computed with the `generate_offset_goals` function. The output of this
+ * function is tested against the test cases defined here. To validate the
+ * results, we check against the `expected` vector of offset waypoints.
+ */
+void test_generate_offset_goals(
+    int argc, 
+    const char* argv[]
+) {
+  State goal_state;
+  /*** Test Case 1 ***/
+  // Waypoint 1
+  std::cout << "Test Case 1:" << "\n";
+  goal_state.location.x = 0.0;
+  goal_state.location.y = 0.0;
+  goal_state.rotation.yaw = 0.0;
+  State offset_goal;
+  std::vector<State> expected;
+  // Waypoint 2
+  offset_goal.location.x = -1.83697e-16;
+  offset_goal.location.y = -3;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 3
+  offset_goal.location.x = -1.22465e-16;
+  offset_goal.location.y = -2;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 4
+  offset_goal.location.x = -6.12323e-17;
+  offset_goal.location.y = -1;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 5
+  offset_goal.location.x = 0;
+  offset_goal.location.y = 0;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 6
+  offset_goal.location.x = 6.12323e-17;
+  offset_goal.location.y = 1;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 7
+  offset_goal.location.x = 1.22465e-16;
+  offset_goal.location.y = 2;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  // Waypoint 8
+  offset_goal.location.x = 1.83697e-16;
+  offset_goal.location.y = 3;
+  offset_goal.rotation.yaw = 0;
+  expected.push_back(offset_goal);
+  /*** Running the evaluation loop ***/
+  // Get the goal-offset waypoints
+  auto result = generate_offset_goals(goal_state);
+  for (size_t i = 0; i < _num_goals; ++i) {
+    std::cout << (
+      (std::fabs(
+        result[i].location.x - expected[i].location.x) < FLT_EPSILON
+      ) && (std::fabs(
+          result[i].location.y - expected[i].location.y) < FLT_EPSILON
+      ) && (std::fabs(
+          result[i].rotation.yaw - expected[i].rotation.yaw) < FLT_EPSILON
+      ) ? "PASS" : "FAIL"
+    ) << "\n";
+  }
 }
 
 
