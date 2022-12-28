@@ -72,20 +72,24 @@ std::vector<bool> collision_checker(
     for (size_t c = 0; c < n_circles && !collision; ++c) {
       // Compute the circle centre-offset points for the ego-vehicle
       Location ego_circle_center;
-      ego_circle_center.x += (
-        CIRCLE_OFFSETS[c] * std::cos(ego_vehicle.rotation.yaw)
+      ego_circle_center.x = (
+        ego_vehicle.location.x
+        + CIRCLE_OFFSETS[c] * std::cos(ego_vehicle.rotation.yaw)
       );
-      ego_circle_center.y += (
-        CIRCLE_OFFSETS[c] * std::sin(ego_vehicle.rotation.yaw)
+      ego_circle_center.y = (
+        ego_vehicle.location.y
+        + CIRCLE_OFFSETS[c] * std::sin(ego_vehicle.rotation.yaw)
       );
       for (size_t c2 = 0; c2 < n_circles && !collision; ++c2) {
         // Compute the circle centre-offset points for the actor (obstacle)
         Location actor_circle_center;
-        actor_circle_center.x += (
-          CIRCLE_OFFSETS[c2] * std::cos(actor.rotation.yaw)
+        actor_circle_center.x = (
+          actor.location.x
+          + CIRCLE_OFFSETS[c2] * std::cos(actor.rotation.yaw)
         );
-        actor_circle_center.y += (
-          CIRCLE_OFFSETS[c2] * std::sin(actor.rotation.yaw)
+        actor_circle_center.y = (
+          actor.location.y
+          + CIRCLE_OFFSETS[c2] * std::sin(actor.rotation.yaw)
         );
         // Compute the distance between the ego-vehicle and obstacle / actor
         double dist = std::sqrt(
