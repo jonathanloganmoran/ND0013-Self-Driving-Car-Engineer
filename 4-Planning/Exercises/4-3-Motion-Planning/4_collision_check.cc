@@ -66,9 +66,9 @@ std::vector<bool> collision_checker(
 ) {
   std::vector<bool> collisions(obstacles.size(), false);
   auto n_circles = CIRCLE_OFFSETS.size();
-  bool collision{false};
   for (size_t obs = 0; obs < obstacles.size(); ++obs) {
     auto actor = obstacles[obs];
+    bool collision{false};
     for (size_t c = 0; c < n_circles && !collision; ++c) {
       // Compute the circle centre-offset points for the ego-vehicle
       Location ego_circle_center;
