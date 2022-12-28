@@ -277,7 +277,6 @@ int main() {
   // Exercise 4.3.3: Velocity Profile Generation
   test_velocity_profile();
   // Exercise 4.3.4: Circle-Based Collision Detection
-  // CURRENT: FAILS TEST CASE 1
   test_collision_check();
   return 0;
 }
