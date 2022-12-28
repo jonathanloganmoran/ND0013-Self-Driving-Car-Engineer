@@ -8,17 +8,6 @@
  * ----------------------------------------------------------------------------
  */
 
-/*
-1) calculate the a final speed given an initial speed, an
-acceleration and distance.
-
-v_f = sqrt(v_i ^ 2 + 2ad);
-
-2) calculate the distance traveled given an initial and final speeds and
-acceleration.
-
-d = (v_f^2 - v_i^2)/ (2 * a);
-*/
 #include "3_velocity_profile.h"
 
 
@@ -87,62 +76,4 @@ double calc_distance(
   // std::cout << "v_i, v_f, a: " << v_i << ", " << v_f << ", ";
   // std::cout << a << ",  d: " << d << "\n";
   return d;
-}
-
-
-// ******* MAIN FUNCTION ********
-int main(int argc, const char* argv[]) {
-  std::cout << "Test Case 1: " << "\n";
-  std::vector<double> expected_d{25.0,
-                                 25.0,
-                                 0.0,
-                                 std::numeric_limits<double>::infinity(),
-                                 std::numeric_limits<double>::infinity(),
-                                 std::numeric_limits<double>::infinity(),
-                                 0.0};
-  std::vector<std::vector<double>> calc_distance_input{
-      {0.0, 10.0, 2.0},
-      {10.0, 0.0, -2.0},
-      {2.0, 2.0, 2.0},
-      {2.0, std::numeric_limits<double>::infinity(), 2.0},
-      {std::numeric_limits<double>::infinity(), 2.0, 3.0},
-      {2.0, std::numeric_limits<double>::infinity(), 1.0},
-      {12.0, 2.0, std::numeric_limits<double>::infinity()}};
-  for (size_t i = 0; i < calc_distance_input.size(); ++i) {
-    std::cout << (expected_d[i] == calc_distance(calc_distance_input[i][0],
-                                                 calc_distance_input[i][1],
-                                                 calc_distance_input[i][2])
-                      ? "PASS"
-                      : "FAIL")
-              << "\n";
-  }
-
-  std::cout << "Test Case 2: " << "\n";
-  std::vector<double> expected_vf{10.0,
-                                  0.0,
-                                  2.0,
-                                  std::numeric_limits<double>::infinity(),
-                                  std::numeric_limits<double>::infinity(),
-                                  std::numeric_limits<double>::infinity(),
-                                  std::numeric_limits<double>::infinity()};
-  std::vector<std::vector<double>> calc_final_speed_input{
-      {0.0, 2.0, 25.0},
-      {10.0, -2.0, 25.0},
-      {2.0, 2.0, 0.0},
-      {2.0, 0.0, std::numeric_limits<double>::infinity()},
-      {std::numeric_limits<double>::infinity(), 3.0,
-       std::numeric_limits<double>::infinity()},
-      {2.0, 0.0, std::numeric_limits<double>::infinity()},
-      {12.0, std::numeric_limits<double>::infinity(), 0.0}};
-  for (size_t i = 0; i < calc_final_speed_input.size(); ++i) {
-    std::cout << (expected_vf[i] ==
-                          calc_final_speed(calc_final_speed_input[i][0],
-                                           calc_final_speed_input[i][1],
-                                           calc_final_speed_input[i][2])
-                      ? "PASS"
-                      : "FAIL")
-              << "\n";
-  }
-
-  return 0;
 }

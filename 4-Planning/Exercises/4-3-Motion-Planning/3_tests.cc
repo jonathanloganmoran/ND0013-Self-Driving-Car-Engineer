@@ -53,10 +53,7 @@ void test_simpsons_rule() {
  * function is tested against the test cases defined here. To validate the
  * results, we check against the `expected` vector of offset waypoints.
  */
-void test_generate_offset_goals(
-    int argc, 
-    const char* argv[]
-) {
+void test_generate_offset_goals() {
   State goal_state;
   /*** Test Case 1 ***/
   // Waypoint 1
@@ -118,10 +115,83 @@ void test_generate_offset_goals(
 }
 
 
+/* Tests the linear velocity profile generator functions.
+ * 
+ * The constant-acceleration rectilinear motion equations are evalauted
+ * in order to compute the final distance and the final velocity of the
+ * vehicle w.r.t. the input values.
+ */
+void test_velocity_profile() {
+  /*** Test Case 1 ***/
+  // Testing `calc_distance` function
+  std::cout << "Test Case 1: " << "\n";
+  std::vector<double> expected_d{
+      25.0,
+      25.0,
+      0.0,
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity(),
+      0.0
+  };
+  std::vector<std::vector<double>> calc_distance_input{
+      {0.0, 10.0, 2.0},
+      {10.0, 0.0, -2.0},
+      {2.0, 2.0, 2.0},
+      {2.0, std::numeric_limits<double>::infinity(), 2.0},
+      {std::numeric_limits<double>::infinity(), 2.0, 3.0},
+      {2.0, std::numeric_limits<double>::infinity(), 1.0},
+      {12.0, 2.0, std::numeric_limits<double>::infinity()}
+  };
+  for (size_t i = 0; i < calc_distance_input.size(); ++i) {
+    std::cout << (
+      expected_d[i] == calc_distance(
+          calc_distance_input[i][0],
+          calc_distance_input[i][1],
+          calc_distance_input[i][2]
+      ) ? "PASS" : "FAIL"
+    ) << "\n";
+  }
+  /*** Test Case 2 ***/
+  // Testing `calc_final_speed` function 
+  std::cout << "Test Case 2: " << "\n";
+  std::vector<double> expected_vf{
+      10.0,
+      0.0,
+      2.0,
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity()
+  };
+  std::vector<std::vector<double>> calc_final_speed_input{
+      {0.0, 2.0, 25.0},
+      {10.0, -2.0, 25.0},
+      {2.0, 2.0, 0.0},
+      {2.0, 0.0, std::numeric_limits<double>::infinity()},
+      {std::numeric_limits<double>::infinity(), 3.0,
+       std::numeric_limits<double>::infinity()},
+      {2.0, 0.0, std::numeric_limits<double>::infinity()},
+      {12.0, std::numeric_limits<double>::infinity(), 0.0}
+  };
+  for (size_t i = 0; i < calc_final_speed_input.size(); ++i) {
+    std::cout << (
+      expected_vf[i] == calc_final_speed(
+          calc_final_speed_input[i][0],
+          calc_final_speed_input[i][1],
+          calc_final_speed_input[i][2]
+      ) ? "PASS" : "FAIL"
+    ) << "\n";
+  }
+}
+
+
 int main() {
   // Exercise 4.3.1: Simpson's Rule
   test_simpsons_rule();
   // Exercise 4.3.2: Goal Offset Path Planning
   test_generate_offset_goals();
+  // Exercise 4.3.3: Velocity Profile Generation
+  test_velocity_profile();
   return 0;
 }
