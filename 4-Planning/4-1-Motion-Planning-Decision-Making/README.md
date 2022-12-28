@@ -62,11 +62,11 @@ TODO.
 * TODO.
 
 ## Credits
-This assignment was prepared by Munir Jojo-Verge, 2020 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).
+This assignment was prepared by Munir Jojo-Verge, Aaron Brown et al., 2021 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).
 
 References
 * TODO.
 
 
 Helpful resources:
-* TODO.
+* [ND0013: C5 Planning Starter | GitHub](https://github.com/udacity/nd013-c5-planning-starter).
