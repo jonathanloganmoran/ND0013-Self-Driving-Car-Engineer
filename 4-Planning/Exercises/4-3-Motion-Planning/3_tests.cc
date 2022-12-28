@@ -185,6 +185,89 @@ void test_velocity_profile() {
   }
 }
 
+/* Tests the collision check function.
+ *
+ * Assumed is the use of the circle-based conservative collision detector.
+ * In other words, a set of three circles with given radii are assigned to each
+ * vehicle / obstacle / actor object and placed with an offset value along the
+ * longitudinal axis w.r.t. the object centre-point.
+ * 
+ * The collision check function examines each ego-vehicle and obstacle / actor
+ * circle and computes the distance to each w.r.t. the circle centre-points.
+ * A collision is said to occur if the computed distance between centre-points
+ * is less than the sum of their respective radii. If this is the case, the
+ * function returns `true`.
+ * 
+ * Defined in `4_collision_check.cc` is the `CIRCLE_RADII` and `CIRCLE_OFFSETS`
+ * in metres for the circles used to represent the entirety of the object area. 
+ */
+void test_collision_check() {
+  State ego_vehicle;
+  /*** Test Case 1 ***/
+  // Define the ego-vehicle state (position and orientation)
+  std::cout << "Test Case 1: ";
+  ego_vehicle.location.x = 10.0;
+  ego_vehicle.location.y = 5.5;
+  ego_vehicle.rotation.yaw = 0.349066;
+  // Define the obstacle states (positions and orientations)
+  std::vector<State> obstacles;
+  // Obstacle 1
+  // Note: same position as ego-vehicle
+  State obstacle;
+  obstacle.location.x = 10.0;
+  obstacle.location.y = 5.5;
+  obstacle.rotation.yaw = 0.34;
+  obstacles.push_back(obstacle);
+  // Obstacle 2
+  obstacle.location.x = 3;
+  obstacle.location.y = -2;
+  obstacle.rotation.yaw = 0.44;
+  obstacles.push_back(obstacle);
+  // Obstacle 3
+  obstacle.location.x = -5;
+  obstacle.location.y = 5.5;
+  obstacle.rotation.yaw = 1.57;
+  obstacles.push_back(obstacle);
+  // Obstacle 4
+  obstacle.location.x = 8;
+  obstacle.location.y = 5;
+  obstacle.rotation.yaw = 0.3;
+  obstacles.push_back(obstacle);
+  // Obstacle 5
+  obstacle.location.x = 12;
+  obstacle.location.y = 6;
+  obstacle.rotation.yaw = 0;
+  obstacles.push_back(obstacle);
+  // Obstacle 6
+  obstacle.location.x = -1;
+  obstacle.location.y = 2;
+  obstacle.rotation.yaw = 0.5;
+  obstacles.push_back(obstacle);
+  // Obstacle 7
+  obstacle.location.x = 11.5;
+  obstacle.location.y = 6;
+  obstacle.rotation.yaw = 0.34;
+  obstacles.push_back(obstacle);
+  // Define the expected truth values for the above obstacles
+  std::vector<bool> expected{
+    true, 
+    false, 
+    false, 
+    true, 
+    true, 
+    false, 
+    true
+  };
+  // Perform the collision check
+  auto result = collision_checker(
+    ego_vehicle, 
+    obstacles
+  );
+  std::cout << (
+    expected == result ? "PASS" : "FAIL"
+  ) << "\n";
+}
+
 
 int main() {
   // Exercise 4.3.1: Simpson's Rule
@@ -193,5 +276,7 @@ int main() {
   test_generate_offset_goals();
   // Exercise 4.3.3: Velocity Profile Generation
   test_velocity_profile();
+  // Exercise 4.3.4: Circle-Based Collision Detection
+  test_collision_check();
   return 0;
 }
