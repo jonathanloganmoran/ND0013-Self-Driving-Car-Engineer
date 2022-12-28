@@ -1,12 +1,14 @@
-/**********************************************
- * Self-Driving Car Nano-degree - Udacity
- *  Created on: October 20, 2020
- *      Author: Munir Jojo-Verge
- **********************************************/
-/*
-In this exercise you will practice 2 essential calculations necessary to build a
-linear profile.
+/* ------------------------------------------------------------------------------
+ * Lesson "4.3: Motion Planning"
+ * Authors     : Munir Jojo-Verge.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Implements the linear velocity profile generator.
+ * ----------------------------------------------------------------------------
+ */
 
+/*
 1) calculate the a final speed given an initial speed, an
 acceleration and distance.
 
@@ -17,42 +19,48 @@ acceleration.
 
 d = (v_f^2 - v_i^2)/ (2 * a);
 */
+#include "3_velocity_profile.h"
 
-#include <cfloat>
-#include <cmath>
-#include <iostream>
-#include <limits>
-#include <vector>
 
-/*
-Using v_f = sqrt(v_i ^ 2 + 2ad), compute the final speed for a given
-acceleration across a given distance, with initial speed v_i.
-Make sure to check the discriminant of the radical.If it is negative,
-return zero as the final speed.
-Inputs : v_i - the initial speed in m / s.
-v_f - the ginal speed in m / s.
-a - the acceleration in m / s ^ 2.
-*/
-double calc_final_speed(const double v_i, const double a, const double d) {
+/* Returns the final speed from the given values.
+ * 
+ * The final speed is calculated using the expression:
+ *    $v_{f} = \sqrt{v_{i}^{2} + 2 * a * d}$.
+ * If the discriminant, i.e., the quantity inside the square-root,
+ * is negative, then the returned final velocity $v_{f}$ is $0$.
+ * If the discriminant is infinity or NaN, $v_{f} = \infty$ is returned.     
+ *
+ * @param    v_i    Initial velocity of the vehicle (m/s).
+ * @param    a      Fixed acceleration across the given distance (m/s^2).
+ * @param    d      Total distance to travel.
+ * @returns  v_f    Final velocity w.r.t. given values.
+ */
+double calc_final_speed(
+    const double v_i, 
+    const double a, 
+    const double d
+) {
   double v_f{0.0};
-  // TODO-calc final speed: Calculate the final distance.
-  // v_f = sqrt(v_i ^ 2 + 2ad)
-  // Make sure you handle negative discriminant
-  // and make v_f = 0 in that case. If the discriminant is inf or nan return
-  // infinity.
-  double disc = ...;  // <-- FIX THIS
-  if (disc <= 0.0) {
-    v_f = ...;  // <-- FIX THIS
-  } else if (disc == std::numeric_limits<double>::infinity() ||
-             std::isnan(disc)) {
-    v_f = ...;  // <-- FIX THIS
-  } else {
-    v_f = ...;  // <-- FIX THIS
+  // Compute the final speed w.r.t. input values
+  double discriminant = v_i * v_i + 2 * a * d;
+  if (discriminant <= 0.0) {
+    v_f = 0.0;
+  } 
+  else if (
+    (discriminant == std::numeric_limits<double>::infinity()) 
+    || (std::isnan(discriminant))
+    ) {
+    v_f = std::numeric_limits<double>::infinity();
+  } 
+  else {
+    v_f = sqrt(discriminant);
   }
-  //   std::cout << "v_i, a, d: " << v_i << ", " << a << ", " << d
-  //             << ",  v_f: " << v_f << std::endl;
+  // UNCOMMENT TO PRINT FINAL SPEED AND INITIAL VALUES
+  // std::cout << "v_i, a, d: " << v_i << ", " << a << ", ";
+  // std::cout << d << ",  v_f: " << v_f << "\n";
   return v_f;
 }
+
 
 /*
 Using d = (v_f^2 - v_i^2) / (2 * a), compute the distance
@@ -62,7 +70,11 @@ Inputs: v_i - the initial speed in m/s.
         v_f - the final speed in m/s.
         a - the acceleration in m/s^2.
         */
-double calc_distance(const double v_i, const double v_f, const double a) {
+double calc_distance(
+    const double v_i, 
+    const double v_f, 
+    const double a
+) {
   double d{0.0};
   // TODO-calc distance: use one of the common rectilinear accelerated
   // equations of motion to calculate the distance traveled while going from
@@ -74,13 +86,14 @@ double calc_distance(const double v_i, const double v_f, const double a) {
   // YOUR CODE HERE
 
   //   std::cout << "v_i, v_f, a: " << v_i << ", " << v_f << ", " << a
-  //             << ",  d: " << d << std::endl;
+  //             << ",  d: " << d << "\n";
   return d;
 }
 
+
 // ******* MAIN FUNCTION ********
 int main(int argc, const char* argv[]) {
-  std::cout << "Test Case 1: " << std::endl;
+  std::cout << "Test Case 1: " << "\n";
   std::vector<double> expected_d{25.0,
                                  25.0,
                                  0.0,
@@ -102,10 +115,10 @@ int main(int argc, const char* argv[]) {
                                                  calc_distance_input[i][2])
                       ? "PASS"
                       : "FAIL")
-              << std::endl;
+              << "\n";
   }
 
-  std::cout << "Test Case 2: " << std::endl;
+  std::cout << "Test Case 2: " << "\n";
   std::vector<double> expected_vf{10.0,
                                   0.0,
                                   2.0,
@@ -129,7 +142,7 @@ int main(int argc, const char* argv[]) {
                                            calc_final_speed_input[i][2])
                       ? "PASS"
                       : "FAIL")
-              << std::endl;
+              << "\n";
   }
 
   return 0;
