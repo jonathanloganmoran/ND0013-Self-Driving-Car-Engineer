@@ -49,7 +49,13 @@ In this project we implement several core components of the traditional [hierarc
 
 
 ## 2. Programming Task
-TODO.
+### Prerequisites
+In order to make use of this project, you must have the following dependencies installed:
+* [Eigen 3.3.7](https://gitlab.com/libeigen/eigen/-/releases/3.3.7);
+* [Carla Simulator](https://github.com/carla-simulator/carla);
+* [`rpclib` 2.2.1](https://github.com/rpclib/rpclib).
+
+While we have chosen to omit these dependencies from this repository, you may find the archived copies on the starter code repository [here](https://github.com/udacity/nd013-c5-planning-starter/tree/master/project).
 
 ## 3. Closing Remarks
 ###### Alternatives
