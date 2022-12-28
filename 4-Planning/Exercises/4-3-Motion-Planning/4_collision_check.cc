@@ -76,7 +76,7 @@ std::vector<bool> collision_checker(
         CIRCLE_OFFSETS[c] * std::cos(ego_vehicle.rotation.yaw)
       );
       ego_circle_center.y += (
-        CIRCLE_OFFSETS[c] * std:sin(ego_vehicle.rotation.yaw)
+        CIRCLE_OFFSETS[c] * std::sin(ego_vehicle.rotation.yaw)
       );
       for (size_t c2 = 0; c2 < n_circles && !collision; ++c2) {
         // Compute the circle centre-offset points for the actor (obstacle)
