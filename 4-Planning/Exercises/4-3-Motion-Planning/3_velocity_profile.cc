@@ -62,31 +62,30 @@ double calc_final_speed(
 }
 
 
-/*
-Using d = (v_f^2 - v_i^2) / (2 * a), compute the distance
-required for a given acceleration/deceleration.
-
-Inputs: v_i - the initial speed in m/s.
-        v_f - the final speed in m/s.
-        a - the acceleration in m/s^2.
-        */
+/* Compute the distance travelled using the rectilinear acceleration equation.
+ *
+ * The distance travelled is computed using the rectilinear (straight-line)
+ * equation for a constant acceleration `a`. This is given by the following:
+ *    $\Delta{d} = \frac{v_{f}^{2} - v_{i}^{2}}{2 * a}$.
+ * 
+ * @param    v_i    Initial velocity of the vehicle (m/s).
+ * @param    v_f    Final velocity of the vehicle (m/s).
+ * @param    a      Constant acceleration of the vehicle (m/s^2).
+ * @returns  d      Distance travelled w.r.t. given values.
+ */
 double calc_distance(
     const double v_i, 
     const double v_f, 
     const double a
 ) {
-  double d{0.0};
-  // TODO-calc distance: use one of the common rectilinear accelerated
-  // equations of motion to calculate the distance traveled while going from
-  // v_i (initial velocity) to v_f (final velocity) at a constant
-  // acceleration/deceleration "a".
-  // d = (v_f^2 - v_i^2) / (2 * a)
-  // Make sure you handle div by 0 (if (std::abs(a) < DBL_EPSILON))
-
-  // YOUR CODE HERE
-
-  //   std::cout << "v_i, v_f, a: " << v_i << ", " << v_f << ", " << a
-  //             << ",  d: " << d << "\n";
+  if (std::abs(a) < DBL_EPSILON) {
+    // Division by very small acceleration value results in infinity
+    return std::numeric_limits<double>::infinity();
+  }
+  double d = (v_f * v_f - v_i * v_i) / (2 * a);
+  // UNCOMMENT TO PRINT DISTANCE AND INITIAL VALUES
+  // std::cout << "v_i, v_f, a: " << v_i << ", " << v_f << ", ";
+  // std::cout << a << ",  d: " << d << "\n";
   return d;
 }
 
