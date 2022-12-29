@@ -23,14 +23,9 @@
 #include <memory>
 #include <vector>
 
-namespace cc = carla::client;
-namespace cost = cost_functions;
-namespace cg = carla::geom;
-namespace cf = cost_functions;
-
 template <typename T>
 using SharedPtr = boost::shared_ptr<T>;
-using Waypoint = cc::Waypoint;
+using Waypoint = carla::client::Waypoint;
 
 
 class MotionPlanner {

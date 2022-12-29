@@ -377,8 +377,8 @@ float MotionPlanner::calculate_cost(
   // LOG(INFO) << "Starting spiral cost calc";
   // Initialize cost to 0.0
   float cost = 0.0;
-  cost += cf::collision_circles_cost_spiral(spiral, obstacles);
-  cost += cf::close_to_main_goal_cost_spiral(spiral, goal);
+  cost += cost_functions::collision_circles_cost_spiral(spiral, obstacles);
+  cost += cost_functions::close_to_main_goal_cost_spiral(spiral, goal);
   // LOG(INFO) << "Path Cost: " << cost;
   return cost;
 }
