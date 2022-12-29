@@ -193,22 +193,15 @@ State BehaviorPlannerFSM::state_transition(
     // Track the previous goal-state, i.e., set new goal-state to previous
     // in order to keep / maintain the goal at the desired stopping point
     goal = _goal;
-
-    // TODO: It turns out that when we teleport, the car is always at speed
-    // zero. In this the case, as soon as we enter the DECEL_TO_STOP state,
-    // the condition that we are <= _stop_threshold_speed is ALWAYS true and we
-    // move straight to "STOPPED" state. To solve this issue (since we don't
-    // have a motion controller yet), you should use "distance" instead of
-    // speed. Make sure the distance to the stopping point is <=
-    // P_STOP_THRESHOLD_DISTANCE. Uncomment the line used to calculate the
-    // distance
+    // Since we are not using a motion controller (yet), we need an alternative
+    // way to control the vehicle speed in the `DECEL_TO_STOP` state
+    // Therefore, we will use distance instead of speed in order to make sure
+    // the ego-vehicle comes to a complete stop at the stopping point
     auto distance_to_stop_sign = utils::magnitude(
         goal.location - ego_state.location
     );
     // LOG(INFO) << "Ego distance to stop line: " << distance_to_stop_sign;
-    // TODO-use distance rather than speed: Use distance rather than speed...
-    if (utils::magnitude(ego_state.velocity) <= _stop_threshold_speed) {  // -> Fix this
-      // if (distance_to_stop_sign <= P_STOP_THRESHOLD_DISTANCE) {
+    if (distance_to_stop_sign <= P_STOP_THRESHOLD_DISTANCE) {
       // TODO-move to STOPPED state: Now that we know we are close or at the
       // stopping point we should change state to "STOPPED"
       //_active_maneuver = ;  // <- Fix This
