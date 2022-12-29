@@ -50,7 +50,7 @@ class BehaviorPlannerFSM {
   // Distance amount to subtract from the goal-state position
   // in order to e.g., prevent collisions or cross stop / intersection lines
   double _stop_line_buffer{-1.0};
-  cr::JuncId _prev_junction_id{-1};
+  carla::road::JuncId _prev_junction_id{-1};
   // double _follow_lead_vehicle_lookahead{-1.0};
   std::chrono::time_point<std::chrono::high_resolution_clock> _start_stop_time;
   // Ego-vehicle manoeuvre state (evaluated by the FSM)
