@@ -24,7 +24,7 @@ VelocityProfileGenerator::~VelocityProfileGenerator() {}
  *
  * @param  time_gap     Time-gap (s) to use with the velocity profile. TODO.
  * @param  a_max        Maximum permitted acceleration (m/s^2).
- * @param  slow_speed   Speed to set for slow manoeuvre (m/s). TODO.
+ * @param  slow_speed   Velocity (m/s) to set for slow manoeuvre. TODO.
  */
 void VelocityProfileGenerator::setup(
     const double& time_gap,
@@ -37,78 +37,75 @@ void VelocityProfileGenerator::setup(
 };
 
 
-/* Returns the trajectory generated for the given state variables.
+/* Computes the travel distance needed for given acceleration / deceleration.
  *
- * @param    spiral           Path containing the waypoints to profile.
- * @param    desired_speed    Desired velocity (m/s) to maintain.
- * @param    ego_state        Ego-vehicle starting state.
- * @param    lead_car_state   Lead-vehicle state to match.
- * @param    maneuver         Requested vehicle state to create trajectory for.
- * @returns  trajectory       Trajectory computed w.r.t. the given state.
+ * The distance required to complete the manoeuvre is given by the distance
+ * equation of the 1D rectilinear motion, i.e.,
+ *   $d = (v_{f}^{2} + v_{i}^{2}) / (2 * a)$.
+ * 
+ * @param    v_i  Initial velocity (m/s) of the vehicle to profile.
+ * @param    v_f  Final desired velocity (m/s) to profile.
+ * @param    a    Desired acceleration (m/s^2) to profile.
+ * @returns  d    Distance required to complete the manoeuvre (m).
  */
-std::vector<TrajectoryPoint> VelocityProfileGenerator::generate_trajectory(
-    const std::vector<PathPoint>& spiral, 
-    const double& desired_speed,
-    const State& ego_state, 
-    const State& lead_car_state,
-    const Maneuver& maneuver
+double VelocityProfileGenerator::calc_distance(
+    const double& v_i,
+    const double& v_f,
+    const double& a
 ) const {
-  // LOG(INFO) << "Lead car x: " << lead_car_state.location.x;
-  std::vector<TrajectoryPoint> trajectory;
-  double start_speed = utils::magnitude(ego_state.velocity);
-  // LOG(INFO) << "Start Speed (m/s): " << start_speed;
-  // LOG(INFO) << "Desired Speed (m/s): " << desired_speed;
-  // Generate a trapezoidal trajectory to decelerate to stop.
-  if (maneuver == DECEL_TO_STOP) {
-    // LOG(INFO) << "Generating velocity trajectory for DECEL_TO_STOP";
-    trajectory = decelerate_trajectory(
-        spiral, 
-        start_speed
-    );
-  }
-  // If we need to follow the lead vehicle, make sure we decelerate to its speed
-  // by the time we reach the time gap point.
-  else if (maneuver == FOLLOW_VEHICLE) {
-    // LOG(INFO) << "Generating velocity trajectory for FOLLOW_VEHICLE";
-    trajectory = follow_trajectory(
-        spiral, 
-        start_speed, 
-        desired_speed, 
-        lead_car_state
-    );
-  }
-  // Otherwise, compute the trajectory to reach our desired speed.
+  double d{0.0};
+  if (std::abs(a) < DBL_EPSILON) {
+    // Handling the divide-by-zero case
+    // Returns infinity for very small values of acceleration
+    d = std::numeric_limits<double>::infinity();
+  } 
   else {
-    // LOG(INFO) << "Generating velocity trajectory for NOMINAL TRAVEL";
-    trajectory = nominal_trajectory(
-        spiral, 
-        start_speed, 
-        desired_speed
-    );
+    // Calculate the distance travelled w.r.t the given velocity / acceleration
+    // Here the 1D rectilinear motion equation for distance is used
+    d = (std::pow(v_f, 2) + std::pow(v_i, 2) / (2 * a);
   }
-  // Interpolate between the zeroth state and the first state.
-  // This prevents the controller from getting stuck at the zeroth state.
-  if (trajectory.size() > 1) {
-    TrajectoryPoint interpolated_state;
-    interpolated_state.path_point.x = (
-      (trajectory[1].path_point.x - trajectory[0].path_point.x) * 0.1 
-      + trajectory[0].path_point.x
-    );
-    interpolated_state.path_point.y = (
-      (trajectory[1].path_point.y - trajectory[0].path_point.y) * 0.1
-      + trajectory[0].path_point.y
-    );
-    interpolated_state.path_point.z = (
-      (trajectory[1].path_point.z - trajectory[0].path_point.z) * 0.1 
-      + trajectory[0].path_point.z
-    );
-    interpolated_state.v = (
-      (trajectory[1].v - trajectory[0].v) * 0.1 
-      + trajectory[0].v
-    );
-    trajectory[0] = interpolated_state;
+  return d;
+}
+
+
+/* Computes the final velocity of the trajectory given by the state variables.
+ *
+ * The final velocity is given by the 1D rectilinear motion equation, i.e.,
+ *   $v_{f} = \sqrt{v_{i}^{2} + 2 * a * d}$,
+ * for the input state variables of the vehicle.
+ * 
+ * NOTE: If the discriminant inside the radical is negative, a final velocity
+ * of `0.0` is returned. If the discriminant is undefined, a final velocity
+ * of infinity is returned.
+ *
+ * @param    v_i    Initial velocity (m/s) of the vehicle to profile.
+ * @param    a      Acceleration of the vehicle during the trajectory.
+ * @param    d      Distance travelled (m) by the vheicle during the manoeuvre.
+ * @returns  v_f    Final velocity (m/s) of vehicle after complete trajectory.
+ */
+double VelocityProfileGenerator::calc_final_speed(
+    const double& v_i,
+    const double& a,
+    const double& d
+) const {
+  double v_f{0.0};
+  // Calculate the final speed w.r.t. the given velocity / acceleration / distance
+  // Here the 1D rectilinear motion equation for final velocity is used 
+  double discriminant = std::pow(v_i, 2) + 2 * a * d;
+  if (discriminant <= 0.0) {
+    v_f = 0.0;
+  } 
+  else if (discriminant == std::numeric_limits<double>::infinity() 
+           || std::isnan(discriminant)
+  ) {
+    v_f = std::numeric_limits<double>::infinity();
+  } 
+  else {
+    v_f = std::sqrt(discriminant);
   }
-  return trajectory;
+  //   std::cout << "v_i, a, d: " << v_i << ", " << a << ", " << d
+  //             << ",  v_f: " << v_f << "\n";
+  return v_f;
 }
 
 
@@ -390,72 +387,76 @@ std::vector<TrajectoryPoint> VelocityProfileGenerator::nominal_trajectory(
 }
 
 
-/* Computes the travel distance needed for given acceleration / deceleration.
+/* Returns the trajectory generated for the given state variables.
  *
- * The distance required to complete the manoeuvre is given by the distance
- * equation of the 1D rectilinear motion, i.e.,
- *   $d = (v_{f}^{2} + v_{i}^{2}) / (2 * a)$.
- * 
- * @param    v_i  Initial velocity (m/s) of the vehicle to profile.
- * @param    v_f  Final desired velocity (m/s) to profile.
- * @param    a    Desired acceleration (m/s^2) to profile.
- * @returns  d    Distance required to complete the manoeuvre (m).
+ * @param    spiral           Path containing the waypoints to profile.
+ * @param    desired_speed    Desired velocity (m/s) to maintain.
+ * @param    ego_state        Ego-vehicle starting state.
+ * @param    lead_car_state   Lead-vehicle state to match.
+ * @param    maneuver         Requested vehicle state to create trajectory for.
+ * @returns  trajectory       Trajectory computed w.r.t. the given state.
  */
-double VelocityProfileGenerator::calc_distance(
-    const double& v_i,
-    const double& v_f,
-    const double& a
+std::vector<TrajectoryPoint> VelocityProfileGenerator::generate_trajectory(
+    const std::vector<PathPoint>& spiral, 
+    const double& desired_speed,
+    const State& ego_state, 
+    const State& lead_car_state,
+    const Maneuver& maneuver
 ) const {
-  double d{0.0};
-  if (std::abs(a) < DBL_EPSILON) {
-    // Handling the divide-by-zero case
-    // Returns infinity for very small values of acceleration
-    d = std::numeric_limits<double>::infinity();
-  } 
-  else {
-    // Calculate the distance travelled w.r.t the given velocity / acceleration
-    // Here the 1D rectilinear motion equation for distance is used
-    d = (std::pow(v_f, 2) + std::pow(v_i, 2) / (2 * a);
+  // LOG(INFO) << "Lead car x: " << lead_car_state.location.x;
+  std::vector<TrajectoryPoint> trajectory;
+  double start_speed = utils::magnitude(ego_state.velocity);
+  // LOG(INFO) << "Start Speed (m/s): " << start_speed;
+  // LOG(INFO) << "Desired Speed (m/s): " << desired_speed;
+  // Generate a trapezoidal trajectory to decelerate to stop.
+  if (maneuver == DECEL_TO_STOP) {
+    // LOG(INFO) << "Generating velocity trajectory for DECEL_TO_STOP";
+    trajectory = decelerate_trajectory(
+        spiral, 
+        start_speed
+    );
   }
-  return d;
-}
-
-/* Computes the final velocity of the trajectory given by the state variables.
- *
- * The final velocity is given by the 1D rectilinear motion equation, i.e.,
- *   $v_{f} = \sqrt{v_{i}^{2} + 2 * a * d}$,
- * for the input state variables of the vehicle.
- * 
- * NOTE: If the discriminant inside the radical is negative, a final velocity
- * of `0.0` is returned. If the discriminant is undefined, a final velocity
- * of infinity is returned.
- *
- * @param    v_i    Initial velocity (m/s) of the vehicle to profile.
- * @param    a      Acceleration of the vehicle during the trajectory.
- * @param    d      Distance travelled (m) by the vheicle during the manoeuvre.
- * @returns  v_f    Final velocity (m/s) of vehicle after complete trajectory.
- */
-double VelocityProfileGenerator::calc_final_speed(
-    const double& v_i,
-    const double& a,
-    const double& d
-) const {
-  double v_f{0.0};
-  // Calculate the final speed w.r.t. the given velocity / acceleration / distance
-  // Here the 1D rectilinear motion equation for final velocity is used 
-  double discriminant = std::pow(v_i, 2) + 2 * a * d;
-  if (discriminant <= 0.0) {
-    v_f = 0.0;
-  } 
-  else if (discriminant == std::numeric_limits<double>::infinity() 
-           || std::isnan(discriminant)
-  ) {
-    v_f = std::numeric_limits<double>::infinity();
-  } 
-  else {
-    v_f = std::sqrt(discriminant);
+  // If we need to follow the lead vehicle, make sure we decelerate to its speed
+  // by the time we reach the time gap point.
+  else if (maneuver == FOLLOW_VEHICLE) {
+    // LOG(INFO) << "Generating velocity trajectory for FOLLOW_VEHICLE";
+    trajectory = follow_trajectory(
+        spiral, 
+        start_speed, 
+        desired_speed, 
+        lead_car_state
+    );
   }
-  //   std::cout << "v_i, a, d: " << v_i << ", " << a << ", " << d
-  //             << ",  v_f: " << v_f << "\n";
-  return v_f;
+  // Otherwise, compute the trajectory to reach our desired speed.
+  else {
+    // LOG(INFO) << "Generating velocity trajectory for NOMINAL TRAVEL";
+    trajectory = nominal_trajectory(
+        spiral, 
+        start_speed, 
+        desired_speed
+    );
+  }
+  // Interpolate between the zeroth state and the first state.
+  // This prevents the controller from getting stuck at the zeroth state.
+  if (trajectory.size() > 1) {
+    TrajectoryPoint interpolated_state;
+    interpolated_state.path_point.x = (
+      (trajectory[1].path_point.x - trajectory[0].path_point.x) * 0.1 
+      + trajectory[0].path_point.x
+    );
+    interpolated_state.path_point.y = (
+      (trajectory[1].path_point.y - trajectory[0].path_point.y) * 0.1
+      + trajectory[0].path_point.y
+    );
+    interpolated_state.path_point.z = (
+      (trajectory[1].path_point.z - trajectory[0].path_point.z) * 0.1 
+      + trajectory[0].path_point.z
+    );
+    interpolated_state.v = (
+      (trajectory[1].v - trajectory[0].v) * 0.1 
+      + trajectory[0].v
+    );
+    trajectory[0] = interpolated_state;
+  }
+  return trajectory;
 }
