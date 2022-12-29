@@ -62,6 +62,7 @@ class VelocityProfileGenerator {
       const double& a_max,
       const double& slow_speed
   );
+  // Returns the trajectory generated for the given state variables
   std::vector<TrajectoryPoint> generate_trajectory(
       const std::vector<PathPoint>& spiral, 
       const double& desired_speed,
@@ -69,26 +70,31 @@ class VelocityProfileGenerator {
       const State& lead_car_state,
       const Maneuver& maneuver
   ) const;
+  // Returns the velocity trajectory for deceleration to a full stop
   std::vector<TrajectoryPoint> decelerate_trajectory(
       const std::vector<PathPoint>& spiral, 
       const double& start_speed
   ) const;
+  // Returns the velocity trajectory for following a lead vehicle
   std::vector<TrajectoryPoint> follow_trajectory(
       const std::vector<PathPoint>& spiral, 
       const double& start_speed,
       const double& desired_speed, 
       const State& lead_car_state
   ) const;
+  // Returns the velocity trajectory for nominal speed tracking
   std::vector<TrajectoryPoint> nominal_trajectory(
       const std::vector<PathPoint>& spiral, 
       const double& start_speed,
       double const& desired_speed
   ) const;
+  // Computes the travel distance needed for given acceleration / deceleration
   double calc_distance(
       const double& v_i, 
       const double& v_f,
       const double& a
   ) const;
+  // Computes the final velocity of the trajectory given by the state variables
   double calc_final_speed(
       const double& v_i, 
       const double& a,

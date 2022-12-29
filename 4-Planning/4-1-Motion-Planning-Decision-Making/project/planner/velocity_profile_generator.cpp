@@ -17,9 +17,14 @@ VelocityProfileGenerator::~VelocityProfileGenerator() {}
 
 /* Initialises the velocity profile generator with the given state variables.
  *
- * @param  time_gap
- * @param  a_max
- * @param  slow_speed
+ * The maximum permitted acceleration (`a_max`) is set w.r.t. the comfort
+ * and vehicle / feasibility constraints.
+ * 
+ * NOTE: The parameters marked `TODO` have not been clearly defined.
+ *
+ * @param  time_gap     Time-gap (s) to use with the velocity profile. TODO.
+ * @param  a_max        Maximum permitted acceleration (m/s^2).
+ * @param  slow_speed   Speed to set for slow manoeuvre (m/s). TODO.
  */
 void VelocityProfileGenerator::setup(
     const double& time_gap,
@@ -34,12 +39,12 @@ void VelocityProfileGenerator::setup(
 
 /* Returns the trajectory generated for the given state variables.
  *
- * @param    spiral           
- * @param    desired_speed
- * @param    ego_state
- * @param    lead_car_state
- * @param    maneuver
- * @returns  trajectory
+ * @param    spiral           Path containing the waypoints to profile.
+ * @param    desired_speed    Desired velocity (m/s) to maintain.
+ * @param    ego_state        Ego-vehicle starting state.
+ * @param    lead_car_state   Lead-vehicle state to match.
+ * @param    maneuver         Requested vehicle state to create trajectory for.
+ * @returns  trajectory       Trajectory computed w.r.t. the given state.
  */
 std::vector<TrajectoryPoint> VelocityProfileGenerator::generate_trajectory(
     const std::vector<PathPoint>& spiral, 
@@ -109,9 +114,14 @@ std::vector<TrajectoryPoint> VelocityProfileGenerator::generate_trajectory(
 
 /* Returns the velocity trajectory for deceleration to a full stop.
  *
- * @param    spiral
- * @param    start_speed
- * @returns  trajectory
+ * The trajectory for the `DECEL_TO_STOP` state is computed w.r.t. the
+ * given path and initial vehicle speed. A comfortable deceleration rate is
+ * used to determine a safe distance needed for the vehicle to travel in
+ * order to arrive at a complete stop. 
+ *
+ * @param    spiral         Path containing the waypoints to profile.
+ * @param    start_speed    Initial ego-vehicle speed (m/s).
+ * @returns  trajectory     Deceleration-to-stop trajectory.
  */
 std::vector<TrajectoryPoint> VelocityProfileGenerator::decelerate_trajectory(
     const std::vector<PathPoint>& spiral, 
@@ -258,9 +268,9 @@ std::vector<TrajectoryPoint> VelocityProfileGenerator::decelerate_trajectory(
 
 /* Returns the velocity trajectory for following a lead vehicle.
  *
- * @param    spiral
- * @param    start_speed
- * @returns  trajectory
+ * @param    spiral       Path containing the waypoints to profile.
+ * @param    start_speed  Initial ego-vehicle speed (m/s).
+ * @returns  trajectory   Lead-vehicle follow trajectory.
  */
 std::vector<TrajectoryPoint> VelocityProfileGenerator::follow_trajectory(
     const std::vector<PathPoint>& spiral, 
@@ -278,9 +288,9 @@ std::vector<TrajectoryPoint> VelocityProfileGenerator::follow_trajectory(
  * Here, the nominal speed tracking trajectory is computed for either the 
  * Lane Follow or Cruise Control vehicle states.
  *
- * @param    spiral
- * @param    start_speed
- * @returns  trajectory
+ * @param    spiral       Path containing the waypoints to profile.
+ * @param    start_speed  Initial ego-vehicle speed (m/s).
+ * @returns  trajectory   Nominal speed trajectory.
  */
 std::vector<TrajectoryPoint> VelocityProfileGenerator::nominal_trajectory(
     const std::vector<PathPoint>& spiral, 
