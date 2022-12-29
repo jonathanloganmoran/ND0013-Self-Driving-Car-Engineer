@@ -26,9 +26,9 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Evaluate cost w.r.t. distance to objects (as circles);
 * ✅ Evaluate cost w.r.t. distance between last waypoint on spiral and final goal state.
 
-### Motion Planning
-* ⬜️ Plan paths based on perpendicular heading direction;
-* ⬜️ Plan paths based on goal-offset location.
+### Motion Planning ([`motion_planner.cpp`]())
+* ✅ Plan paths based on perpendicular heading direction;
+* ✅ Plan paths based on goal-offset location.
 
 ### Velocity Profile Generation
 * ⬜️ Compute the distance travelled w.r.t. rectilinear motion for the linear velocity profile;

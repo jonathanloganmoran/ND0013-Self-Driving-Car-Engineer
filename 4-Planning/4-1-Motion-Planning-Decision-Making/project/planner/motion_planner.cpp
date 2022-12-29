@@ -124,12 +124,9 @@ std::vector<State> MotionPlanner::generate_offset_goals(
   // Now we need to gernerate "_num_paths" goals offset from the center goal at
   // a distance "_goal_offset".
   std::vector<State> goals_offset;
-  // the goals will be aligned on a perpendiclular line to the heading of the
-  // main goal. To get a perpendicular angle, just add 90 (or PI/2) to the main
-  // goal heading.
-  // TODO-Perpendicular direction: ADD pi/2 to the goal yaw
-  // (goal_state.rotation.yaw)
-  //auto yaw = ;  // <- Fix This
+  // Align the new goal-state along the perpendicular line from the heading
+  // of the original goal-state (i.e., add $\pi / 2$ to the original yaw angle)
+  auto yaw = goal_state.rotation.yaw + M_PI_2;
   // LOG(INFO) << "MAIN GOAL";
   // LOG(INFO) << "x: " << goal_state.location.x << " y: " <<
   // goal_state.location.y
@@ -145,13 +142,10 @@ std::vector<State> MotionPlanner::generate_offset_goals(
     // LOG(INFO) << "(i - (int)(_num_paths / 2)): " << (i - (int)(_num_paths /
     // 2)); LOG(INFO) << "_goal_offset: " << _goal_offset;
     // LOG(INFO) << "offset: " << offset;
-    // TODO-offset goal location: calculate the x and y position of the offset
-    // goals using "offset" (calculated above) and knowing that the goals should
-    // lie on a perpendicular line to the direction (yaw) of the main goal. You
-    // calculated this direction above (yaw_plus_90). HINT: use
-    // std::cos(yaw_plus_90) and std::sin(yaw_plus_90)
-    // goal_offset.location.x += ;  // <- Fix This
-    // goal_offset.location.y += ;  // <- Fix This
+    // Set the coordinates of the goal-offset along the $x$- and $y$-axes
+    // perpendicular to the original goal-state heading
+    goal_offset.location.x += offset * std::cos(yaw);
+    goal_offset.location.y += offset * std::sin(yaw);
     // LOG(INFO) << "x: " << goal_offset.location.x
     //          << " y: " << goal_offset.location.y
     //          << " z: " << goal_offset.location.z
