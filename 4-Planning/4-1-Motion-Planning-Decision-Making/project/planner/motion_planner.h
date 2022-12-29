@@ -80,7 +80,7 @@ class MotionPlanner {
       const State& goal_state
   );
   // Generates the set of drivable paths to the desired waypoints
-  auto MotionPlanner::generate_spirals(
+  auto generate_spirals(
     const State& ego_state,
     const std::vector<State>& goals
   ) -> std::vector<std::vector<PathPoint>>;
@@ -90,7 +90,7 @@ class MotionPlanner {
       const State& offset_goal
   );
   // Performs coordinate transformation of each waypoint into the global frame
-  auto MotionPlanner::transform_spirals_to_global_frame(
+  auto transform_spirals_to_global_frame(
     const std::vector<std::vector<PathPoint>>& spirals,
     const State& ego_state
   ) -> std::vector<std::vector<PathPoint>>;
