@@ -21,9 +21,6 @@
 #include <chrono>
 #include <cmath>
 
-namespace cc = carla::client;
-namespace cg = carla::geom;
-namespace cr = carla::road;
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 using namespace utils;
