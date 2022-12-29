@@ -17,7 +17,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Track the existing goal when in `DECEL_TO_STOP` state;
 * ✅ Calculate the distance travelled w.r.t. rectlinear motion;
 * ✅ Compute `DECEL_TO_STOP` state w.r.t. distance rather than speed;
-* ⬜️ Move the ego-vehicle to a `STOPPED` state;
+* ✅ Move the ego-vehicle to a `STOPPED` state;
 * ⬜️ Track the existing goal when in `STOPPED` state;
 * ⬜️ Move ego-vehicle to a `FOLLOW_LANE` state.
 
