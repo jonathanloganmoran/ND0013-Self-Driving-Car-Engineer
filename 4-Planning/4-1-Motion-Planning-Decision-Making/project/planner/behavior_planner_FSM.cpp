@@ -17,7 +17,7 @@ State BehaviorPlannerFSM::get_closest_waypoint_goal(
     const float& lookahead_distance, 
     bool& is_goal_junction
 ) {
-  // Nearest waypoint on the center of a driving lane
+  // Nearest waypoint situated in the centre of a driving lane
   auto waypoint_0 = map->GetWaypoint(ego_state.location);
   if (_active_maneuver == DECEL_TO_STOP || _active_maneuver == STOPPED) {
     State waypoint;
@@ -111,9 +111,9 @@ State BehaviorPlannerFSM::get_goal(
     const State& ego_state,
     SharedPtr<carla::client::Map> map
 ) {
-  // Get look-ahead distance based on Ego speed
+  // Get look-ahead distance based on ego-vehicle speed
   auto look_ahead_distance = get_look_ahead_distance(ego_state);
-  // Nearest waypoint on the center of a Driving Lane.
+  // Nearest waypoint situated in the centre of a driving lane
   bool is_goal_in_junction{false};
   auto goal_wp = get_closest_waypoint_goal(
       ego_state, 
@@ -132,7 +132,22 @@ State BehaviorPlannerFSM::get_goal(
   return goal;
 }
 
-
+/* Updates the ego-vehicle state by evaluating the state transition function.
+ *
+ * If the desired goal-state is located inside an intersection / junction, then
+ * the updated `goal` will be placed at a position behind the junction by the
+ * pre-defined `_stop_line_buffer` amount.
+ * 
+ * Otherwise, we assume the vehicle is in a nominal state and can move freely.
+ * In this case, goal-state velocity is set to the pre-defined `_speed_limit`
+ * w.r.t. the 2D components of the vehicle heading. 
+ * 
+ * @param    ego_state            Current ego-vehicle state.
+ * @param    goal                 Pose of the goal-state.
+ * @param    is_goal_in_junction  Whether the goal-state is in a junction.
+ * @param    tl_state             State of the traffic light.
+ * @returns  goal                 Goal-state updated w.r.t. the current state.  
+ */
 State BehaviorPlannerFSM::state_transition(
     const State& ego_state, 
     State goal,
@@ -153,20 +168,17 @@ State BehaviorPlannerFSM::state_transition(
       // Let's backup a "buffer" distance behind the "STOP" point
       // LOG(INFO) << "BP- original STOP goal at: " << goal.location.x << ", "
       //          << goal.location.y;
-      // TODO-goal behind the stopping point: put the goal behind the stopping
-      // point (i.e the actual goal location) by "_stop_line_buffer". HINTS:
-      // remember that we need to go back in the opposite direction of the
-      // goal/road, i.e you should use: ang = goal.rotation.yaw + M_PI and then
-      // use cosine and sine to get x and y
+      // Compute the "backed up" location of the goal-state
+      // The goal location is placed behind the desired stopping point
       auto ang = goal.rotation.yaw + M_PI;
-      goal.location.x += 1.0;  // <- Fix This
-      goal.location.y += 1.0;  // <- Fix This
+      goal.location.x += _stop_line_buffer * cos(ang);
+      goal.location.y += _stop_line_buffer * sin(ang);
       // LOG(INFO) << "BP- new STOP goal at: " << goal.location.x << ", "
       //          << goal.location.y;
-      // TODO-goal speed at stopping point: What should be the goal speed??
-      goal.velocity.x = 1.0;  // <- Fix This
-      goal.velocity.y = 1.0;  // <- Fix This
-      goal.velocity.z = 1.0;  // <- Fix This
+      // Set the goal-state velocity for the complete stop manoeuvre
+      goal.velocity.x = 0.0;
+      goal.velocity.y = 0.0;
+      goal.velocity.z = 0.0;
     } 
     else {
       // TODO-goal speed in nominal state: What should be the goal speed now
@@ -177,7 +189,6 @@ State BehaviorPlannerFSM::state_transition(
       goal.velocity.y = 1.0;  // <- Fix This
       goal.velocity.z = 0;
     }
-  } 
   else if (_active_maneuver == DECEL_TO_STOP) {
     // LOG(INFO) << "BP- IN DECEL_TO_STOP STATE";
     // TODO-maintain the same goal when in DECEL_TO_STOP state: Make sure the

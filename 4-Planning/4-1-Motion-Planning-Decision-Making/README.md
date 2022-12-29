@@ -12,7 +12,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 ## Tasks
 ### Behaviour Planning ([`behavior_planner_FSM.cpp`]())
 * ✅ Implement the look-ahead distance function;
-* ⬜️ Compute a goal state (pose, velocity) situated behind a stopping point;
+* ✅ Compute a goal state (pose, velocity) situated behind a stopping point;
 * ⬜️ Compute the goal speed for a nominal state;
 * ⬜️ Track the existing goal when in `DECEL_TO_STOP` state;
 * ⬜️ Calculate the distance travelled w.r.t. rectlinear motion;
