@@ -408,15 +408,14 @@ double VelocityProfileGenerator::calc_distance(
 ) const {
   double d{0.0};
   if (std::abs(a) < DBL_EPSILON) {
+    // Handling the divide-by-zero case
+    // Returns infinity for very small values of acceleration
     d = std::numeric_limits<double>::infinity();
   } 
   else {
-    // TODO-calc distance: use one of the common rectilinear accelerated
-    // equations of motion to calculate the distance traveled while going from
-    // v_i (initial velocity) to v_f (final velocity) at a constant
-    // acceleration/deceleration "a". HINT look at the description of this
-    // function. Make sure you handle div by 0
-    d = 0;  // <- Update
+    // Calculate the distance travelled w.r.t the given velocity / acceleration
+    // Here the 1D rectilinear motion equation for distance is used
+    d = (std::pow(v_f, 2) + std::pow(v_i, 2) / (2 * a);
   }
   return d;
 }
