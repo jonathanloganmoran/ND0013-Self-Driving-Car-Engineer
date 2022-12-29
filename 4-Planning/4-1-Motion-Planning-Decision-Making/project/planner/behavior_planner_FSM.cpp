@@ -181,14 +181,13 @@ State BehaviorPlannerFSM::state_transition(
       goal.velocity.z = 0.0;
     } 
     else {
-      // TODO-goal speed in nominal state: What should be the goal speed now
-      // that we know we are in nominal state and we can continue freely?
-      // Remember that the speed is a vector
-      // HINT: _speed_limit * std::sin/cos (goal.rotation.yaw);
-      goal.velocity.x = 1.0;  // <- Fix This
-      goal.velocity.y = 1.0;  // <- Fix This
+      // Compute the goal-state velocity for the nominal state
+      // The velocity components are set w.r.t. the pre-defined speed limit
+      goal.velocity.x = _speed_limit * std::cos(goal.rotation.yaw);
+      goal.velocity.y = _speed_limit * std::sin(goal.rotation.yaw);
       goal.velocity.z = 0;
     }
+  }
   else if (_active_maneuver == DECEL_TO_STOP) {
     // LOG(INFO) << "BP- IN DECEL_TO_STOP STATE";
     // TODO-maintain the same goal when in DECEL_TO_STOP state: Make sure the
