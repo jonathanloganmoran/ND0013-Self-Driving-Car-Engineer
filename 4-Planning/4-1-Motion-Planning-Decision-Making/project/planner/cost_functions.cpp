@@ -64,25 +64,29 @@ double collision_circles_cost_spiral(
   bool collision{false};
   auto n_circles = CIRCLE_OFFSETS.size();
   for (auto wp : spiral) {
+    // Iterate through all waypoints in the path
     if (collision) {
+      // Collision occurred, skip checking remaining waypoints and return cost
       // LOG(INFO) << " ***** COLLISION DETECTED *********" << "\n";
       break;
     }
+    // Get the current pose associated with this waypoint
+    // NOTE: `theta` yaw angle is already given in radians (no need to convert)
     double cur_x = wp.x;
     double cur_y = wp.y;
-    double cur_yaw = wp.theta;  // This is already in rad.
+    double cur_yaw = wp.theta;
     for (size_t c = 0; c < n_circles && !collision; ++c) {
-      // TODO-Circle placement: Where should the circles be at? The code below
-      // is NOT complete. HINT: use CIRCLE_OFFSETS[c], sine and cosine to
-      // calculate x and y: cur_y + CIRCLE_OFFSETS[c] * std::sin/cos(cur_yaw)
-      auto circle_center_x = 0;  // <- Update 
-      auto circle_center_y = 0;  // <- Update 
+      // Compute the centre-point for each circle representing the waypoint
+      auto circle_center_x = cur_x + CIRCLE_OFFSETS[c] * std::sin(cur_yaw);
+      auto circle_center_y = cur_y + CIRCLE_OFFSETS[c] * std::cos(cur_yaw);
       for (auto obst : obstacles) {
         if (collision) {
           break;
         }
+        // Get the heading (yaw angle) of the obstacle
         auto actor_yaw = obst.rotation.yaw;
         for (size_t c2 = 0; c2 < n_circles && !collision; ++c2) {
+          // Compute the centre-point for each circle representing the obstacle
           auto actor_center_x = (
               obst.location.x + CIRCLE_OFFSETS[c2] * std::cos(actor_yaw)
           );
