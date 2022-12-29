@@ -123,19 +123,11 @@ double close_to_main_goal_cost_spiral(
     const std::vector<PathPoint>& spiral,
     State main_goal
 ) {
-  // The last point on the spiral should be used to check how close we are to
-  // the Main (center) goal. That way, spirals that end closer to the lane
-  // center-line, and that are collision free, will be prefered.
   auto n = spiral.size();
-  // TODO-distance between last point on spiral and main goal: How do we
-  // calculate the distance between the last point on the spiral (spiral[n-1])
-  // and the main goal (main_goal.location). Use spiral[n - 1].x, spiral[n -
-  // 1].y and spiral[n - 1].z.
-  // Use main_goal.location.x, main_goal.location.y and main_goal.location.z
-  // Ex: main_goal.location.x - spiral[n - 1].x
-  auto delta_x = 0;  // <- Update
-  auto delta_y = 0;  // <- Update
-  auto delta_z = 0;  // <- Update
+  // Calculate remaining distance between goal-state and last waypoint on path 
+  auto delta_x = main_goal.location.x - spiral[n - 1].x;
+  auto delta_y = main_goal.location.y - spiral[n - 1].y;
+  auto delta_z = main_goal.location.z - spiral[n - 1].z;
   auto dist = std::sqrt(
       (delta_x * delta_x) 
       + (delta_y * delta_y) 

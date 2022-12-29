@@ -24,7 +24,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 ### Cost Functions ([`cost_functions.cpp`]())
 * ✅ Evaluate cost w.r.t. placement of objects (as circles);
 * ✅ Evaluate cost w.r.t. distance to objects (as circles);
-* ⬜️ Evaluate cost w.r.t. distance between last waypoint on spiral and final goal state.
+* ✅ Evaluate cost w.r.t. distance between last waypoint on spiral and final goal state.
 
 ### Motion Planning
 * ⬜️ Plan paths based on perpendicular heading direction;
