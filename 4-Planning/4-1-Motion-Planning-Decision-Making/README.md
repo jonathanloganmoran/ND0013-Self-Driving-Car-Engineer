@@ -32,7 +32,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 ### Velocity Profile Generation ([`velocity_profile_generator.cpp`]())
 * ✅ Compute the distance travelled w.r.t. rectilinear motion for the linear velocity profile;
-* ⬜️ Compute the final velocity w.r.t. rectilinear motion for the linear velocity profile;
+* ✅ Compute the final velocity w.r.t. rectilinear motion for the linear velocity profile;
 
 ### Fine-Tuning Hierarchial Planner
 * ⬜️ Define the number of paths (goal states) to enumerate;

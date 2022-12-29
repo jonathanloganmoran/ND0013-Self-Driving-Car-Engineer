@@ -427,7 +427,8 @@ double VelocityProfileGenerator::calc_distance(
  * for the input state variables of the vehicle.
  * 
  * NOTE: If the discriminant inside the radical is negative, a final velocity
- * of `0.0` is returned. 
+ * of `0.0` is returned. If the discriminant is undefined, a final velocity
+ * of infinity is returned.
  *
  * @param    v_i    Initial velocity (m/s) of the vehicle to profile.
  * @param    a      Acceleration of the vehicle during the trajectory.
@@ -440,23 +441,21 @@ double VelocityProfileGenerator::calc_final_speed(
     const double& d
 ) const {
   double v_f{0.0};
-  // TODO-calc final speed: Calculate the final distance. HINT: look at the
-  // description of this function. Make sure you handle negative discriminant
-  // and make v_f = 0 in that case. If the discriminant is inf or nan return
-  // infinity
-  double disc = 0;  // <- Fix this
-  if (disc <= 0.0) {
+  // Calculate the final speed w.r.t. the given velocity / acceleration / distance
+  // Here the 1D rectilinear motion equation for final velocity is used 
+  double discriminant = std::pow(v_i, 2) + 2 * a * d;
+  if (discriminant <= 0.0) {
     v_f = 0.0;
   } 
-  else if (disc == std::numeric_limits<double>::infinity() 
-           || std::isnan(disc)
+  else if (discriminant == std::numeric_limits<double>::infinity() 
+           || std::isnan(discriminant)
   ) {
     v_f = std::numeric_limits<double>::infinity();
   } 
   else {
-    v_f = std::sqrt(disc);
+    v_f = std::sqrt(discriminant);
   }
   //   std::cout << "v_i, a, d: " << v_i << ", " << a << ", " << d
-  //             << ",  v_f: " << v_f << std::endl;
+  //             << ",  v_f: " << v_f << "\n";
   return v_f;
 }
