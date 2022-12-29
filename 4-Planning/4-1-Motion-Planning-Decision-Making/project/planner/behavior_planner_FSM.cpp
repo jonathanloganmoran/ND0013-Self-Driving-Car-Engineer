@@ -69,15 +69,32 @@ State BehaviorPlannerFSM::get_closest_waypoint_goal(
 }
 
 
+/* Computes the look-ahead distance.
+ *
+ * The look-ahead distance is the longitudinal distance needed to travel
+ * in order for the vehicle to come to a complete stop using a comfortable
+ * deceleration w.r.t. a given velocity and look-ahead time.
+ * 
+ * From the 1D rectilinear motion equation for distance, we have:
+ *  $ d = 0.5 * a * t^2 + v * t$,
+ * where $a$ is the relative acceleration w.r.t. comfort, $v$ is the current
+ * ego-vehicle velocity, and $t$ is the pre-defined elapsed time to complete
+ * the manoeuvre (i.e., the look-ahead time).
+ * 
+ * @param    ego_state  Current state of ego-vehicle (pose and 1D kinematics).
+ * @returns  Distance needed to travel in order to come to a complete stop. 
+ *  
+ */
 double BehaviorPlannerFSM::get_look_ahead_distance(
     const State& ego_state
 ) {
   auto velocity_mag = utils::magnitude(ego_state.velocity);
   auto accel_mag = utils::magnitude(ego_state.acceleration);
-  // TODO-Lookahead: One way to find a reasonable lookahead distance is to find
-  // the distance you will need to come to a stop while traveling at speed `V`
-  // and using a comfortable deceleration.
-  auto look_ahead_distance = 1.0;  // <- Fix This
+  // Compute the look-ahead distance using the 1D rectilinear motion equation
+  auto look_ahead_distance = (
+      0.5 * accel_mag * std::pow(_lookahead_time, 2)
+      + velocity_mag * _lookahead_time
+  );
   // LOG(INFO) << "Calculated look_ahead_distance: " << look_ahead_distance;
   look_ahead_distance = std::min(
       std::max(look_ahead_distance, 
