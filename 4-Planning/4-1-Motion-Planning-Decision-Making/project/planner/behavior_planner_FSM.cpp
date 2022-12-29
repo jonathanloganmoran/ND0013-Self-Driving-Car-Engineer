@@ -210,10 +210,9 @@ State BehaviorPlannerFSM::state_transition(
   } 
   else if (_active_maneuver == STOPPED) {
     // LOG(INFO) << "BP- IN STOPPED STATE";
-    // TODO-maintain the same goal when in STOPPED state: 
-    // Make sure the new goal is the same as the previous goal.
-    // That way we keep/maintain the goal at the stop line.  
-    // Keep previous goal. Stay where you are. // <- Fix This
+    // Track the previous goal-state, i.e., set new goal-state to previous
+    // in order to keep / maintain the `STOPPED` goal-state
+    goal = _goal;
     long long stopped_secs = std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::high_resolution_clock::now() - _start_stop_time
     ).count();
