@@ -30,7 +30,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Plan paths based on perpendicular heading direction;
 * ✅ Plan paths based on goal-offset location.
 
-### Velocity Profile Generation
+### Velocity Profile Generation ([`velocity_profile_generator.cpp`]())
 * ⬜️ Compute the distance travelled w.r.t. rectilinear motion for the linear velocity profile;
 * ⬜️ Compute the final velocity w.r.t. rectilinear motion for the linear velocity profile;
 
