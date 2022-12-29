@@ -15,7 +15,7 @@
 
 /*** Planning Constants ***/
 // Number of paths (goals) to create
-#define P_NUM_PATHS 1                  // TODO
+#define P_NUM_PATHS 5                  // Number of deviations to enumerate
 // Minimum lookhead distance (m)
 #define P_LOOKAHEAD_MIN 8.0
 // Maximum lookahead distance (m)

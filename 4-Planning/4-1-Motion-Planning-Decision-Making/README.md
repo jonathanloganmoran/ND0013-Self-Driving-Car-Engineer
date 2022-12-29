@@ -36,7 +36,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 ### Fine-Tuning Hierarchial Planner ([`planning_params.h`]())
 * ✅ Define the number of paths (goal states) to enumerate;
-* ⬜️ Define the number of waypoints to enumerate for each path spiral.
+* ✅ Define the number of waypoints to enumerate for each path spiral.
 
 
 ## 1. Introduction
