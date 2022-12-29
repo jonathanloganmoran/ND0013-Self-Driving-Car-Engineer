@@ -61,6 +61,15 @@ class MotionPlanner {
       const State& ego_state,
       const State& goal_state
   );
+  // Returns the boolean displacement cost from offset- to goal-state
+  bool valid_goal(
+      const State& main_goal, 
+      const State& offset_goal
+  );
+  // Generates pre-defined number of paths which are offset from the goal-state
+  std::vector<State> generate_offset_goals(
+      const State& goal_state
+  );
   // Helper function to transform goal-offset states in ego-vehicle frame
   std::vector<State> generate_offset_goals_ego_frame(
       const State& ego_state,
@@ -70,40 +79,31 @@ class MotionPlanner {
   std::vector<State> generate_offset_goals_global_frame(
       const State& goal_state
   );
-  // Generates pre-defined number of paths which are offset from the goal-state
-  std::vector<State> generate_offset_goals(
-      const State& goal_state
-  );
   // Generates the set of drivable paths to the desired waypoints
-  std::vector<std::vector<PathPoint>> generate_spirals(
-      const State& ego_state, 
-      const std::vector<State>& goals
+  auto MotionPlanner::generate_spirals(
+    const State& ego_state, 
+    const std::vector<State>& goals
+  ) -> std::vector<std::vector<PathPoint>>;
+  // Checks if the path ends near the desired goal-offset
+  bool valid_spiral(
+      const std::vector<PathPoint>& spiral,
+      const State& offset_goal
   );
-  // Performs a coordinate transformation of each waypoint into the global frame
-  std::vector<std::vector<PathPoint>> transform_spirals_to_global_frame(
-      const std::vector<std::vector<PathPoint>>& spirals,
-      const State& ego_state
+  // Performs coordinate transformation of each waypoint into the global frame
+  auto MotionPlanner::transform_spirals_to_global_frame(
+    const std::vector<std::vector<PathPoint>>& spirals,
+    const State& ego_state
+  ) -> std::vector<std::vector<PathPoint>>;
+  // Evaluates the cost functions for the given state variables
+  float calculate_cost(
+      const std::vector<PathPoint>& spiral,
+      const std::vector<State>& obstacles,
+      const State& goal
   );
   // Returns the indices of the paths which satisfies the possible cases
   std::vector<int> get_best_spiral_idx(
       const std::vector<std::vector<PathPoint>>& spirals,
       const std::vector<State>& obstacles,
       const State& goal_state
-  );
-  // Returns the boolean displacement cost from offset- to goal-state
-  bool valid_goal(
-      const State& main_goal, 
-      const State& offset_goal
-  );
-  // Checks if the path ends near the desired goal-offset
-  bool valid_spiral(
-      const std::vector<PathPoint>& spiral,
-      const State& offset_goal
-  );
-  // Evaluates the cost functions for the given state variables
-  float calculate_cost(
-      const std::vector<PathPoint>& spiral,
-      const std::vector<State>& obstacles,
-      const State& goal
   );
 };
