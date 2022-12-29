@@ -16,11 +16,9 @@
 #include <carla/client/Client.h>
 #include <glog/logging.h>
 #include <math.h>
-#include <algorithm>                // std::max, min (not yet used)
 #include <cfloat>
 #include <iostream>
-#include <limits>                   // std::numeric_limits (not yet used)
-#include <numeric>                  // std::accumulate (not yet used)
+#include <limits>                   // std::numeric_limits (infinity)
 #include <vector>
 
 template <typename T>
