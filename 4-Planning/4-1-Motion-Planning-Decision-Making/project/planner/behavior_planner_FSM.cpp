@@ -11,6 +11,14 @@
 #include "behavior_planner_FSM.h"
 
 
+/* Returns the closest waypoint to the goal-state.
+ *
+ * @param    ego_state            Current ego-vehicle state.
+ * @param    map                  All waypoints known to the ego-vehicle.
+ * @param    lookahead_distance   Distance to travel for complete stop.
+ * @param    is_goal_in_junction  Whether the goal-state is in a junction.
+ * @returns  waypoint             Closest waypoint to the goal-state.
+ */
 State BehaviorPlannerFSM::get_closest_waypoint_goal(
     const State& ego_state, 
     const SharedPtr<carla::client::Map>& map,
@@ -107,6 +115,12 @@ double BehaviorPlannerFSM::get_look_ahead_distance(
 }
 
 
+/* Returns the updated goal-state of the ego-vehicle.
+ *
+ * @param    ego_state  Current state of the ego-vehicle to update.
+ * @param    map        Map containing the goal-state waypoints.
+ * @returns  goal       Goal-state updated w.r.t. current state.
+ */
 State BehaviorPlannerFSM::get_goal(
     const State& ego_state,
     SharedPtr<carla::client::Map> map
@@ -132,15 +146,22 @@ State BehaviorPlannerFSM::get_goal(
   return goal;
 }
 
+
 /* Updates the ego-vehicle state by evaluating the state transition function.
  *
  * If the desired goal-state is located inside an intersection / junction, then
  * the updated `goal` will be placed at a position behind the junction by the
- * pre-defined `_stop_line_buffer` amount.
+ * pre-defined `_stop_line_buffer` amount. Otherwise, we assume the vehicle is 
+ * in a nominal state and can move freely. In this case, goal-state velocity is
+ * set to the pre-defined `_speed_limit` w.r.t. the 2D components of the vehicle
+ * heading.
  * 
- * Otherwise, we assume the vehicle is in a nominal state and can move freely.
- * In this case, goal-state velocity is set to the pre-defined `_speed_limit`
- * w.r.t. the 2D components of the vehicle heading. 
+ * If `STOPPED` at a controlled intersection (i.e., with traffic light), the
+ * ego-vehicle will proceed to a `FOLLOW_LANE` state once the traffic light is
+ * not "Red" and a pre-defined amount of `_req_stop_time` has passed.
+ * 
+ * NOTE: We assume that the motion controller is not yet implemented, therefore we
+ * use a distance threshold to stop the vehicle in the `DECEL_TO_STOP` state.
  * 
  * @param    ego_state            Current ego-vehicle state.
  * @param    goal                 Pose of the goal-state.
