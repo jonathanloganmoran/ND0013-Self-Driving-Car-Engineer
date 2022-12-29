@@ -21,7 +21,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Track the existing goal when in `STOPPED` state;
 * ✅ Move ego-vehicle to a `FOLLOW_LANE` state.
 
-### Cost functions
+### Cost Functions ([`cost_functions.cpp`]())
 * ⬜️ Evaluate cost w.r.t. placement of objects (as circles);
 * ⬜️ Evaluate cost w.r.t. distance to objects (as circles);
 * ⬜️ Evaluate cost w.r.t. distance between last waypoint on spiral and final goal state.

@@ -1,77 +1,98 @@
-/**********************************************
- * Self-Driving Car Nano-degree - Udacity
- *  Created on: September 20, 2020
- *      Author: Munir Jojo-Verge
- **********************************************/
-
-/**
- * @file cost_functions.cpp
- **/
+/* ------------------------------------------------------------------------------
+ * Project "4.1: Motion Planning and Decision Making for Autonomous Vehicles"
+ * Authors     : Munir Jojo-Verge.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Implements the cost functions used in the planner.
+ * ----------------------------------------------------------------------------
+ */
 
 #include "cost_functions.h"
 
-using namespace std;
 
 namespace cost_functions {
-// COST FUNCTIONS
-
-double diff_cost(vector<double> coeff, double duration,
-                 std::array<double, 3> goals, std::array<float, 3> sigma,
-                 double cost_weight) {
-  /*
-  Penalizes trajectories whose coordinate(and derivatives)
-  differ from the goal.
-  */
+/* Goal-state trajectory difference cost function.
+ *
+ * Penalises trajectories whose coordinates (and derivatives) differ
+ * from the goal-state trajectory.
+ * 
+ * @param    coeff
+ * @param    duration     
+ * @param    goals        Set of waypoints belonging to the goal-state.
+ * @param    sigma        
+ * @param    cost_weight  Value to weigh the cost by.
+ * @returns  Weighted difference cost between given and goal-state trajectory.
+ */
+double diff_cost(
+    std::vector<double> coeff, 
+    double duration,
+    std::array<double, 3> goals, 
+    std::array<float, 3> sigma,
+    double cost_weight
+) {
   double cost = 0.0;
-  vector<double> evals = evaluate_f_and_N_derivatives(coeff, duration, 2);
-  //////////////cout << "26 - Evaluating f and N derivatives Done. Size:" <<
-  /// evals.size() << endl;
-
+  std::vector<double> evals = utils::evaluate_f_and_N_derivatives(
+      coeff, 
+      duration, 
+      2
+  );
+  // std::cout << "26 - Evaluating f and N derivatives Done. Size:" <<
+  // evals.size() << "\n";
   for (size_t i = 0; i < evals.size(); i++) {
     double diff = fabs(evals[i] - goals[i]);
-    cost += logistic(diff / sigma[i]);
+    cost += utils::logistic(diff / sigma[i]);
   }
-  ////////////cout << "diff_coeff Cost Calculated " << endl;
+  // std::cout << "diff_coeff Cost Calculated " << "\n";
   return cost_weight * cost;
 }
 
-double collision_circles_cost_spiral(const std::vector<PathPoint>& spiral,
-                                     const std::vector<State>& obstacles) {
+/* Path-obstacle collision cost function.
+ *
+ * Penalises paths whose waypoints intersect with any object(s) by returning
+ * an unweighted cost of `1.0`. If no collisions occur for the given `spiral`
+ * path and set of `obstacles`, then the value `0.0` is returned.
+ *
+ * @param    spiral     Path containing the waypoints to evaluate.
+ * @param    obstacles  Set of object states to evaluate.
+ * @returns  Binary collision cost value.
+ */
+double collision_circles_cost_spiral(
+    const std::vector<PathPoint>& spiral,
+    const std::vector<State>& obstacles
+) {
   bool collision{false};
   auto n_circles = CIRCLE_OFFSETS.size();
-
   for (auto wp : spiral) {
     if (collision) {
-      // LOG(INFO) << " ***** COLLISION DETECTED *********" << std::endl;
+      // LOG(INFO) << " ***** COLLISION DETECTED *********" << "\n";
       break;
     }
     double cur_x = wp.x;
     double cur_y = wp.y;
     double cur_yaw = wp.theta;  // This is already in rad.
-
     for (size_t c = 0; c < n_circles && !collision; ++c) {
       // TODO-Circle placement: Where should the circles be at? The code below
       // is NOT complete. HINT: use CIRCLE_OFFSETS[c], sine and cosine to
       // calculate x and y: cur_y + CIRCLE_OFFSETS[c] * std::sin/cos(cur_yaw)
       auto circle_center_x = 0;  // <- Update 
       auto circle_center_y = 0;  // <- Update 
-
       for (auto obst : obstacles) {
         if (collision) {
           break;
         }
         auto actor_yaw = obst.rotation.yaw;
         for (size_t c2 = 0; c2 < n_circles && !collision; ++c2) {
-          auto actor_center_x =
-              obst.location.x + CIRCLE_OFFSETS[c2] * std::cos(actor_yaw);
-          auto actor_center_y =
-              obst.location.y + CIRCLE_OFFSETS[c2] * std::sin(actor_yaw);
-
+          auto actor_center_x = (
+              obst.location.x + CIRCLE_OFFSETS[c2] * std::cos(actor_yaw)
+          );
+          auto actor_center_y = (
+              obst.location.y + CIRCLE_OFFSETS[c2] * std::sin(actor_yaw)
+          );
           // TODO-Distance from circles to obstacles/actor: How do you calculate
           // the distance between the center of each circle and the
           // obstacle/actor
           double dist = 0;  // <- Update
-
           collision = (dist < (CIRCLE_RADII[c] + CIRCLE_RADII[c2]));
         }
       }
@@ -80,13 +101,26 @@ double collision_circles_cost_spiral(const std::vector<PathPoint>& spiral,
   return (collision) ? COLLISION : 0.0;
 }
 
-double close_to_main_goal_cost_spiral(const std::vector<PathPoint>& spiral,
-                                      State main_goal) {
+
+/* Distance to goal-state from final waypoint cost function.
+ *
+ * Paths whose final waypoint is situated closest to the goal-state,
+ * i.e., the centre line of the lane, will be given a lower cost.
+ * In other words, paths whose final waypoint is farther from the
+ * centre line will be penalised.
+ *
+ * @param    spiral     Path containing the waypoints to evaluate.
+ * @param    main_goal  Goal-state with position of the lane centre line.
+ * @returns  cost       Distance to goal-state cost.
+ */
+double close_to_main_goal_cost_spiral(
+    const std::vector<PathPoint>& spiral,
+    State main_goal
+) {
   // The last point on the spiral should be used to check how close we are to
   // the Main (center) goal. That way, spirals that end closer to the lane
   // center-line, and that are collision free, will be prefered.
   auto n = spiral.size();
-
   // TODO-distance between last point on spiral and main goal: How do we
   // calculate the distance between the last point on the spiral (spiral[n-1])
   // and the main goal (main_goal.location). Use spiral[n - 1].x, spiral[n -
@@ -96,11 +130,12 @@ double close_to_main_goal_cost_spiral(const std::vector<PathPoint>& spiral,
   auto delta_x = 0;  // <- Update
   auto delta_y = 0;  // <- Update
   auto delta_z = 0;  // <- Update
-
-  auto dist = std::sqrt((delta_x * delta_x) + (delta_y * delta_y) +
-                        (delta_z * delta_z));
-
-  auto cost = logistic(dist);
+  auto dist = std::sqrt(
+      (delta_x * delta_x) 
+      + (delta_y * delta_y) 
+      + (delta_z * delta_z)
+  );
+  auto cost = utils::logistic(dist);
   // LOG(INFO) << "distance to main goal: " << dist;
   // LOG(INFO) << "cost (log): " << cost;
   return cost;
