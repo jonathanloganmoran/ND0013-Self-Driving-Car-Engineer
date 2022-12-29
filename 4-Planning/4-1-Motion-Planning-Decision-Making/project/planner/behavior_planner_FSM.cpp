@@ -15,31 +15,31 @@
  *
  * If the desired goal-state is located inside an intersection / junction, then
  * the updated `goal` will be placed at a position behind the junction by the
- * pre-defined `_stop_line_buffer` amount. Otherwise, we assume the vehicle is 
+ * pre-defined `_stop_line_buffer` amount. Otherwise, we assume the vehicle is
  * in a nominal state and can move freely. In this case, goal-state velocity is
  * set to the pre-defined `_speed_limit` w.r.t. the 2D components of the vehicle
  * heading.
- * 
+ *
  * If `STOPPED` at a controlled intersection (i.e., with traffic light), the
  * ego-vehicle will proceed to a `FOLLOW_LANE` state once the traffic light is
  * not "Red" and a pre-defined amount of `_req_stop_time` has passed.
- * 
+ *
  * NOTE: We assume that the motion controller is not yet implemented, therefore we
  * use a distance threshold to stop the vehicle in the `DECEL_TO_STOP` state.
- * 
+ *
  * @param    ego_state            Current ego-vehicle state.
  * @param    goal                 Pose of the goal-state.
  * @param    is_goal_in_junction  Whether the goal-state is in a junction.
  * @param    tl_state             State of the traffic light.
- * @returns  goal                 Goal-state updated w.r.t. the current state.  
+ * @returns  goal                 Goal-state updated w.r.t. the current state.
  */
 State BehaviorPlannerFSM::state_transition(
-    const State& ego_state, 
+    const State& ego_state,
     State goal,
     bool& is_goal_in_junction,
     std::string tl_state
 ) {
-  // Check with the Behavior Planner to see what we are going to do 
+  // Check with the Behavior Planner to see what we are going to do
   // and where our next goal is
   goal.acceleration.x = 0;
   goal.acceleration.y = 0;
@@ -64,7 +64,7 @@ State BehaviorPlannerFSM::state_transition(
       goal.velocity.x = 0.0;
       goal.velocity.y = 0.0;
       goal.velocity.z = 0.0;
-    } 
+    }
     else {
       // Compute the goal-state velocity for the nominal state
       // The velocity components are set w.r.t. the pre-defined speed limit
@@ -92,7 +92,7 @@ State BehaviorPlannerFSM::state_transition(
       _start_stop_time = std::chrono::high_resolution_clock::now();
       // LOG(INFO) << "BP - changing to STOPPED";
     }
-  } 
+  }
   else if (_active_maneuver == STOPPED) {
     // LOG(INFO) << "BP- IN STOPPED STATE";
     // Track the previous goal-state, i.e., set new goal-state to previous
@@ -123,9 +123,9 @@ State BehaviorPlannerFSM::state_transition(
  * @returns  waypoint             Closest waypoint to the goal-state.
  */
 State BehaviorPlannerFSM::get_closest_waypoint_goal(
-    const State& ego_state, 
+    const State& ego_state,
     const SharedPtr<carla::client::Map>& map,
-    const float& lookahead_distance, 
+    const float& lookahead_distance,
     bool& is_goal_junction
 ) {
   // Nearest waypoint situated in the centre of a driving lane
@@ -141,10 +141,10 @@ State BehaviorPlannerFSM::get_closest_waypoint_goal(
   }
   // Waypoints at a lookahead distance
   // NOTE: `GetNext(d)` creates a list of waypoints at an approximate distance
-  // "d" in the direction of the lane. 
+  // "d" in the direction of the lane.
   // The list contains one waypoint for each deviation possible.
   // NOTE 2: `GetNextUntilLaneEnd(d)` returns a list of waypoints a distance
-  // "d" apart. 
+  // "d" apart.
   // The list goes from the current waypoint to the end of its lane.
   auto lookahead_waypoints = waypoint_0->GetNext(lookahead_distance);
   auto n_wp = lookahead_waypoints.size();
@@ -185,16 +185,16 @@ State BehaviorPlannerFSM::get_closest_waypoint_goal(
  * The look-ahead distance is the longitudinal distance needed to travel
  * in order for the vehicle to come to a complete stop using a comfortable
  * deceleration w.r.t. a given velocity and look-ahead time.
- * 
+ *
  * From the 1D rectilinear motion equation for distance, we have:
  *  $ d = 0.5 * a * t^2 + v * t$,
  * where $a$ is the relative acceleration w.r.t. comfort, $v$ is the current
  * ego-vehicle velocity, and $t$ is the pre-defined elapsed time to complete
  * the manoeuvre (i.e., the look-ahead time).
- * 
+ *
  * @param    ego_state  Current state of ego-vehicle (pose and 1D kinematics).
- * @returns  Distance needed to travel in order to come to a complete stop. 
- *  
+ * @returns  Distance needed to travel in order to come to a complete stop.
+ *
  */
 double BehaviorPlannerFSM::get_look_ahead_distance(
     const State& ego_state
@@ -208,7 +208,7 @@ double BehaviorPlannerFSM::get_look_ahead_distance(
   );
   // LOG(INFO) << "Calculated look_ahead_distance: " << look_ahead_distance;
   look_ahead_distance = std::min(
-      std::max(look_ahead_distance, 
+      std::max(look_ahead_distance,
                _lookahead_distance_min
       ),
       _lookahead_distance_max
@@ -233,17 +233,17 @@ State BehaviorPlannerFSM::get_goal(
   // Nearest waypoint situated in the centre of a driving lane
   bool is_goal_in_junction{false};
   auto goal_wp = get_closest_waypoint_goal(
-      ego_state, 
-      map, 
+      ego_state,
+      map,
       look_ahead_distance,
       is_goal_in_junction
   );
   // LOG(INFO) << "Is the FINAL goal on a junction: " << is_goal_in_junction;
   string tl_state = "none";
   State goal = state_transition(
-      ego_state, 
-      goal_wp, 
-      is_goal_in_junction, 
+      ego_state,
+      goal_wp,
+      is_goal_in_junction,
       tl_state
   );
   return goal;

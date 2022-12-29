@@ -59,13 +59,13 @@ class BehaviorPlannerFSM {
 
  public:
   BehaviorPlannerFSM(
-      double lookahead_time, 
+      double lookahead_time,
       double lookahead_distance_min,
-      double lookahead_distance_max, 
+      double lookahead_distance_max,
       double speed_limit,
-      double stop_threshold_speed, 
+      double stop_threshold_speed,
       double req_stop_time,
-      double reaction_time, 
+      double reaction_time,
       double max_accel,
       double stop_line_buffer
   )
@@ -95,7 +95,7 @@ class BehaviorPlannerFSM {
       const State& ego_state
   );
   State get_goal(
-      const State& ego_state, 
+      const State& ego_state,
       SharedPtr<carla::client::Map> map
   );
   Maneuver get_active_maneuver() { return _active_maneuver; };
