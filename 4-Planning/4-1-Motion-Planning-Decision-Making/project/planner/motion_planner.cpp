@@ -14,11 +14,66 @@
 MotionPlanner::~MotionPlanner() {}
 
 
-/* Returns boolean displacement cost from offset- to goal-state.  
+/* Computes the goal-state coordinate transformations in the ego-vehicle frame.
+ *
+ * @param    ego_state   Ego-vehicle state (pose) to transform offsets w.r.t.
+ * @param    goal_state  Goal-state pose to transform into ego-vehicle frame.
+ * @returns  Goal-state pose defined in the ego-vehicle reference frame.
+ *
+ */
+State MotionPlanner::get_goal_state_in_ego_frame(
+    const State& ego_state,
+    const State& goal_state
+) {
+  // Let's start by making a copy of the goal state (global reference frame)
+  auto goal_state_ego_frame = goal_state;
+  // Translate so the ego state is at the origin in the new frame.
+  // This is done by subtracting the ego_state from the goal_ego_.
+  goal_state_ego_frame.location.x -= ego_state.location.x;
+  goal_state_ego_frame.location.y -= ego_state.location.y;
+  goal_state_ego_frame.location.z -= ego_state.location.z;
+  /* Rotate such that the ego state has zero heading/yaw in the new frame.
+     We are rotating by -ego_state "yaw" to ensure the ego vehicle's
+     current yaw corresponds to theta = 0 in the new local frame.
+     Recall that the general rotation matrix around the Z axix is:
+     [cos(theta) -sin(theta)
+     sin(theta)  cos(theta)]
+  */
+  auto theta_rad = -ego_state.rotation.yaw;
+  auto cos_theta = std::cos(theta_rad);
+  auto sin_theta = std::sin(theta_rad);
+  goal_state_ego_frame.location.x = (
+      cos_theta * goal_state_ego_frame.location.x -
+      sin_theta * goal_state_ego_frame.location.y
+  );
+  goal_state_ego_frame.location.y = (
+      sin_theta * goal_state_ego_frame.location.x +
+      cos_theta * goal_state_ego_frame.location.y
+  );
+  // Compute the goal yaw in the local frame by subtracting off the
+  // current ego yaw from the goal waypoint heading/yaw.
+  goal_state_ego_frame.rotation.yaw += theta_rad;
+  // Ego speed is the same in both coordenates
+  // the Z coordinate does not get affected by the rotation.
+  // Let's make sure the yaw is within [-180, 180] or [-pi, pi] so the optimizer
+  // works.
+  goal_state_ego_frame.rotation.yaw = utils::keep_angle_range_rad(
+      goal_state_ego_frame.rotation.yaw, -M_PI, M_PI
+  );
+  // if (goal_state_ego_frame.rotation.yaw < -M_PI) {
+  //   goal_state_ego_frame.rotation.yaw += (2 * M_PI);
+  // } else if (goal_state_ego_frame.rotation.yaw > M_PI) {
+  //   goal_state_ego_frame.rotation.yaw -= (2 * M_PI);
+  // }
+  return goal_state_ego_frame;
+}
+
+
+/* Returns boolean displacement cost from offset- to goal-state.
  *
  * @param    main_goal    Goal-state location to evaluate.
- * @param    offset_goal  Goal-offset location to compute displacement w.r.t. 
- * @returns  Boolean cost whether the offset distance exceeds max threshold. 
+ * @param    offset_goal  Goal-offset location to compute displacement w.r.t.
+ * @returns  Boolean cost whether the offset distance exceeds max threshold.
  */
 bool MotionPlanner::valid_goal(
     const State& main_goal,
@@ -83,78 +138,23 @@ std::vector<State> MotionPlanner::generate_offset_goals(
 }
 
 
-/* Computes the goal-state coordinate transformations in the ego-vehicle frame. 
- *
- * @param    ego_state   Ego-vehicle state (pose) to transform offsets w.r.t.
- * @param    goal_state  Goal-state pose to transform into ego-vehicle frame.
- * @returns  Goal-state pose defined in the ego-vehicle reference frame.
- *
- */
-State MotionPlanner::get_goal_state_in_ego_frame(
-    const State& ego_state,
-    const State& goal_state
-) {
-  // Let's start by making a copy of the goal state (global reference frame)
-  auto goal_state_ego_frame = goal_state;
-  // Translate so the ego state is at the origin in the new frame.
-  // This is done by subtracting the ego_state from the goal_ego_.
-  goal_state_ego_frame.location.x -= ego_state.location.x;
-  goal_state_ego_frame.location.y -= ego_state.location.y;
-  goal_state_ego_frame.location.z -= ego_state.location.z;
-  /* Rotate such that the ego state has zero heading/yaw in the new frame.
-     We are rotating by -ego_state "yaw" to ensure the ego vehicle's
-     current yaw corresponds to theta = 0 in the new local frame.
-     Recall that the general rotation matrix around the Z axix is:
-     [cos(theta) -sin(theta)
-     sin(theta)  cos(theta)]
-  */
-  auto theta_rad = -ego_state.rotation.yaw;
-  auto cos_theta = std::cos(theta_rad);
-  auto sin_theta = std::sin(theta_rad);
-  goal_state_ego_frame.location.x = (
-      cos_theta * goal_state_ego_frame.location.x -
-      sin_theta * goal_state_ego_frame.location.y
-  );
-  goal_state_ego_frame.location.y = (
-      sin_theta * goal_state_ego_frame.location.x +
-      cos_theta * goal_state_ego_frame.location.y
-  );
-  // Compute the goal yaw in the local frame by subtracting off the
-  // current ego yaw from the goal waypoint heading/yaw.
-  goal_state_ego_frame.rotation.yaw += theta_rad;
-  // Ego speed is the same in both coordenates
-  // the Z coordinate does not get affected by the rotation.
-  // Let's make sure the yaw is within [-180, 180] or [-pi, pi] so the optimizer
-  // works.
-  goal_state_ego_frame.rotation.yaw = utils::keep_angle_range_rad(
-      goal_state_ego_frame.rotation.yaw, -M_PI, M_PI
-  );
-  // if (goal_state_ego_frame.rotation.yaw < -M_PI) {
-  //   goal_state_ego_frame.rotation.yaw += (2 * M_PI);
-  // } else if (goal_state_ego_frame.rotation.yaw > M_PI) {
-  //   goal_state_ego_frame.rotation.yaw -= (2 * M_PI);
-  // }
-  return goal_state_ego_frame;
-}
-
-
 /* Helper function to return goal-offset states (poses) in ego-vehicle frame.
  *
- * Here the goal-offsets are computed w.r.t. the given `goal_state`. 
+ * Here the goal-offsets are computed w.r.t. the given `goal_state`.
  * Then, the goal-offset coordinates are transformed into the ego-vehicle
  * reference frame which is defined w.r.t. the `ego_state`.
- * 
+ *
  * @param    ego_state    Ego-vehicle state (pose) to transform offsets w.r.t.
  * @param    goal_state   Goal-state pose to compute the offsets w.r.t.
  * @returns  Offset-goals whose coordinates are defined in ego-vehicle frame.
  */
 std::vector<State> MotionPlanner::generate_offset_goals_ego_frame(
-    const State& ego_state, 
+    const State& ego_state,
     const State& goal_state
 ) {
   // Let's transform the "main" goal (goal state) into ego reference frame
   auto goal_state_ego_frame = get_goal_state_in_ego_frame(
-      ego_state, 
+      ego_state,
       goal_state
   );
   return generate_offset_goals(goal_state_ego_frame);
@@ -162,11 +162,11 @@ std::vector<State> MotionPlanner::generate_offset_goals_ego_frame(
 
 
 /* Helper function to return goal-offset states (poses) in global frame.
- * 
+ *
  * NOTE: As of now, the `generate_offset_goals` computes the coordinates of
  * the offset-goal pose in the global coordinate frame. In other words, no
  * coordinate transformations need to be performed inside this function.
- * 
+ *
  * @param    goal_state  Goal-state pose to compute the offsets w.r.t.
  * @returns  Offset-goals whose coordinates are defined in global frame.
  */
@@ -177,49 +177,24 @@ std::vector<State> MotionPlanner::generate_offset_goals_global_frame(
 }
 
 
-/* Checks if the path ends near the desired goal-offset.
- *
- * Returns `true` if distance from last waypoint in `spiral` path
- * is within a fixed distance (here, `0.1` metres) from the desired
- * `offset_goal` position in 2D.
- * 
- * @param    spiral        Path containing the waypoints to evaluate.
- * @param    offset_goal   Desired stopping point for this path.
- * @returns  Boolean value indicating whether the spiral (path) ends near goal.
- */
-bool MotionPlanner::valid_spiral(
-    const std::vector<PathPoint>& spiral,
-    const State& offset_goal
-) {
-  auto n = spiral.size();
-  auto delta_x = (offset_goal.location.x - spiral[n - 1].x);
-  auto delta_y = (offset_goal.location.y - spiral[n - 1].y);
-  auto dist = std::sqrt((delta_x * delta_x) + (delta_y * delta_y));
-  // auto dist = utils::magnitude(spiral[spiral.size() - 1].location -
-  //                              offset_goal.location);
-  // LOG(INFO) << "Distance from Spiral end to offset_goal: " << dist;
-  return (dist < 0.1);
-}
-
-
-/* Generates the set of drivable paths to the desired waypoints. 
+/* Generates the set of drivable paths to the desired waypoints.
  *
  * The paths are represented as polynomial spirals, each with a
  * `P_NUM_POINTS_IN_SPIRAL`. The paths generated here follow a set
  * of comfort constraints and are said to be drivable based on their
  * maximum curvature. Each path is defined w.r.t. the starting `ego_state`
  * and one of the final goal-state poses in `goals`.
- * 
+ *
  * @param    ego_state  Starting ego-state to generate path from.
  * @param    goals      Set of final ego-state poses to generate path to.
  * @returns  spirals    Set of drivable paths from `ego_state` to `goals`.
  */
 auto MotionPlanner::generate_spirals(
-    const State& ego_state, 
+    const State& ego_state,
     const std::vector<State>& goals
 ) -> std::vector<std::vector<PathPoint>> {
   // Get the starting pose
-  // NOTE: ego-vehicle frame has starting point at (0, 0, 0) 
+  // NOTE: ego-vehicle frame has starting point at (0, 0, 0)
   PathPoint start;
   start.x = ego_state.location.x;
   start.y = ego_state.location.y;
@@ -246,10 +221,10 @@ auto MotionPlanner::generate_spirals(
     end.ddkappa = 0.0;
     end.s = std::sqrt((end.x * end.x) + (end.y * end.y));
     if (_cubic_spiral.GenerateSpiral(start, end)) {
-      // Path was created successfully, save the generated path 
+      // Path was created successfully, save the generated path
       std::vector<PathPoint>* spiral = new std::vector<PathPoint>;
       auto ok = _cubic_spiral.GetSampledSpiral(
-          P_NUM_POINTS_IN_SPIRAL, 
+          P_NUM_POINTS_IN_SPIRAL,
           spiral
       );
       if (ok && valid_spiral(*spiral, goal)) {
@@ -257,16 +232,78 @@ auto MotionPlanner::generate_spirals(
         // Save the path to the `spirals` vector
         // LOG(INFO) << "Spiral Valid ";
         spirals.push_back(*spiral);
-      } 
+      }
       else {
         // LOG(INFO) << "Spiral Invalid ";
       }
-    } 
+    }
     else {
       // LOG(INFO) << "Spiral Generation FAILED! ";
     }
   }
   return spirals;
+}
+
+
+/* Checks if the path ends near the desired goal-offset.
+ *
+ * Returns `true` if distance from last waypoint in `spiral` path
+ * is within a fixed distance (here, `0.1` metres) from the desired
+ * `offset_goal` position in 2D.
+ *
+ * @param    spiral        Path containing the waypoints to evaluate.
+ * @param    offset_goal   Desired stopping point for this path.
+ * @returns  Boolean value indicating whether the spiral (path) ends near goal.
+ */
+bool MotionPlanner::valid_spiral(
+    const std::vector<PathPoint>& spiral,
+    const State& offset_goal
+) {
+  auto n = spiral.size();
+  auto delta_x = (offset_goal.location.x - spiral[n - 1].x);
+  auto delta_y = (offset_goal.location.y - spiral[n - 1].y);
+  auto dist = std::sqrt((delta_x * delta_x) + (delta_y * delta_y));
+  // auto dist = utils::magnitude(spiral[spiral.size() - 1].location -
+  //                              offset_goal.location);
+  // LOG(INFO) << "Distance from Spiral end to offset_goal: " << dist;
+  return (dist < 0.1);
+}
+
+
+/* Performs a coordinate transformation of each waypoint into the global frame.
+ *
+ * @param    spiral     Set of paths with the waypoints to transform.
+ * @param    ego_state  Reference point of the ego-vehicle to transform w.r.t.
+ * @returns  Paths with waypoint coordinates in the global reference frame.
+ */
+auto MotionPlanner::transform_spirals_to_global_frame(
+    const std::vector<std::vector<PathPoint>>& spirals,
+    const State& ego_state
+) -> std::vector<std::vector<PathPoint>> {
+  std::vector<std::vector<PathPoint>> transformed_spirals;
+  for (auto spiral : spirals) {
+    std::vector<PathPoint> transformed_single_spiral;
+    for (auto path_point : spiral) {
+      PathPoint new_path_point;
+      new_path_point.x = (
+          ego_state.location.x
+          + path_point.x * std::cos(ego_state.rotation.yaw)
+          - path_point.y * std::sin(ego_state.rotation.yaw)
+      );
+      new_path_point.y = (
+          ego_state.location.y
+          + path_point.x * std::sin(ego_state.rotation.yaw)
+          + path_point.y * std::cos(ego_state.rotation.yaw)
+      );
+      new_path_point.theta = (
+          path_point.theta
+          + ego_state.rotation.yaw
+      );
+      transformed_single_spiral.emplace_back(new_path_point);
+    }
+    transformed_spirals.emplace_back(transformed_single_spiral);
+  }
+  return transformed_spirals;
 }
 
 
@@ -297,21 +334,21 @@ float MotionPlanner::calculate_cost(
  * The index of a path in `spirals` in which a collision occurs will be
  * added to the returned `collisions` vector at the position in the vector
  * where it was examined in the loop (i.e., its position in `spirals`).
- * 
+ *
  * Assuming there exists an optimal path (no collisions, lowest cost score),
  * the corresponding index of this path in `spirals` will be added to the
  * last element of the returned `collisions` vector.
- * 
+ *
  * If no collisions occur, and no optimal path exists, the returned vector
  * will be empty. If all paths are not optimal, this could be because the
  * final waypoint is not near the goal-state, or the trajectory differs
- * significantly from the intended trajectory. 
+ * significantly from the intended trajectory.
  *
  * @param    spirals     Paths to examine for collisions / lowest score.
  * @param    obstacles   Set of objects to evaluate.
- * @param    goal_state  Goal-state / final waypoint positioned in lane centre. 
+ * @param    goal_state  Goal-state / final waypoint positioned in lane centre.
  * @returns  Set of indices s.t. last element is the index of path with lowest
- *           cost, or empty vector if no collisions or optimal path exists. 
+ *           cost, or empty vector if no collisions or optimal path exists.
  */
 std::vector<int> MotionPlanner::get_best_spiral_idx(
     const std::vector<std::vector<PathPoint>>& spirals,

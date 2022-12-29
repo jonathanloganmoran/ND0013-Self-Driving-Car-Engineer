@@ -30,7 +30,7 @@ using Waypoint = carla::client::Waypoint;
 
 class MotionPlanner {
  private:
-  // Number of paths with lateral offset to generate 
+  // Number of paths with lateral offset to generate
   unsigned short _num_paths;
   // Lateral distance between goals
   float _goal_offset;
@@ -46,7 +46,7 @@ class MotionPlanner {
       float goal_offset,
       // Amount of error to tolerate (not yet implemented)
       float error_tolerance
-  )  
+  )
       : _num_paths(num_paths),
         _goal_offset(goal_offset),
         _error_tolerance(error_tolerance) {
@@ -63,7 +63,7 @@ class MotionPlanner {
   );
   // Returns the boolean displacement cost from offset- to goal-state
   bool valid_goal(
-      const State& main_goal, 
+      const State& main_goal,
       const State& offset_goal
   );
   // Generates pre-defined number of paths which are offset from the goal-state
@@ -81,7 +81,7 @@ class MotionPlanner {
   );
   // Generates the set of drivable paths to the desired waypoints
   auto MotionPlanner::generate_spirals(
-    const State& ego_state, 
+    const State& ego_state,
     const std::vector<State>& goals
   ) -> std::vector<std::vector<PathPoint>>;
   // Checks if the path ends near the desired goal-offset
