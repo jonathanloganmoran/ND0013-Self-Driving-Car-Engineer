@@ -62,7 +62,7 @@ double VelocityProfileGenerator::calc_distance(
   else {
     // Calculate the distance travelled w.r.t the given velocity / acceleration
     // Here the 1D rectilinear motion equation for distance is used
-    d = (std::pow(v_f, 2) + std::pow(v_i, 2) / (2 * a);
+    d = (std::pow(v_f, 2) + std::pow(v_i, 2) / (2 * a));
   }
   return d;
 }
