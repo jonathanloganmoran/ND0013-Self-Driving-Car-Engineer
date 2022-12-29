@@ -34,9 +34,9 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Compute the distance travelled w.r.t. rectilinear motion for the linear velocity profile;
 * ✅ Compute the final velocity w.r.t. rectilinear motion for the linear velocity profile;
 
-### Fine-Tuning Hierarchial Planner
-* ⬜️ Define the number of paths (goal states) to enumerate;
-* ⬜️ Define the number of waypoints to enumerate for each path spiral. 
+### Fine-Tuning Hierarchial Planner ([`planning_params.h`]())
+* ✅ Define the number of paths (goal states) to enumerate;
+* ⬜️ Define the number of waypoints to enumerate for each path spiral.
 
 
 ## 1. Introduction
