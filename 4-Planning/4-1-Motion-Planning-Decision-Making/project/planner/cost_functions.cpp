@@ -17,10 +17,10 @@ namespace cost_functions {
  * Penalises trajectories whose coordinates (and derivatives) differ
  * from the goal-state trajectory.
  * 
- * @param    coeff
- * @param    duration     
+ * @param    coeff        Set of coefficients of the polynomial spiral (path).
+ * @param    duration     Elapsed time to execute the trajectory.
  * @param    goals        Set of waypoints belonging to the goal-state.
- * @param    sigma        
+ * @param    sigma        Value to weigh the trajectory difference by. 
  * @param    cost_weight  Value to weigh the cost by.
  * @returns  Weighted difference cost between given and goal-state trajectory.
  */
@@ -46,6 +46,7 @@ double diff_cost(
   // std::cout << "diff_coeff Cost Calculated " << "\n";
   return cost_weight * cost;
 }
+
 
 /* Path-obstacle collision cost function.
  *
