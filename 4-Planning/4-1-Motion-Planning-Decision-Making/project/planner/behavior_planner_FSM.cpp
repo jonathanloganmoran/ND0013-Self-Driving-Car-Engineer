@@ -11,6 +11,109 @@
 #include "behavior_planner_FSM.h"
 
 
+/* Updates the ego-vehicle state by evaluating the state transition function.
+ *
+ * If the desired goal-state is located inside an intersection / junction, then
+ * the updated `goal` will be placed at a position behind the junction by the
+ * pre-defined `_stop_line_buffer` amount. Otherwise, we assume the vehicle is 
+ * in a nominal state and can move freely. In this case, goal-state velocity is
+ * set to the pre-defined `_speed_limit` w.r.t. the 2D components of the vehicle
+ * heading.
+ * 
+ * If `STOPPED` at a controlled intersection (i.e., with traffic light), the
+ * ego-vehicle will proceed to a `FOLLOW_LANE` state once the traffic light is
+ * not "Red" and a pre-defined amount of `_req_stop_time` has passed.
+ * 
+ * NOTE: We assume that the motion controller is not yet implemented, therefore we
+ * use a distance threshold to stop the vehicle in the `DECEL_TO_STOP` state.
+ * 
+ * @param    ego_state            Current ego-vehicle state.
+ * @param    goal                 Pose of the goal-state.
+ * @param    is_goal_in_junction  Whether the goal-state is in a junction.
+ * @param    tl_state             State of the traffic light.
+ * @returns  goal                 Goal-state updated w.r.t. the current state.  
+ */
+State BehaviorPlannerFSM::state_transition(
+    const State& ego_state, 
+    State goal,
+    bool& is_goal_in_junction,
+    std::string tl_state
+) {
+  // Check with the Behavior Planner to see what we are going to do 
+  // and where our next goal is
+  goal.acceleration.x = 0;
+  goal.acceleration.y = 0;
+  goal.acceleration.z = 0;
+  if (_active_maneuver == FOLLOW_LANE) {
+    // LOG(INFO) << "BP- IN FOLLOW_LANE STATE";
+    if (is_goal_in_junction) {
+      // LOG(INFO) << "BP - goal in junction";
+      _active_maneuver = DECEL_TO_STOP;
+      // LOG(INFO) << "BP - changing to DECEL_TO_STOP";
+      // Let's backup a "buffer" distance behind the "STOP" point
+      // LOG(INFO) << "BP- original STOP goal at: " << goal.location.x << ", "
+      //          << goal.location.y;
+      // Compute the "backed up" location of the goal-state
+      // The goal location is placed behind the desired stopping point
+      auto ang = goal.rotation.yaw + M_PI;
+      goal.location.x += _stop_line_buffer * cos(ang);
+      goal.location.y += _stop_line_buffer * sin(ang);
+      // LOG(INFO) << "BP- new STOP goal at: " << goal.location.x << ", "
+      //          << goal.location.y;
+      // Set the goal-state velocity for the complete stop manoeuvre
+      goal.velocity.x = 0.0;
+      goal.velocity.y = 0.0;
+      goal.velocity.z = 0.0;
+    } 
+    else {
+      // Compute the goal-state velocity for the nominal state
+      // The velocity components are set w.r.t. the pre-defined speed limit
+      goal.velocity.x = _speed_limit * std::cos(goal.rotation.yaw);
+      goal.velocity.y = _speed_limit * std::sin(goal.rotation.yaw);
+      goal.velocity.z = 0;
+    }
+  }
+  else if (_active_maneuver == DECEL_TO_STOP) {
+    // LOG(INFO) << "BP- IN DECEL_TO_STOP STATE";
+    // Track the previous goal-state, i.e., set new goal-state to previous
+    // in order to keep / maintain the goal at the desired stopping point
+    goal = _goal;
+    // Since we are not using a motion controller (yet), we need an alternative
+    // way to control the vehicle speed in the `DECEL_TO_STOP` state
+    // Therefore, we will use distance instead of speed in order to make sure
+    // the ego-vehicle comes to a complete stop at the stopping point
+    auto distance_to_stop_sign = utils::magnitude(
+        goal.location - ego_state.location
+    );
+    // LOG(INFO) << "Ego distance to stop line: " << distance_to_stop_sign;
+    if (distance_to_stop_sign <= P_STOP_THRESHOLD_DISTANCE) {
+      // Update the ego-vehicle state to `STOPPED`
+      _active_maneuver = STOPPED;
+      _start_stop_time = std::chrono::high_resolution_clock::now();
+      // LOG(INFO) << "BP - changing to STOPPED";
+    }
+  } 
+  else if (_active_maneuver == STOPPED) {
+    // LOG(INFO) << "BP- IN STOPPED STATE";
+    // Track the previous goal-state, i.e., set new goal-state to previous
+    // in order to keep / maintain the `STOPPED` goal-state
+    goal = _goal;
+    long long stopped_secs = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::high_resolution_clock::now() - _start_stop_time
+    ).count();
+    // LOG(INFO) << "BP- Stopped for " << stopped_secs << " secs";
+    if (stopped_secs >= _req_stop_time && tl_state.compare("Red") != 0) {
+      // Since traffic light is no longer "Red" and safety duration has elapsed
+      // Move the ego-vehicle to a `FOLLOW_LANE` state
+      _active_maneuver = FOLLOW_LANE;
+      // LOG(INFO) << "BP - changing to FOLLOW_LANE";
+    }
+  }
+  _goal = goal;
+  return goal;
+}
+
+
 /* Returns the closest waypoint to the goal-state.
  *
  * @param    ego_state            Current ego-vehicle state.
@@ -143,108 +246,5 @@ State BehaviorPlannerFSM::get_goal(
       is_goal_in_junction, 
       tl_state
   );
-  return goal;
-}
-
-
-/* Updates the ego-vehicle state by evaluating the state transition function.
- *
- * If the desired goal-state is located inside an intersection / junction, then
- * the updated `goal` will be placed at a position behind the junction by the
- * pre-defined `_stop_line_buffer` amount. Otherwise, we assume the vehicle is 
- * in a nominal state and can move freely. In this case, goal-state velocity is
- * set to the pre-defined `_speed_limit` w.r.t. the 2D components of the vehicle
- * heading.
- * 
- * If `STOPPED` at a controlled intersection (i.e., with traffic light), the
- * ego-vehicle will proceed to a `FOLLOW_LANE` state once the traffic light is
- * not "Red" and a pre-defined amount of `_req_stop_time` has passed.
- * 
- * NOTE: We assume that the motion controller is not yet implemented, therefore we
- * use a distance threshold to stop the vehicle in the `DECEL_TO_STOP` state.
- * 
- * @param    ego_state            Current ego-vehicle state.
- * @param    goal                 Pose of the goal-state.
- * @param    is_goal_in_junction  Whether the goal-state is in a junction.
- * @param    tl_state             State of the traffic light.
- * @returns  goal                 Goal-state updated w.r.t. the current state.  
- */
-State BehaviorPlannerFSM::state_transition(
-    const State& ego_state, 
-    State goal,
-    bool& is_goal_in_junction,
-    std::string tl_state
-) {
-  // Check with the Behavior Planner to see what we are going to do 
-  // and where our next goal is
-  goal.acceleration.x = 0;
-  goal.acceleration.y = 0;
-  goal.acceleration.z = 0;
-  if (_active_maneuver == FOLLOW_LANE) {
-    // LOG(INFO) << "BP- IN FOLLOW_LANE STATE";
-    if (is_goal_in_junction) {
-      // LOG(INFO) << "BP - goal in junction";
-      _active_maneuver = DECEL_TO_STOP;
-      // LOG(INFO) << "BP - changing to DECEL_TO_STOP";
-      // Let's backup a "buffer" distance behind the "STOP" point
-      // LOG(INFO) << "BP- original STOP goal at: " << goal.location.x << ", "
-      //          << goal.location.y;
-      // Compute the "backed up" location of the goal-state
-      // The goal location is placed behind the desired stopping point
-      auto ang = goal.rotation.yaw + M_PI;
-      goal.location.x += _stop_line_buffer * cos(ang);
-      goal.location.y += _stop_line_buffer * sin(ang);
-      // LOG(INFO) << "BP- new STOP goal at: " << goal.location.x << ", "
-      //          << goal.location.y;
-      // Set the goal-state velocity for the complete stop manoeuvre
-      goal.velocity.x = 0.0;
-      goal.velocity.y = 0.0;
-      goal.velocity.z = 0.0;
-    } 
-    else {
-      // Compute the goal-state velocity for the nominal state
-      // The velocity components are set w.r.t. the pre-defined speed limit
-      goal.velocity.x = _speed_limit * std::cos(goal.rotation.yaw);
-      goal.velocity.y = _speed_limit * std::sin(goal.rotation.yaw);
-      goal.velocity.z = 0;
-    }
-  }
-  else if (_active_maneuver == DECEL_TO_STOP) {
-    // LOG(INFO) << "BP- IN DECEL_TO_STOP STATE";
-    // Track the previous goal-state, i.e., set new goal-state to previous
-    // in order to keep / maintain the goal at the desired stopping point
-    goal = _goal;
-    // Since we are not using a motion controller (yet), we need an alternative
-    // way to control the vehicle speed in the `DECEL_TO_STOP` state
-    // Therefore, we will use distance instead of speed in order to make sure
-    // the ego-vehicle comes to a complete stop at the stopping point
-    auto distance_to_stop_sign = utils::magnitude(
-        goal.location - ego_state.location
-    );
-    // LOG(INFO) << "Ego distance to stop line: " << distance_to_stop_sign;
-    if (distance_to_stop_sign <= P_STOP_THRESHOLD_DISTANCE) {
-      // Update the ego-vehicle state to `STOPPED`
-      _active_maneuver = STOPPED;
-      _start_stop_time = std::chrono::high_resolution_clock::now();
-      // LOG(INFO) << "BP - changing to STOPPED";
-    }
-  } 
-  else if (_active_maneuver == STOPPED) {
-    // LOG(INFO) << "BP- IN STOPPED STATE";
-    // Track the previous goal-state, i.e., set new goal-state to previous
-    // in order to keep / maintain the `STOPPED` goal-state
-    goal = _goal;
-    long long stopped_secs = std::chrono::duration_cast<std::chrono::seconds>(
-        std::chrono::high_resolution_clock::now() - _start_stop_time
-    ).count();
-    // LOG(INFO) << "BP- Stopped for " << stopped_secs << " secs";
-    if (stopped_secs >= _req_stop_time && tl_state.compare("Red") != 0) {
-      // Since traffic light is no longer "Red" and safety duration has elapsed
-      // Move the ego-vehicle to a `FOLLOW_LANE` state
-      _active_maneuver = FOLLOW_LANE;
-      // LOG(INFO) << "BP - changing to FOLLOW_LANE";
-    }
-  }
-  _goal = goal;
   return goal;
 }

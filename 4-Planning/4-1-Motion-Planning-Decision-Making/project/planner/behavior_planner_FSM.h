@@ -36,18 +36,27 @@ using Waypoint = carla::client::Waypoint;
 
 class BehaviorPlannerFSM {
  private:
+  // Time allocated to executing a given manoeuvre
+  // e.g., a complete stop
   double _lookahead_time;
+  // Minimum distance needed to make a complete stop
   double _lookahead_distance_min;
+  // Maximum distance to make a complete stop
   double _lookahead_distance_max;
+  // Speed limit to set for the nominal state
   double _speed_limit;
   double _stop_threshold_speed;
+  // Time required for the vehicle to wait before proceeding through junction
   double _req_stop_time;
   double _reaction_time;
   double _max_accel;
+  // Distance amount to subtract from the goal-state position
+  // in order to e.g., prevent collisions or cross stop / intersection lines
   double _stop_line_buffer{-1.0};
   cr::JuncId _prev_junction_id{-1};
   // double _follow_lead_vehicle_lookahead{-1.0};
   std::chrono::time_point<std::chrono::high_resolution_clock> _start_stop_time;
+  // Ego-vehicle manoeuvre state (evaluated by the FSM)
   Maneuver _active_maneuver{FOLLOW_LANE};
   State _goal;
 
@@ -72,10 +81,12 @@ class BehaviorPlannerFSM {
         _reaction_time(reaction_time),
         _max_accel(max_accel),
         _stop_line_buffer(stop_line_buffer) {};
-  ~BehaviorPlannerFSM(){};
-
-  double get_look_ahead_distance(
-      const State& ego_state
+  ~BehaviorPlannerFSM() {};
+  State state_transition(
+      const State& ego_state,
+      State goal,
+      bool& is_goal_in_junction,
+      std::string tl_state
   );
   State get_closest_waypoint_goal(
       const State& ego_state,
@@ -83,15 +94,12 @@ class BehaviorPlannerFSM {
       const float& lookahead_distance,
       bool& is_goal_junction
   );
+  double get_look_ahead_distance(
+      const State& ego_state
+  );
   State get_goal(
       const State& ego_state, 
       SharedPtr<carla::client::Map> map
-  );
-  State state_transition(
-      const State& ego_state,
-      State goal,
-      bool& is_goal_in_junction,
-      std::string tl_state
   );
   Maneuver get_active_maneuver() { return _active_maneuver; };
 };
