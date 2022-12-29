@@ -117,7 +117,7 @@ double collision_circles_cost_spiral(
  * centre line will be penalised.
  *
  * @param    spiral     Path containing the waypoints to evaluate.
- * @param    main_goal  Goal-state with position of the lane centre line.
+ * @param    main_goal  Goal-state positioned in the lane centre-line.
  * @returns  cost       Distance to goal-state cost.
  */
 double close_to_main_goal_cost_spiral(
