@@ -23,9 +23,6 @@
 #include <numeric>                  // std::accumulate (not yet used)
 #include <vector>
 
-using namespace std;
-using namespace utils;
-namespace cc = carla::client;
 template <typename T>
 using SharedPtr = boost::shared_ptr<T>;
 
