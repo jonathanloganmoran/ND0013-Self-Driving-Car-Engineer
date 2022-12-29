@@ -19,7 +19,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Compute `DECEL_TO_STOP` state w.r.t. distance rather than speed;
 * ✅ Move the ego-vehicle to a `STOPPED` state;
 * ✅ Track the existing goal when in `STOPPED` state;
-* ⬜️ Move ego-vehicle to a `FOLLOW_LANE` state.
+* ✅ Move ego-vehicle to a `FOLLOW_LANE` state.
 
 ### Cost functions
 * ⬜️ Evaluate cost w.r.t. placement of objects (as circles);

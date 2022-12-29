@@ -218,10 +218,9 @@ State BehaviorPlannerFSM::state_transition(
     ).count();
     // LOG(INFO) << "BP- Stopped for " << stopped_secs << " secs";
     if (stopped_secs >= _req_stop_time && tl_state.compare("Red") != 0) {
-      // TODO-move to FOLLOW_LANE state: 
-      // What state do we want to move to, 
-      // when we are "done" at the `STOPPED` state?
-      // _active_maneuver = ;  // <- Fix This
+      // Since traffic light is no longer "Red" and safety duration has elapsed
+      // Move the ego-vehicle to a `FOLLOW_LANE` state
+      _active_maneuver = FOLLOW_LANE;
       // LOG(INFO) << "BP - changing to FOLLOW_LANE";
     }
   }
