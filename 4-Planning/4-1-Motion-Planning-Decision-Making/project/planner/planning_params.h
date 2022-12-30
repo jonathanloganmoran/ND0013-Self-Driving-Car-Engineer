@@ -15,6 +15,7 @@
 
 /*** Planning Constants ***/
 // Number of paths (goals) to create
+// CANDO: Modify the number of path offsets to generate
 #define P_NUM_PATHS 5                  // Number of deviations to enumerate
 // Minimum lookhead distance (m)
 #define P_LOOKAHEAD_MIN 8.0
@@ -45,6 +46,7 @@
 // Minimum required reaction time (s)
 #define P_REACTION_TIME 0.25
 // Number of waypoints to use in polynomial spiral (path)
+// CANDO: Modify the number of waypoints to use in each path
 // NOTE: Needs to be sufficiently large to avoid compile error
 #define P_NUM_POINTS_IN_SPIRAL 25
 // Minimum distance (m) needed for full stop
