@@ -56,8 +56,8 @@ State BehaviorPlannerFSM::state_transition(
       // Compute the "backed up" location of the goal-state
       // The goal location is placed behind the desired stopping point
       auto ang = goal.rotation.yaw + M_PI;
-      goal.location.x += _stop_line_buffer * cos(ang);
-      goal.location.y += _stop_line_buffer * sin(ang);
+      goal.location.x += _stop_line_buffer * std::cos(ang);
+      goal.location.y += _stop_line_buffer * std::sin(ang);
       // LOG(INFO) << "BP- new STOP goal at: " << goal.location.x << ", "
       //          << goal.location.y;
       // Set the goal-state velocity for the complete stop manoeuvre

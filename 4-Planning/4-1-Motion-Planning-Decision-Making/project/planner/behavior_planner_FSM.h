@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "velocity_profile_generator.h"
 #include "planning_params.h"
 #include "structs.h"
 #include "utils.h"
