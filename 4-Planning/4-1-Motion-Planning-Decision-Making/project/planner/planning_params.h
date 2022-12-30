@@ -45,7 +45,8 @@
 // Minimum required reaction time (s)
 #define P_REACTION_TIME 0.25
 // Number of waypoints to use in polynomial spiral (path)
-#define P_NUM_POINTS_IN_SPIRAL 5       // Quintic polynomial
+// NOTE: Needs to be sufficiently large to avoid compile error
+#define P_NUM_POINTS_IN_SPIRAL 25
 // Minimum distance (m) needed for full stop
 // NOTE: Replaces motion controller (velocity-based) for now
 #define P_STOP_THRESHOLD_DISTANCE \
