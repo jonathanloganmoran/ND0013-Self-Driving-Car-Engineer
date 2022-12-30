@@ -1,23 +1,37 @@
+NOTE: These instructions have been adapted for the `4-1-Motion-Planning-Decision-Making` repository created by Jonathan L. Moran (@jonathanloganmoran on GitHub).
+To obtain a copy of the code used with this build script (minus the dependencies from the original starter code repository), visit:
+https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making.
+
+NOTE 2: These instructions are intended to be run on the Udacity workspace, i.e., the VM running Ubuntu 18.04.5 LTS.
+
 New terminal window
 1. su - student
 // Will say permission denied, ignore and continue 
 2. cd /opt/carla-simulator/
 3. SDL_VIDEODRIVER=offscreen ./CarlaUE4.sh -opengl
 
-New terminal window
+New terminal window:
 4. git clone https://github.com/udacity/nd013-c5-planning-starter.git
 5. cd nd013-c5-planning-starter/project
 6 ./install-ubuntu.sh
 7. cd planner/
+
+NOTE: Before running the next steps, modify the relevant code files as instructed in the project description. If referencing the repository by @jonathanloganmoran, you should copy over the following files:
+* `behavior_planner_FSM.cpp` and `behavior_planner_FSM.h`;
+* `cost_functions.cpp` and `cost_functions.h`;
+* `motion_planner.cpp` and `motion_planner.h`;
+* `planning_params.h`;
+* `velocity_profile_generator.cpp` and `velocity_profile_generator.h`. 
+
+Now, with the above files modified, proceed to build and execute the project with the following steps:
 9. cmake .
 10. make
-11. cd nd013-c5-planning-refresh/project
+11. cd nd013-c5-planning-starter/project
 12. ./run_main.sh
 // This will silently fail 
 13. ctrl + C to stop 
 14. ./run_main.sh again
 15. Go to desktop mode to see CARLA
-
 
 
 // If error bind is already in use, or address already being used

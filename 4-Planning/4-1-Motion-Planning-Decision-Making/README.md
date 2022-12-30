@@ -47,32 +47,158 @@ In this project we implement several core components of the traditional [hierarc
     * The ego-vehicle must come to a complete stop at any of these intersections;
 3. Track the lane centre line.
 
-
 ## 2. Programming Task
-### Prerequisites
-In order to make use of this project, you must have the following dependencies installed:
+### 2.1. Motion Planning and Decision Making
+#### Background
+TODO.
+
+#### Results
+
+The following output was produced during a test run of the 
+<img src="out/2022-12-29-Figure-1-Testing-Motion-Planner-in-CARLA.gif" width="90%" height="90%" alt="Figure 1. Testing the Motion Planner in the CARLA Simulator.">
+
+$$
+\begin{align}
+\textrm{Figure 1. Testing the Motion Planner in the CARLA Simulator.}
+\end{align}
+$$
+
+#### Prerequisites
+In order to make use of this project, you must have the following dependencies installed —
+
+Python:
+* Python 3.7;
+* [Carla Simulator](https://github.com/carla-simulator/carla)
+* [PyPI Pip](https://pip.pypa.io/en/stable/installation/);
+* [Numpy](https://numpy.org/);
+* [Pygame](https://www.pygame.org/);
+* [Gtest](https://pypi.org/project/gtest/).
+C++:
+* [C++14](https://en.wikipedia.org/wiki/C%2B%2B14)
 * [Eigen 3.3.7](https://gitlab.com/libeigen/eigen/-/releases/3.3.7);
 * [Carla Simulator](https://github.com/carla-simulator/carla);
 * [`rpclib` 2.2.1](https://github.com/rpclib/rpclib).
 
 While we have chosen to omit these dependencies from this repository, you may find the archived copies on the starter code repository [here](https://github.com/udacity/nd013-c5-planning-starter/tree/master/project).
 
+#### Running and compiling the programme
+
+##### Setting the hyperparameters
+The motion planner has several hyperparameters whose values can be modified. Inside the [`planning_params.h`]() file, you will find the following two parameters:
+
+```cpp
+/*** Planning Constants ***/
+// Number of paths (goals) to create
+// CANDO: Modify the number of path offsets to generate
+#define P_NUM_PATHS 5                  // Number of deviations to enumerate
+``` 
+
+and
+
+```cpp
+// Number of waypoints to use in polynomial spiral (path)
+// CANDO: Modify the number of waypoints to use in each path
+// NOTE: Needs to be sufficiently large to avoid compile error
+#define P_NUM_POINTS_IN_SPIRAL 25
+```
+
+which are on lines 19 and 51, respectively.
+
+Modifying these values will allow you to control the number of and the coarseness / fineness of the polynomial spiral-based paths. 
+
+We recommended setting the `P_NUM_POINTS_IN_SPIRAL` to a value of `25` or greater in order to avoid runtime errors (`Unknown PCM default` / `segmentation fault (core dumped)`).
+
+##### Configuring CMAKE build
+In order to use this modified version of the project code, which has renamed the `'project/starter_code/'` subfolder to [`'project/planner'`](), you must change line 3 of the _original_ [`run_main.sh`](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/run_main.sh) script to the following:
+
+```sh
+./{SUBFOLDER_NAME}/spiral_planner&
+```
+
+where `{SUBFOLDER_NAME}` should be `planner`, which matches the renamed subfolder in this repository. Note that you may ignore this step if running the [`run_main.sh`]() script from inside this repository.
+
+##### Creating the executable
+In order to create the executable file, open a new console window and navigate to the [`'/project/planner'`]() subdirectory. Then, execute the following commands in the console:
+
+```console
+root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/planner/#  cmake .
+root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/planner/#  make
+```
+
+Note that here our project root directory is named `4-1-Motion-Planning-Decision-Making`, but this might be different depending on how you obtained the [starter code](https://github.com/udacity/nd013-c5-planning-starter) for this project.
+
+##### Configuring the runtime environment
+If you are using the Udacity VM, i.e., the project workspace running Ubuntu 18.04.5 LTS, you will need to perform two extra steps before the executable can be run.
+
+The first step is to run the CARLA configuration script. First, set the superuser from `root` to `student` in a separate console window with the following command:
+```console
+root@foobar:/opt/web-terminal/#  su - student
+```
+
+You may get a `Permission denied` error, but you can ignore this if you see the `student` user in the console command line as follows:
+
+```console
+student@foobar:  ...
+```
+
+Now, with the `student` user account configured, navigate to the `/opt/carla-simulator/` subdirectory and run the build script, i.e.,
+
+```console
+student@foobar:/#  cd /opt/carla-simulator
+student@foobar:/opt/carla-simulator/#  SDL_VIDEODRIVER=offscreen ./CarlaUE4.sh -opengl
+```
+
+This should set the CARLA Simulator to headless mode and prevent the programme from incurring any `Segmentation fault (core dumped)` errors.
+
+The second step is to run the [`install-ubuntu.sh`]() build script which installs the necessary dependencies for the Ubuntu LTS runtime environment. To do so, open a new console window, navigate to the project subfolder (here, that's `4-1-Motion-Planning-Decision-Making/project`), and run the following:
+
+```console
+root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/#  ./install-ubuntu.sh
+```
+
+You may have to agree to the installation of the dependencies by entering `Y` when prompted.
+
+With these runtime configuration steps out of the way, open a _separate console window_ (making sure the CARLA build script from earlier is running in another). Then, navigate back to the project root directory:
+
+```console
+root@foobar:/opt/web-terminal/#  cd /opt/web-terminal/4-1-Motion-Planning-Decision-Making
+```
+
+and proceed to the programme execution steps in the following section.
+
+##### Executing the programme
+Once the project has been built successfully, the executable can be run with the following command:
+```console
+root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/#  ./run_main.sh
+```
+
+Depending on which environment you are running, you may experience a silent fail error. On the Udacity VM, this is expected. Simply use CTRL + C keys to halt the programme. Run the programme script again (same as above), then the CARLA Simulator should start without problems. If you continue to experience errors running the `./run_main.sh` script, make sure that you're running the script in a _new_ console window and have the CARLA headless script running under the `student` user in another console window (see _Configuring the runtime environment_). 
+
+In the case that you get a `Unknown PCL default` error, try modifying the `P_NUM_POINTS_IN_SPIRAL` hyperparameter value (increasing this number worked for me here).
+
+With the programme running successfully, you should observe the ego-vehicle manoeuvre automatically around obstacles, come to a complete stop at the stop sign, and even be able to make a right-turn from the complete stop into one of the available lanes.
+
+##### More information
+This build / configure / execute sequence has been adapted from the [original `how_to_run.txt` instructions](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/how_to_run.txt). For instructions pertaining to this repository for use with the Udacity VM, see [`how_to_run.txt`]() file here. 
+
+This concludes the programming tasks for this project. Refer to the "Tasks" check-list to make sure all TODOs are completed.
+
 ## 3. Closing Remarks
 ###### Alternatives
-* TODO.
+* Increase the number of points in the path (`P_NUM_POINTS_IN_SPIRAL`);
+* Change the number of paths to generate (`P_NUM_PATHS`).
 
 ##### Extensions of task
-* TODO.
+* Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function.
 
 ## 4. Future Work
-* TODO.
+* ⬜️ Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function.
 
 ## Credits
 This assignment was prepared by Munir Jojo-Verge, Aaron Brown et al., 2021 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).
 
 References
-* TODO.
-
+* N/A.
 
 Helpful resources:
 * [ND0013: C5 Planning Starter | GitHub](https://github.com/udacity/nd013-c5-planning-starter).
