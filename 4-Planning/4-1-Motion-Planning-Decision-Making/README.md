@@ -40,17 +40,25 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 
 ## 1. Introduction
-In this project we implement several core components of the traditional [hierarchial task network](https://en.wikipedia.org/wiki/Hierarchical_task_network)-based planner: the behaviour planner and the motion planner. Both the behaviour and the motion planner modules will be able to:
+In this project we implement several core components of the traditional [hierarchical task network](https://en.wikipedia.org/wiki/Hierarchical_task_network)-based planner [1]: the behaviour planner and the motion planner. Both the behaviour and the motion planner modules will be able to:
 1. Avoid static objects located on the sides of the road. These obstacles (e.g., cars, bicycles, trucks) are placed such that their location intersects the lane travelled by the ego-vehicle;
     * The ego-vehicle must avoid crashing into these obstacles by executing a proper "nudge" or lane-change manoeuvre;
 2. Handle intersections of arbitrary type (e.g., 3-way / 4-way intersections, round-abouts); 
     * The ego-vehicle must come to a complete stop at any of these intersections;
 3. Track the lane centre line.
 
+Many behaviour / motion planning systems for autonomous vehicles utilise [finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine), such as Stanford's Junior [], the DARPA Grand Challenge Winner. In this project we also make use of the finite-state machine to handle state transitions from one active manoeuvre (i.e., `DECEL_TO_STOP`) to another. The FSM implements the behaviour planning module of the hierarchical-task network. This submodule manages the goal-state of the ego-vehicle and lookahead distance functionality (i.e., the longitudinal distance needed to travel by the ego-vehicle in order to come to a complete stop). Here we introduce comfort constraints which ensure that the deceleration for     
+
 ## 2. Programming Task
 ### 2.1. Motion Planning and Decision Making
 #### Background
-TODO.
+The vehicle behaviours we consider for this project are:
+* `FOLLOW_LANE`: Ego-vehicle keeps lane and maintains the configured `_speed_limit`;
+* `FOLLOW_VEHICLE`: Ego-vehicle keeps lane and maintains the speed of the lead vehicle;
+* `DECEL_TO_STOP`: Ego-vehicle moves towards the goal-state location (minus a distance `_stop_line_buffer`) in order to come to a complete stop using a comfortable acceleration;
+* `STOPPED`: Ego-vehicle waits at e.g., intersection / stop sign for `_req_stop_time` (sec).
+
+In the current implementation of the behaviour planner (in [`behavior_planner_FSM.cpp`]()) we neglect the `FOLLOW_VEHICLE` action and instead choose to move the vehicle to a different lane to avoid any possible collisions.
 
 #### Results
 
@@ -73,6 +81,7 @@ Python:
 * [Numpy](https://numpy.org/);
 * [Pygame](https://www.pygame.org/);
 * [Gtest](https://pypi.org/project/gtest/).
+
 C++:
 * [C++14](https://en.wikipedia.org/wiki/C%2B%2B14)
 * [Eigen 3.3.7](https://gitlab.com/libeigen/eigen/-/releases/3.3.7);
@@ -181,15 +190,19 @@ With the programme running successfully, you should observe the ego-vehicle mano
 ##### More information
 This build / configure / execute sequence has been adapted from the [original `how_to_run.txt` instructions](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/how_to_run.txt). For instructions pertaining to this repository for use with the Udacity VM, see [`how_to_run.txt`]() file here. 
 
-This concludes the programming tasks for this project. Refer to the "Tasks" check-list to make sure all TODOs are completed.
+This concludes the programming tasks for this project. Refer to the "Tasks" check-list to make sure all TODOs are completed. Recommended literature to review: hierarchical planning [1], finite-state machines for AVs [2][5], real-time motion planning [6], path planning algorithms [3], and applications to vehicles [2][6][7].
+
 
 ## 3. Closing Remarks
 ###### Alternatives
 * Increase the number of points in the path (`P_NUM_POINTS_IN_SPIRAL`);
-* Change the number of paths to generate (`P_NUM_PATHS`).
+* Change the number of paths to generate (`P_NUM_PATHS`);
 
 ##### Extensions of task
-* Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function.
+* Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function;
+* Implement the `FOLLOW_VEHICLE` state in [`state_transition`]() function;
+* Choose a trajectory planner suitable for real-time applications (e.g., [Frenet Optimal Trajectory](https://fjp.at/posts/optimal-frenet/) [6]);
+* Consider using deep learning-based techniques for path planning / obstacle avoidance (e.g., RL with particle filtering [4])
 
 ## 4. Future Work
 * ⬜️ Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function.
@@ -198,7 +211,18 @@ This concludes the programming tasks for this project. Refer to the "Tasks" chec
 This assignment was prepared by Munir Jojo-Verge, Aaron Brown et al., 2021 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).
 
 References
-* N/A.
+* [1] Orzechowski, P. F. et al. Decision-Making for Automated Vehicles Using a Hierarchical Behavior-Based Arbitration Scheme. IEEE Intelligent Vehicles Symposium (IV). pp. 767-774. 2020. [doi:10.1109/IV47402.2020.9304723](https://doi.org/10.1109/IV47402.2020.9304723).
+* [2] Montemerlo, M. et al. Junior: The Stanford Entry in the Urban Challenge. Journal of Field Robotics. 2008. 25(9):569-597. [doi:10.1002/rob.20258](https://doi.org/10.1002/rob.20258).
+* [3] LaValle, S. M. Combinatorial Motion Planning. In: Planning Algorithms. Cambridge University Press. 2006. pp.206-256. [doi:10.1017/CBO9780511546877.008]().ISBN-13: 978-0521862059.
+* [4] Everett, M. et al. Motion Planning Among Dynamic, Decision-Making Agents with Deep Reinforcement Learning. IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). 2018. [doi:10.1109/IROS.2018.8593871](https://doi.org/10.1109/IROS.2018.8593871).
+* [5] Dolgov, D. et al. Practical Search Techniques in Path Planning for Autonomous Driving. Association for the Advancement of Artificial Intelligence. Pre-print. 2008. [https://www.aaai.org/Library/Workshops/2008/ws08-10-006.php](https://www.aaai.org/Papers/Workshops/2008/WS-08-10/WS08-10-006.pdf).
+* [6] Xu, W. et al. A Real-Time Motion Planner with Trajectory Optimization for Autonomous Vehicles. IEEE International Conference on Robotics and Automation. pp.2061–2067. 2012. [doi:10.1109/ICRA.2012.6225063](https://doi.org/10.1109/ICRA.2012.6225063);
+* [7] Yu, L. A Driving Behavior Planning and Trajectory Generation Method for Autonomous Electric Bus. Future Internet 2018, 10, 51. [doi:10.3390/fi10060051](https://doi.org/10.3390/fi10060051);
+* [8] Liang, T. C. et al. Practical and flexible path planning for car-like mobile robot using maximal-curvature cubic spiral. Robotics and Autonomous Systems. Elsevier. 52(4):312-335. 2005. [doi:10.1016/j.robot.2005.05.001](https://doi.org/10.1016/j.robot.2005.05.001).
 
 Helpful resources:
-* [ND0013: C5 Planning Starter | GitHub](https://github.com/udacity/nd013-c5-planning-starter).
+* [ND0013: C5 Planning Starter | GitHub](https://github.com/udacity/nd013-c5-planning-starter);
+* [Research Projects in Decision-Making and Motion Planning | Institute of Measurement and Control Systems (MRT) at KIT](https://www.mrt.kit.edu/english/Decision-Making_and_Motion_Planning.php);
+* [Planning Algorithms by LaValle, S. M. | Cambridge University Press (2006)](doi:10.1017/CBO9780511546877.008);
+* [Planning and Decision Making for Aerial Robots by Sebbane, Y. S. | Springer (2014)](https://doi.org/10.1007/978-3-319-03707-3);
+* [Dynamic Deadlines in Motion Planning for Autonomous Driving Systems by E. Fang | Lit. Review of AV Planning systems](https://www.semanticscholar.org/paper/Dynamic-Deadlines-in-Motion-Planning-for-Autonomous-Fang/ad76971b987f586078235c18ea68d2210d848f08).
