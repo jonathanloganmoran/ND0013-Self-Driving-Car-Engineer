@@ -10,7 +10,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * Perform best-trajectory selection via cost function optimisation.
 
 ## Tasks
-### Behaviour Planning ([`behavior_planner_FSM.cpp`]())
+### Behaviour Planning ([`behavior_planner_FSM.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/behavior_planner_FSM.cpp))
 * ✅ Implement the look-ahead distance function;
 * ✅ Compute a goal state (pose, velocity) situated behind a stopping point;
 * ✅ Compute the goal speed for a nominal state;
@@ -21,20 +21,20 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Track the existing goal when in `STOPPED` state;
 * ✅ Move ego-vehicle to a `FOLLOW_LANE` state.
 
-### Cost Functions ([`cost_functions.cpp`]())
+### Cost Functions ([`cost_functions.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/cost_functions.cpp))
 * ✅ Evaluate cost w.r.t. placement of objects (as circles);
 * ✅ Evaluate cost w.r.t. distance to objects (as circles);
 * ✅ Evaluate cost w.r.t. distance between last waypoint on spiral and final goal state.
 
-### Motion Planning ([`motion_planner.cpp`]())
+### Motion Planning ([`motion_planner.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/motion_planner.cpp))
 * ✅ Plan paths based on perpendicular heading direction;
 * ✅ Plan paths based on goal-offset location.
 
-### Velocity Profile Generation ([`velocity_profile_generator.cpp`]())
+### Velocity Profile Generation ([`velocity_profile_generator.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/velocity_profile_generator.cpp))
 * ✅ Compute the distance travelled w.r.t. rectilinear motion for the linear velocity profile;
 * ✅ Compute the final velocity w.r.t. rectilinear motion for the linear velocity profile;
 
-### Fine-Tuning Hierarchial Planner ([`planning_params.h`]())
+### Fine-Tuning Hierarchial Planner ([`planning_params.h`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/planning_params.h))
 * ✅ Define the number of paths (goal states) to enumerate;
 * ✅ Define the number of waypoints to enumerate for each path spiral.
 
@@ -58,7 +58,7 @@ The vehicle behaviours we consider for this project are:
 * `DECEL_TO_STOP`: Ego-vehicle moves towards the goal-state location (minus a distance `_stop_line_buffer`) in order to come to a complete stop using a comfortable acceleration;
 * `STOPPED`: Ego-vehicle waits at e.g., intersection / stop sign for `_req_stop_time` (sec).
 
-In the current implementation of the behaviour planner (in [`behavior_planner_FSM.cpp`]()) we neglect the `FOLLOW_VEHICLE` action and instead choose to move the vehicle to a different lane to avoid any possible collisions.
+In the current implementation of the behaviour planner (in [`behavior_planner_FSM.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/behavior_planner_FSM.cpp)) we neglect the `FOLLOW_VEHICLE` action and instead choose to move the vehicle to a different lane to avoid any possible collisions.
 
 #### Results
 
@@ -93,7 +93,7 @@ While we have chosen to omit these dependencies from this repository, you may fi
 #### Running and compiling the programme
 
 ##### Setting the hyperparameters
-The motion planner has several hyperparameters whose values can be modified. Inside the [`planning_params.h`]() file, you will find the following two parameters:
+The motion planner has several hyperparameters whose values can be modified. Inside the [`planning_params.h`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/planning_params.h) file, you will find the following two parameters:
 
 ```cpp
 /*** Planning Constants ***/
@@ -118,16 +118,16 @@ Modifying these values will allow you to control the number of and the coarsenes
 We recommended setting the `P_NUM_POINTS_IN_SPIRAL` to a value of `25` or greater in order to avoid runtime errors (`Unknown PCM default` / `segmentation fault (core dumped)`).
 
 ##### Configuring CMAKE build
-In order to use this modified version of the project code, which has renamed the `'project/starter_code/'` subfolder to [`'project/planner'`](), you must change line 3 of the _original_ [`run_main.sh`](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/run_main.sh) script to the following:
+In order to use this modified version of the project code, which has renamed the `'project/starter_code/'` subfolder to [`'project/planner'`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner), you must change line 3 of the _original_ [`run_main.sh`](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/run_main.sh) script to the following:
 
 ```sh
 ./{SUBFOLDER_NAME}/spiral_planner&
 ```
 
-where `{SUBFOLDER_NAME}` should be `planner`, which matches the renamed subfolder in this repository. Note that you may ignore this step if running the [`run_main.sh`]() script from inside this repository.
+where `{SUBFOLDER_NAME}` should be `planner`, which matches the renamed subfolder in this repository. Note that you may ignore this step if running the [`run_main.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/run_main.sh) script from inside this repository.
 
 ##### Creating the executable
-In order to create the executable file, open a new console window and navigate to the [`'/project/planner'`]() subdirectory. Then, execute the following commands in the console:
+In order to create the executable file, open a new console window and navigate to the [`'/project/planner'`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner) subdirectory. Then, execute the following commands in the console:
 
 ```console
 root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/planner/#  cmake .
@@ -159,7 +159,7 @@ student@foobar:/opt/carla-simulator/#  SDL_VIDEODRIVER=offscreen ./CarlaUE4.sh -
 
 This should set the CARLA Simulator to headless mode and prevent the programme from incurring any `Segmentation fault (core dumped)` errors.
 
-The second step is to run the [`install-ubuntu.sh`]() build script which installs the necessary dependencies for the Ubuntu LTS runtime environment. To do so, open a new console window, navigate to the project subfolder (here, that's `4-1-Motion-Planning-Decision-Making/project`), and run the following:
+The second step is to run the [`install-ubuntu.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/install-ubuntu.sh) build script which installs the necessary dependencies for the Ubuntu LTS runtime environment. To do so, open a new console window, navigate to the project subfolder (here, that's `4-1-Motion-Planning-Decision-Making/project`), and run the following:
 
 ```console
 root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/#  ./install-ubuntu.sh
@@ -181,14 +181,14 @@ Once the project has been built successfully, the executable can be run with the
 root@foobar:/opt/web-terminal/4-1-Motion-Planning-Decision-Making/project/#  ./run_main.sh
 ```
 
-Depending on which environment you are running, you may experience a silent fail error. On the Udacity VM, this is expected. Simply use CTRL + C keys to halt the programme. Run the programme script again (same as above), then the CARLA Simulator should start without problems. If you continue to experience errors running the `./run_main.sh` script, make sure that you're running the script in a _new_ console window and have the CARLA headless script running under the `student` user in another console window (see _Configuring the runtime environment_). 
+Depending on which environment you are running, you may experience a silent fail error. On the Udacity VM, this is expected. Simply use CTRL + C keys to halt the programme. Run the programme script again (same as above), then the CARLA Simulator should start without problems. If you continue to experience errors running the [`./run_main.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/run_main.sh) script, make sure that you're running the script in a _new_ console window and have the CARLA headless script running under the `student` user in another console window (see _Configuring the runtime environment_). 
 
 In the case that you get a `Unknown PCL default` error, try modifying the `P_NUM_POINTS_IN_SPIRAL` hyperparameter value (increasing this number worked for me here).
 
 With the programme running successfully, you should observe the ego-vehicle manoeuvre automatically around obstacles, come to a complete stop at the stop sign, and even be able to make a right-turn from the complete stop into one of the available lanes.
 
 ##### More information
-This build / configure / execute sequence has been adapted from the [original `how_to_run.txt` instructions](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/how_to_run.txt). For instructions pertaining to this repository for use with the Udacity VM, see [`how_to_run.txt`]() file here. 
+This build / configure / execute sequence has been adapted from the [original `how_to_run.txt` instructions](https://github.com/udacity/nd013-c5-planning-starter/blob/master/project/how_to_run.txt). For instructions pertaining to this repository for use with the Udacity VM, see [`how_to_run.txt`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/how_to_run.txt) file here. 
 
 This concludes the programming tasks for this project. Refer to the "Tasks" check-list to make sure all TODOs are completed. Recommended literature to review: hierarchical planning [1], finite-state machines for AVs [2][5], real-time motion planning [6], path planning algorithms [3], and applications to vehicles [2][6][7].
 
@@ -199,13 +199,13 @@ This concludes the programming tasks for this project. Refer to the "Tasks" chec
 * Change the number of paths to generate (`P_NUM_PATHS`);
 
 ##### Extensions of task
-* Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function;
-* Implement the `FOLLOW_VEHICLE` state in [`state_transition`]() function;
+* Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/behavior_planner_FSM.cpp) function;
+* Implement the `FOLLOW_VEHICLE` state in [`state_transition`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/behavior_planner_FSM.cpp) function;
 * Choose a trajectory planner suitable for real-time applications (e.g., [Frenet Optimal Trajectory](https://fjp.at/posts/optimal-frenet/) [6]);
 * Consider using deep learning-based techniques for path planning / obstacle avoidance (e.g., RL with particle filtering [4])
 
 ## 4. Future Work
-* ⬜️ Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`]() function.
+* ⬜️ Implement a motion controller for the `DECEL_TO_STOP` state in [`state_transition`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/4-Planning/4-1-Motion-Planning-Decision-Making/project/planner/behavior_planner_FSM.cpp) function.
 
 ## Credits
 This assignment was prepared by Munir Jojo-Verge, Aaron Brown et al., 2021 (link [here](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd0013)).

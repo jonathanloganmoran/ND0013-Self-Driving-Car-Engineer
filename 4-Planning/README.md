@@ -19,7 +19,7 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 
 
 ### Projects
-* ⬜️ 4.1: [Motion Planning and Decision Making for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making) — in progress! 🎉.
+* ✅ 4.1: [Motion Planning and Decision Making for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making).
 
 
 ### Exercises
