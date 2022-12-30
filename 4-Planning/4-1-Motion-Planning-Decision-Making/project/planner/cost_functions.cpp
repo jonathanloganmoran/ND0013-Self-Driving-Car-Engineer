@@ -78,8 +78,8 @@ double collision_circles_cost_spiral(
     double cur_yaw = wp.theta;
     for (size_t c = 0; c < n_circles && !collision; ++c) {
       // Compute the centre-point for each circle representing the waypoint
-      auto circle_center_x = cur_x + CIRCLE_OFFSETS[c] * std::sin(cur_yaw);
-      auto circle_center_y = cur_y + CIRCLE_OFFSETS[c] * std::cos(cur_yaw);
+      auto circle_center_x = cur_x + CIRCLE_OFFSETS[c] * std::cos(cur_yaw);
+      auto circle_center_y = cur_y + CIRCLE_OFFSETS[c] * std::sin(cur_yaw);
       for (auto obst : obstacles) {
         if (collision) {
           break;
