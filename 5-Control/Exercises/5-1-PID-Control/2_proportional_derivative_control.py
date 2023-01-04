@@ -10,10 +10,12 @@
 # -----------------------------------------------------------------------------
 
 import matplotlib as mpl
+# Setting the default font to use with Matplotlib
+mpl.rc('font', family='Times New Roman')
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from typing import List, Tuple
+from typing import List, NoReturn, Tuple
 
 
 class Robot(object):
@@ -21,20 +23,6 @@ class Robot(object):
     
     The robot moves about the 2D environment given a position (x, y) and
     heading (`orientation`) angle, i.e., direction of motion.
-
-    The proportional controller used here follows the equation:
-        $\alpha = -\tau * \mathrm{CTE}$,
-    where the steering input angle $\alpha$ is computed w.r.t. the
-    cross-track error $\mathrm{CTE}$ proportional to the gain factor
-    $\tau$ (i.e., the "response strength"). The cross-track error is
-    defined w.r.t. reference trajectory, which here is assumed to be
-    a constant horizontal trajectory along the x-axis.   
-    
-    The proportional controller implemented here is used to direct the
-    robot motion towards the horizontal reference trajectory by giving
-    steering angle commands computed w.r.t. the normally-distributed
-    steering drift, as well as both steering- and distance measurement
-    noise.
 
     :param x: Position of the robot along the $x$-axis.
     :param y: Position of the robot along the $y$-axis.
@@ -182,6 +170,7 @@ def run_p(
     :param tau: Proportional gain constant.
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory.
     """
 
     # The list of $x$- and $y$-values for the simulated trajectory
@@ -202,15 +191,81 @@ def run_p(
     return x_trajectory, y_trajectory
 
 
-def run(robot, tau_p, tau_d, n=100, speed=1.0):
+def run(
+        robot: Robot, 
+        tau_p: float,
+        tau_d: float, 
+        n: int=100, 
+        speed: float=1.0
+) -> NoReturn:
+    """Simulates robot movement using proportional-derivative control.
+
+    The proportional-derivative controller used here follows the equation:
+        $\alpha = -\tau_{p} * \mathrm{CTE} - \tau_{d} * \Delta \mathrm{CTE}$,
+    where the steering input angle $\alpha$ is computed w.r.t. the proportional
+    gain controller — i.e., the product of proportional gain $\tau_{p}$ (the
+    "response strength") and the current cross-track error $\mathrm{CTE}_{t}$,
+    and the derivative of the cross-track error $\Delta \mathrm{CTE}$, i.e., 
+        $\frac{\mathrm{CTE}_{t} - \mathrm{CTE}_{t-1}}{\Delta t}$,
+    scaled by a constant gain factor $\tau_{d}$. 
+    
+    Assumed here is a constant unit time-step $\Delta t = 1.0$ and a reference
+    trajectory defined as a constant horizontal trajectory about the $x$-axis
+    at $y=0$.
+    
+    The proportional-derivative controller implemented here is used to direct
+    the robot motion towards the horizontal reference trajectory by giving
+    steering angle commands computed w.r.t. both the normally-distributed
+    steering drift and steering-, distance measurement noise.
+
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
+    :param tau_p: Proportional gain constant.
+    :param tau_d: Anticipatory control constant for derivative control,
+        used to control / dampen the influence of the rate-of-error change.
+    :param n: Number of time-steps to simulate.
+    :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory.
+    """
     x_trajectory = []
     y_trajectory = []
     # TODO: your code here
-    raise x_trajectory, y_trajectory
-    
-x_trajectory, y_trajectory = run(robot, 0.2, 3.0)
-n = len(x_trajectory)
+    raise NotImplementedError
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
-ax1.plot(x_trajectory, y_trajectory, 'g', label='PD controller')
-ax1.plot(x_trajectory, np.zeros(n), 'r', label='reference')
+
+if __name__ == '__main__':
+    ### Initialise the robot instance using default values
+    robot = Robot()
+    ### Perform a single control run to position (0, 1)
+    # with heading angle `0.0`
+    robot.set(0.0, 1.0, 0.0)
+    ### Execute the trajectory using the proportional-gain controller            
+    x_p_trajectory, y_p_trajectory = run(robot, 0.1)
+    ### Re-initialise the robot to the starting PD-controller run
+    robot.set(0.0, 1.0, 0.0)
+    ### Execute the trajectory using the proportional-derivative controller            
+    x_pd_trajectory, y_pd_trajectory = run(robot, 0.2, 3.0)
+    ### Plot the robot position and orientation relative to the reference
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
+            figsize=(24, 20), tight_layout=True
+    )
+    suptxt = 'Trajectory Tracking in 2D Using Proportional and Proportional-Derivative Controller'
+    plt.suptitle(suptxt,
+            fontsize=24
+    )
+    ax1.set_title('Robot simulated across 100 time-steps',
+            fontsize=18
+    )
+    ax1.plot(x_p_trajectory, y_p_trajectory,
+            color='g', label='P-controller'
+    )
+    ax1.plot(x_p_trajectory, np.zeros(len(x_p_trajectory)),
+            color='r', label='Reference'
+    )
+    ax2.plot(x_pd_trajectory, y_pd_trajectory, 
+            color='g', label='PD-controller'
+    )
+    ax2.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)), 
+            color='r', label='Reference'
+    )
+    plt.legend(loc='lower right', fontsize='xx-large')
+    plt.show()
