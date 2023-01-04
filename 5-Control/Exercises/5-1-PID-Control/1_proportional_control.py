@@ -6,14 +6,12 @@
 #
 # Purpose of this file: Implements the Proportional Controller and simulates
 #                       robot motion along a horizontal reference trajectory.
-#
-# NOTE: This programme is not functional in its current state (see TODO).
 # -----------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from typing import NoReturn
+from typing import List, Tuple
 
 
 class Robot(object):
@@ -164,26 +162,39 @@ def run(
         tau: float, 
         n: int=100, 
         speed: float=1.0
-) -> NoReturn:
-    """TODO. 
+) -> Tuple[List[float], List[float]]:
+    """Simulates the robot movement across `n` time-steps.
     
-    Modify the `run` function here s.t. the robot position is simulated
-    across 100 time-steps. 
-    
-    The robot's steering angle should be selected using the proportional
-    gain controller implemented here w.r.t. the horizontal reference trajectory
-    and the proportional gain factor $\tau$.
+    The robot's steering angle $\alpha$ is computed relative to the
+    proportional gain controller, which follows the equation:
+        $\alpha = -\tau * \mathrm{CTE}$,
+    where the cross-track error $\mathrm{CTE}$ is defined as the
+    robot position along the $y$-axis, assuming a horizontal reference
+    trajectory about the $x$-axis. Here, the gain factor $\tau$ is proportional
+    to the cross-track error $\mathrm{CTE}$.
 
     :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
     :param tau: Proportional gain constant.
+    :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     """
 
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
-    # TODO: your code here
-    raise NotImplementedError
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte = robot.y
+        # Compute the steering angle w.r.t. the proportional gain controller
+        steer = -tau * cte
+        # Execute the steering command
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
 
 
 if __name__ == '__main__':
