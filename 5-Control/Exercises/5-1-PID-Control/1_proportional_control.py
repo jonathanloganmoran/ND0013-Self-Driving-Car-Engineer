@@ -37,8 +37,10 @@ class Robot(object):
 
     :param x: Position of the robot along the $x$-axis.
     :param y: Position of the robot along the $y$-axis.
-    :param orientation: Heading angle of the robot (i.e., the direction).
-    :param length:
+    :param orientation: Heading angle of the robot, i.e.,
+        the direction parameter $\theta$ used in the bicycle motion model.
+    :param length: Length of the robot, i.e.,
+        the parameter $L$ used in the bicycle motion model.
     :param steering_noise: Steering measurement noise sampled from a
         Gaussian normal distribution.
     :param distance_noise: Distance measurement noise sampled from a
@@ -116,8 +118,8 @@ class Robot(object):
     ):
         """Move the robot to the next time-step with the provided controls.
 
-        :param steering: Front-wheel steering angle.
-        :param distance: Total distance driven by the vehicle,
+        :param steering: Front-wheel steering angle $\delta$.
+        :param distance: Total distance travelled by vehicle in this time-step,
             must be non-negative.
         :param tolerance: Tolerance value for the manoeuvre,
             values outside this threshold indicate a turning manoeuvre.
@@ -134,22 +136,23 @@ class Robot(object):
         # Computing the noise values
         steering2 = random.gauss(steering, self.steering_noise)
         distance2 = random.gauss(distance, self.distance_noise)
-        # Applying the steering drift parameter
+        # Applying the steering drift parameter to the steering angle
         steering2 += self.steering_drift
-        # Compute the manoeuvre / turn motion to execute
-        turn = np.tan(steering2) * distance2 / self.length
-        if abs(turn) < tolerance:
+        # Compute the radius of the turn / manoeuvre to execute
+        turn_radius = np.tan(steering2) * distance2 / self.length
+        if abs(turn_radius) < tolerance:
             # Compute the straight-line distance approximation of the manoeuvre
             self.x += distance2 * np.cos(self.orientation)
             self.y += distance2 * np.sin(self.orientation)
-            self.orientation = (self.orientation + turn) % (2.0 * np.pi)
+            self.orientation = (self.orientation + turn_radius) % (2.0 * np.pi)
         else:
             # Evaluate the approximate kinematic bicycle motion model
             # for the desired turning manoeuvre
-            radius = distance2 / turn
+            radius = distance2 / turn_radius
+            # Compute the changing rate of $x$, $y$, $\delta$
             cx = self.x - (np.sin(self.orientation) * radius)
             cy = self.y + (np.cos(self.orientation) * radius)
-            self.orientation = (self.orientation + turn) % (2.0 * np.pi)
+            self.orientation = (self.orientation + turn_radius) % (2.0 * np.pi)
             self.x = cx + (np.sin(self.orientation) * radius)
             self.y = cy - (np.cos(self.orientation) * radius)
 
@@ -210,26 +213,26 @@ if __name__ == '__main__':
     ### Plot the robot position and orientation relative to the reference
     # Setting the default font to use with Matplotlib
     mpl.rc('font', family='Times New Roman')
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(24, 20),
-            tight_layout=True
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
+            figsize=(24, 20), tight_layout=True
     )
-    plt.suptitle('Robot Trajectory Tracking in 2D Using Proportional Gain Controller',
+    plt.suptitle('Trajectory Tracking in 2D Using Proportional Gain Controller',
             fontsize=24
     )
-    ax1.set_title('Simulated across 100 time-steps',
+    ax1.set_title('Robot simulated across 100 time-steps',
             fontsize=18
     )
     ax1.plot(x_trajectory, y_trajectory,
-            'g', label='P-controller'
+            color='g', label='P-controller'
     )
     ax1.plot(x_trajectory, np.zeros(n),
-            'r', label='Reference'
+            color='r', label='Reference'
     )
     ax2.plot(x_trajectory, y_trajectory, 
-            'g', label='P-controller'
+            color='g', label='P-controller'
     )
     ax2.plot(x_trajectory, np.zeros(n), 
-            'r', label='Reference'
+            color='r', label='Reference'
     )
     plt.legend(loc='lower right', fontsize='xx-large')
     plt.show()
