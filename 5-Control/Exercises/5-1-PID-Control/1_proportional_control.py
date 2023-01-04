@@ -210,3 +210,4 @@ if __name__ == '__main__':
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
     ax1.plot(x_trajectory, y_trajectory, 'g', label='P controller')
     ax1.plot(x_trajectory, np.zeros(n), 'r', label='reference')
+    plt.show()
