@@ -10,7 +10,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 * ✅ [Course 2: Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion)
 * ✅ [Course 3: Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization)
 * ✅ [Course 4: Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning)
-* ⬜️ Course 5: Control
+* ⬜️ [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/5.1/5-Control) — in progress! 🎉
 
 
 
@@ -51,9 +51,15 @@ The following topics are covered in course projects:
 * Implement the A* and Hybrid A* search algorithms in C++;
 * Use numerical approximation and discretisation to solve the Polynomial splines problem;
 * Generate optimal, feasible, collision-free paths;
-* And so much more ... (see [4-Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Planning) for full list of course topics).
+* And so much more ... (see [4-Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning) for full list of course topics).
 
-
+##### Course 5: Control
+* Design and implement feedback controllers (PID and MPC) for trajectory tracking;
+* Select design parameters to guarantee stability;
+* Use MPC to design a feedback controller for non-linear dynamics;
+* Test and evaluate the feedback controllers w.r.t. real-world perturbations using CARLA Simulator;
+* And so much more ... (see [5-Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control) for full list of course topics).
+ 
 
 ### Material
 Syllabus:

@@ -21,7 +21,7 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 
 ### Exercises
-* ⬜️ [5.1 PID Control]().
+* ⬜️ [5.1 PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/5.1/5-Control/Exercises/5-1-PID-Control) — in progress! 🎉.
 
 
 ### Course Contents
