@@ -244,6 +244,8 @@ def run(
         cte_dot = (cte_curr - cte_prev) / delta_t
         # Compute the steering angle w.r.t. proportional and derivative gain
         steer = -tau_p * cte_curr - tau_d * cte_dot
+        # Set the "previous" CTE value to the current error before manoeuvre
+        cte_prev = cte_curr
         # Execute the steering command computed with the PD-controller
         robot.move(steer, speed)
         # Append the updated robot position coordinates to the trajectory lists
@@ -260,8 +262,9 @@ if __name__ == '__main__':
     # with heading angle `0.0`
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the proportional-gain controller            
-    x_p_trajectory, y_p_trajectory = run(robot, 0.1)
+    x_p_trajectory, y_p_trajectory = run_p(robot, 0.1)
     ### Re-initialise the robot to the starting PD-controller run
+    robot = Robot()
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the proportional-derivative controller            
     x_pd_trajectory, y_pd_trajectory = run(robot, 0.2, 3.0)
@@ -276,14 +279,17 @@ if __name__ == '__main__':
     ax1.set_title('Robot simulated across 100 time-steps',
             fontsize=18
     )
-    ax1.plot(x_p_trajectory, y_p_trajectory,
-            color='g', label='P-controller'
+    ax1.plot(x_pd_trajectory, y_pd_trajectory,
+            color='g', label='PD-controller'
     )
-    ax1.plot(x_p_trajectory, np.zeros(len(x_p_trajectory)),
+    ax1.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)),
             color='r', label='Reference'
     )
     ax2.plot(x_pd_trajectory, y_pd_trajectory, 
             color='g', label='PD-controller'
+    )
+    ax2.plot(x_p_trajectory, y_p_trajectory, 
+            color='b', label='P-controller'
     )
     ax2.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)), 
             color='r', label='Reference'
