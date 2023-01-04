@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Lesson "4.3: Motion Planning"
+# Lesson "5.1: PID Control"
 # Authors     : Sebastian Thrun.
 #
 # Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
