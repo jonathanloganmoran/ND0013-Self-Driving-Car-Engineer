@@ -272,7 +272,7 @@ if __name__ == '__main__':
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
             figsize=(24, 20), tight_layout=True
     )
-    suptxt = 'Trajectory Tracking in 2D Using Proportional and Proportional-Derivative Controller'
+    suptxt = 'Trajectory Tracking in 2D Using Proportional and Proportional-Derivative Controllers'
     plt.suptitle(suptxt,
             fontsize=24
     )
