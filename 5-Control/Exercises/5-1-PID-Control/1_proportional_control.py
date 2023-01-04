@@ -181,6 +181,7 @@ def run(
     :param tau: Proportional gain constant.
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
+    :return: Set of x- and y-coordinates of the simulated trajectory.
     """
 
     # The list of $x$- and $y$-values for the simulated trajectory
