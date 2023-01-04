@@ -8,6 +8,7 @@
 #                       robot motion along a horizontal reference trajectory.
 # -----------------------------------------------------------------------------
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -207,7 +208,28 @@ if __name__ == '__main__':
     x_trajectory, y_trajectory = run(robot, 0.1)
     n = len(x_trajectory)
     ### Plot the robot position and orientation relative to the reference
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
-    ax1.plot(x_trajectory, y_trajectory, 'g', label='P controller')
-    ax1.plot(x_trajectory, np.zeros(n), 'r', label='reference')
+    # Setting the default font to use with Matplotlib
+    mpl.rc('font', family='Times New Roman')
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(24, 20),
+            tight_layout=True
+    )
+    plt.suptitle('Robot Trajectory Tracking in 2D Using Proportional Gain Controller',
+            fontsize=24
+    )
+    ax1.set_title('Simulated across 100 time-steps',
+            fontsize=18
+    )
+    ax1.plot(x_trajectory, y_trajectory,
+            'g', label='P-controller'
+    )
+    ax1.plot(x_trajectory, np.zeros(n),
+            'r', label='Reference'
+    )
+    ax2.plot(x_trajectory, y_trajectory, 
+            'g', label='P-controller'
+    )
+    ax2.plot(x_trajectory, np.zeros(n), 
+            'r', label='Reference'
+    )
+    plt.legend(loc='lower right', fontsize='xx-large')
     plt.show()
