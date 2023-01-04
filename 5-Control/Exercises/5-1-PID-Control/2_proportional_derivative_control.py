@@ -15,7 +15,7 @@ mpl.rc('font', family='Times New Roman')
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from typing import List, NoReturn, Tuple
+from typing import List, Tuple
 
 
 class Robot(object):
@@ -197,7 +197,7 @@ def run(
         tau_d: float, 
         n: int=100, 
         speed: float=1.0
-) -> NoReturn:
+) -> Tuple[List[float], List[float]]:
     """Simulates robot movement using proportional-derivative control.
 
     The proportional-derivative controller used here follows the equation:
@@ -226,10 +226,31 @@ def run(
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory.
     """
+
+    # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
-    # TODO: your code here
-    raise NotImplementedError
+    # Set the constant unit time-step value (used in derivative term)
+    delta_t = 1.0
+    # Initialise the "previous" and current cross-track error values
+    cte_prev = robot.y
+    cte_curr = 0.0
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte_curr = robot.y
+        # Compute the steering angle w.r.t. proportional-derivative controller
+        # NOTE: `cte_dot` is derivative of CTE w.r.t. constant unit time-step
+        cte_dot = (cte_curr - cte_prev) / delta_t
+        # Compute the steering angle w.r.t. proportional and derivative gain
+        steer = -tau_p * cte_curr - tau_d * cte_dot
+        # Execute the steering command computed with the PD-controller
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
 
 
 if __name__ == '__main__':
