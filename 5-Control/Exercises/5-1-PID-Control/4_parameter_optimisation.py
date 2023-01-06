@@ -204,7 +204,7 @@ def run(
 
     :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
     :param params: Set of hyperparameter values to use in the PID-controller,
-        expected are three values in order: [$\tau_{i}$, \tau_{d}, \tau_{i}].
+        should be three values in order: [$\tau_{i}$, $\tau_{d}$, $\tau_{i}$].
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory, plus
@@ -236,8 +236,23 @@ def twiddle(
 ) -> Tuple[List[float], float]: 
     """Parameter optimisation algorithm using local hill-climbing.
     
+    Also known as "coordinate ascent", the Twiddle algorithm used here
+    optimises a set of parameters given an objective function. The
+    optimisation process continues until the error falls below the given
+    tolerance value `tol`.
+    
+    Here, we assume a set of three hyperparameters corresponding to the
+    coefficients $\tau = [\tau_{i}, \tau_{d}, \tau_{i}]$, which we seek
+    to optimise according to the error value as computed by the trajectory
+    tracking algorithm with PID-control. This error value, our objective
+    function value, is the difference between the actual- and goal
+    trajectory of the robot. The error is evaluated as the difference
+    between the robot's final coordinates $(x, y)$ and the goal coordinates.
+
     For more information: https://martin-thoma.com/twiddle/.
     See also brief video overview: https://www.youtube.com/watch?v=2uQ2BSzDvXs.
+    And an in-depth review of the Twiddle algorithm performance (DE): 
+    https://www.htw-mechlab.de/index.php/numerische-optimierung-in-matlab-mit-twiddle-algorithmus/
 
     :param tol: Tolerance value used in determining when the hyperparameter
         has converged to a good value.
@@ -246,11 +261,52 @@ def twiddle(
     """
 
     # Don't forget to call `make_robot` before every call of `run`!
-    p = [0, 0, 0]
-    dp = [1, 1, 1]
+    # Set the initial values of the parameters
+    # Here, we assume these correspond to $[\tau_{p}, \tau_{d}, \tau_{i}]$
+    p = [0., 0., 0.]
+    # Set the delta values (i.e., amount to increase / decrease each parameter)
+    dp = [1., 1., 1.]
+    # Create and initialise the robot in its starting state
     robot = make_robot()
-    x_trajectory, y_trajectory, best_err = run(robot, p)
-    # TODO: twiddle loop here
+    # Get the error using the initial parameter values 
+    _, _, best_err = run(robot, p)
+    while best_err > tol:
+        # Sequentially update each parameter in the set
+        for i, param in enumerate(p):
+            # Compute new parameter value
+            p[i] += dp[i]
+            # Re-evaluate error using new parameter value
+            _, _, err = run(robot, p, n=100, speed=1.0)
+            if err < best_err:
+                # We found a better parameter value!
+                # Update the lowest error found
+                best_err = err
+                # Update delta value to be slightly larger
+                dp[i] *= 1.1
+            else:
+                # There was no improvement
+                # Decrease parameter value ("descent")
+                # Here we subtract twice the value to revert previous addition
+                p[i] -= 2 * dp[i]
+                # Then, re-compute the error value
+                robot = make_robot()
+                _, _, err = run(robot, p, n=100, speed=1.0)
+                if err < best_err:
+                    # We found a better parameter value!
+                    # Update the lowest error found
+                    best_err = err
+                    # Update the delta value to be slightly larger
+                    dp[i] *= 1.05
+                else:
+                    # There was no improvement
+                    # Increase parameter value in other direction ("ascent")
+                    p[i] += dp[i]
+                    # Decrease the delta value (step-size) to avoid overshoot
+                    d[i] *- 0.95
+    # Compute the error corresponding to the best parameter values found
+    robot = make_robot()
+    _, _, best_err = run(robot, p, n=100, speed=1.0)
+    # Return the best parameter values and their corresponding error score
     return p, best_err
 
 
