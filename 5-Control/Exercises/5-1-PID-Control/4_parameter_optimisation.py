@@ -14,9 +14,13 @@
 # No cheating!
 # ------------
 
-import random
-import numpy as np
+import matplotlib as mpl
+# Setting the default font to use with Matplotlib
+mpl.rc('font', family='Times New Roman')
 import matplotlib.pyplot as plt
+import numpy as np
+import random
+from typing import List, Tuple
 
 
 class Robot(object):
@@ -156,10 +160,13 @@ class Robot(object):
 # run - does a single control run
 
 
-def make_robot():
-    """
-    Resets the robot back to the initial position and drift.
-    You'll want to call this after you call `run`.
+def make_robot(
+) -> Robot:
+    """Creates and initialises a `Robot` instance.
+
+    Resets the robot back to the initial position with non-zero steering drift.
+    
+    :returns: A new, configured instance of the `Robot` class.
     """
     robot = Robot()
     robot.set(0, 1, 0)
@@ -168,7 +175,42 @@ def make_robot():
 
 
 # NOTE: We use params instead of tau_p, tau_d, tau_i
-def run(robot, params, n=100, speed=1.0):
+def run(
+        robot, 
+        params, 
+        n=100, 
+        speed=1.0
+) -> Tuple[List[float], List[float], float]:
+    """Simulates robot movement using PID-control and an objective function.
+    
+    The proportional-integral-derivative controller used here follows:
+    $$\begin{align}
+    \alpha &= -\tau_{p} * \mathrm{CTE} 
+              - \tau_{d} * \Delta \mathrm{CTE} 
+              - \tau_{i} * \int_{0}^{t} \mathrm{CTE},
+    \end{align}$$
+    where the integral-term $\int_{0}^{t} \mathrm{CTE}$ is given as the sum of
+    the instantaneous error over time. This gives the accumulated offset that
+    should have been previously corrected.
+
+    Assumed here is a constant unit time-step $\Delta t = 1.0$ and a reference
+    trajectory defined as a constant horizontal trajectory about the $x$-axis
+    at $y=0$.
+    
+    The proportional-integral-derivative controller implemented here is used
+    to direct the robot motion towards the horizontal reference trajectory by
+    giving steering angle commands computed w.r.t. both the normally-distributed
+    steering drift and steering-, distance measurement noise.
+
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
+    :param params: Set of hyperparameter values to use in the PID-controller,
+        expected are three values in order: [$\tau_{i}$, \tau_{d}, \tau_{i}].
+    :param n: Number of time-steps to simulate.
+    :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory, plus
+        an error score corresponding to the difference in final trajectories.
+    """
+
     x_trajectory = []
     y_trajectory = []
     err = 0
@@ -189,14 +231,26 @@ def run(robot, params, n=100, speed=1.0):
 
 
 # Make this tolerance bigger if you are timing out!
-def twiddle(tol=0.2): 
+def twiddle(
+        tol: float=0.2
+) -> Tuple[List[float], float]: 
+    """Parameter optimisation algorithm using local hill-climbing.
+    
+    For more information: https://martin-thoma.com/twiddle/.
+    See also brief video overview: https://www.youtube.com/watch?v=2uQ2BSzDvXs.
+
+    :param tol: Tolerance value used in determining when the hyperparameter
+        has converged to a good value.
+    :returns: tuple, Set of modified hyperparameters and the lowest error
+        returned by the objective function.
+    """
+
     # Don't forget to call `make_robot` before every call of `run`!
     p = [0, 0, 0]
     dp = [1, 1, 1]
     robot = make_robot()
     x_trajectory, y_trajectory, best_err = run(robot, p)
     # TODO: twiddle loop here
-    
     return p, best_err
 
 
