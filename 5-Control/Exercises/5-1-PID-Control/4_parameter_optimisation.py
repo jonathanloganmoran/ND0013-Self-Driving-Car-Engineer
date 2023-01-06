@@ -18,16 +18,38 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ------------------------------------------------
-# 
-# this is the Robot class
-#
 
 class Robot(object):
-    def __init__(self, length=20.0):
+    '''The simulated Robot class.
+    
+    The robot moves about the 2D environment given a position (x, y) and
+    heading (`orientation`) angle, i.e., direction of motion.
+
+    :param x: Position of the robot along the $x$-axis.
+    :param y: Position of the robot along the $y$-axis.
+    :param orientation: Heading angle of the robot, i.e.,
+        the direction parameter $\theta$ used in the bicycle motion model.
+    :param length: Length of the robot, i.e.,
+        the parameter $L$ used in the bicycle motion model.
+    :param steering_noise: Steering measurement noise sampled from a
+        Gaussian normal distribution.
+    :param distance_noise: Distance measurement noise sampled from a
+        Gaussian normal distribution.
+    :param steering_drift: Perturbation of the steering angle sampled from a
+        Gaussian normal distribution.
+    '''
+
+    def __init__(self,
+            length: float=20.0
+    ):
+        """Creates a `Robot` instance.
+
+        Initialises the robot 2D location and orientation angle to the
+        position along the origin (0, 0) with a heading of `0.0`.
+
+        :param length: Desired length to initialise the robot with. 
         """
-        Creates robot and initializes location/orientation to 0, 0, 0.
-        """
+
         self.x = 0.0
         self.y = 0.0
         self.orientation = 0.0
@@ -36,66 +58,96 @@ class Robot(object):
         self.distance_noise = 0.0
         self.steering_drift = 0.0
 
-    def set(self, x, y, orientation):
+    def set(self, 
+            x: float, 
+            y: float,
+            orientation: float
+    ):
+        """Sets the robot's 2D location and orientation to the given values.
+        
+        :param x: Position along the $x$-axis to assign to the robot.
+        :param y: Position along the $y$-axis to assign to the robot.
+        :param orientation: Heading angle to assign to the robot. 
         """
-        Sets a robot coordinate.
-        """
+
         self.x = x
         self.y = y
         self.orientation = orientation % (2.0 * np.pi)
 
-    def set_noise(self, steering_noise, distance_noise):
+    def set_noise(self, 
+            steering_noise: float, 
+            distance_noise: float
+    ):
+        """Sets the steering- and measurement- noise parameters.
+
+        This update function allows for the use of dynamic noise values,
+        which is often useful in particle filters.
+
+        :param steering_noise: Noise value to use for the steering measurement.
+        :param distance_noise: Noise value to use for the distance measurement.
         """
-        Sets the noise parameters.
-        """
-        # makes it possible to change the noise parameters
-        # this is often useful in particle filters
+
         self.steering_noise = steering_noise
         self.distance_noise = distance_noise
 
-    def set_steering_drift(self, drift):
+    def set_steering_drift(self, 
+            drift: float
+    ):
+        """Sets the systematical steering drift parameter.
+
+        :param drift: Drift value to use for the steering angle.
         """
-        Sets the systematical steering drift parameter
-        """
+
         self.steering_drift = drift
 
-    def move(self, steering, distance, tolerance=0.001, max_steering_angle=np.pi / 4.0):
+    def move(self, 
+            steering: float, 
+            distance: float, 
+            tolerance: float=0.001, 
+            max_steering_angle: float=np.pi / 4.0
+    ):
+        """Move the robot to the next time-step with the provided controls.
+
+        :param steering: Front-wheel steering angle $\delta$.
+        :param distance: Total distance travelled by vehicle in this time-step,
+            must be non-negative.
+        :param tolerance: Tolerance value for the manoeuvre,
+            values outside this threshold indicate a turning manoeuvre.
+        :param max_steering angle: Maximum front-wheel steering angle.
         """
-        steering = front wheel steering angle, limited by max_steering_angle
-        distance = total distance driven, most be non-negative
-        """
+
+        # Thresholding of input steering angle and distance values 
         if steering > max_steering_angle:
             steering = max_steering_angle
         if steering < -max_steering_angle:
             steering = -max_steering_angle
         if distance < 0.0:
             distance = 0.0
-
-        # apply noise
+        # Computing the noise values
         steering2 = random.gauss(steering, self.steering_noise)
         distance2 = random.gauss(distance, self.distance_noise)
-
-        # apply steering drift
+        # Applying the steering drift parameter to the steering angle
         steering2 += self.steering_drift
-
-        # Execute motion
-        turn = np.tan(steering2) * distance2 / self.length
-
-        if abs(turn) < tolerance:
-            # approximate by straight line motion
+        # Compute the radius of the turn / manoeuvre to execute
+        turn_radius = np.tan(steering2) * distance2 / self.length
+        if abs(turn_radius) < tolerance:
+            # Compute the straight-line distance approximation of the manoeuvre
             self.x += distance2 * np.cos(self.orientation)
             self.y += distance2 * np.sin(self.orientation)
-            self.orientation = (self.orientation + turn) % (2.0 * np.pi)
+            self.orientation = (self.orientation + turn_radius) % (2.0 * np.pi)
         else:
-            # approximate bicycle model for motion
-            radius = distance2 / turn
+            # Evaluate the approximate kinematic bicycle motion model
+            # for the desired turning manoeuvre
+            radius = distance2 / turn_radius
+            # Compute the changing rate of $x$, $y$, $\delta$
             cx = self.x - (np.sin(self.orientation) * radius)
             cy = self.y + (np.cos(self.orientation) * radius)
-            self.orientation = (self.orientation + turn) % (2.0 * np.pi)
+            self.orientation = (self.orientation + turn_radius) % (2.0 * np.pi)
             self.x = cx + (np.sin(self.orientation) * radius)
             self.y = cy - (np.cos(self.orientation) * radius)
 
     def __repr__(self):
+        """Overrides the default print function with vehicle state values."""
         return '[x=%.5f y=%.5f orient=%.5f]' % (self.x, self.y, self.orientation)
 
 ############## ADD / MODIFY CODE BELOW ####################
