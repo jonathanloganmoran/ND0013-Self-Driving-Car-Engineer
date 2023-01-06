@@ -305,7 +305,6 @@ def run_pid(
     # Initialise the "previous" and current cross-track error values
     cte_prev = robot.y
     cte_curr = 0.0
-    # cte_values.append(cte_prev)
     # Simulate the robot movement across `n` time-steps
     for i in range(n):
         # Get the current cross-track error relative to reference trajectory
@@ -348,7 +347,7 @@ if __name__ == '__main__':
     robot = Robot()
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the PID controller
-    x_pid_trajectory, y_pid_trajectory = run_pid(robot, 0.2, 3.0)
+    x_pid_trajectory, y_pid_trajectory = run_pid(robot, 0.2, 3.0, 0.004)
     ### Plot the robot position and orientation relative to the reference
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
             figsize=(24, 20), tight_layout=True
@@ -362,13 +361,13 @@ if __name__ == '__main__':
             fontsize=18
     )
     ax1.plot(x_pid_trajectory, y_pid_trajectory,
-            color='m', label='PID-controller'
+            color='y', label='PID-controller'
     )
     ax1.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)),
             color='r', label='Reference'
     )
     ax2.plot(x_pid_trajectory, y_pid_trajectory, 
-            color='m', label='PID-controller'
+            color='y', label='PID-controller'
     )
     ax2.plot(x_pd_trajectory, y_pd_trajectory, 
             color='g', label='PD-controller'
