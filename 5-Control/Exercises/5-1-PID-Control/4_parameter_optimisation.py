@@ -154,11 +154,6 @@ class Robot(object):
         """Overrides the default print function with vehicle state values."""
         return '[x=%.5f y=%.5f orient=%.5f]' % (self.x, self.y, self.orientation)
 
-############## ADD / MODIFY CODE BELOW ####################
-# ------------------------------------------------------------------------
-#
-# run - does a single control run
-
 
 def make_robot(
 ) -> Robot:
@@ -168,6 +163,7 @@ def make_robot(
     
     :returns: A new, configured instance of the `Robot` class.
     """
+
     robot = Robot()
     robot.set(0, 1, 0)
     robot.set_steering_drift(10 / 180 * np.pi)
@@ -176,7 +172,7 @@ def make_robot(
 
 def run_p(
         robot: Robot, 
-        tau: float, 
+        params: List[float], 
         n: int=100, 
         speed: float=1.0
 ) -> Tuple[List[float], List[float]]:
@@ -191,12 +187,16 @@ def run_p(
     to the cross-track error $\mathrm{CTE}$.
 
     :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
-    :param tau: Proportional gain constant.
+    :param params: Set of hyperparameter values to use in the P-controller,
+        should be one value in order: $[\tau_{p}]$.
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory.
     """
 
+    ### Make sure all parameters were provided
+    assert len(params) == 1
+    tau_p = params[1]
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
@@ -205,7 +205,7 @@ def run_p(
         # Get the current cross-track error relative to reference trajectory
         cte = robot.y
         # Compute the steering angle w.r.t. the proportional gain controller
-        steer = -tau * cte
+        steer = -tau_p * cte
         # Execute the steering command
         robot.move(steer, speed)
         # Append the updated robot position coordinates to the trajectory lists
@@ -217,8 +217,7 @@ def run_p(
 
 def run_pd(
         robot: Robot, 
-        tau_p: float,
-        tau_d: float, 
+        params: List[float]
         n: int=100, 
         speed: float=1.0
 ) -> Tuple[List[float], List[float]]:
@@ -243,14 +242,16 @@ def run_pd(
     steering drift and steering-, distance measurement noise.
 
     :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
-    :param tau_p: Proportional gain constant.
-    :param tau_d: Anticipatory control constant for derivative control,
-        used to control / dampen the influence of the rate-of-error change.
+    :param params: Set of hyperparameter values to use in the PD-controller,
+        should be two values in order: $[\tau_{p}$, \tau_{d}]$.
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory.
     """
 
+    ### Make sure all parameters were provided
+    assert len(params) == 2
+    tau_p, tau_d = params
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
@@ -281,9 +282,7 @@ def run_pd(
 
 def run_pid(
         robot: Robot, 
-        tau_p: float,
-        tau_d: float,
-        tau_i: float,
+        params: List[float]
         n: int=100, 
         speed: float=1.0
 ) -> Tuple[List[float], List[float]]:
@@ -308,17 +307,17 @@ def run_pid(
     giving steering angle commands computed w.r.t. both the normally-distributed
     steering drift and steering-, distance measurement noise.
 
-    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
-    :param tau_p: Proportional gain constant.
-    :param tau_d: Anticipatory control constant for derivative control,
-        used to control / dampen the influence of the rate-of-error change.
-    :param tau_i: Sum of instantaneous error over time for integral control,
-        used to calculate accumulated error that should have been corrected. 
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre.    
+    :param params: Set of hyperparameter values to use in the PID-controller,
+        should be three values in order: $[\tau_{p}, \tau_{d}, \tau_{i}]$.
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory.
     """
 
+    # Make sure all parameters were provided
+    assert len(params) == 3
+    tau_p, tau_d, tau_i = params
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
@@ -354,7 +353,6 @@ def run_pid(
     return x_trajectory, y_trajectory
 
 
-# NOTE: We use params instead of tau_p, tau_d, tau_i
 def run_pid_tuned(
         robot, 
         params, 
@@ -388,23 +386,45 @@ def run_pid_tuned(
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory, plus
-        an error score corresponding to the difference in final trajectories.
+        an error score corresponding to the average difference in trajectories.
     """
 
+    # Make sure all parameters were provided
+    assert len(params) == 3
+    tau_p, tau_d, tau_i = params
+    # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
-    err = 0
-    prev_cte = robot.y
-    int_cte = 0
+    # The list of all previous cross-track errors (used in integral term)
+    cte_values = []
+    # Set the constant unit time-step value (used in derivative term)
+    delta_t = 1.0
+    # Initialise the "previous" and current cross-track error values
+    cte_prev = robot.y
+    cte_curr = 0.0
+    # Simulate the robot movement across `n` time-steps
     for i in range(2 * n):
-        cte = robot.y
-        diff_cte = cte - prev_cte
-        int_cte += cte
-        prev_cte = cte
-        steer = -params[0] * cte - params[1] * diff_cte - params[2] * int_cte
+        # Get the current cross-track error relative to reference trajectory
+        cte_curr = robot.y
+        cte_values.append(cte_curr)
+        ### Compute the steering angle w.r.t. PID controller
+        # First, caclulate the derivative term
+        # NOTE: `cte_dot` is derivative of CTE w.r.t. constant unit time-step
+        cte_dot = (cte_curr - cte_prev) / delta_t
+        # Then, calculate the integral term 
+        cte_int = np.sum(cte_values)
+        # Form the expression of the complete PID controller
+        # w.r.t. the proportional, integral, and derivative gain values
+        steer = -tau_p * cte_curr - tau_d * cte_dot - tau_i * cte_int
+        # Set the "previous" CTE value to the current error before manoeuvre
+        cte_prev = cte_curr
+        # Execute the steering command computed with the PID-controller
         robot.move(steer, speed)
-        x_trajectory.append(robot.x)
-        y_trajectory.append(robot.y)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+        # Add current error to running total
         if i >= n:
             err += cte ** 2
     return x_trajectory, y_trajectory, err / n
