@@ -174,14 +174,194 @@ def make_robot(
     return robot
 
 
+def run_p(
+        robot: Robot, 
+        tau: float, 
+        n: int=100, 
+        speed: float=1.0
+) -> Tuple[List[float], List[float]]:
+    """Simulates robot movement using proportional control.
+    
+    The robot's steering angle $\alpha$ is computed relative to the
+    proportional gain controller, which follows the equation:
+        $\alpha = -\tau * \mathrm{CTE}$,
+    where the cross-track error $\mathrm{CTE}$ is defined as the
+    robot position along the $y$-axis, assuming a horizontal reference
+    trajectory about the $x$-axis. Here, the gain factor $\tau$ is proportional
+    to the cross-track error $\mathrm{CTE}$.
+
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
+    :param tau: Proportional gain constant.
+    :param n: Number of time-steps to simulate.
+    :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory.
+    """
+
+    # The list of $x$- and $y$-values for the simulated trajectory
+    x_trajectory = []
+    y_trajectory = []
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte = robot.y
+        # Compute the steering angle w.r.t. the proportional gain controller
+        steer = -tau * cte
+        # Execute the steering command
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
+
+
+def run_pd(
+        robot: Robot, 
+        tau_p: float,
+        tau_d: float, 
+        n: int=100, 
+        speed: float=1.0
+) -> Tuple[List[float], List[float]]:
+    """Simulates robot movement using proportional-derivative control.
+
+    The proportional-derivative controller used here follows the equation:
+        $\alpha = -\tau_{p} * \mathrm{CTE} - \tau_{d} * \Delta \mathrm{CTE}$,
+    where the steering input angle $\alpha$ is computed w.r.t. the proportional
+    gain controller — i.e., the product of proportional gain $\tau_{p}$ (the
+    "response strength") and the current cross-track error $\mathrm{CTE}_{t}$,
+    and the derivative of the cross-track error $\Delta \mathrm{CTE}$, i.e., 
+        $\frac{\mathrm{CTE}_{t} - \mathrm{CTE}_{t-1}}{\Delta t}$,
+    scaled by a constant gain factor $\tau_{d}$. 
+    
+    Assumed here is a constant unit time-step $\Delta t = 1.0$ and a reference
+    trajectory defined as a constant horizontal trajectory about the $x$-axis
+    at $y=0$.
+    
+    The proportional-derivative controller implemented here is used to direct
+    the robot motion towards the horizontal reference trajectory by giving
+    steering angle commands computed w.r.t. both the normally-distributed
+    steering drift and steering-, distance measurement noise.
+
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
+    :param tau_p: Proportional gain constant.
+    :param tau_d: Anticipatory control constant for derivative control,
+        used to control / dampen the influence of the rate-of-error change.
+    :param n: Number of time-steps to simulate.
+    :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory.
+    """
+
+    # The list of $x$- and $y$-values for the simulated trajectory
+    x_trajectory = []
+    y_trajectory = []
+    # Set the constant unit time-step value (used in derivative term)
+    delta_t = 1.0
+    # Initialise the "previous" and current cross-track error values
+    cte_prev = robot.y
+    cte_curr = 0.0
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte_curr = robot.y
+        # Compute the steering angle w.r.t. proportional-derivative controller
+        # NOTE: `cte_dot` is derivative of CTE w.r.t. constant unit time-step
+        cte_dot = (cte_curr - cte_prev) / delta_t
+        # Compute the steering angle w.r.t. proportional and derivative gain
+        steer = -tau_p * cte_curr - tau_d * cte_dot
+        # Set the "previous" CTE value to the current error before manoeuvre
+        cte_prev = cte_curr
+        # Execute the steering command computed with the PD-controller
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
+
+
+def run_pid(
+        robot: Robot, 
+        tau_p: float,
+        tau_d: float,
+        tau_i: float,
+        n: int=100, 
+        speed: float=1.0
+) -> Tuple[List[float], List[float]]:
+    """Simulates robot movement using proportional-integral-derivative control.
+
+    The proportional-integral-derivative controller used here follows:
+    $$\begin{align}
+    \alpha &= -\tau_{p} * \mathrm{CTE} 
+              - \tau_{d} * \Delta \mathrm{CTE} 
+              - \tau_{i} * \int_{0}^{t} \mathrm{CTE},
+    \end{align}$$
+    where the integral-term $\int_{0}^{t} \mathrm{CTE}$ is given as the sum of
+    the instantaneous error over time. This gives the accumulated offset that
+    should have been previously corrected.
+
+    Assumed here is a constant unit time-step $\Delta t = 1.0$ and a reference
+    trajectory defined as a constant horizontal trajectory about the $x$-axis
+    at $y=0$.
+    
+    The proportional-integral-derivative controller implemented here is used
+    to direct the robot motion towards the horizontal reference trajectory by
+    giving steering angle commands computed w.r.t. both the normally-distributed
+    steering drift and steering-, distance measurement noise.
+
+    :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
+    :param tau_p: Proportional gain constant.
+    :param tau_d: Anticipatory control constant for derivative control,
+        used to control / dampen the influence of the rate-of-error change.
+    :param tau_i: Sum of instantaneous error over time for integral control,
+        used to calculate accumulated error that should have been corrected. 
+    :param n: Number of time-steps to simulate.
+    :param speed: Velocity (m/s) at which to drive the vehicle.
+    :returns: Set of x- and y-coordinates of the simulated trajectory.
+    """
+
+    # The list of $x$- and $y$-values for the simulated trajectory
+    x_trajectory = []
+    y_trajectory = []
+    # The list of all previous cross-track errors (used in integral term)
+    cte_values = []
+    # Set the constant unit time-step value (used in derivative term)
+    delta_t = 1.0
+    # Initialise the "previous" and current cross-track error values
+    cte_prev = robot.y
+    cte_curr = 0.0
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte_curr = robot.y
+        cte_values.append(cte_curr)
+        ### Compute the steering angle w.r.t. PID controller
+        # First, caclulate the derivative term
+        # NOTE: `cte_dot` is derivative of CTE w.r.t. constant unit time-step
+        cte_dot = (cte_curr - cte_prev) / delta_t
+        # Then, calculate the integral term 
+        cte_int = np.sum(cte_values)
+        # Form the expression of the complete PID controller
+        # w.r.t. the proportional, integral, and derivative gain values
+        steer = -tau_p * cte_curr - tau_d * cte_dot - tau_i * cte_int
+        # Set the "previous" CTE value to the current error before manoeuvre
+        cte_prev = cte_curr
+        # Execute the steering command computed with the PID-controller
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
+
+
 # NOTE: We use params instead of tau_p, tau_d, tau_i
-def run(
+def run_pid_tuned(
         robot, 
         params, 
         n=100, 
         speed=1.0
 ) -> Tuple[List[float], List[float], float]:
-    """Simulates robot movement using PID-control and an objective function.
+    """Simulates robot movement using PID-control with tuned parameters.
     
     The proportional-integral-derivative controller used here follows:
     $$\begin{align}
@@ -269,7 +449,7 @@ def twiddle(
     # Create and initialise the robot in its starting state
     robot = make_robot()
     # Get the error using the initial parameter values 
-    _, _, best_err = run(robot, p)
+    _, _, best_err = run_pid_tuned(robot, p)
     iter = 0
     while sum(dp) > tol:
         print(f"Iteration #{iter}, best error: {best_err}")
@@ -279,7 +459,7 @@ def twiddle(
             p[i] += dp[i]
             # Re-evaluate error using new parameter
             robot = make_robot()
-            _, _, err = run(robot, p, n=100, speed=1.0)
+            _, _, err = run_pid_tuned(robot, p, n=100, speed=1.0)
             if err < best_err:
                 # We found a better parameter value!
                 # Update the lowest error found
@@ -293,7 +473,7 @@ def twiddle(
                 p[i] -= 2 * dp[i]
                 # Then, re-compute the error value
                 robot = make_robot()
-                _, _, err = run(robot, p, n=100, speed=1.0)
+                _, _, err = run_pid_tuned(robot, p, n=100, speed=1.0)
                 if err < best_err:
                     # We found a better parameter value!
                     # Update the lowest error found
@@ -310,17 +490,83 @@ def twiddle(
         iter += 1
     # Compute the error corresponding to the best parameter values found
     robot = make_robot()
-    _, _, best_err = run(robot, p, n=100, speed=1.0)
+    _, _, best_err = run_pid_tuned(robot, p, n=100, speed=1.0)
     # Return the best parameter values and their corresponding error score
     return p, best_err
 
 
-params, err = twiddle()
-print("Final twiddle error = {}".format(err))
-robot = make_robot()
-x_trajectory, y_trajectory, err = run(robot, params)
-n = len(x_trajectory)
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
-ax1.plot(x_trajectory, y_trajectory, 'g', label='Twiddle PID controller')
-ax1.plot(x_trajectory, np.zeros(n), 'r', label='reference')
+if __name__ == '__main__':
+    ### Find the best parameters and corresponding error score
+    # using the Twiddle coordinate ascent optimisation algorithm
+    params_twiddle, err = twiddle()
+    print("Final twiddle error = {}".format(err))
+    ### (1) Run the trajectory tracking task with PID-controller
+    # Case 1.1 : Using the parameter values obtained from Twiddle 
+    x_pid_optimal_trajectory, y_pid_optimal_trajectory, err = run_pid_tuned(
+            robot=make_robot(), 
+            params=params_twiddle
+    )
+    # Case 1.2 : Using manually configured parameter values
+    # Create and initialise a new `Robot` instance at its starting state
+    x_pid_trajectory, y_pid_trajectory, err = run_pid(
+            robot=make_robot(), 
+            params=[0.2, 3.0, 0.004]
+    )
+    ### (2) Run the trajectory tracking task with PD-controller
+    # Case 2.1 : Using manually configured parameter values
+    x_pd_trajectory, y_pd_trajectory, err = run_pd(
+            robot=make_robot(), 
+            params=[0.2, 3.0]
+    )
+    ### (2) Run the trajectory tracking task with P-controller
+    # Case 2.1 : Using manually configured parameter values
+    x_p_trajectory, y_p_trajectory, err = run_p(
+            robot=make_robot(), 
+            params=[0.2]
+    )
+    ### Plot the robot coordinates relative to the reference trajectory
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, 
+            figsize=(24, 20), tight_layout=True
+    )
+    ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory, 
+            'g', label='PID-controller with Twiddle params'
+    )
+    ax1.plot(x_pid_optimal_trajectory, np.zeros(len(x_pid_optimal_trajectory)), 
+            'r', label='Reference'
+    )
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
+            figsize=(24, 20), tight_layout=True
+    )
+    suptxt = 'Trajectory Tracking in 2D Using Proportional-, Proportional-'
+    suptxt += 'Derivative, and Proportional-Integral-Derivative Controllers'
+    plt.suptitle(suptxt,
+            fontsize=24
+    )
+    ax1.set_title('Robot simulated across 100 time-steps (with steering wheel drift of $10^{\circ}$)',
+            fontsize=18
+    )
+    ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory,
+            color='y', label='PID-controller with Twiddle params'
+    )
+    txt_pid_non_opt = 'PID-controller ('
+    txt_pid_non_opt += '($\tau_{p}=0.2$, $\tau_{d}=3.0$, $\tau_{i}=0.1$)'
+    ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory,
+            color='y', label=txt_pid_non_opt
+    )
+    ax1.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)),
+            color='r', label='Reference'
+    )
+    ax2.plot(x_pid_trajectory, y_pid_trajectory, 
+            color='y', label='PID-controller'
+    )
+    ax2.plot(x_pd_trajectory, y_pd_trajectory, 
+            color='g', label='PD-controller'
+    )
+    ax2.plot(x_p_trajectory, y_p_trajectory, 
+            color='b', label='P-controller'
+    )
+    ax2.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)), 
+            color='r', label='Reference'
+    )
+    plt.legend(loc='lower right', fontsize='xx-large')
+    plt.show()
