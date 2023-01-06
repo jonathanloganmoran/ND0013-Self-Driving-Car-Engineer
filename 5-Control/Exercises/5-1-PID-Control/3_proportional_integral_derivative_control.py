@@ -15,7 +15,7 @@ mpl.rc('font', family='Times New Roman')
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from typing import List, NoReturn, Tuple
+from typing import List, Tuple
 
 
 class Robot(object):
@@ -259,14 +259,22 @@ def run_pid(
         robot: Robot, 
         tau_p: float,
         tau_d: float,
-        tau_i: float
+        tau_i: float,
         n: int=100, 
         speed: float=1.0
-) -> NoReturn:
-    """TODO.
-    
-    Simulates robot movement using proportional-integral-derivative control.
-    
+) -> Tuple[List[float], List[float]]:
+    """Simulates robot movement using proportional-integral-derivative control.
+
+    The proportional-integral-derivative controller used here follows:
+    $$\begin{align}
+    \alpha &= -\tau_{p} * \mathrm{CTE} 
+              - \tau_{d} * \Delta \mathrm{CTE} 
+              - \tau_{i} * \int_{0}^{t} \mathrm{CTE},
+    \end{align}$$
+    where the integral-term $\int_{0}^{t} \mathrm{CTE}$ is given as the sum of
+    the instantaneous error over time. This gives the accumulated offset that
+    should have been previously corrected.
+
     Assumed here is a constant unit time-step $\Delta t = 1.0$ and a reference
     trajectory defined as a constant horizontal trajectory about the $x$-axis
     at $y=0$.
@@ -280,6 +288,8 @@ def run_pid(
     :param tau_p: Proportional gain constant.
     :param tau_d: Anticipatory control constant for derivative control,
         used to control / dampen the influence of the rate-of-error change.
+    :param tau_i: Sum of instantaneous error over time for integral control,
+        used to calculate accumulated error that should have been corrected. 
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory.
@@ -288,8 +298,37 @@ def run_pid(
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
-    # TODO: your code here
-    raise NotImplementedError
+    # The list of all previous cross-track errors (used in integral term)
+    cte_values = []
+    # Set the constant unit time-step value (used in derivative term)
+    delta_t = 1.0
+    # Initialise the "previous" and current cross-track error values
+    cte_prev = robot.y
+    cte_curr = 0.0
+    # cte_values.append(cte_prev)
+    # Simulate the robot movement across `n` time-steps
+    for i in range(n):
+        # Get the current cross-track error relative to reference trajectory
+        cte_curr = robot.y
+        cte_values.append(cte_curr)
+        ### Compute the steering angle w.r.t. PID controller
+        # First, caclulate the derivative term
+        # NOTE: `cte_dot` is derivative of CTE w.r.t. constant unit time-step
+        cte_dot = (cte_curr - cte_prev) / delta_t
+        # Then, calculate the integral term 
+        cte_int = np.sum(cte_values)
+        # Form the expression of the complete PID controller
+        # w.r.t. the proportional, integral, and derivative gain values
+        steer = -tau_p * cte_curr - tau_d * cte_dot - tau_i * cte_int
+        # Set the "previous" CTE value to the current error before manoeuvre
+        cte_prev = cte_curr
+        # Execute the steering command computed with the PID-controller
+        robot.move(steer, speed)
+        # Append the updated robot position coordinates to the trajectory lists
+        _x, _y = robot.x, robot.y
+        x_trajectory.append(_x)
+        y_trajectory.append(_y)
+    return x_trajectory, y_trajectory
 
 
 if __name__ == '__main__':
@@ -304,12 +343,12 @@ if __name__ == '__main__':
     robot = Robot()
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the proportional-derivative controller           
-    x_pd_trajectory, y_pd_trajectory = run(robot, 0.2, 3.0)
+    x_pd_trajectory, y_pd_trajectory = run_pd(robot, 0.2, 3.0)
     ### Re-initialise the robot to the starting PID-controller run
     robot = Robot()
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the PID controller
-    x_pid_trajectory, y_pid_trajectory = run(robot, 0.2, 3.0)
+    x_pid_trajectory, y_pid_trajectory = run_pid(robot, 0.2, 3.0)
     ### Plot the robot position and orientation relative to the reference
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
             figsize=(24, 20), tight_layout=True
