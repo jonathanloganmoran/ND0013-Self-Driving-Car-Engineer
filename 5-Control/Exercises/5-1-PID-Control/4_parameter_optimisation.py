@@ -272,7 +272,7 @@ def twiddle(
     _, _, best_err = run(robot, p)
     while sum(dp) > tol:
         # Sequentially update each parameter in the set
-        for i, param in enumerate(p):
+        for i in range(len(p)):
             # Compute new parameter value
             p[i] += dp[i]
             # Re-evaluate error using new parameter value
@@ -302,7 +302,7 @@ def twiddle(
                     # Increase parameter value in other direction ("ascent")
                     p[i] += dp[i]
                     # Decrease the delta value (step-size) to avoid overshoot
-                    dp[i] *- 0.95
+                    dp[i] *= 0.95
     # Compute the error corresponding to the best parameter values found
     robot = make_robot()
     _, _, best_err = run(robot, p, n=100, speed=1.0)
