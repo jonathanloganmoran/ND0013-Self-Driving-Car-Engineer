@@ -161,7 +161,7 @@ class Robot(object):
         return '[x=%.5f y=%.5f orient=%.5f]' % (self.x, self.y, self.orientation)
 
 
-def run(
+def run_p(
         robot: Robot, 
         tau: float, 
         n: int=100, 
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     # with heading angle `0.0`
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the proportional controller            
-    x_trajectory, y_trajectory = run(robot, 0.1)
+    x_trajectory, y_trajectory = run_p(robot, 0.1)
     n = len(x_trajectory)
     ### Plot the robot position and orientation relative to the reference
     # Setting the default font to use with Matplotlib

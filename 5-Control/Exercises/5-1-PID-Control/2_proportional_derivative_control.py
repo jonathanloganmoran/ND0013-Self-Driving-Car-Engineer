@@ -191,7 +191,7 @@ def run_p(
     return x_trajectory, y_trajectory
 
 
-def run(
+def run_pd(
         robot: Robot, 
         tau_p: float,
         tau_d: float, 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     robot = Robot()
     robot.set(0.0, 1.0, 0.0)
     ### Execute the trajectory using the proportional-derivative controller            
-    x_pd_trajectory, y_pd_trajectory = run(robot, 0.2, 3.0)
+    x_pd_trajectory, y_pd_trajectory = run_pd(robot, 0.2, 3.0)
     ### Plot the robot position and orientation relative to the reference
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
             figsize=(24, 20), tight_layout=True
