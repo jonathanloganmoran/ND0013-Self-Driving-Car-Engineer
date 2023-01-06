@@ -217,7 +217,7 @@ def run_p(
 
 def run_pd(
         robot: Robot, 
-        params: List[float]
+        params: List[float],
         n: int=100, 
         speed: float=1.0
 ) -> Tuple[List[float], List[float]]:
@@ -282,7 +282,7 @@ def run_pd(
 
 def run_pid(
         robot: Robot, 
-        params: List[float]
+        params: List[float],
         n: int=100, 
         speed: float=1.0
 ) -> Tuple[List[float], List[float]]:
