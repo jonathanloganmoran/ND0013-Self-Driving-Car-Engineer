@@ -196,7 +196,7 @@ def run_p(
 
     ### Make sure all parameters were provided
     assert len(params) == 1
-    tau_p = params[1]
+    tau_p = params[0]
     # The list of $x$- and $y$-values for the simulated trajectory
     x_trajectory = []
     y_trajectory = []
