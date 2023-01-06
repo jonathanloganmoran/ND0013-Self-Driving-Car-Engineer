@@ -530,19 +530,19 @@ if __name__ == '__main__':
     )
     # Case 1.2 : Using manually configured parameter values
     # Create and initialise a new `Robot` instance at its starting state
-    x_pid_trajectory, y_pid_trajectory, err = run_pid(
+    x_pid_trajectory, y_pid_trajectory = run_pid(
             robot=make_robot(), 
             params=[0.2, 3.0, 0.004]
     )
     ### (2) Run the trajectory tracking task with PD-controller
     # Case 2.1 : Using manually configured parameter values
-    x_pd_trajectory, y_pd_trajectory, err = run_pd(
+    x_pd_trajectory, y_pd_trajectory = run_pd(
             robot=make_robot(), 
             params=[0.2, 3.0]
     )
     ### (2) Run the trajectory tracking task with P-controller
     # Case 2.1 : Using manually configured parameter values
-    x_p_trajectory, y_p_trajectory, err = run_p(
+    x_p_trajectory, y_p_trajectory = run_p(
             robot=make_robot(), 
             params=[0.2]
     )
