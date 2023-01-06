@@ -402,6 +402,8 @@ def run_pid_tuned(
     # Initialise the "previous" and current cross-track error values
     cte_prev = robot.y
     cte_curr = 0.0
+    # Store the running total square error of CTE (used to compute average)
+    err = 0.0
     # Simulate the robot movement across `n` time-steps
     for i in range(2 * n):
         # Get the current cross-track error relative to reference trajectory
@@ -426,7 +428,7 @@ def run_pid_tuned(
         y_trajectory.append(_y)
         # Add current error to running total
         if i >= n:
-            err += cte ** 2
+            err += cte_curr ** 2
     return x_trajectory, y_trajectory, err / n
 
 
