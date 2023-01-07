@@ -379,7 +379,7 @@ def run_pid_tuned(
 
     :param robot: `Robot` class instance representing the vehicle to manoeuvre. 
     :param params: Set of hyperparameter values to use in the PID-controller,
-        should be three values in order: [$\tau_{i}$, $\tau_{d}$, $\tau_{i}$].
+        should be three values in order: [$\tau_{p}$, $\tau_{d}$, $\tau_{i}$].
     :param n: Number of time-steps to simulate.
     :param speed: Velocity (m/s) at which to drive the vehicle.
     :returns: Set of x- and y-coordinates of the simulated trajectory, plus
@@ -445,9 +445,9 @@ def twiddle(
     to optimise according to the error value as computed by the trajectory
     tracking algorithm with PID-control. This error value, our objective
     function value, is the difference between the actual- and goal
-    trajectory of the robot. The error is evaluated as the difference
-    between the robot's final coordinates $(x, y)$ and the goal coordinates.
-
+    trajectory of the robot. The error is evaluated as the cumulative average
+    of the difference in the robot's coordinates $(x, y)$ and the goal
+    coordinates of the reference trajectory.
     For more information: https://martin-thoma.com/twiddle/.
     See also brief video overview: https://www.youtube.com/watch?v=2uQ2BSzDvXs.
     And an in-depth review of the Twiddle algorithm performance (DE): 
