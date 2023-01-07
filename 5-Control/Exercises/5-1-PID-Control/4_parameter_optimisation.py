@@ -532,7 +532,7 @@ if __name__ == '__main__':
     # Create and initialise a new `Robot` instance at its starting state
     x_pid_trajectory, y_pid_trajectory = run_pid(
             robot=make_robot(), 
-            params=[0.2, 3.0, 0.004]
+            params=[0.2, 3.0, 0.1]
     )
     ### (2) Run the trajectory tracking task with PD-controller
     # Case 2.1 : Using manually configured parameter values
@@ -550,45 +550,52 @@ if __name__ == '__main__':
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, 
             figsize=(24, 20), tight_layout=True
     )
-    ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory, 
-            'g', label='PID-controller with Twiddle params'
-    )
-    ax1.plot(x_pid_optimal_trajectory, np.zeros(len(x_pid_optimal_trajectory)), 
-            'r', label='Reference'
-    )
-    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1,
-            figsize=(24, 20), tight_layout=True
-    )
     suptxt = 'Trajectory Tracking in 2D Using Proportional-, Proportional-'
     suptxt += 'Derivative, and Proportional-Integral-Derivative Controllers'
     plt.suptitle(suptxt,
             fontsize=24
     )
-    ax1.set_title('Robot simulated across 100 time-steps (with steering wheel drift of $10^{\circ}$)',
+    txt_sup = r'Robot simulated across 100 time-steps (with steering wheel drift of $10^{\circ}$)'
+    ax1.set_title(txt_sup,
             fontsize=18
     )
+    txt_pid_opt = r"PID-controller with Twiddle ($\tau_{p}="
+    txt_pid_opt += f"{params_twiddle[0]:.2f}$,"
+    txt_pid_opt += r"$\tau_{d}="
+    txt_pid_opt += f"{params_twiddle[1]:.2f}$,"
+    txt_pid_opt += r"$\tau_{i}="
+    txt_pid_opt += f"{params_twiddle[2]:.2f}$)"
+    # NOTE: Plotting only first 100 steps of trajectory from tuned PID-controller
+    ax1.plot(x_pid_optimal_trajectory[:len(x_pid_trajectory)], 
+             y_pid_optimal_trajectory[:len(x_pid_trajectory)], 
+             'm', label=txt_pid_opt
+    )
+    """
     ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory,
-            color='y', label='PID-controller with Twiddle params'
+            color='m', label=txt_pid_opt
     )
-    txt_pid_non_opt = 'PID-controller ('
-    txt_pid_non_opt += '($\tau_{p}=0.2$, $\tau_{d}=3.0$, $\tau_{i}=0.1$)'
-    ax1.plot(x_pid_optimal_trajectory, y_pid_optimal_trajectory,
-            color='y', label=txt_pid_non_opt
+    """
+    ax1.plot(x_pid_optimal_trajectory[:len(x_pid_trajectory)], 
+             np.zeros(len(x_pid_trajectory)),
+             'r', label='Reference'
     )
-    ax1.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)),
-            color='r', label='Reference'
+    ax2.plot(x_pid_optimal_trajectory[:len(x_pid_trajectory)], 
+             y_pid_optimal_trajectory[:len(x_pid_trajectory)], 
+             'm', label=txt_pid_opt
     )
-    ax2.plot(x_pid_trajectory, y_pid_trajectory, 
-            color='y', label='PID-controller'
+    txt_pid_non_opt = 'PID-controller '
+    txt_pid_non_opt += r'($\tau_{p}=0.2$, $\tau_{d}=3.0$, $\tau_{i}=0.1$)'
+    ax2.plot(x_pid_trajectory, y_pid_trajectory,
+             color='y', label=txt_pid_non_opt
     )
     ax2.plot(x_pd_trajectory, y_pd_trajectory, 
-            color='g', label='PD-controller'
+             color='g', label=r'PD-controller ($\tau_{p}=0.2$, $\tau_{d}=3.0$)'
     )
     ax2.plot(x_p_trajectory, y_p_trajectory, 
-            color='b', label='P-controller'
+             color='b', label=r'P-controller ($\tau_{p}=0.2$)'
     )
     ax2.plot(x_pd_trajectory, np.zeros(len(x_pd_trajectory)), 
-            color='r', label='Reference'
+             color='r', label='Reference'
     )
     plt.legend(loc='lower right', fontsize='xx-large')
     plt.show()
