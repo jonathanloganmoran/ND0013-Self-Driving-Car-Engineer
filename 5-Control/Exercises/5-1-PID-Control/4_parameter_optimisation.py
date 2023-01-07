@@ -1,18 +1,15 @@
-# ----------------
-# User Instructions
+# -----------------------------------------------------------------------------
+# Lesson "5.1: PID Control"
+# Authors     : Sebastian Thrun.
 #
-# Implement twiddle as shown in the previous two videos.
-# Your accumulated error should be very small!
+# Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
 #
-# You don't have to use the exact values as shown in the video
-# play around with different values! This quiz isn't graded just see
-# how low of an error you can get.
-#
-# Try to get your error below 1.0e-10 with as few iterations
-# as possible (too many iterations will cause a timeout).
-#
-# No cheating!
-# ------------
+# Purpose of this file: Implements the Proportional-Integral-Derivative (PID)
+#                       Controller with hyperparameter tuning using the
+#                       Twiddle algorithm. The programme simulates robot motion
+#                       along a horizontal reference trajectory and compares
+#                       the accuracy of each controller type (P-, PD-, PID).
+# -----------------------------------------------------------------------------
 
 import matplotlib as mpl
 # Setting the default font to use with Matplotlib
