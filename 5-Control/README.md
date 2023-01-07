@@ -13,7 +13,7 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 
 ### Demo Notebooks
-* ⬜️ [`2023-01-03-Course-5-Control-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/5.1/5-Control/Exercises/2023-01-03-Course-5-Control-Exercises-Part-1.ipynb) — in progress! 🎉.
+* ✅ [`2023-01-03-Course-5-Control-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/Exercises/2023-01-03-Course-5-Control-Exercises-Part-1.ipynb).
 
 
 ### Projects
@@ -21,7 +21,7 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 
 ### Exercises
-* ⬜️ [5.1 PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/5.1/5-Control/Exercises/5-1-PID-Control) — in progress! 🎉.
+* ✅ [5.1 PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-1-PID-Control).
 
 
 ### Course Contents

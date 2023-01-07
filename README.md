@@ -10,7 +10,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 * ✅ [Course 2: Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion)
 * ✅ [Course 3: Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization)
 * ✅ [Course 4: Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning)
-* ⬜️ [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/5.1/5-Control) — in progress! 🎉
+* ✅ [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control)
 
 
 
