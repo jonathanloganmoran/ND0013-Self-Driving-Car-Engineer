@@ -20,7 +20,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 * ✅ [Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF)
 * ✅ [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization)
 * ✅ [Project 4.1: Motion Planning and Decision Making for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making)
-* ⬜️ Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles
+* ⬜️ [Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles] — in progress! 🎉
 
 
 ### Contents
