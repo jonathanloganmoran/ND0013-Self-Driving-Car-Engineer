@@ -42,10 +42,9 @@ void PID::init_controller(
 }
 
 
-/* Evaluates the PID controller expression using the given cross-track error.
+/* Updates the PID controller terms using the given cross-track error.
  * 
- * @param  cte    Current cross-track error value. 
- * 
+ * @param  cte    Current cross-track error value.
  */
 void PID::update_error(
     double cte
@@ -66,16 +65,29 @@ void PID::update_error(
 }
 
 
-/* TODO.
- * 
- * Returns the total error computed w.r.t. the PID controller values.
+/* Evaluates the PID controller expression and returns the control value.
  * 
  * @returns  control  Total computed error, should be within the range
  *                    [`lim_max_output`, `lim_min_output`].
  */
 double PID::total_error() {
-    double control;
+  
+  double control = ((this->k_p * this->error_p)
+                    + (this->k_d * this->error_d)
+                    + (this->k_i * this->error_i)
+  );
+  // Filter `control` values outside minimum / maximum range
+  // NOTE: value outside the range is clipped to limit
+  if (control > this->lim_max_output) {
+    return this->lim_max_output;
+  }
+  else if (control < this->lim_min_output) {
+    return this->lim_min_output;
+  }
+  else {
+    // No need to clip, return value as-is
     return control;
+  }
 }
 
 
