@@ -13,7 +13,8 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Initialise a PID controller instance;
 * ✅ Compute the PID error terms for the given cross-track error;
 * ✅ Evaluate the expression of the PID controller using the updated terms;
-* ✅ Create a function to update / modify the time-delta variable. 
+* ✅ Create a function to update / modify the time-delta variable.
+* ✅ Compile and run the programme to verify the ego-vehicle is stationary (controller not yet implemented).
 
 ### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
 * ⬜️ TODO.
