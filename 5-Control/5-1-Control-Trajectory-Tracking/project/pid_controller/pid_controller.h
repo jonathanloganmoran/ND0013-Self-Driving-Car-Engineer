@@ -57,7 +57,7 @@ class PID {
   virtual ~PID();
 
   // Initialises the PID controller with the given parameter values
-  void PID::init_controller(
+  void init_controller(
       double k_p, 
       double k_i, 
       double k_d, 
