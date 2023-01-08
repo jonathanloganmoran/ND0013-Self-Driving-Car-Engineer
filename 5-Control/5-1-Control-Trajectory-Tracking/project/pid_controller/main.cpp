@@ -414,6 +414,21 @@ int main() {
        * TODO (step 3): compute the steer error (error_steer) from the position and the desired trajectory
        **/
       // error_steer = 0;
+      // Get the index of the closest point in the reference trajectory to the
+      // current vehicle position w.r.t. the PID controller steering command
+      std::size_t idx_closest_point = get_closest_point_idx(
+          x_position,
+          y_position,
+          x_points,
+          y_points
+      );
+      // Compute the steering angle error
+      error_steer = angle_between_points(
+          x_position,
+          y_position,
+          x_points[idx_closest_point],
+          y_points[idx_closest_point]
+      ) - yaw;
       /**
        * TODO (step 3): uncomment these lines
        **/
