@@ -15,6 +15,7 @@
 #include <iostream>
 #include <math.h>
 
+
 /* The PID controller class.
  *
  * Implements the proportional-integral-derivative (PID) controller for use in
@@ -30,37 +31,27 @@
  * the instantaneous error over time. This gives the accumulated offset that
  * should have been previously corrected.
  * 
- * @var  
+ * @var  lim_max_output  Maximum output value (used to threshold controller).
+ * @var  lim_min_output  Minimum output value (used to threshold controller). 
+ * @var  delta_t         Elapsed time (s) (used to compute derivative term).
+ * @var  error_p         Proportional error term.
+ * @var  error_i         Integral error term.
+ * @var  error_d         Derivative error term.
+ * @var  k_p             Proportional gain value (used to compute `error_p`)
+ * @var  k_i             Integral gain value (used to compute `error_i`)
+ * @var  k_d             Derivative gain value (used to compute `error_d`)
  */
 class PID {
  public:
-  /**
-  * TODO: Create the PID class
-  **/
-  /*
-   * Errors
-   */
-  // The cross-track error value from the previous time-step
-  double cte_prev;
-  // The cross-track error value from the current time-step
-  double cte_curr;
-  // The cumulative cross-track error across all time-steps `n`
-  double cte_total;
-  /*
-   * Coefficients
-   */
+  double lim_max_output;
+  double lim_min_output;
+  double delta_t;
+  double error_p;
+  double error_i;
+  double error_d;
   double k_p;
   double k_i;
   double k_d;
-  /*
-   * Output limits
-   */
-  double lim_max_output;
-  double lim_min_output;
-  /*
-   * Delta time
-   */
-  double delta_t;
 
   PID();
   virtual ~PID();
@@ -73,7 +64,7 @@ class PID {
       double lim_max_output, 
       double lim_min_output
   );
-  // Updates the objective functino error given the cross-track error
+  // Updates the objective function error given the cross-track error
   void update_error(
       double cte
   );

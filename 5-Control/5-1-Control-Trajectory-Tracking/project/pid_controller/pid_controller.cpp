@@ -14,15 +14,16 @@
 PID::PID() {}
 PID::~PID() {}
 
+
 /* TODO.
  *
  * Initialises the PID controller parameters with the given values.
  *
- * @param  k_p
- * @param  k_i
- * @param  k_d
- * @param  output_lim_maxi
- * @param  lim_min_output
+ * @param  k_p             Gain value to use for the proportional term.
+ * @param  k_i             Gain value to use for the integral term.
+ * @param  k_d             Gain value to use for the derivative term.
+ * @param  lim_max_output  Maximum output value (used to threshold controller).
+ * @param  lim_min_output  Minimum output value (used to threshold controller).
  */
 void PID::init_controller(
     double k_p, 
@@ -32,6 +33,7 @@ void PID::init_controller(
     double lim_min_output
 ) {
 }
+
 
 /* TODO.
  * 
@@ -45,17 +47,19 @@ void PID::update_error(
 ) {
 }
 
+
 /* TODO.
  * 
  * Returns the total error computed w.r.t. the PID controller values.
  * 
- * @returns  control  Total computed error, should be
- *                    within range [`lim_max_output`, `lim_min_output`].
+ * @returns  control  Total computed error, should be within the range
+ *                    [`lim_max_output`, `lim_min_output`].
  */
 double PID::total_error() {
     double control;
     return control;
 }
+
 
 /* TODO.
  *
