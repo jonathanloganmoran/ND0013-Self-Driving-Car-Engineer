@@ -1,44 +1,69 @@
-/**********************************************
- * Self-Driving Car Nano-degree - Udacity
- *  Created on: December 11, 2020
- *      Author: Mathilde Badoual
- **********************************************/
+/* ------------------------------------------------------------------------------
+ * Project "5.1: Control and Trajectory Tracking for Autonomous Vehicles"
+ * Authors     : Mathilde Badoual.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ *
+ * Purpose of this file: Implements the PID controller.
+ * ----------------------------------------------------------------------------
+ */
 
 #include "pid_controller.h"
-#include <vector>
-#include <iostream>
-#include <math.h>
 
-using namespace std;
 
 PID::PID() {}
-
 PID::~PID() {}
 
-void PID::Init(double Kpi, double Kii, double Kdi, double output_lim_maxi, double output_lim_mini) {
-   /**
-   * TODO: Initialize PID coefficients (and errors, if needed)
-   **/
+
+/* TODO.
+ *
+ * Initialises the PID controller parameters with the given values.
+ *
+ * @param  Kpi
+ * @param  Kii
+ * @param  Kdi
+ * @param  output_lim_maxi
+ * @param  output_lim_mini
+ */
+void PID::Init(
+    double Kpi, 
+    double Kii, 
+    double Kdi, 
+    double output_lim_maxi, 
+    double output_lim_mini
+) {
 }
 
-
+/* TODO.
+ * 
+ * Updates the PID errors based on the given cross-track error value.
+ * 
+ * @param  cte
+ * 
+ */
 void PID::UpdateError(double cte) {
-   /**
-   * TODO: Update PID errors based on cte.
-   **/
 }
 
+/* TODO.
+ * 
+ * Returns the total error computed w.r.t. the PID controller values.
+ * 
+ * @returns  control  Total computed error, should be
+ *                    within range [`output_lim_maxi`, `output_lim_mini`].
+ */
 double PID::TotalError() {
-   /**
-   * TODO: Calculate and return the total error
-    * The code should return a value in the interval [output_lim_mini, output_lim_maxi]
-   */
     double control;
     return control;
 }
 
-double PID::UpdateDeltaTime(double new_delta_time) {
-   /**
-   * TODO: Update the delta time with new value
-   */
+/* TODO.
+ *
+ * Updates $\Delta t$ to the given value.
+ * 
+ * @param    new_delta_time  Elapsed time interval (s) value to set.
+ * @returns  delta_time      Updated time interval (s).
+ */
+double PID::UpdateDeltaTime(
+    double new_delta_time
+) {
 }
