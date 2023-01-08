@@ -224,6 +224,40 @@ void path_planner(
   }
 }
 
+/* Returns the index of the point in vector closest to the given coordinates. 
+ *
+ * @param    point_x      Coordinate of the reference point along the x-axis. 
+ * @param    point_y      Coordinate of the reference point along the y-axis.
+ * @param    points_x     Set of x-coordinates to compute the distance to.
+ * @param    points_y     Set of y-coordinates to compute the distance to.
+ * @returns  closest_idx  Index of point in vector closest to the coordinates. 
+ */
+std::size_t get_closest_point_idx(
+    double point_x,
+    double point_y,
+    std::vector<double> points_x,
+    std::vector<double> points_y
+) {
+  // Index of closest found point 
+  std::size_t closest_idx = 0;
+  // Distance to point
+  double dist_min = std::numeric_limits<double>::infinity();
+  // Find closest point in vector
+  for (std::size_t i = 0; i < points_x.size(); ++i) {
+    double dist = std::pow(
+        (std::pow((point_x - points_x[i]), 2)
+         + std::pow((point_y - points_y[i]), 2)
+        ),
+        0.5
+    );
+    if (dist < dist_min) {
+      dist_min = dist;
+      closest_idx = i;
+    }
+  }
+  return closest_idx;
+}
+
 
 void set_obst(
     std::vector<double> x_points, 
@@ -312,6 +346,7 @@ int main() {
     auto s = has_data(data);
     if (s != "") {
       auto data = json::parse(s);
+      /*** Saving steering / throttle commands to output files ****/
       // Create file to save steering values from PID controller
       fstream file_steer;
       file_steer.open("steer_pid_data.txt");
