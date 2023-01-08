@@ -17,11 +17,21 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Compile and run the programme to verify the ego-vehicle is stationary (controller not yet implemented).
 
 ### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
-* ⬜️ TODO.
+* ⬜️ Implement the PID controller for throttle commands;
+* ⬜️ Initialise the PID controller parameters with experimental gain values;
+* ⬜️ Examine the performance of the PID controller using the experimental gain values;
+* ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
+
 ### Use PID Controller for Vehicle Steering ([`main.cpp`]())
-* ⬜️ TODO.
+* ⬜️ Implement the PID controller for steering commands;
+* ⬜️ Initialise the PID controller parameters with experimental gain values;
+* ⬜️ Examine the performance of the PID controller using the experimental gain values;
+* ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
+
 ### Evaluate the PID Controller Efficiency ([`plot_pid.py`]())
-* ⬜️ TODO.
+* ⬜️ Save the throttle / steering command values into text files;
+* ⬜️ Plot the saved values using the `plot_pid.py` script and comment on the results;
+* ⬜️ Answer the discussion questions in `answers.txt`.
 
 ## 1. Introduction
 In this project we use the skills we have gained in [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control) to implement the [PID controller](https://en.wikipedia.org/wiki/PID_controller) and apply it to the vehicle trajectory tracking task. Given a trajectory and an array of locations, we will design and code a PID controller to actuate the vehicle (i.e., apply steer and throttle commands). Using the [CARLA Simulator](http://carla.org) environment, we will test the PID Controller on the ego-vehicle and evaluate its real-world performance using a simulation environment with perturbations.
