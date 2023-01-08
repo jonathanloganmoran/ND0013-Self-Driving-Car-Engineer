@@ -428,50 +428,40 @@ int main() {
       for (int j=0; j < i - 1; ++j) {
         file_steer.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       }
-      file_steer  << i << " " << error_steer;
+      file_steer << i << " " << error_steer;
       file_steer << " " << steer_output << "\n";
       ////////////////////////////////////////
       // Throttle control
       ////////////////////////////////////////
-      /**
-      * TODO (step 2): uncomment these lines
-      **/
-      // Update the delta time with the previous command
-      // pid_throttle.update_delta_time(new_delta_time);
-      // Compute error of speed
-      double error_throttle;
-      /**
-      * TODO (step 2): compute the throttle error (error_throttle) from the position and the desired speed
-      **/
+      // Update the delta-time variable w.r.t. the previous throttle command
+      pid_throttle.update_delta_time(new_delta_time);
       // Compute throttle error
       // i.e., the difference between current- and trajectory velocity
-      error_throttle = v_points[idx_closest_point] - velocity;
+      double error_throttle = v_points[idx_closest_point] - velocity;
+      // Compute the throttle and brake control values to apply
       double throttle_output;
       double brake_output;
-      /**
-      * TODO (step 2): uncomment these lines
-      **/
-      // Compute control to apply
-      // pid_throttle.update_error(error_throttle);
-      // double throttle = pid_throttle.total_error();
-      // Adapt the negative throttle to break
-      // if (throttle > 0.0) {
-      //   throttle_output = throttle;
-      //   brake_output = 0;
-      // } 
-      // else {
-      //   throttle_output = 0;
-      //   brake_output = -throttle;
-      // }
-      // Save the output throttle data
-      // file_throttle.seekg(std::ios::beg);
-      // for(int j=0; j < i - 1; ++j) {
-      //     file_throttle.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-      // }
-      // file_throttle  << i ;
-      // file_throttle  << " " << error_throttle;
-      // file_throttle  << " " << brake_output;
-      // file_throttle  << " " << throttle_output << "\n";
+      pid_throttle.update_error(error_throttle);
+      // Get the response of the PID controller
+      double throttle_response = pid_throttle.total_error();
+      if (throttle_response > 0.0) {
+        // Set positive response values as actual throttle output command 
+        throttle_output = throttle_response;
+        brake_output = 0;
+      } 
+      else {
+        // Set negative response values to brake output command
+        throttle_output = 0;
+        brake_output = -throttle;
+      }
+      // Save the output throttle command data to the text file
+      file_throttle.seekg(std::ios::beg);
+      for(int j=0; j < i - 1; ++j) {
+          file_throttle.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+      }
+      file_throttle << i << " " << error_throttle;
+      file_throttle << " " << brake_output;
+      file_throttle << " " << throttle_output << "\n";
       // Execute the control commands with a new message
       json msgJson;
       msgJson["brake"] = brake_output;
