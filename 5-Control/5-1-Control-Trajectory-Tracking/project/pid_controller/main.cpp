@@ -423,6 +423,7 @@ int main() {
           y_points
       );
       // Compute the steering angle error
+      // i.e., difference in heading between current- and trajectory position 
       error_steer = angle_between_points(
           x_position,
           y_position,
@@ -456,8 +457,9 @@ int main() {
       /**
       * TODO (step 2): compute the throttle error (error_throttle) from the position and the desired speed
       **/
-      // modify the following line for step 2
-      error_throttle = 0;
+      // Compute throttle error
+      // i.e., the difference between current- and trajectory velocity
+      error_throttle = v_points[idx_closest_point] - velocity;
       double throttle_output;
       double brake_output;
       /**
