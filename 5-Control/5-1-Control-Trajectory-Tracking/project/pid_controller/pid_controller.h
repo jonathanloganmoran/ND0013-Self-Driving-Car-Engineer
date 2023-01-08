@@ -49,14 +49,14 @@ class PID {
   /*
    * Coefficients
    */
-  double Kp;
-  double Ki;
-  double Kd;
+  double k_p;
+  double k_i;
+  double k_d;
   /*
    * Output limits
    */
-  double output_lim_max;
-  double output_lim_min;
+  double lim_max_output;
+  double lim_min_output;
   /*
    * Delta time
    */
@@ -66,24 +66,25 @@ class PID {
   virtual ~PID();
 
   // Initialises the PID controller with the given parameter values
-  void Init(
-      double Kp, 
-      double Ki, 
-      double Kd, 
-      double output_lim_max, 
-      double output_lim_min
+  void PID::init_controller(
+      double k_p, 
+      double k_i, 
+      double k_d, 
+      double lim_max_output, 
+      double lim_min_output
   );
   // Updates the objective functino error given the cross-track error
-  void UpdateError(
+  void update_error(
       double cte
   );
   // Computes the total error for the PID controller
-  double TotalError();
+  double total_error();
   // Updates $\Delta t$ to the given value
-  double UpdateDeltaTime(
+  double update_delta_time(
       double new_delta_time
   );
 };
+
 
 #endif  //PID_CONTROLLER_H
 

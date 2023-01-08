@@ -14,23 +14,22 @@
 PID::PID() {}
 PID::~PID() {}
 
-
 /* TODO.
  *
  * Initialises the PID controller parameters with the given values.
  *
- * @param  Kpi
- * @param  Kii
- * @param  Kdi
+ * @param  k_p
+ * @param  k_i
+ * @param  k_d
  * @param  output_lim_maxi
- * @param  output_lim_mini
+ * @param  lim_min_output
  */
-void PID::Init(
-    double Kpi, 
-    double Kii, 
-    double Kdi, 
-    double output_lim_maxi, 
-    double output_lim_mini
+void PID::init_controller(
+    double k_p, 
+    double k_i, 
+    double k_d, 
+    double lim_max_output, 
+    double lim_min_output
 ) {
 }
 
@@ -41,7 +40,9 @@ void PID::Init(
  * @param  cte
  * 
  */
-void PID::UpdateError(double cte) {
+void PID::update_error(
+    double cte
+) {
 }
 
 /* TODO.
@@ -49,9 +50,9 @@ void PID::UpdateError(double cte) {
  * Returns the total error computed w.r.t. the PID controller values.
  * 
  * @returns  control  Total computed error, should be
- *                    within range [`output_lim_maxi`, `output_lim_mini`].
+ *                    within range [`lim_max_output`, `lim_min_output`].
  */
-double PID::TotalError() {
+double PID::total_error() {
     double control;
     return control;
 }
@@ -63,7 +64,7 @@ double PID::TotalError() {
  * @param    new_delta_time  Elapsed time interval (s) value to set.
  * @returns  delta_time      Updated time interval (s).
  */
-double PID::UpdateDeltaTime(
+double PID::update_delta_time(
     double new_delta_time
 ) {
 }
