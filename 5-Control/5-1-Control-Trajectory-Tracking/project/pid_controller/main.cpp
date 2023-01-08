@@ -402,18 +402,8 @@ int main() {
       ////////////////////////////////////////
       // Steering control
       ////////////////////////////////////////
-      /**
-      * TODO (step 3): uncomment these lines
-      **/
-      // Update the delta time with the previous command
-      // pid_steer.update_delta_time(new_delta_time);
-      // Compute steer error
-      double error_steer;
-      double steer_output;
-      /**
-       * TODO (step 3): compute the steer error (error_steer) from the position and the desired trajectory
-       **/
-      // error_steer = 0;
+      // Update the delta-time variable w.r.t. the previous steering command
+      pid_steer.update_delta_time(new_delta_time);
       // Get the index of the closest point in the reference trajectory to the
       // current vehicle position w.r.t. the PID controller steering command
       std::size_t idx_closest_point = get_closest_point_idx(
@@ -424,26 +414,22 @@ int main() {
       );
       // Compute the steering angle error
       // i.e., difference in heading between current- and trajectory position 
-      error_steer = angle_between_points(
+      double error_steer = angle_between_points(
           x_position,
           y_position,
           x_points[idx_closest_point],
           y_points[idx_closest_point]
       ) - yaw;
-      /**
-       * TODO (step 3): uncomment these lines
-       **/
-      // Compute control to apply
-      // pid_steer.update_error(error_steer);
-      // steer_output = pid_steer.total_error();
-      // Save the output steering command data
-      // file_steer.seekg(std::ios::beg);
-      // for (int j=0; j < i - 1; ++j) {
-      //   file_steer.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      // }
-      // file_steer  << i ;
-      // file_steer  << " " << error_steer;
-      // file_steer  << " " << steer_output << "\n";
+      // Compute the steering control value to apply
+      pid_steer.update_error(error_steer);
+      double steer_output = pid_steer.total_error();
+      // Save the output steering command data to the text file
+      file_steer.seekg(std::ios::beg);
+      for (int j=0; j < i - 1; ++j) {
+        file_steer.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      }
+      file_steer  << i << " " << error_steer;
+      file_steer << " " << steer_output << "\n";
       ////////////////////////////////////////
       // Throttle control
       ////////////////////////////////////////
