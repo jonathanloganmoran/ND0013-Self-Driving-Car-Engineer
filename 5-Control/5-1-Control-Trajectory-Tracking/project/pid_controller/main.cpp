@@ -388,7 +388,7 @@ int main() {
   // pid_steer.init_controller(0.5, 0.001, 0.0, 1.2, -1.2);
   // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
   // pid_steer.init_controller(1.0, 1.0, 1.0, 1.2, -1.2);
-  pid_steer.init_controller(0.5, 0.001, 0.1, 1.2, -1.2;
+  pid_steer.init_controller(0.5, 0.001, 0.1, 1.2, -1.2);
   h.onMessage(
       [
         &pid_steer, 
@@ -515,7 +515,7 @@ int main() {
       else {
         // Set negative response values to brake output command
         throttle_output = 0;
-        brake_output = -throttle;
+        brake_output = -throttle_response;
       }
       // Save the output throttle command data to the text file
       file_throttle.seekg(std::ios::beg);
