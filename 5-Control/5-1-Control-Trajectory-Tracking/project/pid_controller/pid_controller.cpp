@@ -91,9 +91,7 @@ double PID::total_error() {
 }
 
 
-/* TODO.
- *
- * Updates $\Delta t$ to the given value.
+/* Updates $\Delta t$ to the given value.
  * 
  * @param    new_delta_time  Elapsed time interval (s) value to set.
  * @returns  delta_time      Updated time interval (s).
@@ -101,4 +99,6 @@ double PID::total_error() {
 double PID::update_delta_time(
     double new_delta_time
 ) {
+  this->delta_t = new_delta_time;
+  return this->delta_t;
 }
