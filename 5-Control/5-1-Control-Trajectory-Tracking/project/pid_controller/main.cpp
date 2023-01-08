@@ -270,12 +270,15 @@ int main() {
   /*** Initialise the PID controller for the ego-vehicle throttle commands ***/
   PID pid_throttle = PID();
   // CANDO: Set appropriate gain values here
-  // Using the P-controller (proportional-gain only):
-  pid_throttle.init_controller(1.0, 0.0, 0.0, 1.2, -1.2);
-  // Using the PD-controller (proportional-derivative gain only):
-  // pid_throttle.init_controller(1.0, 0.0, 1.0, 1.2, -1.2);
-  // Using the PID-controller (proportional-integral-derivative gain):
-  //pid_throttle.init_controller(1.0, 1.0, 1.0, 1.2, -1.2);
+  // CASE 1 : Using the P-controller (proportional-gain only):
+  // pid_throttle.init_controller(1.0, 0.0, 0.0, 1.0, -1.0);
+  // pid_throttle.init_controller(0.5, 0.0, 0.0, 1.0, -1.0);
+  // CASE 2 : Using the PD-controller (proportional-derivative gain only):
+  // pid_throttle.init_controller(1.0, 0.0, 1.0, 1.0, -1.0);
+  // pid_throttle.init_controller(0.5, 0.001, 0.0, 1.0, -1.0);
+  // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
+  // pid_throttle.init_controller(1.0, 1.0, 1.0, 1.0, -1.0);
+  pid_throttle.init_controller(0.5, 0.001, 0.1, 1.0, -1.0);
   /**
   * TODO (Step 1): create pid (pid_steer) for steering command and initialize values
   **/
