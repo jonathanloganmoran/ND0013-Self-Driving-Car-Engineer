@@ -17,7 +17,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ✅ Compile and run the programme to verify the ego-vehicle is stationary (controller not yet implemented).
 
 ### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
-* ⬜️ Implement the PID controller for throttle commands;
+* ✅ Implement the PID controller for throttle commands;
 * ⬜️ Initialise the PID controller parameters with experimental gain values;
 * ⬜️ Examine the performance of the PID controller using the experimental gain values;
 * ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.

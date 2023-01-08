@@ -264,16 +264,23 @@ int main() {
   time_t prev_timer;
   time_t timer;
   time(&prev_timer);
-  // Initialise the PID controller for the ego-vehicle steering commands
-  /**
-  * TODO (Step 1): create pid (pid_steer) for steer command and initialize values
-  **/
-  // Initialise the PID controller for the ego-vehicle throttle commands
   /**
   * TODO (Step 1): create pid (pid_throttle) for throttle command and initialize values
   **/
-  PID pid_steer = PID();
+  /*** Initialise the PID controller for the ego-vehicle throttle commands ***/
   PID pid_throttle = PID();
+  // CANDO: Set appropriate gain values here
+  // Using the P-controller (proportional-gain only):
+  pid_throttle.init_controller(1.0, 0.0, 0.0, 1.2, -1.2);
+  // Using the PD-controller (proportional-derivative gain only):
+  // pid_throttle.init_controller(1.0, 0.0, 1.0, 1.2, -1.2);
+  // Using the PID-controller (proportional-integral-derivative gain):
+  //pid_throttle.init_controller(1.0, 1.0, 1.0, 1.2, -1.2);
+  /**
+  * TODO (Step 1): create pid (pid_steer) for steering command and initialize values
+  **/
+  /*** Initialise the PID controller for the ego-vehicle steering commands ***/
+  PID pid_steer = PID();
   h.onMessage(
       [
         &pid_steer, 
