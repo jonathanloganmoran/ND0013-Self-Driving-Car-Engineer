@@ -50,7 +50,11 @@
 using json = nlohmann::json;
 #define _USE_MATH_DEFINES
 
-
+/* Helper function to check if the given string contains data.
+ *
+ * @param    s    String to examine for relevant data.
+ * @returns  Substring with data of interest, empty string ("") otherwise. 
+ */
 std::string has_data(
     std::string s
 ) {
@@ -76,6 +80,15 @@ template <typename T> int sgn(
   return (T(0) < val) - (val < T(0));
 }
 
+
+/* Helper function to compute the angle between two points.
+ *
+ * @param  x1   Coordinate of the first 2D point along the x-axis.
+ * @param  y1   Coordinate of the first 2D point along the y-axis.
+ * @param  x2   Coordinate of the second 2D point along the x-axis.
+ * @param  y2   Coordinate of the second 2D point along the y-axis.
+ * @returns     Angle between the two points.
+ */
 double angle_between_points(
     double x1, 
     double y1, 
@@ -86,6 +99,8 @@ double angle_between_points(
 }
 
 
+/*** Setting the global variables **/
+// Declares and initialises the ego-vehicle behaviour planner module
 BehaviorPlannerFSM behavior_planner(
     P_LOOKAHEAD_TIME, 
     P_LOOKAHEAD_MIN, 
@@ -97,19 +112,43 @@ BehaviorPlannerFSM behavior_planner(
     P_MAX_ACCEL, 
     P_STOP_LINE_BUFFER
 );
-
-
-// Decalre and initialized the Motion Planner and all its class requirements
+// Declares and initialises the ego-vehicle motion planner module
 MotionPlanner motion_planner(
     P_NUM_PATHS, 
     P_GOAL_OFFSET, 
     P_ERR_TOLERANCE
 );
-
+// Sets the global obstacles flag to `false` (no obstacles at current position)
 bool have_obst = false;
+// Initialise the vector of obstacle states
 std::vector<State> obstacles;
 
 
+/* Updates the ego-vehicle trajectory.
+ *
+ * The trajectory is updated by interfacing with the behaviour and
+ * motion planning modules in the `behavior_planner_FSM` and `motion_planner`
+ * files, respectively. A state transition is computed in the behaviour module
+ * for the given ego-vehicle state (position / orientation angle), which is
+ * then used to compute the goal-offset trajectories as polynomial spirals in
+ * the motion planner and velocity profile generator modules.
+ * 
+ * The best trajectory from the generated goal-offset trajectories is selected
+ * and its corresponding waypoints are used to update the ego-vehicle.
+ *
+ * @param  x_points       Ego-vehicle trajectory coordinates along the x-axis.
+ * @param  y_points       Ego-vehicle trajectory coordinates along the y-axis.
+ * @param  v_points       Ego-vehicle trajectory velocity (m/s) values.
+ * @param  yaw            Ego-vehicle trajectory yaw angle / heading.
+ * @param  velocity       Current velocity (m/s) of the ego-vehicle.
+ * @param  goal           Current goal-state of the ego-vehicle.
+ * @param  is_junction    Junction state flag, `true` if at junction.
+ * @param  tl_state       Traffic light state variable.
+ * @param  spirals_x      Polynomial spiral coordinates along the x-axis.
+ * @param  spirals_y      Polynomial spiral coordinates along the y-axis.
+ * @param  spirals_v      Polynomial spiral velocity (m/s) values.
+ * @param  best_spirals   Vector of indices of the best polynomial spirals.
+ */
 void path_planner(
     std::vector<double>& x_points, 
     std::vector<double>& y_points, 
@@ -259,6 +298,17 @@ std::size_t get_closest_point_idx(
 }
 
 
+/* Creates the set of obstacles from the given coordinate vectors.
+ *
+ * A new `State` instance is created and initialised for every point in the
+ * given coordinate vectors. Each new obstacle `State` is appended to the
+ * `obstacles` vector and the global `obst_flag` is then set to `true`.
+ *
+ * @param  x_points   Coordinates of the obstacles along the x-axis.
+ * @param  y_points   Coordinates of the obstacles along the y-axis.
+ * @param  obstacles  Vector to update with obstacle `State` instances.
+ * @param  obst_flag  Gloabl flag to update, is `true` when obstacles present.
+ */
 void set_obst(
     std::vector<double> x_points, 
     std::vector<double> y_points, 
@@ -275,6 +325,22 @@ void set_obst(
 }
 
 
+/* Runs the motion / trajectory planning (P4.1) and the
+ * control / trajectory tracking (P5.1) modules.
+ * 
+ * The ego-vehicle state is updated relative to the response of the
+ * PID controller, which is implemented for both steering and throttle
+ * commands. The error between the current- and intended trajectory is
+ * computed on each time-step and used to update the PID controller.
+ * 
+ * The output steering / throttle comamnds are saved to the respective
+ * text files, which are later used to plot the performance of the controller
+ * using the `plot_pid.py` script.
+ *
+ * Lastly, the actuation commands are issued to the ego-vehicle via the
+ * `uWebSockets` library. These commands and any obstacles are rendered in
+ * the CARLA Simulator environment in a separate process.
+ */
 int main() {
   std::cout << "Starting server" << "\n";
   uWS::Hub h;
@@ -353,21 +419,23 @@ int main() {
       // Create file to save throttle values from PID controller
       fstream file_throttle;
       file_throttle.open("throttle_pid_data.txt");
-      // Get the trajectory data
+      /*** Fetching the trajectory and current waypoint data ***/
       std::vector<double> x_points = data["traj_x"];
       std::vector<double> y_points = data["traj_y"];
       std::vector<double> v_points = data["traj_v"];
-      double yaw = data["yaw"];
-      double velocity = data["velocity"];
-      double sim_time = data["time"];
       double waypoint_x = data["waypoint_x"];
       double waypoint_y = data["waypoint_y"];
       double waypoint_t = data["waypoint_t"];
       bool is_junction = data["waypoint_j"];
-      std::string tl_state = data["tl_state"];
+      /*** Fetching the ego-vehicle state data ***/
       double x_position = data["location_x"];
       double y_position = data["location_y"];
       double z_position = data["location_z"];
+      double yaw = data["yaw"];
+      double velocity = data["velocity"];
+      /*** Fetching the environment state data ***/
+      double sim_time = data["time"];
+      std::string tl_state = data["tl_state"];
       if (!have_obst) {
         std::vector<double> x_obst = data["obst_x"];
         std::vector<double> y_obst = data["obst_y"];
