@@ -50,6 +50,31 @@
 using json = nlohmann::json;
 #define _USE_MATH_DEFINES
 
+/*** Setting the global variables **/
+// Declares and initialises the ego-vehicle behaviour planner module
+BehaviorPlannerFSM behavior_planner(
+    P_LOOKAHEAD_TIME, 
+    P_LOOKAHEAD_MIN, 
+    P_LOOKAHEAD_MAX, 
+    P_SPEED_LIMIT,
+    P_STOP_THRESHOLD_SPEED, 
+    P_REQ_STOPPED_TIME, 
+    P_REACTION_TIME,
+    P_MAX_ACCEL, 
+    P_STOP_LINE_BUFFER
+);
+// Declares and initialises the ego-vehicle motion planner module
+MotionPlanner motion_planner(
+    P_NUM_PATHS, 
+    P_GOAL_OFFSET, 
+    P_ERR_TOLERANCE
+);
+// Sets the global obstacles flag to `false` (no obstacles at current position)
+bool have_obst = false;
+// Initialise the vector of obstacle states
+std::vector<State> obstacles;
+
+
 /* Helper function to check if the given string contains data.
  *
  * @param    s    String to examine for relevant data.
@@ -74,10 +99,65 @@ std::string has_data(
 }
 
 
-template <typename T> int sgn(
-    T val
+/* Creates the set of obstacles from the given coordinate vectors.
+ *
+ * A new `State` instance is created and initialised for every point in the
+ * given coordinate vectors. Each new obstacle `State` is appended to the
+ * `obstacles` vector and the global `obst_flag` is then set to `true`.
+ *
+ * @param  x_points   Coordinates of the obstacles along the x-axis.
+ * @param  y_points   Coordinates of the obstacles along the y-axis.
+ * @param  obstacles  Vector to update with obstacle `State` instances.
+ * @param  obst_flag  Gloabl flag to update, is `true` when obstacles present.
+ */
+void set_obst(
+    std::vector<double> x_points, 
+    std::vector<double> y_points, 
+    std::vector<State>& obstacles, 
+    bool& obst_flag
 ) {
-  return (T(0) < val) - (val < T(0));
+	for (int i = 0; i < x_points.size(); i++) {
+		State obstacle;
+		obstacle.location.x = x_points[i];
+		obstacle.location.y = y_points[i];
+		obstacles.push_back(obstacle);
+	}
+	obst_flag = true;
+}
+
+
+/* Returns the index of the point in vector closest to the given coordinates. 
+ *
+ * @param    point_x      Coordinate of the reference point along the x-axis. 
+ * @param    point_y      Coordinate of the reference point along the y-axis.
+ * @param    points_x     Set of x-coordinates to compute the distance to.
+ * @param    points_y     Set of y-coordinates to compute the distance to.
+ * @returns  closest_idx  Index of point in vector closest to the coordinates. 
+ */
+std::size_t get_closest_point_idx(
+    double point_x,
+    double point_y,
+    std::vector<double> points_x,
+    std::vector<double> points_y
+) {
+  // Index of closest found point 
+  std::size_t closest_idx = 0;
+  // Distance to point
+  double dist_min = std::numeric_limits<double>::infinity();
+  // Find closest point in vector
+  for (std::size_t i = 0; i < points_x.size(); ++i) {
+    double dist = std::pow(
+        (std::pow((point_x - points_x[i]), 2)
+         + std::pow((point_y - points_y[i]), 2)
+        ),
+        0.5
+    );
+    if (dist < dist_min) {
+      dist_min = dist;
+      closest_idx = i;
+    }
+  }
+  return closest_idx;
 }
 
 
@@ -99,29 +179,11 @@ double angle_between_points(
 }
 
 
-/*** Setting the global variables **/
-// Declares and initialises the ego-vehicle behaviour planner module
-BehaviorPlannerFSM behavior_planner(
-    P_LOOKAHEAD_TIME, 
-    P_LOOKAHEAD_MIN, 
-    P_LOOKAHEAD_MAX, 
-    P_SPEED_LIMIT,
-    P_STOP_THRESHOLD_SPEED, 
-    P_REQ_STOPPED_TIME, 
-    P_REACTION_TIME,
-    P_MAX_ACCEL, 
-    P_STOP_LINE_BUFFER
-);
-// Declares and initialises the ego-vehicle motion planner module
-MotionPlanner motion_planner(
-    P_NUM_PATHS, 
-    P_GOAL_OFFSET, 
-    P_ERR_TOLERANCE
-);
-// Sets the global obstacles flag to `false` (no obstacles at current position)
-bool have_obst = false;
-// Initialise the vector of obstacle states
-std::vector<State> obstacles;
+template <typename T> int sgn(
+    T val
+) {
+  return (T(0) < val) - (val < T(0));
+}
 
 
 /* Updates the ego-vehicle trajectory.
@@ -263,67 +325,6 @@ void path_planner(
   }
 }
 
-/* Returns the index of the point in vector closest to the given coordinates. 
- *
- * @param    point_x      Coordinate of the reference point along the x-axis. 
- * @param    point_y      Coordinate of the reference point along the y-axis.
- * @param    points_x     Set of x-coordinates to compute the distance to.
- * @param    points_y     Set of y-coordinates to compute the distance to.
- * @returns  closest_idx  Index of point in vector closest to the coordinates. 
- */
-std::size_t get_closest_point_idx(
-    double point_x,
-    double point_y,
-    std::vector<double> points_x,
-    std::vector<double> points_y
-) {
-  // Index of closest found point 
-  std::size_t closest_idx = 0;
-  // Distance to point
-  double dist_min = std::numeric_limits<double>::infinity();
-  // Find closest point in vector
-  for (std::size_t i = 0; i < points_x.size(); ++i) {
-    double dist = std::pow(
-        (std::pow((point_x - points_x[i]), 2)
-         + std::pow((point_y - points_y[i]), 2)
-        ),
-        0.5
-    );
-    if (dist < dist_min) {
-      dist_min = dist;
-      closest_idx = i;
-    }
-  }
-  return closest_idx;
-}
-
-
-/* Creates the set of obstacles from the given coordinate vectors.
- *
- * A new `State` instance is created and initialised for every point in the
- * given coordinate vectors. Each new obstacle `State` is appended to the
- * `obstacles` vector and the global `obst_flag` is then set to `true`.
- *
- * @param  x_points   Coordinates of the obstacles along the x-axis.
- * @param  y_points   Coordinates of the obstacles along the y-axis.
- * @param  obstacles  Vector to update with obstacle `State` instances.
- * @param  obst_flag  Gloabl flag to update, is `true` when obstacles present.
- */
-void set_obst(
-    std::vector<double> x_points, 
-    std::vector<double> y_points, 
-    std::vector<State>& obstacles, 
-    bool& obst_flag
-) {
-	for (int i = 0; i < x_points.size(); i++) {
-		State obstacle;
-		obstacle.location.x = x_points[i];
-		obstacle.location.y = y_points[i];
-		obstacles.push_back(obstacle);
-	}
-	obst_flag = true;
-}
-
 
 /* Runs the motion / trajectory planning (P4.1) and the
  * control / trajectory tracking (P5.1) modules.
@@ -364,9 +365,6 @@ int main() {
   time_t prev_timer;
   time_t timer;
   time(&prev_timer);
-  /**
-  * TODO (Step 1): create pid (pid_throttle) for throttle command and initialize values
-  **/
   /*** Initialise the PID controller for the ego-vehicle throttle commands ***/
   PID pid_throttle = PID();
   // CANDO: Set appropriate gain values here
@@ -379,9 +377,6 @@ int main() {
   // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
   // pid_throttle.init_controller(1.0, 1.0, 1.0, 1.0, -1.0);
   pid_throttle.init_controller(0.5, 0.001, 0.1, 1.0, -1.0);
-  /**
-  * TODO (Step 1): create pid (pid_steer) for steering command and initialize values
-  **/
   /*** Initialise the PID controller for the ego-vehicle steering commands ***/
   PID pid_steer = PID();
   // CANDO: Set appropriate gain values here
