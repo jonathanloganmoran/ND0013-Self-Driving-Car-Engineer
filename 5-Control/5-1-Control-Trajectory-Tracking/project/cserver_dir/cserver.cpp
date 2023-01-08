@@ -12,7 +12,7 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
-string hasData(string s) {
+string has_data(string s) {
 	auto found_null = s.find("null");
   	auto b1 = s.find_first_of("{");
   	auto b2 = s.find_first_of("}");
@@ -66,7 +66,7 @@ int main ()
 	h.onMessage([](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode)
 	{
 		
-      	auto s = hasData(data);
+      	auto s = has_data(data);
       	//cout << "string " << s << endl;
 
       	if (s != "") {
