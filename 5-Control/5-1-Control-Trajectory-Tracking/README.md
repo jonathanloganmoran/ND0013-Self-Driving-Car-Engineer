@@ -23,13 +23,14 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
 
 ### Use PID Controller for Vehicle Steering ([`main.cpp`]())
-* ⬜️ Implement the PID controller for steering commands;
-* ⬜️ Initialise the PID controller parameters with experimental gain values;
+* ✅ Implement the PID controller for steering commands;
+* ✅ Initialise the PID controller parameters with experimental gain values;
 * ⬜️ Examine the performance of the PID controller using the experimental gain values;
 * ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
 
-### Evaluate the PID Controller Efficiency ([`plot_pid.py`]())
-* ⬜️ Save the throttle / steering command values into text files;
+### Evaluate the PID Controller Efficiency ([`main.cpp`]() and [`plot_pid.py`]())
+* ✅ Save the throttle / steering command values into text files;
+* ✅ Compute the steering / throttle error; 
 * ⬜️ Plot the saved values using the `plot_pid.py` script and comment on the results;
 * ⬜️ Answer the discussion questions in `answers.txt`.
 
