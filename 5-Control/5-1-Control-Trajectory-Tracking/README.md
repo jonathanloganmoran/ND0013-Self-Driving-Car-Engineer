@@ -10,7 +10,11 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
 ## Tasks
 ### Build the PID Controller ([`pid_controller.cpp`]())
-* ⬜️ TODO.
+* ✅ Initialise a PID controller instance;
+* ✅ Compute the PID error terms for the given cross-track error;
+* ✅ Evaluate the expression of the PID controller using the updated terms;
+* ✅ Create a function to update / modify the time-delta variable. 
+
 ### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
 * ⬜️ TODO.
 ### Use PID Controller for Vehicle Steering ([`main.cpp`]())

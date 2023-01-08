@@ -64,7 +64,7 @@ class PID {
       double lim_max_output, 
       double lim_min_output
   );
-  // Updates the objective function error given the cross-track error
+  // Updates the PID controller error terms given the cross-track error
   void update_error(
       double cte
   );
