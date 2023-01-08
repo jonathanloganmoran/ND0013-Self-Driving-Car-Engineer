@@ -284,6 +284,16 @@ int main() {
   **/
   /*** Initialise the PID controller for the ego-vehicle steering commands ***/
   PID pid_steer = PID();
+  // CANDO: Set appropriate gain values here
+  // CASE 1 : Using the P-controller (proportional-gain only):
+  // pid_steer.init_controller(1.0, 0.0, 0.0, 1.2, -1.2);
+  // pid_steer.init_controller(0.5, 0.0, 0.0, 1.2, -1.2);
+  // CASE 2 : Using the PD-controller (proportional-derivative gain only):
+  // pid_steer.init_controller(1.0, 0.0, 1.0, 1.2, -1.2);
+  // pid_steer.init_controller(0.5, 0.001, 0.0, 1.2, -1.2);
+  // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
+  // pid_steer.init_controller(1.0, 1.0, 1.0, 1.2, -1.2);
+  pid_steer.init_controller(0.5, 0.001, 0.1, 1.2, -1.2;
   h.onMessage(
       [
         &pid_steer, 
