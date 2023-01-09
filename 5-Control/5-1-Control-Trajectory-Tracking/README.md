@@ -19,7 +19,7 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 ### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
 * ✅ Implement the PID controller for throttle commands;
 * ✅ Initialise the PID controller parameters with experimental gain values;
-* ⬜️ Examine the performance of the PID controller using the experimental gain values;
+* ✅ Examine the performance of the PID controller using the experimental gain values;
 * ⬜️ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
 
 ### Use PID Controller for Vehicle Steering ([`main.cpp`]())
