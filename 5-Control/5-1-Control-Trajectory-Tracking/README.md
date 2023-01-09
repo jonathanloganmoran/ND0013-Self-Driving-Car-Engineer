@@ -58,6 +58,8 @@ In this project we use the C++ and Python APIs for the [CARLA Simulator](http://
 
 Results of the PID controller using manually-tuned gain values. Note that the movement of the ego-vehicle is quite erratic. This is due in part to non-optimal configuration of the gain values of the PID controller. This is due to the [limitation of the PID controller](https://en.wikipedia.org/wiki/PID_controller#Limitations_of_PID_control), which is a [model-free](https://en.wikipedia.org/wiki/Model-free_\(reinforcement_learning\)) algorithm whose parameters are tuned explicitly via [trial-and-error](https://en.wikipedia.org/wiki/Trial_and_error).
 
+**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`]() file.
+
 #### Prerequisites
 In order to make use of this project, you must have the following dependencies installed —
 
@@ -197,6 +199,9 @@ root@foobar:/../#  pip3 install pandas
 ```
 
 #### Discussion
+
+**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`]() file.
+
 After running the [`plot_pid.py`]() script, you will get plots that look similar to the following:
 
 <img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Steering.png" height="85%" width="85%" alt="The error rate of the steering response of the PID controller using the final manually-tuned gain values.">
@@ -237,4 +242,7 @@ References
 
 
 Helpful resources:
-* [`nd013-c6-control-starter` by @udacity | GitHub](https://github.com/udacity/nd013-c6-control-starter/tree/master).
+* [`nd013-c6-control-starter` by @udacity | GitHub](https://github.com/udacity/nd013-c6-control-starter/tree/master);
+* [The PID controller | Wikiwand](https://www.wikiwand.com/en/PID_controller#);
+* [Controlling Self Driving Cars by Aerospace Controls Laboratory at MIT | YouTube](https://www.youtube.com/watch?v=4Y7zG48uHRo) — very useful for understanding visually how each term of the PID controller effects the vehicle trajectory;
+* [How do the PID parameters (Kp, Ki, and Kd) affect the heading of a differential driving robot when they are increased individually? | Robotics StackExchange](https://robotics.stackexchange.com/questions/9786/how-do-the-pid-parameters-kp-ki-and-kd-affect-the-heading-of-a-differential#:~:text=An%20increase%20in%20the%20integral,sum%20of%20error%20over%20time.).
