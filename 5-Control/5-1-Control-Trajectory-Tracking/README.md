@@ -31,8 +31,8 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 ### Evaluate the PID Controller Efficiency ([`main.cpp`]() and [`plot_pid.py`]())
 * ✅ Save the throttle / steering command values into text files;
 * ✅ Compute the steering / throttle error; 
-* ✅ Plot the saved values using the `plot_pid.py` script and comment on the results;
-* ⬜️ Answer the discussion questions in `answers.txt`.
+* ✅ Plot the saved values using the [`plot_pid.py`]() script and comment on the results;
+* ✅ Answer the discussion questions in [`2023-01-08-Project-Submission-Q&A.md`]().
 
 ## 1. Introduction
 In this project we use the skills we have gained in [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control) to implement the [PID controller](https://en.wikipedia.org/wiki/PID_controller) and apply it to the vehicle trajectory tracking task. Given a trajectory and an array of locations, we will design and code a PID controller to actuate the vehicle (i.e., apply steer and throttle commands). Using the [CARLA Simulator](http://carla.org) environment, we will test the PID Controller on the ego-vehicle and evaluate its real-world performance using a simulation environment with perturbations.
