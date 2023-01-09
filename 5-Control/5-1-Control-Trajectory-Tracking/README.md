@@ -9,30 +9,30 @@ From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 * Evaluate the controller performance and efficiency and plot the results.
 
 ## Tasks
-### Build the PID Controller ([`pid_controller.cpp`]())
+### Build the PID Controller ([`pid_controller.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/pid_controller.cpp))
 * ✅ Initialise a PID controller instance;
 * ✅ Compute the PID error terms for the given cross-track error;
 * ✅ Evaluate the expression of the PID controller using the updated terms;
 * ✅ Create a function to update / modify the time-delta variable.
 * ✅ Compile and run the programme to verify the ego-vehicle is stationary (controller not yet implemented).
 
-### Use PID Controller for Vehicle Throttle ([`main.cpp`]())
+### Use PID Controller for Vehicle Throttle ([`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp))
 * ✅ Implement the PID controller for throttle commands;
 * ✅ Initialise the PID controller parameters with experimental gain values;
 * ✅ Examine the performance of the PID controller using the experimental gain values;
 * ✅ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
 
-### Use PID Controller for Vehicle Steering ([`main.cpp`]())
+### Use PID Controller for Vehicle Steering ([`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp))
 * ✅ Implement the PID controller for steering commands;
 * ✅ Initialise the PID controller parameters with experimental gain values;
 * ✅ Examine the performance of the PID controller using the experimental gain values;
 * ✅ Tune the PID controller parameters (gain values) until trajectory is satisfactory.
 
-### Evaluate the PID Controller Efficiency ([`main.cpp`]() and [`plot_pid.py`]())
+### Evaluate the PID Controller Efficiency ([`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp) and [`plot_pid.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/plot_pid.py))
 * ✅ Save the throttle / steering command values into text files;
 * ✅ Compute the steering / throttle error; 
-* ✅ Plot the saved values using the [`plot_pid.py`]() script and comment on the results;
-* ✅ Answer the discussion questions in [`2023-01-08-Project-Submission-Q&A.md`]().
+* ✅ Plot the saved values using the [`plot_pid.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/plot_pid.py) script and comment on the results;
+* ✅ Answer the discussion questions in [`2023-01-08-Project-Submission-Q&A.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/2023-01-08-Project-Submission-Q%26A.md).
 
 ## 1. Introduction
 In this project we use the skills we have gained in [Course 5: Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control) to implement the [PID controller](https://en.wikipedia.org/wiki/PID_controller) and apply it to the vehicle trajectory tracking task. Given a trajectory and an array of locations, we will design and code a PID controller to actuate the vehicle (i.e., apply steer and throttle commands). Using the [CARLA Simulator](http://carla.org) environment, we will test the PID Controller on the ego-vehicle and evaluate its real-world performance using a simulation environment with perturbations.
@@ -58,7 +58,7 @@ In this project we use the C++ and Python APIs for the [CARLA Simulator](http://
 
 Results of the PID controller using manually-tuned gain values. Note that the movement of the ego-vehicle is quite erratic. This is due in part to non-optimal configuration of the gain values of the PID controller. This is due to the [limitation of the PID controller](https://en.wikipedia.org/wiki/PID_controller#Limitations_of_PID_control), which is a [model-free](https://en.wikipedia.org/wiki/Model-free_\(reinforcement_learning\)) algorithm whose parameters are tuned explicitly via [trial-and-error](https://en.wikipedia.org/wiki/Trial_and_error).
 
-**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`]() file.
+**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/2023-01-08-Project-Submission-Q%26A.md) file.
 
 #### Prerequisites
 In order to make use of this project, you must have the following dependencies installed —
@@ -70,8 +70,8 @@ Python:
 * [Numpy](https://numpy.org/);
 * [Pygame](https://www.pygame.org/);
 * [Gtest](https://pypi.org/project/gtest/);
-* [Matplotlib]();
-* [Pandas]().
+* [Matplotlib](https://matplotlib.org/stable/tutorials/introductory/pyplot.html);
+* [Pandas](https://pandas.pydata.org/docs/getting_started/index.html).
 
 C++:
 * [C++14](https://en.wikipedia.org/wiki/C%2B%2B14)
@@ -84,7 +84,7 @@ C++:
 
 ##### Setting the hyperparameters
 
-In this project we focus on the parameters of the PID controller. That is, the proportional-, integral-, and derivative-gain values used in the PID controller expression. These values can be manually configured in the [`main.cpp`]() file on lines 370-400. Note that the input arguments to the `init_controller` function from the [`pid_controller.cpp`]() file have the following ordering:
+In this project we focus on the parameters of the PID controller. That is, the proportional-, integral-, and derivative-gain values used in the PID controller expression. These values can be manually configured in the [`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp) file on lines 370-400. Note that the input arguments to the `init_controller` function from the [`pid_controller.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/pid_controller.cpp) file have the following ordering:
 
 ```cpp
 PID::init_controller(k_p, k_i, k_d, lim_max_output, lim_min_output)
@@ -115,7 +115,7 @@ Lastly, we suggest to the reader a manual tuning method which is described as fo
 
 
 ##### Creating the executable
-In order to create the executable for this project, we follow similar instructions to that of [Project 4.1](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making). In summary, you must build the project from inside the `pid_controller` sub-folder using `CMAKE` as follows:
+In order to create the executable for this project, we follow similar instructions to that of [Project 4.1](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making). In summary, you must build the project from inside the [`pid_controller`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller) sub-folder using `CMAKE` as follows:
 
 ```console
 root@foobar:/../5-1-Control-Trajectory-Tracking/project/pid_controller/#  cmake .
@@ -127,18 +127,18 @@ Note that if using the Udacity Workspace VM, read and perform the following step
 ##### Configuring the runtime environment
 If you are using the Udacity VM, i.e., the project workspace running Ubuntu 18.04.5 LTS, you will need to perform several extra steps before the executable can be run.
 
-First, make sure you have all project dependencies installed. Note that you must have the following C++ dependencies stored within the `project/pid_controller` folder:
-* [`eigen-3.3.7`]();
-* [`libcarla-install`]();
-* [`rpclib`]().
+First, make sure you have all project dependencies installed. Note that you must have the following C++ dependencies stored within the [`project/pid_controller`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller) folder:
+* [`eigen-3.3.7`](https://github.com/udacity/nd013-c6-control-starter/tree/master/project/pid_controller/eigen-3.3.7);
+* [`libcarla-install`](https://github.com/udacity/nd013-c6-control-starter/tree/master/project/pid_controller/libcarla-install);
+* [`rpclib`](https://github.com/udacity/nd013-c6-control-starter/tree/master/project/pid_controller/rpclib).
 
-These can be obtained directly from the [`nd013-c6-control-starter` repository](https://github.com/udacity/nd013-c6-control-starter). However, the `rpclib` files should be cloned directly from their source repository using the following commands while inside the `project/pid_controller` sub-directory:
+These can be obtained directly from the [`nd013-c6-control-starter` repository](https://github.com/udacity/nd013-c6-control-starter). However, the `rpclib` files should be cloned directly from their source repository using the following commands while inside the [`project/pid_controller`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller) sub-directory:
 
 ```console
 root@foobar:/../5-1-Control-Trajectory-Tracking/project/pid_controller/#  git clone https://github.com/rpclib/rpclib.git
 ```
 
-Once the dependencies are installed and placed inside the `pid_controller` sub-directory, run the `CMAKE` script in the previous section to create the executable.
+Once the dependencies are installed and placed inside the [`pid_controller`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller) sub-directory, run the `CMAKE` script in the previous section to create the executable.
 
 The second step you must perform is needed to successfully run the CARLA Simulator. In a new console window, set the superuser from `root` to `student` with the following command:
 
@@ -161,7 +161,7 @@ student@foobar:/opt/carla-simulator/#  SDL_VIDEODRIVER=offscreen ./CarlaUE4.sh -
 
 This should set the CARLA Simulator to headless mode and prevent the programme from incurring any `Segmentation fault (core dumped)` errors.
 
-The third step is to, in a new console window (could be the first you ran the project `CMAKE` script in — just make sure you've got the `root` user active), run the [`install-ubuntu.sh`]() build script. This will install the necessary dependencies for CARLA specific to the Ubuntu LTS runtime environment:
+The third step is to, in a new console window (could be the first you ran the project `CMAKE` script in — just make sure you've got the `root` user active), run the [`install-ubuntu.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/install-ubuntu.sh) build script. This will install the necessary dependencies for CARLA specific to the Ubuntu LTS runtime environment:
 
 ```console
 root@foobar:/opt/web-terminal/5-1-Control-Trajectory-Tracking/project/#  ./install-ubuntu.sh
@@ -178,14 +178,14 @@ root@foobar:/opt/web-terminal/5-1-Control-Trajectory-Tracking/project/#  ./run_m
 
 Make sure you also have the CARLA configuration script running simultaneously in a separate window (see above).
 
-Depending on the environment you are running, you may experience a silet fail error. On the Udacity VM, this is expected. Simply use the CTRL + C keys to halt the programme. Run the programme script again using the same commands above. The programme should open in a new Pygame window without further problems. If you continue to experience issues running the [`run_main_pid.sh`]() script, make sure that the script is being run from a _separate_ console window with the `root` superuser **and** that you have the CARLA headless script executing under the `student` superuser in another console window (see _Configuring the runtime environment_ for instructions).
+Depending on the environment you are running, you may experience a silet fail error. On the Udacity VM, this is expected. Simply use the CTRL + C keys to halt the programme. Run the programme script again using the same commands above. The programme should open in a new Pygame window without further problems. If you continue to experience issues running the [`run_main_pid.sh`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/run_main_pid.sh) script, make sure that the script is being run from a _separate_ console window with the `root` superuser **and** that you have the CARLA headless script executing under the `student` superuser in another console window (see _Configuring the runtime environment_ for instructions).
 
-With the programme running successfully, you should observe the ego-vehicle manoeuvre automatically about the environment. Depending on the PID controller parameter values you set in [`main.cpp`](), the ego-vehicle may avoid collisions and execute steer / throttle commands which allow it to arrive succesfully at the stop sign near the end of the two-lane road. In experiment runs where this is **not** the case, you will quickly notice the ego-vehicle exhibit erratic steering / throttle actuations, and possibly experience one or more collisions with its surroundings, as such:
+With the programme running successfully, you should observe the ego-vehicle manoeuvre automatically about the environment. Depending on the PID controller parameter values you set in [`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp), the ego-vehicle may avoid collisions and execute steer / throttle commands which allow it to arrive succesfully at the stop sign near the end of the two-lane road. In experiment runs where this is **not** the case, you will quickly notice the ego-vehicle exhibit erratic steering / throttle actuations, and possibly experience one or more collisions with its surroundings, as such:
 
 <img src="figures/2023-01-08-Figure-1-PID-Controller-with-Manual-Tuning-Collisions.gif" width="85%" height="85%" alt="PID Controller with poorly configured PID gain values. Results in a collision with one or more obstacles in the environment.">
 
 ##### Evaluating the controller results
-In order to evaluate the performance of the controller, run the provided [`plot_pid.py`]() script after the PID controller is configured and the desired vehicle goal trajectory (i.e., the stop sign) has been reached. This Python script will plot the steering- and throttle-error over time using the values recorded in [`main.cpp`]().
+In order to evaluate the performance of the controller, run the provided [`plot_pid.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/plot_pid.py) script after the PID controller is configured and the desired vehicle goal trajectory (i.e., the stop sign) has been reached. This Python script will plot the steering- and throttle-error over time using the values recorded in [`main.cpp`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/pid_controller/main.cpp).
 
 ```console
 root@foobar:/opt/web-terminal/5-1-Control-Trajectory-Tracking/project/pid_controller/#  python3 plot_pid.py
@@ -200,9 +200,9 @@ root@foobar:/../#  pip3 install pandas
 
 #### Discussion
 
-**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`]() file.
+**NOTE**: A full discussion addressing project questions Q1 through Q5 is available in the [`2023-01-08-Project-Submission-Q&A.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/2023-01-08-Project-Submission-Q%26A.md) file.
 
-After running the [`plot_pid.py`]() script, you will get plots that look similar to the following:
+After running the [`plot_pid.py`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/project/plot_pid.py) script, you will get plots that look similar to the following:
 
 <img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Steering.png" height="85%" width="85%" alt="The error rate of the steering response of the PID controller using the final manually-tuned gain values.">
 

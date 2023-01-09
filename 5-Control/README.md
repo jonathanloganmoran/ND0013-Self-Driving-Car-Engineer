@@ -17,7 +17,7 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 
 ### Projects
-* ⬜️ [Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles]().
+* ✅ [Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking).
 
 
 ### Exercises
@@ -61,4 +61,4 @@ Lectures:
 
 ### Other resources
 Companion code:
-* N/A.
+* [`nd013-c6-control-starter` by @udacity | GitHub](https://github.com/udacity/nd013-c6-control-starter/tree/master);

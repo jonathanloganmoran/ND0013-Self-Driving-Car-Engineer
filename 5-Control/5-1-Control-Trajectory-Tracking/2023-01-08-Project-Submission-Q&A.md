@@ -8,7 +8,7 @@ From the Self-Driving Car Engineer Nanodegree offered by Udacity.
 
 ## Discussion Q&A
 ### Q1. Add the plots to your report and explain them (describe what you see).
-A1. See `figures/` folder for results and `README.md` for discussion of results (summarised below):
+A1. See [`figures/`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking/figures) folder for results and [`README.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/README.md) for discussion of results (summarised below):
 
 > <img src="figures/2023-01-08-Figure-2-PID-Controller-with-Manual-Tuning-No-Collisions.gif" width="85%" height="85%" alt="PID Controller with acceptable PID gain values. Results in a tracked trajectory which avoid collisions and manoeuvres the vehicle to the stop sign at the end of the two-lane road.">
 >
@@ -30,7 +30,7 @@ A1. See `figures/` folder for results and `README.md` for discussion of results 
 > It is also important to note that in the final set of parameter values I have chosen to modify the maximum and minimum output thresholds (the last two arguments to `PID::init_controller, i.e., `lim_max_output`, `lim_min_output`) for the steering output response. This was an intentional decision first made by Marcus Vinicius which I discovered in [this Knowledge forum post](https://knowledge.udacity.com/questions/941131). The logic behind this decision is that the initial steering threshold value of $\pm1.2 \mathrm{rad} \sim \pm68.75^{\circ}$ was not represented of a true vehicle's turning radius. Given the information presented in the paper by Berjoza 2008, we settled on a more reasonable steering threshold value of $\pm0.6 \sim \pm 35^{\circ}$ which approximates the lower-end of the suggested range of the theoretical turning radius of a vehicle — $[\pm35^{\circ}, \pm45^{\circ}]$. After making this change we observe a lower collision rate, and, after tuning the parameters to their final experimental values, we observe a collision-free trajectory.
 
 ### Q2. What is the effect of the PID according to the plots? How does each part of the PID effect the control command?
-A2. See commentary from the `README.md` (reproduced below):
+A2. See commentary from the [`README.md`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/5-Control/5-1-Control-Trajectory-Tracking/README.md) (reproduced below):
 
 > <img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Steering.png" height="85%" width="85%" alt="The error rate of the steering response of the PID controller using the final manually-tuned gain values.">
 >
@@ -91,7 +91,7 @@ Pros:
 
 Cons:
 * PID controller does not take into account the system / process (i.e., environment / vehicle dynamics);
-* PID controller parameter tuning is less of a science than an art (i.e., discovering optimal values is more or less done through [trial-and-error]());
+* PID controller parameter tuning is less of a science than an art (i.e., discovering optimal values is more or less done through [trial-and-error](https://en.wikipedia.org/wiki/Trial_and_error));
 * PID controller cannot easily handle complex scenarios (e.g., sharp right-turns);
 * PID controllers are limited in their ability to handle high-dimensional nonlinear equations of motion that are characteristic of self-driving vehicles.
 

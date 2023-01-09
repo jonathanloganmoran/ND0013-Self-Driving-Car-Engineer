@@ -20,7 +20,7 @@ This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree pro
 * ✅ [Project 2.2: Multi-Target Tracking with Extended Kalman filter (MTT with EKF)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/2-2-Multi-Target-Tracking-with-EKF)
 * ✅ [Project 3.1: Scan Matching Localization](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/3-Localization/3-1-Scan-Matching-Localization)
 * ✅ [Project 4.1: Motion Planning and Decision Making for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-1-Motion-Planning-Decision-Making)
-* ⬜️ [Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles] — in progress! 🎉
+* ✅ [Project 5.1: Control and Trajectory Tracking for Autonomous Vehicles](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/5-1-Control-Trajectory-Tracking)
 
 
 ### Contents
@@ -80,4 +80,5 @@ Lectures:
 Companion code:
 * [Object Detection in an Urban Environment | Starter code](https://github.com/udacity/nd013-c1-vision-starter);
 * [Sensor Fusion and Tracking | Starter code](https://github.com/udacity/nd013-c2-fusion-starter);
-* [SFND Lidar Obstacle Detection | Starter code](https://github.com/udacity/SFND_Lidar_Obstacle_Detection).
+* [SFND Lidar Obstacle Detection | Starter code](https://github.com/udacity/SFND_Lidar_Obstacle_Detection);
+* [Control and Trajectory Tracking | Starter code](https://github.com/udacity/nd013-c6-control-starter/tree/master).
