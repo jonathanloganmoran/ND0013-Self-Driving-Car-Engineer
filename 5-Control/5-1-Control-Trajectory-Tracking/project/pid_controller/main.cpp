@@ -377,7 +377,9 @@ int main() {
   // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
   // pid_throttle.init_controller(1.0, 1.0, 1.0, 1.0, -1.0);
   // pid_throttle.init_controller(0.5, 0.001, 0.1, 1.0, -1.0);
-  pid_throttle.init_controller(0.21, 0.0009, 0.1, 1.0, -1.0);
+  // pid_throttle.init_controller(0.21, 0.0009, 0.1, 1.0, -1.0);
+  // Final run (I achieved the best results, i.e., no collisions, with these)
+  pid_throttle.init_controller(0.21, 0.008, 0.080, 1.0, -1.0);
   /*** Initialise the PID controller for the ego-vehicle steering commands ***/
   PID pid_steer = PID();
   // CANDO: Set appropriate gain values here
@@ -390,7 +392,11 @@ int main() {
   // CASE 3 : Using the PID-controller (proportional-integral-derivative gain):
   // pid_steer.init_controller(1.0, 1.0, 1.0, 1.2, -1.2);
   // pid_steer.init_controller(0.5, 0.001, 0.1, 1.2, -1.2);
-  pid_steer.init_controller(0.29, 0.0011, 0.3, 1.2, -1.2);
+  // pid_steer.init_controller(0.29, 0.0011, 0.3, 1.2, -1.2);
+  // Final run (I achieved the best results, i.e., no collisions, with these)
+  // NOTE: the min / max steering angle has been reduced to $\pm 0.6 rad$ in
+  // order to clip steering commands to feasible values (approx. 35 degrees)
+  pid_steer.init_controller(0.3, 0.0025, 0.17, 0.60, -0.60);
   h.onMessage(
       [
         &pid_steer, 
