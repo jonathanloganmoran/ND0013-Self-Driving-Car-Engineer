@@ -54,7 +54,7 @@ In this project we use the C++ and Python APIs for the [CARLA Simulator](http://
 
 #### Results
 
-<img src="figures/2023-01-08-Figure-2-PID-Controller-with-Manual-Tuning-No-Collisions.png" width="85%" height="85%" alt="PID Controller with acceptable PID gain values. Results in a tracked trajectory which avoid collisions and manoeuvres the vehicle to the stop sign at the end of the two-lane road.">
+<img src="figures/2023-01-08-Figure-2-PID-Controller-with-Manual-Tuning-No-Collisions.gif" width="85%" height="85%" alt="PID Controller with acceptable PID gain values. Results in a tracked trajectory which avoid collisions and manoeuvres the vehicle to the stop sign at the end of the two-lane road.">
 
 Results of the PID controller using manually-tuned gain values. Note that the movement of the ego-vehicle is quite erratic. This is due in part to non-optimal configuration of the gain values of the PID controller. This is due to the [limitation of the PID controller](https://en.wikipedia.org/wiki/PID_controller#Limitations_of_PID_control), which is a [model-free](https://en.wikipedia.org/wiki/Model-free_\(reinforcement_learning\)) algorithm whose parameters are tuned explicitly via [trial-and-error](https://en.wikipedia.org/wiki/Trial_and_error).
 
@@ -199,14 +199,14 @@ root@foobar:/../#  pip3 install pandas
 #### Discussion
 After running the [`plot_pid.py`]() script, you will get plots that look similar to the following:
 
-<img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Steering.png" height="75%" width="75%" alt="The error rate of the steering response of the PID controller using the final manually-tuned gain values.">
+<img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Steering.png" height="85%" width="85%" alt="The error rate of the steering response of the PID controller using the final manually-tuned gain values.">
 
 In the first figure — the plot of the steering command data, the ego-vehicle exhibits sharp steering commands. This is observed in the plot as the sharp oscillations (high peaks / low valleys). Demonstrated is the back-and-forth (erratic) steering of the ego-vehicle performed in order to avoid collision. The PID controller design choice to clip the minimum / maximum steering allowed from $\pm 1.2 \mathrm{rad}$ to $\pm 0.6 \mathrm{rad}$ does not seem to prevent extremely sharp transitions between left- and right- angled steering commands, nor does it seem like the final controller gain values selected here help minimise the overall steering error experienced by the ego-vehicle with respect to the reference trajectory (the "best" polynomial spiral selected for each manoeuvre). 
 
 The choice of PID controller gain values for the steering response were selected such that the largest penalty (weight) was given to the proportional- term, since we wanted to keep the ego-vehicle roughly aligned with the curvature of the intended goal trajectory in order to avoid obstacles in the expected amount of time. The next-largest weight was given to the derivative- term in order to keep the steering response values within reasonable limits (i.e., penalise extremely abrupt changes to the steering angle). The least amount of weight was given to the integral- term, which attempts to penalise the cumulative uncorrected steering error in a consecutive time interval. This might be one area of weakness in the current implementation, where a large cumulative error w.r.t. steering might be apparent. In other words, if we decided to penalise larger cumulative errors more, we might notice a smoother steering trajectory, rather than just penalising large derivative errors (i.e., sharp changes in steering angle).        
 
 
-<img src="figures/2023-01-08-Figure-3-PID-Controller-Error-Plot-Throttle.png" height="75%" width="75%" alt="The error rate of the throttle response of the PID controller using the final manually-tuned gain values.">
+<img src="figures/2023-01-08-Figure-4-PID-Controller-Error-Plot-Throttle.png" height="85%" width="85%" alt="The error rate of the throttle response of the PID controller using the final manually-tuned gain values.">
 
 In the second figure — the plot of the throttle command data, the controller error seems to stabilise to a [steady-state](https://en.wikipedia.org/wiki/Steady_state) after the initial [rise time](https://en.wikipedia.org/wiki/Rise_time) (as indicated by the sharp oscillations in the early part of the experiment run). While the controller maintains a relatively large magnitude of error throughout the experiment run, we notice a gradual downward trend of the throttle error (blue) towards the centre-line (red) at $y = 0$. This leads one to believe from the overall throttle response that this PID controller is more effectively tuned than the steering angle controller above.
 
