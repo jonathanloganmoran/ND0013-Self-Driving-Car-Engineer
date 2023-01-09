@@ -1,9 +1,10 @@
-# Project 4.1: Control and Trajectory Tracking
+# Project 5.1: Control and Trajectory Tracking
 ## Project Submission Q&A
 #### By Jonathan L. Moran (jonathan.moran107@gmail.com)
+From the Self-Driving Car Engineer Nanodegree offered by Udacity.
 
-## Introduction
-_Answer the following discussion questions Q1-Q5._
+## Objectivs
+* Answer the following discussion questions Q1-Q5.
 
 ## Discussion Q&A
 ### Q1. Add the plots to your report and explain them (describe what you see).
