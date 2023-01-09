@@ -379,7 +379,7 @@ int main() {
   // pid_throttle.init_controller(0.5, 0.001, 0.1, 1.0, -1.0);
   // pid_throttle.init_controller(0.21, 0.0009, 0.1, 1.0, -1.0);
   // Final run (I achieved the best results, i.e., no collisions, with these)
-  pid_throttle.init_controller(0.21, 0.008, 0.080, 1.0, -1.0);
+  pid_throttle.init_controller(0.21, 0.0006, 0.080, 1.0, -1.0);
   /*** Initialise the PID controller for the ego-vehicle steering commands ***/
   PID pid_steer = PID();
   // CANDO: Set appropriate gain values here
