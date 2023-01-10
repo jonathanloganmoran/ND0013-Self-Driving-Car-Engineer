@@ -2,8 +2,6 @@
 ## Udacity ND0013 | 2022 Cohort
 This is the repository for the ND0013 - Self-Driving Car Engineer Nanodegree programme given at Udacity during the 2022 session.
 
-**Note**: Work in this repository is ongoing and has not yet been finalised.
-
 
 ### Courses
 * ✅ [Course 1: Computer Vision](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/1-Computer-Vision)
