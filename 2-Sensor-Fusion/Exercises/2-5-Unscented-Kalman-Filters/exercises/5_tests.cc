@@ -80,4 +80,6 @@ void test_augmented_sigma_points() {
 int main() {
   // Exercise 2.5.1: Generating Sigma Points
   // test_generate_sigma_points();
+  // Exercise 5.2.2: Generating Augmented Sigma Points
+  test_augmented_sigma_points();
 }
