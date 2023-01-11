@@ -229,16 +229,6 @@ void UKF::SigmaPointPrediction(
   /**
    * Student part begin
    */
-  // Get the state vector values from the augmented sigma point matrix
-  VectorXd x_k(n_x, 1);
-  // The first `n_x` values in the first column of augmented sigma point matrix
-  x_k << Xsig_aug.col(1).head(n_x);
-  // Get the mean-values of the noise processes
-  VectorXd nu_mean(n_a, 1);
-  // Last `n_a` values in the first column of the augmented sigma point matrix
-  nu_mean << Xsig_aug.col(1).tail(n_a);
-  // Predict the sigma points by evaulting the process model function
-  // Avoid a divide-by-zero error
   // Write the predicted sigma points into right-column of the output matrix
   for (int i = 0; i < n_sigma_points; i++) {
     // Get the state vector values from the augmented sigma point matrix
