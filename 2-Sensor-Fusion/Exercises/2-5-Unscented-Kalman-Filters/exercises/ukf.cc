@@ -82,10 +82,6 @@ void UKF::GenerateSigmaPoints(
   // Compute the square-root term for the sigma point vector
   // The square-root of the spreading term
   double spreading_factor = std::sqrt(lambda - n_x);
-  // Set the next block to be the vector w.r.t. `A` of positive magnitude
-  //Xsig.col(all, Eigen::MatrixXd::seq(1, n_x + 1)) = x + A * spreading_factor;
-  // Set the last block to be the vector w.r.t. `A` of negative magnitude
-  //Xsig.col(all, Eigen::MatrixXd::seq(nx + 2, 2*n_x + 1)) = x - A * spreading_factor;
   // Loop through the columns of `A` to compute columns of `Xsig`
   for (int i = 0; i < n_x + 1; i++) {
     // First, update the lower column terms
