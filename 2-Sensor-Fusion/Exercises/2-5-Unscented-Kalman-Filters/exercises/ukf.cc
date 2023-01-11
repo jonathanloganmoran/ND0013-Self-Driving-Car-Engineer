@@ -229,9 +229,70 @@ void UKF::SigmaPointPrediction(
   /**
    * Student part begin
    */
+  // Get the state vector values from the augmented sigma point matrix
+  VectorXd x_k(n_x, 1);
+  // The first `n_x` values in the first column of augmented sigma point matrix
+  x_k << Xsig_aug.col(1).head(n_x);
+  // Get the mean-values of the noise processes
+  VectorXd nu_mean(n_a, 1);
+  // Last `n_a` values in the first column of the augmented sigma point matrix
+  nu_mean << Xsig_aug.col(1).tail(n_a);
   // Predict the sigma points by evaulting the process model function
   // Avoid a divide-by-zero error
   // Write the predicted sigma points into right-column of the output matrix
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Get the state vector values from the augmented sigma point matrix
+    VectorXd x_k(n_x, 1);
+    x_k << Xsig_aug.col(i).head(n_x);
+    // Get the mean-values of the noise processes
+    VectorXd nu_mean_i(n_a, 1);
+    // i.e., the last `n_a` values in state vector
+    nu_mean_k << Xsig_aug.col(i).tail(n_a);
+    // Predict the sigma point by forming the process model in state-space
+    // The vector for the state transition equation 
+    VectorXd Fx_i(n_x, 1);
+    // The vector of the process noise values evaluated w.r.t. time
+    VectorXd nu_k(n_x, 1);
+    // Get the variables w.r.t. this sigma point
+    double v_k = x_k(3, 1);
+    double yaw_k = x_k(4, 1);
+    double yawd_k = x_k(5, 1);
+    // Avoid a divide-by-zero for $\dot{\psi}$ (the yaw angle rate-of-change)
+    if (yaw_d == 0) {
+      // Compute the state-space form of the process model
+      Fx_i << 
+        v_k * std::cos(yaw_k) * delta_t,
+        v_k * std::sin(yaw_k) * delta_t,
+        yawd_k * delta_t,
+        0;
+      // Compute the contribution of the process noise
+      nu_k <<
+        0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(1, 1),
+        0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(1, 1),
+        delta_t * nu_mean_k(1, 1),
+        0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
+        delta_t * nu_mean_k(2, 1);
+      // Store the sigma point prediction into the predicted state matrix
+      Xsig_pred.col(i) << x_k + Fx_i + nu_k;
+      continue;
+    }
+    // Compute the state-space form of the process model
+    Fx_k <<
+      (v_k / yawd_k) * (std::sin(yaw_k + yawd_k * delta_t - std::sin(yaw_k)),
+      (v_k / yawd_k) * (-std::cos(yaw_k + yawd_k * delta_t) + std::cos(yaw_k)),
+      0,
+      yawd_k * delta_t,
+      0;
+    // Compute the contribution of the process noise
+    nu_k << 
+      0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(1, 1),
+      0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(1, 1),
+      delta_t * nu_mean_k(1, 1),
+      0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
+      delta_t * nu_mean_k(2, 1);
+    // Store the sigma point prediction into the predicted state matrix
+    Xsig_pred.col(i) << x_k + Fx_i + nu_k;
+    }
   /**
    * Student part end
    */
