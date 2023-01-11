@@ -41,7 +41,7 @@ void UKF::InitFilter() {}
  * of the sigma points. The output matrix $\mathcal{x}_{k\vert k} stores
  * the resulting sigma points (`Xsig_out` in the function).
  * 
- * @param  Xsig_out   Column-vector matrix to store resulting sigma points.
+ * @param  Xsig_out   Matrix to store resulting sigma points.
  */
 void UKF::GenerateSigmaPoints(
     Eigen::MatrixXd* Xsig_out
@@ -105,6 +105,8 @@ void UKF::GenerateSigmaPoints(
  * is assumed to be zero. The augmented sigma points are computed with a design
  * parameter $\lambda$ which governs how "close" an augmented sigma point is to
  * the mean $x_{a, k\vert k}$.
+ *
+ * @param  Xsig_out   Matrix to store resulting augmented sigma points. 
  */
 void UKF::AugmentedSigmaPoints(
     MatrixXd* Xsig_out
@@ -192,51 +194,49 @@ void UKF::AugmentedSigmaPoints(
 }
 
 
-/**
- * Programming assignment functions: 
+/* Constructs the predicted state estimation from the augmented sigma points.
+ *
+ * Implements the CTRV model (i.e., Constant Turn Rate and Velocity Magnitude).
+ * Here, the augmented sigma points are used to evaluate the non-linear process
+ * model function $\mathcal{f}$ w.r.t. $\Delta t$.
+ * 
+ * The resulting point predictions are written to the right-column of the
+ * predicted state estimation matrix (ensuring divide-by-zero does not occur).
+ * 
+ * @param  Xsig_out   Matrix to store the resulting sigma point predictions.
  */
-
-void UKF::SigmaPointPrediction(MatrixXd* Xsig_out) {
-
-  // set state dimension
+void UKF::SigmaPointPrediction(
+    MatrixXd* Xsig_out
+) {
+  /*** Set the state variables (values should match across functions) ***/
+  // Set the state dimension
   int n_x = 5;
-
-  // set augmented dimension
-  int n_aug = 7;
-
-  // create example sigma point matrix
-  MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
-  Xsig_aug <<
-    5.7441,  5.85768,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.63052,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,
-      1.38,  1.34566,  1.52806,     1.38,     1.38,     1.38,     1.38,     1.38,   1.41434,  1.23194,     1.38,     1.38,     1.38,     1.38,     1.38,
-    2.2049,  2.28414,  2.24557,  2.29582,   2.2049,   2.2049,   2.2049,   2.2049,   2.12566,  2.16423,  2.11398,   2.2049,   2.2049,   2.2049,   2.2049,
-    0.5015,  0.44339, 0.631886, 0.516923, 0.595227,   0.5015,   0.5015,   0.5015,   0.55961, 0.371114, 0.486077, 0.407773,   0.5015,   0.5015,   0.5015,
-    0.3528, 0.299973, 0.462123, 0.376339,  0.48417, 0.418721,   0.3528,   0.3528,  0.405627, 0.243477, 0.329261,  0.22143, 0.286879,   0.3528,   0.3528,
-         0,        0,        0,        0,        0,        0,  0.34641,        0,         0,        0,        0,        0,        0, -0.34641,        0,
-         0,        0,        0,        0,        0,        0,        0,  0.34641,         0,        0,        0,        0,        0,        0, -0.34641;
-
-  // create matrix with predicted sigma points as columns
-  MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-
-  double delta_t = 0.1; // time diff in sec
-
+  // Set the augmented dimension
+  // Process noise $\nu_{k}$ has the terms $\nu_{a, k}$, $\nu_{\ddot{psi},k}$
+  int n_a = 2;
+  // The process noise dimension added to the state vector dimension
+  int n_aug = n_x + n_a;
+  // Calculate the number of sigma points to compute
+  int n_sigma_points = 2 * n_aug + 1;
+  // Get the augmented sigma point matrix
+  Eigen::MatrixXd Xsig_aug(n_aug, n_sigma_points);
+  AugmentedSigmaPoints(&Xsig_aug);
+  /*** Compute the predicted sigma point matrix ***/
+  // Instantiate the predicted sigma point matrix
+  MatrixXd Xsig_pred = MatrixXd(n_x, n_sigma_points);
+  // Define the delta-time variable (s)
+  double delta_t = 0.1;
   /**
    * Student part begin
    */
-
-  // predict sigma points
-
-  // avoid division by zero
-
-  // write predicted sigma points into right column
-
+  // Predict the sigma points by evaulting the process model function
+  // Avoid a divide-by-zero error
+  // Write the predicted sigma points into right-column of the output matrix
   /**
    * Student part end
    */
-
-  // print result
-  std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
-
-  // write result
+  // Print the resulting predicted sigma point matrix
+  std::cout << "Xsig_pred = " << "\n" << Xsig_pred << "\n";
+  // Write the result to the output matrix
   *Xsig_out = Xsig_pred;
 }
