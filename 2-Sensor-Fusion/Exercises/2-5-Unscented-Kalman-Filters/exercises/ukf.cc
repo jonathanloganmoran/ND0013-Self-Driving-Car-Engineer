@@ -91,7 +91,7 @@ void UKF::GenerateSigmaPoints(
     Xsig.col(i + n_x + 1) = x - spreading_factor * A.col(i);
   }
   // Print the resulting matrix
-  // std::cout << "Xsig = " << std::endl << Xsig << "\n";
+  // std::cout << "Xsig = " << "\n" << Xsig << "\n";
   // Write the result to the output matrix
   *Xsig_out = Xsig;
 }
