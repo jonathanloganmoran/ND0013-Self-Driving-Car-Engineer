@@ -69,10 +69,7 @@ void UKF::GenerateSigmaPoints(
       -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
       -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
   // Create the sigma point matrix
-  Eigen::MatrixXd Xsig = Eigen::MatrixXd(
-      n_x, 
-      n_sigma_points
-  );
+  Eigen::MatrixXd Xsig = Eigen::MatrixXd(n_x, n_sigma_points);
   // Calculate square-root of matrix `P`
   // `A` is the lower-triangular matrix of the Cholesky decomposition
   Eigen::MatrixXd A = P.llt().matrixL();
@@ -81,9 +78,9 @@ void UKF::GenerateSigmaPoints(
   Xsig.col(0) = x;
   // Compute the square-root term for the sigma point vector
   // The square-root of the spreading term
-  double spreading_factor = std::sqrt(lambda - n_x);
+  double spreading_factor = std::sqrt(lambda + n_x);
   // Loop through the columns of `A` to compute columns of `Xsig`
-  for (int i = 0; i < n_x + 1; i++) {
+  for (int i = 0; i < n_x; i++) {
     // First, update the lower column terms
     // Note the array indexing of `A` starting at 0
     Xsig.col(i + 1) = x + spreading_factor * A.col(i);
@@ -112,22 +109,33 @@ void UKF::GenerateSigmaPoints(
 void UKF::AugmentedSigmaPoints(
     MatrixXd* Xsig_out
 ) {
-
   // Set the state dimension
   int n_x = 5;
   // Set the augmented dimension
-  // The process noise dimension added to the state vector dimension
   // Process noise $\nu_{k}$ has the terms $\nu_{a, k}$, $\nu_{\ddot{psi},k}$
-  int n_aug = n_x + 2;
+  int n_a = 2;
+  // The process noise dimension added to the state vector dimension
+  int n_aug = n_x + n_a;
+  // Calculate the number of sigma points to compute
+  int n_sigma_points = 2 * n_aug + 1;
   // Process noise standard deviation of longitudinal acceleration (m/s^2)
   double std_a = 0.2;
   // Process noise standard deviation of yaw acceleration (rad/s^2)
   double std_yawdd = 0.2;
   // Define the spreading parameter
   double lambda = 3 - n_aug;
+  // Define the independent noise processes
+  // Here, both are zero-mean white-noise processes
+  std::normal_distribution<double> nu_a(0.0, std_a);
+  std::normal_distribution<double> nu_yawdd(0.0, std_yawdd);
+  // Define the noise processes vector and set its values
+  std::default_random_engine rand_gen;
+  VectorXd nu_k(n_a, 1);
+  nu_k << nu_a(rand_gen),
+          nu_yawdd(rand_gen);
   // Set the state vector values
   // Here, this is assumed to be the mean of the posterior state estimation
-  VectorXd x = VectorXd(n_x);
+  Eigen::VectorXd x = Eigen::VectorXd(n_x);
   x << 5.7441,
        1.3800,
        2.2049,
@@ -135,30 +143,51 @@ void UKF::AugmentedSigmaPoints(
        0.3528;
   // Set the covariance matrix values
   // Here, this is assumed to be the covariance of posterior state estimation
-  MatrixXd P = MatrixXd(n_x, n_x);
+  Eigen::MatrixXd P = Eigen::MatrixXd(n_x, n_x);
   P << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
       -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
        0.0030,    0.0011,    0.0054,    0.0007,    0.0008,
       -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
       -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
   // Instantiate the augmented mean vector
-  VectorXd x_aug = VectorXd(7);
+  Eigen::VectorXd x_aug = Eigen::VectorXd(n_aug);
   // Instantiate the augmented state covariance matrix
-  MatrixXd P_aug = MatrixXd(7, 7);
+  Eigen::MatrixXd P_aug = Eigen::MatrixXd(n_aug, n_aug);
   // Instantiate the augmented sigma point matrix
-  MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
-  /**
-   * Student part begin
-   */
+  Eigen::MatrixXd Xsig_aug = Eigen::MatrixXd(n_aug, n_sigma_points);
   // Compute the values of the augmented mean state vector
+  // Set the first `n_x` values to be the state vector 
+  x_aug.head(n_x) = x;
+  // Set the last values to be the process noise vector
+  for (int i = 0; i < n_a; i++) {
+    x_aug.row(n_x + i) = nu_k.row(i);
+  }
   // Compute the values of the augmented covariance matrix
-  // Compute the square-root of the augmented covariance matrix
-  // Compute the augmented sigma points
-  /**
-   * Student part end
-   */
-  // Print the resulting augemnted sigma point matrix
-  std::cout << "Xsig_aug = " << "\n" << Xsig_aug << "\n";
+  Eigen::MatrixXd Q(n_a, n_a);
+  Q << std_a * std_a, 0.0,
+       0.0, std_yawdd * std_yawdd;
+  P_aug.fill(0.0);
+  P_aug.topLeftCorner(n_x, n_x) = P;
+  P_aug.bottomRightCorner(n_a, n_a) = Q;
+  // Calcualte the square-root of the augmented covariance matrix
+  // `A` is the lower-triangular matrix of the Cholesky decomposition
+  Eigen::MatrixXd A_aug = P_aug.llt().matrixL();
+  /*** Calculate the set of augmented sigma points ***/
+  // Set the first column as mean of augmented posterior state estimation
+  Xsig_aug.col(0) = x_aug;
+  // Compute the square-root term for the augmented sigma point vector
+  // The square-root of the spreading term
+  double spreading_factor = std::sqrt(lambda + n_aug);
+  // Loop through the columns of `A` to compute columns of `Xsig_aug`
+  for (int i = 0; i < n_aug; i++) {
+    // First, update the lower column terms
+    // Note the array indexing of `A` starting at 0
+    Xsig_aug.col(i + 1) = x_aug + spreading_factor * A_aug.col(i);
+    // Then, update the upper column terms
+    Xsig_aug.col(i + n_aug + 1) = x_aug - spreading_factor * A_aug.col(i);
+  }
+  // Print the resulting augmented sigma point matrix
+  // std::cout << "Xsig_aug = " << "\n" << Xsig_aug << "\n";
   // Write the result to the output matrix
-  *Xsig_out = Xsig_aug;
+  *Xsig_out = Xsig_aug; 
 }
