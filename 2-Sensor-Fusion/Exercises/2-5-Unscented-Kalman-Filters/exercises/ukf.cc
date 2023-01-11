@@ -158,10 +158,9 @@ void UKF::AugmentedSigmaPoints(
   // Compute the values of the augmented mean state vector
   // Set the first `n_x` values to be the state vector 
   x_aug.head(n_x) = x;
-  // Set the last values to be the process noise vector
-  for (int i = 0; i < n_a; i++) {
-    x_aug.row(n_x + i) = nu_k.row(i);
-  }
+  // Set the last values to be the mean of the noise processes
+  x_aug.row(5) << nu_a.mean();
+  x_aug.row(6) << nu_yawdd.mean(); 
   // Compute the values of the augmented covariance matrix
   Eigen::MatrixXd Q(n_a, n_a);
   Q << std_a * std_a, 0.0,
