@@ -38,7 +38,8 @@ void UKF::InitFilter() {}
  * governs how "close" a sigma point is to the mean $x_{k\vert k}$, i.e.,
  * the posterior state estimation from the previous time-step. The posterior
  * covariance matrix $\mathrm{P}_{k\vert k}$ is also used in the calculation
- * of the sigma points.
+ * of the sigma points. The output matrix $\mathcal{x}_{k\vert k} stores
+ * the resulting sigma points (`Xsig_out` in the function).
  * 
  * @param  Xsig_out   Column-vector matrix to store resulting sigma points.
  */
@@ -46,17 +47,22 @@ void UKF::GenerateSigmaPoints(
     Eigen::MatrixXd* Xsig_out
 ) {
   // Set the state dimension
+  // Here we assume this to be `5` in order to compute the solution directly
   int n_x = 5;
+  // Calculate the number of sigma points to compute
+  int n_sigma_points = 2 * n_x + 1; 
   // Define the spreading parameter
   double lambda = 3 - n_x;
-  // Set the state vector
+  // Set the state vector values
+  // Here, this is assumed to be the mean of the posterior state estimation
   Eigen::VectorXd x = Eigen::VectorXd(n_x);
   x << 5.7441,
        1.3800,
        2.2049,
        0.5015,
        0.3528;
-  // Set the covariance matrix
+  // Set the covariance matrix values
+  // Here, this is assumed to be the covariance of posterior state estimation
   Eigen::MatrixXd P = Eigen::MatrixXd(n_x, n_x);
   P << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
       -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
@@ -66,19 +72,22 @@ void UKF::GenerateSigmaPoints(
   // Create the sigma point matrix
   Eigen::MatrixXd Xsig = Eigen::MatrixXd(
       n_x, 
-      2 * n_x + 1
+      n_sigma_points
   );
   // Calculate square-root of matrix `P`
+  // `A` is the lower-triangular matrix of the Cholesky decomposition
   Eigen::MatrixXd A = P.llt().matrixL();
-  /**
-   * Student part begin
-   */
-  // your code goes here 
-  // Calculate the set of sigma points
-  // Set the sigma points as the columns of matrix `Xsig`
-  /**
-   * Student part end
-   */
+  /*** Calculate the set of sigma points ***/
+  // Set the first column to the mean of the posterior state estimation
+  Xsig.col(0) = x;
+  // Compute the square-root term for the sigma point vector
+  // The square-root of the spreading factor-covariance product
+  double spreading_factor_term = std::sqrt(lambda - n_x) * std::sqrt(A);
+  // Set the next block to be the vector w.r.t. `A` of positive magnitude
+  Xsig.col(all, seq(1, n_x + 1)) = x + spreading_factor_term;
+  // Set the last block to be the vector w.r.t. `A` of negative magnitude
+  Xsig.col(all, seq(nx + 2, 2*n_x + 1)) = x - spreading_factor_term;
+  }
   // Print the resulting matrix
   // std::cout << "Xsig = " << std::endl << Xsig << "\n";
   // Write the result to the output matrix
