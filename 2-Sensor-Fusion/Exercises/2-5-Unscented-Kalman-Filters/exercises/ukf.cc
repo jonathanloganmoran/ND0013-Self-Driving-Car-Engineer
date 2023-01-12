@@ -697,19 +697,13 @@ void UKF::UpdateState(
   }
   // Calculate the Kalman gain matrix `K`
   Eigen::MatrixXd K = Tc * S.inverse();
-  // Update the state mean
-  for (int i = 0; i < n_sigma_points; i++) {
-    // Compute the difference in measurement states
-    // i.e., the predicted and received measurement state
-    Eigen::VectorXd z_diff = Radar::NormaliseHeading(z_pred - z);
-    // Perform the state update
-    x += K * z_diff;
-  }
-  // Update the covariance matrix
-  for (int i = 0; i < n_sigma_points; i++) {
-    // Perform the covariance matrix update
-    P -= K * S * K.transpose();
-  }
+  // Compute the residual
+  // i.e., the difference in predicted and received measurement state
+  Eigen::VectorXd z_diff = Radar::NormaliseHeading(z_pred - z);
+  // Perform the state mean update
+  x += K * z_diff;
+  // Perform the covariance matrix update
+  P -= K * S * K.transpose();
   /**
    * Student part end
    */
