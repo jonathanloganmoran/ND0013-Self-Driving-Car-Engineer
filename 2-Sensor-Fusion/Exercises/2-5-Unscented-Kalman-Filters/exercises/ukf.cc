@@ -483,7 +483,7 @@ void UKF::PredictRadarMeasurement(
     // Compute the radial distance $\rho$ transformation
     Zsig_i(0) = std::sqrt(std::pow(x_i(0), 2) + std::pow(x_i(1), 2));
     // Compute the angle $\phi$ transformation
-    Zsig_i(1) = std::arctan(x_i(1) / x_i(0));
+    Zsig_i(1) = std::atan(x_i(1) / x_i(0));
     // Compute the radial velocity $\dot{\rho}$ transformation
     Zsig_i(2) = (
       x_i(0) * std::cos(x_i(3)) * x_i(2) + x_i(1) * std::sin(x_i(3)) * x_i(2)
