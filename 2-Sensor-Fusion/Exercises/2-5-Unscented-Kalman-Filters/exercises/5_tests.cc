@@ -24,7 +24,7 @@ void test_generate_sigma_points() {
   // Create the Unscented Kalman Filter (UKF) instance
   UKF ukf;
   // Instantiate the sigma point output matrix 
-  MatrixXd Xsig = MatrixXd(5, 11);
+  Eigen::MatrixXd Xsig(5, 11);
   // Generate the sigma points and write them to the output matrix
   ukf.GenerateSigmaPoints(&Xsig);
   // Print the resulting values
@@ -57,7 +57,7 @@ void test_augmented_sigma_points() {
   // Instantiate the augmented sigma point matrix
   // Note: We assume the dimension of the augmented state vector to be `7`,
   // and the number of augmented sigma points generated to be `15`
-  Eigen::MatrixXd(7, 15) Xsig_aug;
+  Eigen::MatrixXd Xsig_aug(7, 15);
   // Generate the augmented sigma points and write them to the output matrix
   ukf.AugmentedSigmaPoints(&Xsig_aug);
   // Print the resulting values
@@ -97,15 +97,15 @@ void test_sigma_point_prediction() {
   // Instantiate the augmented sigma point matrix
   // Assumed to be of dimensions (`n_aug`, `n_sigma_points`) which match the
   // values set within the `AugmentSigmaPoints` function
-  Eigen::MatrixXd(7, 15) Xsig_aug;
+  Eigen::MatrixXd Xsig_aug(7, 15);
   // Generate the augmented sigma points and write them to the output matrix
-  ukf.AugmentSigmaPoints(&Xsig_aug)
+  ukf.AugmentedSigmaPoints(&Xsig_aug);
   // Instantiate the output predicted sigma point matrix
   // Assumed to be of dimensions (`n_x`, `n_sigma_points`) which match the
   // values set within the `SigmaPointPrediction` function 
-  Eigen::MatrixXd(5, 15) Xsig_pred;
+  Eigen::MatrixXd Xsig_pred(5, 15);
   // Compute the output matrix (the predicted state matrix)
-  SigmaPointPrediction(&Xsig_pred);
+  ukf.SigmaPointPrediction(&Xsig_pred);
   // Print the resulting values
   std::cout << "Xsig_pred = " << Xsig_pred << "\n";
   // Perform the L2 norm to compare the two matrices
@@ -127,5 +127,5 @@ int main() {
   // Exercise 2.5.1: Generating Sigma Points
   // test_generate_sigma_points();
   // Exercise 2.5.2: Generating Augmented Sigma Points
-  test_augmented_sigma_points();
+  //test_augmented_sigma_points();
 }

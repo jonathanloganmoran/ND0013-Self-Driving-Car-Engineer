@@ -206,7 +206,7 @@ void UKF::AugmentedSigmaPoints(
  * @param  Xsig_out   Matrix to store the resulting sigma point predictions.
  */
 void UKF::SigmaPointPrediction(
-    MatrixXd* Xsig_out
+    Eigen::MatrixXd* Xsig_out
 ) {
   /*** Set the state variables (values should match across functions) ***/
   // Set the state dimension
@@ -288,7 +288,7 @@ void UKF::SigmaPointPrediction(
    * Student part end
    */
   // Print the resulting predicted sigma point matrix
-  std::cout << "Xsig_pred = " << "\n" << Xsig_pred << "\n";
+  // std::cout << "Xsig_pred = " << "\n" << Xsig_pred << "\n";
   // Write the result to the output matrix
   *Xsig_out = Xsig_pred;
 }
