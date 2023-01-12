@@ -218,6 +218,8 @@ void UKF::SigmaPointPrediction(
   int n_aug = n_x + n_a;
   // Calculate the number of sigma points to compute
   int n_sigma_points = 2 * n_aug + 1;
+  // Define the spreading parameter
+  double lambda = 3 - n_aug;
   // Get the augmented sigma point matrix
   Eigen::MatrixXd Xsig_aug(n_aug, n_sigma_points);
   AugmentedSigmaPoints(&Xsig_aug);
@@ -325,7 +327,7 @@ void UKF::PredictMeanAndCovariance(
   SigmaPointPrediction(&Xsig_pred);
   /*** Compute the predicted mean state and covariance matrix ***/
   // Instantiate the weight vector
-  Eigen::VectorXd weights(n_sigma_points, 1);
+  Eigen::VectorXd w(n_sigma_points, 1);
   // Instantiate the predicted mean state vector
   Eigen::VectorXd x(n_x);
   // Instantiate the predicted covariance matrix
@@ -334,8 +336,23 @@ void UKF::PredictMeanAndCovariance(
    * Student part begin
    */
   // Set the weight vector values
-  // Perform the mean state vector prediction
-  // Perform the state covariance matrix prediction
+  // Computing the first value of the weight value
+  w(0) = lambda / (lambda + n_sigma_points);
+  // Computing the rest of the weight values
+  for (int i = 1; i < n_sigma_points; i++) {
+    w(i) = 1.0 / (2.0 * (lambda + n_sigma_points));
+  }
+  // Perform the mean state vector and covariance matrix prediction
+  for (int i = 0;  < n_x; i++) {
+    x(i) = (
+      // Compute the predicted mean state
+      w(i) * Xsig_pred.row(i).sum()
+    );
+    // Compute the predicted covariance matrix
+    P(i) = (
+      w(i) * (Xsig_pred.row(i) - x(i)) * (Xsig_pred.row(i) - x(i)).transpose()
+    );
+  }
   /**
    * Student part end
    */
