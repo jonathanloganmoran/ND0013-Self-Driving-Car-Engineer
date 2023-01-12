@@ -145,22 +145,22 @@ void test_predict_mean_and_covariance() {
   Eigen::MatrixXd P(5, 5);
   // Compute the outputs (the predicted state estimation and covariance matrix)
   ukf.PredictMeanAndCovariance(
-      &x_out,
-      &P_out 
+      &x,
+      &P 
   );
   // Printing the resulting values
-  std::cout << "x_out = " << "\n" << x_out << "\n";
-  std::cout << "P_out = " << "\n" << P_out << "\n";
+  std::cout << "x = " << "\n" << x << "\n";
+  std::cout << "P = " << "\n" << P << "\n";
   // Perform the L2 norm to compare the output values
-  Eigen::VectorXd x_out_expected(n_x, 1);
-  x_out_expected <<
+  Eigen::VectorXd x_expected(5, 1);
+  x_expected <<
     5.93637,
     1.49035,
     2.20528,
     0.536853,
     0.353577;
-  Eigen::MatrixXd P_out_expected(n_x, n_x);
-  P_out_expected <<
+  Eigen::MatrixXd P_expected(5, 5);
+  P_expected <<
     0.00543425, -0.0024053,  0.00341576, -0.00348196, -0.00299378,
    -0.0024053,   0.010845,   0.0014923,   0.00980182,  0.00791091,
     0.00341576,  0.0014923,  0.00580129,  0.000778632, 0.000792973,
@@ -168,10 +168,10 @@ void test_predict_mean_and_covariance() {
    -0.00299378,  0.00791091, 0.000792973, 0.0112491,   0.0126972;
   // Precision (i.e., max allowed magnitude of the outputs' L2 difference)
   double epsilon = 0.001;
-  std::cout << "Result `x_out` matches expected amount by `epsilon = " << epsilon << '`';
-  std::cout << ": " << std::boolalpha << x_out.isApprox(x_out_expected, epsilon) << "\n";
-  std::cout << "Result `P_out` matches expected amount by `epsilon = " << epsilon << '`';
-  std::cout << ": " << std::boolalpha << P_out.isApprox(P_out_expected, epsilon) << "\n";
+  std::cout << "Result `x` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << x.isApprox(x_expected, epsilon) << "\n";
+  std::cout << "Result `P_` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << P.isApprox(P_expected, epsilon) << "\n";
 }
 
 
