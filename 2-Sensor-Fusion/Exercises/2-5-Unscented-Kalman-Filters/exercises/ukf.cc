@@ -355,9 +355,6 @@ void UKF::PredictMeanAndCovariance(
   // Initialise the predicted covariance matrix
   Eigen::MatrixXd P(n_x, n_x);
   P.fill(0.0);
-  /**
-   * Student part begin
-   */
   // Set the weight vector values
   // Computing the first value of the weight value
   w(0) = lambda / (lambda + n_aug);
@@ -378,9 +375,6 @@ void UKF::PredictMeanAndCovariance(
     // Compute the predicted covariance matrix
     P += w(i) * Xsig_pred_diff * Xsig_pred_diff.transpose();
   }
-  /**
-   * Student part end
-   */
   // Print the resulting mean state and covariance matrix predictions
   std::cout << "Predicted state" << "\n";
   std::cout << x << "\n";
