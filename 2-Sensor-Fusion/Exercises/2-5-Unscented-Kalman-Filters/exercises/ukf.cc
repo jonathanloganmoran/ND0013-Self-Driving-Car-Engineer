@@ -495,7 +495,7 @@ void UKF::PredictRadarMeasurement(
   Eigen::VectorXd z_pred(n_z);
   z_pred.fill(0.0);
   // Initialise the measurement covariance matrix S
-  Eigen::MatrixXd S(n_z,n_z);
+  Eigen::MatrixXd S(n_z, n_z);
   S.fill(0.0);
   // Transform the sigma points into the radar measurement space
   for (int i = 0; i < n_sigma_points; i++) {
@@ -679,15 +679,36 @@ void UKF::UpdateState(
   //    0.2187,   // phi in rad
   //    2.0062;   // rho_dot in m/s
   /*** Compute the updated state and covariance (innovation step) ***/
-  // Instantiate the cross-correlation matrix
+  // Initialise the cross-correlation matrix
   Eigen::MatrixXd Tc(n_x, n_z);
+  Tc.fill(0.0);
   /**
    * Student part begin
    */
   // Calculate the cross-correlation matrix
-  // between the sigma points in the state- and measurement spaces
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Compute the difference in the sigma points in state-space
+    Eigen::VectorXd x_diff = SigmaPoints::NormaliseHeading(Xsig_pred.col(i) - x); 
+    // Compute the difference in the sigma points in measurement-space
+    Eigen::VectorXd z_diff = Radar::NormaliseHeading(Zsig.col(i) - z_pred);
+    // Compute the cross-correlation for this sigma point
+    Tc += w(i) * x_diff * z_diff.transpose(); 
+  }
   // Calculate the Kalman gain matrix `K`
-  // Update the state mean and covariance matrix
+  Eigen::MatrixXd K = Tc * S.inverse();
+  // Update the state mean
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Compute the difference in measurement states
+    // i.e., the predicted and received measurement state
+    Eigen::VectorXd z_diff = Radar::NormaliseHeading(z_pred - z);
+    // Perform the state update
+    x += K * z_diff;
+  }
+  // Update the covariance matrix
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Perform the covariance matrix update
+    P -= K * S * K.transpose();
+  }
   /**
    * Student part end
    */
