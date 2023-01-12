@@ -308,7 +308,7 @@ void test_update_state() {
   //  -0.000139448,  0.000617548, -0.000770652,
   //    0.00407016, -0.000770652,    0.0180917;
   /*** Perform the UKF Innovation step ***/
-  ukf.UpdateState(x, P);
+  ukf.UpdateState(&x, &P);
   // Perform the L2 norm to compare the output values
   Eigen::VectorXd x_expected(5, 1);
   x_expected <<
