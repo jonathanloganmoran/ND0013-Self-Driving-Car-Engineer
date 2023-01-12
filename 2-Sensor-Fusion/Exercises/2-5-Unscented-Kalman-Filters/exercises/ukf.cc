@@ -289,6 +289,27 @@ void UKF::SigmaPointPrediction(
   *Xsig_out = Xsig_pred;
 }
 
+/* Normalises the heading angle of the predicted state estimation.
+ *
+ * The input vector is assumed to be the difference between the predicted and
+ * previous state estimation vector, s.t. the fourth row-wise element of the
+ * input vector is the heading angle to normalise in range [-pi, pi].
+ *
+ * @param    Xsig_pred_diff   Vector of difference values between state estimates.
+ * @returns  Normalised vector of the difference between state estimates. 
+ */
+Eigen::VectorXd NormaliseHeading(
+  Eigen::VectorXd Xsig_pred_diff
+) {
+  while (Xsig_pred_diff(3) < -M_PI) {
+    Xsig_pred_diff(3) += 2.0 * M_PI;
+  }
+  while (Xsig_pred_diff(3) > M_PI) {
+    Xsig_pred_diff(3) -= 2.0 * M_PI;
+  }
+  return Xsig_pred_diff;
+}
+
 
 /* Constructs the predicted the mean state estimation and covariance matrix.
  *
@@ -346,8 +367,11 @@ void UKF::PredictMeanAndCovariance(
   for (int i = 0;  < n_sigma_points; i++) {
     // Compute the predicted mean state
     x += w(i) * Xsig_pred.col(i);
+    // Compute the difference between the state estimations
+    // Normalise the resulting heading angle to range [-pi, pi]
+    Eigen::VectorXd Xsig_pred_diff = NormaliseHeading(Xsig_pred.col(i) - x);
     // Compute the predicted covariance matrix
-    P += w(i) * (Xsig_pred.col(i) - x) * (Xsig_pred.col(i) - x).transpose();
+    P += w(i) * Xsig_pred_diff * Xsig_pred_diff.transpose();
   }
   /**
    * Student part end
