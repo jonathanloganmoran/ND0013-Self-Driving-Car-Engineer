@@ -181,5 +181,7 @@ int main() {
   // Exercise 2.5.2: Generating Augmented Sigma Points
   //test_augmented_sigma_points();
   // Exercise 2.5.3: Prediction Step with Sigma Point
-  test_sigma_point_prediction();
+  // test_sigma_point_prediction();
+  // Exercise 2.5.4: Prediction Step with Mean and Covariance
+  test_predict_mean_and_covariance();
 }
