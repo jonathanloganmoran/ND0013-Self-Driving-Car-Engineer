@@ -289,26 +289,53 @@ void UKF::SigmaPointPrediction(
   *Xsig_out = Xsig_pred;
 }
 
+
+namespace SigmaPoints {
 /* Normalises the heading angle of the predicted state estimation.
  *
  * The input vector is assumed to be the difference between the predicted and
  * previous state estimation vector, s.t. the fourth row-wise element of the
  * input vector is the heading angle to normalise in range [-pi, pi].
  *
- * @param    Xsig_pred_diff   Vector of difference values between state estimates.
+ * @param    x_diff   Vector of difference values between state estimates.
  * @returns  Normalised vector of the difference between state estimates. 
  */
 Eigen::VectorXd NormaliseHeading(
-  Eigen::VectorXd Xsig_pred_diff
+  Eigen::VectorXd x_diff
 ) {
-  while (Xsig_pred_diff(3) < -M_PI) {
-    Xsig_pred_diff(3) += 2.0 * M_PI;
+  while (x_diff(3) < -M_PI) {
+    x_diff(3) += 2.0 * M_PI;
   }
-  while (Xsig_pred_diff(3) > M_PI) {
-    Xsig_pred_diff(3) -= 2.0 * M_PI;
+  while (x_diff(3) > M_PI) {
+    x_diff(3) -= 2.0 * M_PI;
   }
-  return Xsig_pred_diff;
+  return x_diff;
 }
+}  // namespace SigmaPoints
+
+
+namespace Radar {
+/* Normalises the heading angle of the radar measurement state estimatation.
+ *
+ * The input vector is assumed to be the radar measurement vector s.t. the
+ * second row-wise element of the input vector is the heading angle to
+ * normalise in range [0, pi].
+ *
+ * @param    z_diff   Vector of difference values between radar measurements.
+ * @returns  Normalised vector of the difference in radar measurements.
+ */
+Eigen::VectorXd NormaliseHeading(
+  Eigen::VectorXd z_diff
+) {
+  while (z_diff(1) < -M_PI) {
+    z_diff(1) += 2.0 * M_PI;
+  }
+  while (z_diff(1) > M_PI) {
+    z_diff(1) -= 2.0 * M_PI;
+  }
+  return z_diff;
+}
+} // namespace Radar
 
 
 /* Constructs the predicted the mean state estimation and covariance matrix.
@@ -372,8 +399,10 @@ void UKF::PredictMeanAndCovariance(
   // Perform the covariance matrix prediction
   for (int i = 0; i < n_sigma_points; i++) {
     // Compute the difference between the state estimations
-    // Then, normalise the resulting heding angle to range [-pi, pi]
-    Eigen::VectorXd Xsig_pred_diff = NormaliseHeading(Xsig_pred.col(i) - x);
+    // Then, normalise the resulting heading angle to range [-pi, pi]
+    Eigen::VectorXd Xsig_pred_diff = (
+      SigmaPoints::NormaliseHeading(Xsig_pred.col(i) - x)
+    );
     // Compute the predicted covariance matrix
     P += w(i) * Xsig_pred_diff * Xsig_pred_diff.transpose();
   }
@@ -465,12 +494,15 @@ void UKF::PredictRadarMeasurement(
   //        0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
   //         0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
   SigmaPointPrediction(&xsig_pred);
-  // Instantiate the sigma point matrix in measurement space
+  // Initialise the sigma point matrix in measurement space
   Eigen::MatrixXd Zsig(n_z, n_sigma_points);
-  // Instantiate the mean predicted measurement vector
+  Zsig.fill(0.0);
+  // Initialise the mean predicted measurement vector
   Eigen::VectorXd z_pred(n_z);
-  // Instantiate the measurement covariance matrix S
+  z_pred.fill(0.0);
+  // Initialise the measurement covariance matrix S
   Eigen::MatrixXd S(n_z,n_z);
+  S.fill(0.0);
   /**
    * Student part begin
    */
@@ -499,7 +531,10 @@ void UKF::PredictRadarMeasurement(
   // Calculate the covariance matrix `S` of the innovation / correction step
   for (int i = 0; i < n_sigma_points; i++) {
     // Compute the difference in measurement mean state estimations
-    Eigen::VectorXd Zsig_meas_diff = Zsig.col(i) - z_pred; 
+    // Then, normalise the resulting heading angle estimate to range [-pi, pi]
+    Eigen::VectorXd Zsig_meas_diff = (
+      Radar::NormaliseHeading(Zsig.col(i) - z_pred)
+    );
     // Compute the `i`th covariance matrix $S_{k+1\vert k}$ step
     // NOTE: Here we add the additive contribution of the measurement noise
     // as defined by covariance matrix $\mathrm{R}$
