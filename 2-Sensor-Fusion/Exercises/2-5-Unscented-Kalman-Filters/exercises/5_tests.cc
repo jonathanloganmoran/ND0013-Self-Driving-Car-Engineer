@@ -123,6 +123,58 @@ void test_sigma_point_prediction() {
 }
 
 
+/* Evalautes the result of the `PredictMeanAndCovariance` function.
+ * 
+ * The mean state estimation and covariance matrix are predicted into the next
+ * time-step using the predict step equations of the Unscented Kalman Filter.
+ * The prediction relies on the previous sigma point predictions from the
+ * `SigmaPointPrediction` function. The resulting heading angle of the difference
+ * vector between the previous and the predicted state estimation is normalised
+ * to a range [-pi, pi] corresponding to the expected values for the vehicle.
+ */
+void test_predict_mean_and_covariance() {
+  // Create the Unscented Kalman Filter (UKF) isntance
+  UKF ukf;
+  // Instantiate the predicted state estimation vector
+  // Assumed to be of dimensions (`n_x`, 1) which match the
+  // values set within the `PredictMeanAndCovariance` function 
+  Eigen::VectorXd x(5, 1);
+  // Instantiate the predicted covariance matrix
+  // Assumed to be of dimensions (`n_x`, `n_x`) which match the
+  // values set within the `PredictMeanAndCovariance` function
+  Eigen::MatrixXd P(5, 5);
+  // Compute the outputs (the predicted state estimation and covariance matrix)
+  ukf.PredictMeanAndCovariance(
+      &x_out,
+      &P_out 
+  );
+  // Printing the resulting values
+  std::cout << "x_out = " << "\n" << x_out << "\n";
+  std::cout << "P_out = " << "\n" << P_out << "\n";
+  // Perform the L2 norm to compare the output values
+  Eigen::VectorXd x_out_expected(n_x, 1);
+  x_out_expected <<
+    5.93637,
+    1.49035,
+    2.20528,
+    0.536853,
+    0.353577;
+  Eigen::MatrixXd P_out_expected(n_x, n_x);
+  P_out_expected <<
+    0.00543425, -0.0024053,  0.00341576, -0.00348196, -0.00299378,
+   -0.0024053,   0.010845,   0.0014923,   0.00980182,  0.00791091,
+    0.00341576,  0.0014923,  0.00580129,  0.000778632, 0.000792973,
+   -0.00348196,  0.00980182, 0.000778632, 0.0119238,   0.0112491,
+   -0.00299378,  0.00791091, 0.000792973, 0.0112491,   0.0126972;
+  // Precision (i.e., max allowed magnitude of the outputs' L2 difference)
+  double epsilon = 0.001;
+  std::cout << "Result `x_out` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << x_out.isApprox(x_out_expected, epsilon) << "\n";
+  std::cout << "Result `P_out` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << P_out.isApprox(P_out_expected, epsilon) << "\n";
+}
+
+
 int main() {
   // Exercise 2.5.1: Generating Sigma Points
   // test_generate_sigma_points();
