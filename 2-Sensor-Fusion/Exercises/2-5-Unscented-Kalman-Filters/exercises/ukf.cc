@@ -341,6 +341,8 @@ void UKF::PredictMeanAndCovariance(
   AugmentedSigmaPoints(&Xsig_aug);
   /*** Compute the predicted sigma point matrix ***/
   // Instantiate the predicted sigma point matrix
+  // NOTE: if running unit test in `5_tests.cc`, the values of the matrix
+  // must be set manually using the provided definition 
   Eigen::MatrixXd Xsig_pred(n_x, n_sigma_points);
   // Define the delta-time variable (s)
   double delta_t = 0.1;
