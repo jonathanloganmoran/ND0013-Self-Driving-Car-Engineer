@@ -54,7 +54,7 @@ void UKF::GenerateSigmaPoints(
   double lambda = 3 - n_x;
   // Set the state vector values
   // Here, this is assumed to be the mean of the posterior state estimation
-  Eigen::VectorXd x = Eigen::VectorXd(n_x);
+  Eigen::VectorXd x(n_x);
   x << 5.7441,
        1.3800,
        2.2049,
@@ -62,14 +62,14 @@ void UKF::GenerateSigmaPoints(
        0.3528;
   // Set the covariance matrix values
   // Here, this is assumed to be the covariance of posterior state estimation
-  Eigen::MatrixXd P = Eigen::MatrixXd(n_x, n_x);
+  Eigen::MatrixXd P(n_x, n_x);
   P << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
       -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
        0.0030,    0.0011,    0.0054,    0.0007,    0.0008,
       -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
       -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
   // Create the sigma point matrix
-  Eigen::MatrixXd Xsig = Eigen::MatrixXd(n_x, n_sigma_points);
+  Eigen::MatrixXd Xsig(n_x, n_sigma_points);
   // Calculate square-root of matrix `P`
   // `A` is the lower-triangular matrix of the Cholesky decomposition
   Eigen::MatrixXd A = P.llt().matrixL();
@@ -137,7 +137,7 @@ void UKF::AugmentedSigmaPoints(
           nu_yawdd(rand_gen);
   // Set the state vector values
   // Here, this is assumed to be the mean of the posterior state estimation
-  Eigen::VectorXd x = Eigen::VectorXd(n_x);
+  Eigen::VectorXd x(n_x);
   x << 5.7441,
        1.3800,
        2.2049,
@@ -145,18 +145,18 @@ void UKF::AugmentedSigmaPoints(
        0.3528;
   // Set the covariance matrix values
   // Here, this is assumed to be the covariance of posterior state estimation
-  Eigen::MatrixXd P = Eigen::MatrixXd(n_x, n_x);
+  Eigen::MatrixXd P(n_x, n_x);
   P << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
       -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
        0.0030,    0.0011,    0.0054,    0.0007,    0.0008,
       -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
       -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
   // Instantiate the augmented mean vector
-  Eigen::VectorXd x_aug = Eigen::VectorXd(n_aug);
+  Eigen::VectorXd x_aug(n_aug);
   // Instantiate the augmented state covariance matrix
-  Eigen::MatrixXd P_aug = Eigen::MatrixXd(n_aug, n_aug);
+  Eigen::MatrixXd P_aug(n_aug, n_aug);
   // Instantiate the augmented sigma point matrix
-  Eigen::MatrixXd Xsig_aug = Eigen::MatrixXd(n_aug, n_sigma_points);
+  Eigen::MatrixXd Xsig_aug(n_aug, n_sigma_points);
   // Compute the values of the augmented mean state vector
   // Set the first `n_x` values to be the state vector 
   x_aug.head(n_x) = x;
@@ -223,7 +223,7 @@ void UKF::SigmaPointPrediction(
   AugmentedSigmaPoints(&Xsig_aug);
   /*** Compute the predicted sigma point matrix ***/
   // Instantiate the predicted sigma point matrix
-  MatrixXd Xsig_pred = MatrixXd(n_x, n_sigma_points);
+  Eigen::MatrixXd Xsig_pred(n_x, n_sigma_points);
   // Define the delta-time variable (s)
   double delta_t = 0.1;
   /**
@@ -232,27 +232,28 @@ void UKF::SigmaPointPrediction(
   // Write the predicted sigma points into right-column of the output matrix
   for (int i = 0; i < n_sigma_points; i++) {
     // Get the state vector values from the augmented sigma point matrix
-    VectorXd x_k(n_x, 1);
+    Eigen::VectorXd x_k(n_x, 1);
     x_k << Xsig_aug.col(i).head(n_x);
     // Get the mean-values of the noise processes
-    VectorXd nu_mean_i(n_a, 1);
+    Eigen::VectorXd nu_mean_k(n_a, 1);
     // i.e., the last `n_a` values in state vector
     nu_mean_k << Xsig_aug.col(i).tail(n_a);
     // Predict the sigma point by forming the process model in state-space
     // The vector for the state transition equation 
-    VectorXd Fx_i(n_x, 1);
+    Eigen::VectorXd Fx_k(n_x, 1);
     // The vector of the process noise values evaluated w.r.t. time
-    VectorXd nu_k(n_x, 1);
+    Eigen::VectorXd nu_k(n_x, 1);
     // Get the variables w.r.t. this sigma point
     double v_k = x_k(3, 1);
     double yaw_k = x_k(4, 1);
     double yawd_k = x_k(5, 1);
     // Avoid a divide-by-zero for $\dot{\psi}$ (the yaw angle rate-of-change)
-    if (yaw_d == 0) {
+    if (yawd_k == 0) {
       // Compute the state-space form of the process model
-      Fx_i << 
+      Fx_k << 
         v_k * std::cos(yaw_k) * delta_t,
         v_k * std::sin(yaw_k) * delta_t,
+        0,
         yawd_k * delta_t,
         0;
       // Compute the contribution of the process noise
@@ -263,12 +264,12 @@ void UKF::SigmaPointPrediction(
         0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
         delta_t * nu_mean_k(2, 1);
       // Store the sigma point prediction into the predicted state matrix
-      Xsig_pred.col(i) << x_k + Fx_i + nu_k;
+      Xsig_pred.col(i) << x_k + Fx_k + nu_k;
       continue;
     }
     // Compute the state-space form of the process model
     Fx_k <<
-      (v_k / yawd_k) * (std::sin(yaw_k + yawd_k * delta_t - std::sin(yaw_k)),
+      (v_k / yawd_k) * (std::sin(yaw_k + yawd_k * delta_t) - std::sin(yaw_k)),
       (v_k / yawd_k) * (-std::cos(yaw_k + yawd_k * delta_t) + std::cos(yaw_k)),
       0,
       yawd_k * delta_t,
@@ -281,8 +282,8 @@ void UKF::SigmaPointPrediction(
       0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
       delta_t * nu_mean_k(2, 1);
     // Store the sigma point prediction into the predicted state matrix
-    Xsig_pred.col(i) << x_k + Fx_i + nu_k;
-    }
+    Xsig_pred.col(i) << x_k + Fx_k + nu_k;
+  }
   /**
    * Student part end
    */
