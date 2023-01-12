@@ -644,7 +644,7 @@ void UKF::UpdateState(
   //   0.0034157,   0.001492,  0.0058012, 0.00077863, 0.000792973,
   //  -0.0034819,  0.0098018, 0.00077863,   0.011923,   0.0112491,
   //  -0.0029937,  0.0079109, 0.00079297,   0.011249,   0.0126972;
-  PredictMeanAndCovariance(x, P);
+  PredictMeanAndCovariance(&x, &P);
   /*** Obtain the measurement vector and covariance matrix estimations ***/
   // Instantiate the measurement matrix
   Eigen::MatrixXd Zsig(n_z, n_sigma_points);
@@ -670,14 +670,15 @@ void UKF::UpdateState(
   //     0.0946171, -0.000139448,   0.00407016,
   //  -0.000139448,  0.000617548, -0.000770652,
   //    0.00407016, -0.000770652,    0.0180917;
+  PredictRadarMeasurement(&z_pred, &S)
   // Instantiate the incoming radar measurement vector
   Eigen::VectorXd z(n_z);
   // NOTE: if running unit test in `5_tests.cc`, the values of the vector
   // must be set manually using the provided definition
-  // z <<
-  //    5.9214,   // rho in m
-  //    0.2187,   // phi in rad
-  //    2.0062;   // rho_dot in m/s
+  z <<
+     5.9214,   // rho in m
+     0.2187,   // phi in rad
+     2.0062;   // rho_dot in m/s
   /*** Compute the updated state and covariance (innovation step) ***/
   // Initialise the cross-correlation matrix
   Eigen::MatrixXd Tc(n_x, n_z);
