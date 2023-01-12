@@ -343,15 +343,11 @@ void UKF::PredictMeanAndCovariance(
     w(i) = 1.0 / (2.0 * (lambda + n_sigma_points));
   }
   // Perform the mean state vector and covariance matrix prediction
-  for (int i = 0;  < n_x; i++) {
-    x(i) = (
-      // Compute the predicted mean state
-      w(i) * Xsig_pred.row(i).sum()
-    );
+  for (int i = 0;  < n_sigma_points; i++) {
+    // Compute the predicted mean state
+    x += w(i) * Xsig_pred.col(i);
     // Compute the predicted covariance matrix
-    P(i) = (
-      w(i) * (Xsig_pred.row(i) - x(i)) * (Xsig_pred.row(i) - x(i)).transpose()
-    );
+    P += w(i) * (Xsig_pred.col(i) - x) * (Xsig_pred.col(i) - x).transpose();
   }
   /**
    * Student part end
