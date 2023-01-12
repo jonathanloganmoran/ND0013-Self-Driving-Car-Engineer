@@ -404,7 +404,16 @@ void UKF::PredictMeanAndCovariance(
  * Again, due to the linearity of the noise contribution, we neglect the noise
  * value until the computation of the measurement covariance prediction matrix
  * $\mathrm{R}$ in the innovation / correction step.
- *     
+ * 
+ * The equations for the sigma point-to-radar measurement space are given by:
+ *    $\rho = \sqrt{p_{x}^{2} + p_{y}^{2}}$,
+ *    $\phi = \arctan(p_{y} / p_{x})$,
+ *    $$\begin{align}
+ *    \dot{\rho} &= \frac{
+ *        p_{x}\cos(\phi)*v + p_{y}\sin(\phi)*v
+ *        }{\sqrt{p_{x}^{2} + p_{y}^{2}}} \\
+ *    \end{align}$$.
+ * 
  * @param  z_out  Vector to store predicted measurement mean state estimation.
  * @param  S_out  Matrix to store predicted measurement covariance.
  */
@@ -441,6 +450,12 @@ void UKF::PredictRadarMeasurement(
   double std_radphi = 0.0175;
   // Standard deviation of the radar measurment noise for $\dot{\rho}$ (m/s)
   double std_radrd = 0.1;
+  // Define the measurement noise covariance $\mathrm{R}$
+  Eigen::MatrixXd R(n_z, n_z);
+  // Set the measurement noise covariance matrix values
+  R << std_radr * std_radr, 0.0, 0.0,
+       0.0, std_radphi * std_radphi, 0.0,
+       0.0, 0.0, std_radrd * std_radrd;
   // Get the predicted sigma point matrix
   Eigen::MatrixXd Xsig_pred(n_x, 2 * n_aug + 1);
   // Xsig_pred <<
@@ -460,8 +475,36 @@ void UKF::PredictRadarMeasurement(
    * Student part begin
    */
   // Transform the sigma points into the radar measurement space
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Get the state vector associated with the sigma point
+    Eigen::VectorXd x_i = Xsig_pred.col(i);
+    // Store the transformed state vector in measurement space
+    Eigen::VectorXd Zsig_i(n_z, 1);
+    // Compute the radial distance $\rho$ transformation
+    Zsig_i(0) = std::sqrt(std::pow(x_i(0), 2) + std::pow(x_i(1), 2));
+    // Compute the angle $\phi$ transformation
+    Zsig_i(1) = std::arctan(x_i(1) / x_i(0));
+    // Compute the radial velocity $\dot{\rho}$ transformation
+    Zsig_i(2) = (
+      x_i(0) * std::cos(x_i(3)) * x_i(2) + x_i(1) * std::sin(x_i(3)) * x_i(2)
+    ) / std::sqrt(std::pow(x_i(0), 2) + std::pow(x_i(1), 2));
+    // Update the resulting sigma point in measurment space vector
+    Zsig.col(i) = Zsig_i;
+  }
   // Calculate the mean predicted measurement vector
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Compute the `i`th predicteded measurement mean $z_{k+1 \vert k}$
+    z_pred += w(i) * Zsig.col(i);
+  }
   // Calculate the covariance matrix `S` of the innovation / correction step
+  for (int i = 0; i < n_sigma_points; i++) {
+    // Compute the difference in measurement mean state estimations
+    Eigen::VectorXd Zsig_meas_diff = Zsig.col(i) - z_pred; 
+    // Compute the `i`th covariance matrix $S_{k+1\vert k}$ step
+    // NOTE: Here we add the additive contribution of the measurement noise
+    // as defined by covariance matrix $\mathrm{R}$
+    S += w(i) * Zsig_meas_diff * Zsig_meas_diff.transpose() + R;
+  }
   /**
    * Student part end
    */
