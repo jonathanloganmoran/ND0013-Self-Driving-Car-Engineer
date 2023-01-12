@@ -128,4 +128,6 @@ int main() {
   // test_generate_sigma_points();
   // Exercise 2.5.2: Generating Augmented Sigma Points
   //test_augmented_sigma_points();
+  // Exercise 2.5.3: Prediction Step with Sigma Point
+  test_sigma_point_prediction();
 }
