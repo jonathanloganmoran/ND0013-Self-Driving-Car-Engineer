@@ -349,10 +349,12 @@ void UKF::PredictMeanAndCovariance(
   /*** Compute the predicted mean state and covariance matrix ***/
   // Instantiate the weight vector
   Eigen::VectorXd w(n_sigma_points, 1);
-  // Instantiate the predicted mean state vector
+  // Initialise the predicted mean state vector
   Eigen::VectorXd x(n_x);
-  // Instantiate the predicted covariance matrix
+  x.fill(0.0)
+  // Initialise the predicted covariance matrix
   Eigen::MatrixXd P(n_x, n_x);
+  P.fill(0.0);
   /**
    * Student part begin
    */
