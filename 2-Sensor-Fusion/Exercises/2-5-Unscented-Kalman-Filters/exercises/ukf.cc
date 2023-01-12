@@ -89,7 +89,7 @@ void UKF::GenerateSigmaPoints(
   }
   // Print the resulting matrix
   // std::cout << "Xsig = " << "\n" << Xsig << "\n";
-  // Write the result to the output matrix
+  // Update the input pointer to the output result
   *Xsig_out = Xsig;
 }
 
@@ -189,7 +189,7 @@ void UKF::AugmentedSigmaPoints(
   }
   // Print the resulting augmented sigma point matrix
   // std::cout << "Xsig_aug = " << "\n" << Xsig_aug << "\n";
-  // Write the result to the output matrix
+  // Update the input pointer to the output result
   *Xsig_out = Xsig_aug; 
 }
 
@@ -285,7 +285,7 @@ void UKF::SigmaPointPrediction(
   }
   // Print the resulting predicted sigma point matrix
   // std::cout << "Xsig_pred = " << "\n" << Xsig_pred << "\n";
-  // Write the result to the output matrix
+  // Update the input pointer to the output result
   *Xsig_out = Xsig_pred;
 }
 
@@ -319,8 +319,8 @@ Eigen::VectorXd NormaliseHeading(
  * in terms of the spreading parameter $\lambda$. The weights are applied to
  * "undo" the effect of spreading on the covariance and mean state prediction.
  * 
- * @param  x_out  Predicted mean state estimation. 
- * @param  P_out  Predicted covariance matrix.
+ * @param  x_out  Vector to store predicted mean state estimation. 
+ * @param  P_out  Matrix to store predicted covariance.
  */
 void UKF::PredictMeanAndCovariance(
     Eigen::VectorXd* x_out, 
@@ -382,86 +382,93 @@ void UKF::PredictMeanAndCovariance(
   std::cout << x << "\n";
   std::cout << "Predicted covariance matrix" << "\n";
   std::cout << P << "\n";
-  // Write the result to the input variables
+  // Update the input pointers to the output results
   *x_out = x;
   *P_out = P;
 }
 
 
-/**
- * Programming assignment functions: 
+/* Constructs the radar measurement mean estimation and covariance matrix.
+ * 
+ * The radar measurement vector is a three-dimensional vector:
+ *   $z_{k + 1\vert k} = [\rho, \phi, \dot{\rho}]$,
+ * where $\rho$ is the radial distance (m), $\phi$ is the angle (rad), and
+ * $\dot{\rho}$ is the radial velocity (m/s) measured by the radar sensor.
+ * 
+ * In order to perform the update / innovation step, several "shortcuts" are
+ * used. The first involves the "recycling" of the sigma point matrix, which,
+ * due to the purely additive (linear) contribution of the radar measurement
+ * noise, allows us to skip the computation of new sigma points and the UKF
+ * augmentation step all-together. The second "shortcut" used here the hold-out
+ * of the measurement noise $\omega_{k+1}$ from the measurement model function.
+ * Again, due to the linearity of the noise contribution, we neglect the noise
+ * value until the computation of the measurement covariance prediction matrix
+ * $\mathrm{R}$ in the innovation / correction step.
+ *     
+ * @param  z_out  Vector to store predicted measurement mean state estimation.
+ * @param  S_out  Matrix to store predicted measurement covariance.
  */
-
-void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out) {
-
-  // set state dimension
+void UKF::PredictRadarMeasurement(
+    Eigen::VectorXd* z_out, 
+    Eigen::MatrixXd* S_out
+) {
+  /*** Set the state variables (values should match across functions) ***/
+  // Set the state dimension
   int n_x = 5;
-
-  // set augmented dimension
-  int n_aug = 7;
-
-  // set measurement dimension, radar can measure r, phi, and r_dot
+  // Set the augmented dimension
+  // Process noise $\nu_{k}$ has the terms $\nu_{a, k}$, $\nu_{\ddot{psi},k}$
+  int n_a = 2;
+  // The process noise dimension added to the state vector dimension
+  int n_aug = n_x + n_a;
+  // Calculate the number of sigma points to compute
+  int n_sigma_points = 2 * n_aug + 1;
+  // Set the measurement dimensions
+  // Note: the radar measurement vector is $[\rho, \phi, \dot{\rho}]$
+  // i.e., the measured radial distance, angle, and radial velocity
   int n_z = 3;
-
-  // define spreading parameter
+  // Define the spreading parameter
   double lambda = 3 - n_aug;
-
-  // set vector for weights
-  VectorXd weights = VectorXd(2*n_aug+1);
-  double weight_0 = lambda/(lambda+n_aug);
-  double weight = 0.5/(lambda+n_aug);
-  weights(0) = weight_0;
-
-  for (int i=1; i<2*n_aug+1; ++i) {  
-    weights(i) = weight;
+  // Set the weight vector values
+  Eigen::VectorXd w(n_sigma_points, 1);
+  w(0) = lambda / (lambda + n_aug);
+  double weight = 1.0 / (2.0 * (lambda + n_aug));
+  for (int i = 1; i < n_sigma_points; ++i) {  
+    w(i) = weight;
   }
-
-  // radar measurement noise standard deviation radius in m
+  // Standard deviation of the radar measurement noise for $\rho$ (m)
   double std_radr = 0.3;
-
-  // radar measurement noise standard deviation angle in rad
+  // Standard deviation of the radar measurment noise for $\phi$ (rad)
   double std_radphi = 0.0175;
-
-  // radar measurement noise standard deviation radius change in m/s
+  // Standard deviation of the radar measurment noise for $\dot{\rho}$ (m/s)
   double std_radrd = 0.1;
-
-  // create example matrix with predicted sigma points
-  MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-  Xsig_pred <<
-         5.9374,  6.0640,   5.925,  5.9436,  5.9266,  5.9374,  5.9389,  5.9374,  5.8106,  5.9457,  5.9310,  5.9465,  5.9374,  5.9359,  5.93744,
-           1.48,  1.4436,   1.660,  1.4934,  1.5036,    1.48,  1.4868,    1.48,  1.5271,  1.3104,  1.4787,  1.4674,    1.48,  1.4851,    1.486,
-          2.204,  2.2841,  2.2455,  2.2958,   2.204,   2.204,  2.2395,   2.204,  2.1256,  2.1642,  2.1139,   2.204,   2.204,  2.1702,   2.2049,
-         0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
-          0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
-
-  // create matrix for sigma points in measurement space
-  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
-
-  // mean predicted measurement
-  VectorXd z_pred = VectorXd(n_z);
-  
-  // measurement covariance matrix S
-  MatrixXd S = MatrixXd(n_z,n_z);
-
+  // Get the predicted sigma point matrix
+  Eigen::MatrixXd Xsig_pred(n_x, 2 * n_aug + 1);
+  // Xsig_pred <<
+  //        5.9374,  6.0640,   5.925,  5.9436,  5.9266,  5.9374,  5.9389,  5.9374,  5.8106,  5.9457,  5.9310,  5.9465,  5.9374,  5.9359,  5.93744,
+  //          1.48,  1.4436,   1.660,  1.4934,  1.5036,    1.48,  1.4868,    1.48,  1.5271,  1.3104,  1.4787,  1.4674,    1.48,  1.4851,    1.486,
+  //         2.204,  2.2841,  2.2455,  2.2958,   2.204,   2.204,  2.2395,   2.204,  2.1256,  2.1642,  2.1139,   2.204,   2.204,  2.1702,   2.2049,
+  //        0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
+  //         0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
+  SigmaPointPrediction(&xsig_pred);
+  // Instantiate the sigma point matrix in measurement space
+  Eigen::MatrixXd Zsig(n_z, n_sigma_points);
+  // Instantiate the mean predicted measurement vector
+  Eigen::VectorXd z_pred(n_z);
+  // Instantiate the measurement covariance matrix S
+  Eigen::MatrixXd S(n_z,n_z);
   /**
    * Student part begin
    */
-
-  // transform sigma points into measurement space
-  
-  // calculate mean predicted measurement
-  
-  // calculate innovation covariance matrix S
-
+  // Transform the sigma points into the radar measurement space
+  // Calculate the mean predicted measurement vector
+  // Calculate the covariance matrix `S` of the innovation / correction step
   /**
    * Student part end
    */
-
-  // print result
-  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
-  std::cout << "S: " << std::endl << S << std::endl;
-
-  // write result
+  // Print the resulting outputs
+  std::cout << "z_pred: " << "\n" << z_pred << "\n";
+  std::cout << "S: " << "\n" << S << "\n";
+  // Update the input pointers to the output results
   *z_out = z_pred;
   *S_out = S;
 }
