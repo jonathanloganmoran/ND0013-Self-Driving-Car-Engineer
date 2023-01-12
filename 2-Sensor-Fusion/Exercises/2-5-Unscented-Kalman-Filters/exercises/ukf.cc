@@ -536,10 +536,11 @@ void UKF::PredictRadarMeasurement(
       Radar::NormaliseHeading(Zsig.col(i) - z_pred)
     );
     // Compute the `i`th covariance matrix $S_{k+1\vert k}$ step
-    // NOTE: Here we add the additive contribution of the measurement noise
-    // as defined by covariance matrix $\mathrm{R}$
-    S += w(i) * Zsig_meas_diff * Zsig_meas_diff.transpose() + R;
+    S += w(i) * Zsig_meas_diff * Zsig_meas_diff.transpose();
   }
+  // Set the additive contribution of the measurement noise to the vector
+  // as defined by the measurement noise covariance matrix $\mathrm{R}$
+  S += R;
   /**
    * Student part end
    */
