@@ -226,7 +226,7 @@ void test_predict_radar_measurement() {
     0.00407016, -0.000770652,  0.0180917;
   // Precision (i.e., max allowed magnitude of the outputs' L2 difference)
   // NOTE: see above caveat (test works only when `Xsig_pred` is set manually) 
-  double epsilon = 0.001;
+  double epsilon = 0.0001;
   std::cout << "Result `z_pred` matches expected amount by `epsilon = " << epsilon << '`';
   std::cout << ": " << std::boolalpha << z_pred.isApprox(z_pred_expected, epsilon) << "\n";
   std::cout << "Result `S` matches expected amount by `epsilon = " << epsilon << '`';
@@ -245,7 +245,6 @@ int main() {
   // Exercise 2.5.4: Prediction Step with Mean and Covariance
   // test_predict_mean_and_covariance();
   // Exercise 2.5.5: Innovation Step with Radar Measurement
-  // Repeat test two: Still not passing...
   test_predict_radar_measurement();
   return 0;
 }
