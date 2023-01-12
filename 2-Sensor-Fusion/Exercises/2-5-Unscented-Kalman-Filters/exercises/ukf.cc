@@ -363,12 +363,15 @@ void UKF::PredictMeanAndCovariance(
   for (int i = 1; i < n_sigma_points; i++) {
     w(i) = 1.0 / (2.0 * (lambda + n_aug));
   }
-  // Perform the mean state vector and covariance matrix prediction
-  for (int i = 0;  < n_sigma_points; i++) {
+  // Perform the mean state estimation vector prediction
+  for (int i = 0; i < n_sigma_points; i++) {
     // Compute the predicted mean state
     x += w(i) * Xsig_pred.col(i);
+  }
+  // Perform the covariance matrix prediction
+  for (int i = 0; i < n_sigma_points; i++) {
     // Compute the difference between the state estimations
-    // Normalise the resulting heading angle to range [-pi, pi]
+    // Then, normalise the resulting heding angle to range [-pi, pi]
     Eigen::VectorXd Xsig_pred_diff = NormaliseHeading(Xsig_pred.col(i) - x);
     // Compute the predicted covariance matrix
     P += w(i) * Xsig_pred_diff * Xsig_pred_diff.transpose();
