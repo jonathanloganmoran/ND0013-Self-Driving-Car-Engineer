@@ -487,12 +487,6 @@ void UKF::PredictRadarMeasurement(
        0.0, 0.0, std_radrd * std_radrd;
   // Get the predicted sigma point matrix
   Eigen::MatrixXd Xsig_pred(n_x, 2 * n_aug + 1);
-  // Xsig_pred <<
-  //        5.9374,  6.0640,   5.925,  5.9436,  5.9266,  5.9374,  5.9389,  5.9374,  5.8106,  5.9457,  5.9310,  5.9465,  5.9374,  5.9359,  5.93744,
-  //          1.48,  1.4436,   1.660,  1.4934,  1.5036,    1.48,  1.4868,    1.48,  1.5271,  1.3104,  1.4787,  1.4674,    1.48,  1.4851,    1.486,
-  //         2.204,  2.2841,  2.2455,  2.2958,   2.204,   2.204,  2.2395,   2.204,  2.1256,  2.1642,  2.1139,   2.204,   2.204,  2.1702,   2.2049,
-  //        0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
-  //         0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
   SigmaPointPrediction(&xsig_pred);
   // Initialise the sigma point matrix in measurement space
   Eigen::MatrixXd Zsig(n_z, n_sigma_points);
@@ -503,9 +497,6 @@ void UKF::PredictRadarMeasurement(
   // Initialise the measurement covariance matrix S
   Eigen::MatrixXd S(n_z,n_z);
   S.fill(0.0);
-  /**
-   * Student part begin
-   */
   // Transform the sigma points into the radar measurement space
   for (int i = 0; i < n_sigma_points; i++) {
     // Get the state vector associated with the sigma point
@@ -541,9 +532,6 @@ void UKF::PredictRadarMeasurement(
   // Set the additive contribution of the measurement noise to the vector
   // as defined by the measurement noise covariance matrix $\mathrm{R}$
   S += R;
-  /**
-   * Student part end
-   */
   // Print the resulting outputs
   std::cout << "z_pred: " << "\n" << z_pred << "\n";
   std::cout << "S: " << "\n" << S << "\n";

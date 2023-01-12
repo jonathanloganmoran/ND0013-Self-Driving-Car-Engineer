@@ -198,6 +198,8 @@ void test_predict_radar_measurement() {
   // values set within the `PredictRadarMeasurement` function
   Eigen::MatrixXd S(3, 3);
   // Compute the outputs (the measurement state estimation / covariance matrix)
+  // NOTE: must set the `Xsig_pred` matrix to the values defined below in order
+  // to obtain output `z_pred` and `S` with corresponding expected values
   ukf.PredictRadarMeasurement(
       &z_pred,
       &S

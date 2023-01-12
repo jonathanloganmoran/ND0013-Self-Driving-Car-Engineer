@@ -45,6 +45,7 @@ class UKF {
       Eigen::VectorXd* x_pred, 
       Eigen::MatrixXd* P_pred
   );
+  // Predicts the radar measurement vector and covariance in innovation step
   void PredictRadarMeasurement(
       Eigen::VectorXd* z_out, 
       Eigen::MatrixXd* S_out
