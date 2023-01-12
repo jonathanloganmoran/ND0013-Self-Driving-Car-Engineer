@@ -337,10 +337,10 @@ void UKF::PredictMeanAndCovariance(
    */
   // Set the weight vector values
   // Computing the first value of the weight value
-  w(0) = lambda / (lambda + n_sigma_points);
+  w(0) = lambda / (lambda + n_aug);
   // Computing the rest of the weight values
   for (int i = 1; i < n_sigma_points; i++) {
-    w(i) = 1.0 / (2.0 * (lambda + n_sigma_points));
+    w(i) = 1.0 / (2.0 * (lambda + n_aug));
   }
   // Perform the mean state vector and covariance matrix prediction
   for (int i = 0;  < n_sigma_points; i++) {
