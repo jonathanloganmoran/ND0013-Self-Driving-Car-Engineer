@@ -109,7 +109,7 @@ void UKF::GenerateSigmaPoints(
  * @param  Xsig_out   Matrix to store resulting augmented sigma points. 
  */
 void UKF::AugmentedSigmaPoints(
-    MatrixXd* Xsig_out
+    Eigen::MatrixXd* Xsig_out
 ) {
   // Set the state dimension
   int n_x = 5;
@@ -132,7 +132,7 @@ void UKF::AugmentedSigmaPoints(
   std::normal_distribution<double> nu_yawdd(0.0, std_yawdd);
   // Define the noise processes vector and set its values
   std::default_random_engine rand_gen;
-  VectorXd nu_k(n_a, 1);
+  Eigen::VectorXd nu_k(n_a, 1);
   nu_k << nu_a(rand_gen),
           nu_yawdd(rand_gen);
   // Set the state vector values
@@ -244,11 +244,11 @@ void UKF::SigmaPointPrediction(
     // The vector of the process noise values evaluated w.r.t. time
     Eigen::VectorXd nu_k(n_x, 1);
     // Get the variables w.r.t. this sigma point
-    double v_k = x_k(3, 1);
-    double yaw_k = x_k(4, 1);
-    double yawd_k = x_k(5, 1);
+    double v_k = x_k(2);
+    double yaw_k = x_k(3);
+    double yawd_k = x_k(4);
     // Avoid a divide-by-zero for $\dot{\psi}$ (the yaw angle rate-of-change)
-    if (yawd_k == 0) {
+    if (yawd_k < 0.0001) {
       // Compute the state-space form of the process model
       Fx_k << 
         v_k * std::cos(yaw_k) * delta_t,
@@ -258,11 +258,11 @@ void UKF::SigmaPointPrediction(
         0;
       // Compute the contribution of the process noise
       nu_k <<
-        0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(1, 1),
-        0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(1, 1),
-        delta_t * nu_mean_k(1, 1),
-        0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
-        delta_t * nu_mean_k(2, 1);
+        0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(0),
+        0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(0),
+        delta_t * nu_mean_k(0),
+        0.5 * std::pow(delta_t, 2) * nu_mean_k(1),
+        delta_t * nu_mean_k(1);
       // Store the sigma point prediction into the predicted state matrix
       Xsig_pred.col(i) << x_k + Fx_k + nu_k;
       continue;
@@ -276,11 +276,11 @@ void UKF::SigmaPointPrediction(
       0;
     // Compute the contribution of the process noise
     nu_k << 
-      0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(1, 1),
-      0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(1, 1),
-      delta_t * nu_mean_k(1, 1),
-      0.5 * std::pow(delta_t, 2) * nu_mean_k(2, 1),
-      delta_t * nu_mean_k(2, 1);
+      0.5 * std::pow(delta_t, 2) * std::cos(yaw_k) * nu_mean_k(0),
+      0.5 * std::pow(delta_t, 2) * std::sin(yaw_k) * nu_mean_k(0),
+      delta_t * nu_mean_k(0),
+      0.5 * std::pow(delta_t, 2) * nu_mean_k(1),
+      delta_t * nu_mean_k(1);
     // Store the sigma point prediction into the predicted state matrix
     Xsig_pred.col(i) << x_k + Fx_k + nu_k;
   }
