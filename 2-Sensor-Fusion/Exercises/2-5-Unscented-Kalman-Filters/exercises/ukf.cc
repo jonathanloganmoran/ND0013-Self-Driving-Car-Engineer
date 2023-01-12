@@ -226,9 +226,6 @@ void UKF::SigmaPointPrediction(
   Eigen::MatrixXd Xsig_pred(n_x, n_sigma_points);
   // Define the delta-time variable (s)
   double delta_t = 0.1;
-  /**
-   * Student part begin
-   */
   // Write the predicted sigma points into right-column of the output matrix
   for (int i = 0; i < n_sigma_points; i++) {
     // Get the state vector values from the augmented sigma point matrix
@@ -284,9 +281,6 @@ void UKF::SigmaPointPrediction(
     // Store the sigma point prediction into the predicted state matrix
     Xsig_pred.col(i) << x_k + Fx_k + nu_k;
   }
-  /**
-   * Student part end
-   */
   // Print the resulting predicted sigma point matrix
   // std::cout << "Xsig_pred = " << "\n" << Xsig_pred << "\n";
   // Write the result to the output matrix
