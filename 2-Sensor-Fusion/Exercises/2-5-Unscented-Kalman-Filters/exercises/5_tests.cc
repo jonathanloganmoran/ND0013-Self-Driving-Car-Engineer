@@ -186,7 +186,7 @@ void test_predict_mean_and_covariance() {
 
 /* Evalautes the result of the `PredictRadarMeasurement` function.
  */
-void test_predict_mean_and_covariance() {
+void test_predict_radar_measurement() {
   // Create the Unscented Kalman Filter (UKF) isntance
   UKF ukf;
   // Instantiate the predicted state estimation vector
@@ -244,5 +244,7 @@ int main() {
   // test_sigma_point_prediction();
   // Exercise 2.5.4: Prediction Step with Mean and Covariance
   // test_predict_mean_and_covariance();
+  // Exercise 2.5.5: Innovation Step with Radar Measurement
+  test_predict_radar_measurement();
   return 0;
 }
