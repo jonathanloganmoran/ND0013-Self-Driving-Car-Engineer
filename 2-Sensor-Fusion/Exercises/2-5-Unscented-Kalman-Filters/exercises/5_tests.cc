@@ -184,6 +184,57 @@ void test_predict_mean_and_covariance() {
 }
 
 
+/* Evalautes the result of the `PredictRadarMeasurement` function.
+ */
+void test_predict_mean_and_covariance() {
+  // Create the Unscented Kalman Filter (UKF) isntance
+  UKF ukf;
+  // Instantiate the predicted state estimation vector
+  // Assumed to be of dimensions (`n_z`, 1) which match the
+  // values set within the `PredictRadarMeasurement` function 
+  Eigen::VectorXd z_pred(3, 1);
+  // Instantiate the predicted covariance matrix
+  // Assumed to be of dimensions (`n_z`, `n_z`) which match the
+  // values set within the `PredictRadarMeasurement` function
+  Eigen::MatrixXd S(3, 3);
+  // Compute the outputs (the measurement state estimation / covariance matrix)
+  ukf.PredictRadarMeasurement(
+      &z_pred,
+      &S
+  );
+  // Printing the resulting values
+  std::cout << "z_pred = " << "\n" << z_pred << "\n";
+  std::cout << "S = " << "\n" << S << "\n";
+  // Perform the L2 norm to compare the output values
+  // NOTE: these expected values hold only for the hard-coded `Xsig_pred`
+  // matrix whose values are given in the Udacity VM workspace as follows:
+  // Xsig_pred <<
+  //        5.9374,  6.0640,   5.925,  5.9436,  5.9266,  5.9374,  5.9389,  5.9374,  5.8106,  5.9457,  5.9310,  5.9465,  5.9374,  5.9359,  5.93744,
+  //          1.48,  1.4436,   1.660,  1.4934,  1.5036,    1.48,  1.4868,    1.48,  1.5271,  1.3104,  1.4787,  1.4674,    1.48,  1.4851,    1.486,
+  //         2.204,  2.2841,  2.2455,  2.2958,   2.204,   2.204,  2.2395,   2.204,  2.1256,  2.1642,  2.1139,   2.204,   2.204,  2.1702,   2.2049,
+  //        0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
+  //         0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
+  Eigen::VectorXd z_pred_expected(3, 1);
+  z_pred_expected <<
+    6.12155,
+    0.245993,
+    2.10313;
+  Eigen::MatrixXd S_expected(3, 3);
+  S_expected <<
+    0.0946171,  -0.000139448,  0.00407016,
+   -0.000139448, 0.000617548, -0.000770652,
+    0.00407016, -0.000770652,  0.0180917;
+  // Precision (i.e., max allowed magnitude of the outputs' L2 difference)
+  // NOTE: see above caveat (test works only when `Xsig_pred` is set manually) 
+  double epsilon = 0.001;
+  std::cout << "Result `z_pred` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << z_pred.isApprox(z_pred_expected, epsilon) << "\n";
+  std::cout << "Result `S` matches expected amount by `epsilon = " << epsilon << '`';
+  std::cout << ": " << std::boolalpha << S.isApprox(S_expected, epsilon) << "\n";
+}
+
+
+
 int main() {
   // Exercise 2.5.1: Generating Sigma Points
   // test_generate_sigma_points();
@@ -192,5 +243,6 @@ int main() {
   // Exercise 2.5.3: Prediction Step with Sigma Point
   // test_sigma_point_prediction();
   // Exercise 2.5.4: Prediction Step with Mean and Covariance
-  test_predict_mean_and_covariance();
+  // test_predict_mean_and_covariance();
+  return 0;
 }
