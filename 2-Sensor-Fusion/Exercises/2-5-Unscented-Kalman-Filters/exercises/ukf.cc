@@ -683,9 +683,6 @@ void UKF::UpdateState(
   // Initialise the cross-correlation matrix
   Eigen::MatrixXd Tc(n_x, n_z);
   Tc.fill(0.0);
-  /**
-   * Student part begin
-   */
   // Calculate the cross-correlation matrix
   for (int i = 0; i < n_sigma_points; i++) {
     // Compute the difference in the sigma points in state-space
@@ -704,9 +701,6 @@ void UKF::UpdateState(
   x += K * z_diff;
   // Perform the covariance matrix update
   P -= K * S * K.transpose();
-  /**
-   * Student part end
-   */
   // Print the resulting outputs
   std::cout << "Updated state x: " << "\n" << x << "\n";
   std::cout << "Updated state covariance P: " << "\n" << P << "\n";
