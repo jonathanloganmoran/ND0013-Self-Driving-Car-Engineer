@@ -325,7 +325,7 @@ void test_update_state() {
    -0.000937196, 0.00455342,  0.00160333,  0.00652634,   0.00669436,
    -0.00071719,  0.00358884,  0.00171811,  0.00669426,   0.00881797;
   // Precision (i.e., max allowed magnitude of the outputs' L2 difference)
-  // NOTE: see above caveat (test works only when `Xsig_pred` is set manually) 
+  // NOTE: test works only when all variables above are set manually 
   double epsilon = 0.0001;
   std::cout << "Result `x` matches expected amount by `epsilon = " << epsilon << '`';
   std::cout << ": " << std::boolalpha << x.isApprox(x_expected, epsilon) << "\n";
