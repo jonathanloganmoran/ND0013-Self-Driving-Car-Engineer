@@ -344,6 +344,8 @@ int main() {
   // Exercise 2.5.4: Prediction Step with Mean and Covariance
   // test_predict_mean_and_covariance();
   // Exercise 2.5.5: Innovation Step with Radar Measurement
-  test_predict_radar_measurement();
+  // test_predict_radar_measurement();
+  // Exercise 2.5.6: Innovation Step with State and Covariance Update
+  test_update_state();
   return 0;
 }
