@@ -699,7 +699,7 @@ void UKF::UpdateState(
   Eigen::MatrixXd K = Tc * S.inverse();
   // Compute the residual
   // i.e., the difference in predicted and received measurement state
-  Eigen::VectorXd z_diff = Radar::NormaliseHeading(z_pred - z);
+  Eigen::VectorXd z_diff = Radar::NormaliseHeading(z - z_pred);
   // Perform the state mean update
   x += K * z_diff;
   // Perform the covariance matrix update
