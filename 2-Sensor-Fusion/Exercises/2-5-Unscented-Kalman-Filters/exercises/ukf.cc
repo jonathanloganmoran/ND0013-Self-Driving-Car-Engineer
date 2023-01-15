@@ -363,6 +363,8 @@ void UKF::PredictMeanAndCovariance(
   int n_aug = n_x + n_a;
   // Calculate the number of sigma points to compute
   int n_sigma_points = 2 * n_aug + 1;
+  // Define the spreading parameter
+  double lambda = 3 - n_aug;
   // Get the augmented sigma point matrix
   Eigen::MatrixXd Xsig_aug(n_aug, n_sigma_points);
   AugmentedSigmaPoints(&Xsig_aug);
@@ -380,7 +382,7 @@ void UKF::PredictMeanAndCovariance(
   Eigen::VectorXd w(n_sigma_points, 1);
   // Initialise the predicted mean state vector
   Eigen::VectorXd x(n_x);
-  x.fill(0.0)
+  x.fill(0.0);
   // Initialise the predicted covariance matrix
   Eigen::MatrixXd P(n_x, n_x);
   P.fill(0.0);
@@ -487,7 +489,7 @@ void UKF::PredictRadarMeasurement(
        0.0, 0.0, std_radrd * std_radrd;
   // Get the predicted sigma point matrix
   Eigen::MatrixXd Xsig_pred(n_x, 2 * n_aug + 1);
-  SigmaPointPrediction(&xsig_pred);
+  SigmaPointPrediction(&Xsig_pred);
   // Initialise the sigma point matrix in measurement space
   Eigen::MatrixXd Zsig(n_z, n_sigma_points);
   Zsig.fill(0.0);
@@ -670,7 +672,7 @@ void UKF::UpdateState(
   //     0.0946171, -0.000139448,   0.00407016,
   //  -0.000139448,  0.000617548, -0.000770652,
   //    0.00407016, -0.000770652,    0.0180917;
-  PredictRadarMeasurement(&z_pred, &S)
+  PredictRadarMeasurement(&z_pred, &S);
   // Instantiate the incoming radar measurement vector
   Eigen::VectorXd z(n_z);
   // NOTE: if running unit test in `5_tests.cc`, the values of the vector

@@ -236,6 +236,21 @@ void test_predict_radar_measurement() {
 }
 
 
+/* Evaluates the result of the mean and covariance update.
+ *
+ * Performs the second and final part of the UKF innovation step.
+ * The mean state and covariance matrix are updated w.r.t. the incoming
+ * radar measurement using the unscented transformation of the sigma points.
+ * Here, we assume a purely additive contribution of measurement noise on the
+ * radar measurement model. This allows us to simplify the update step and
+ * estimate a noise covariance $\mathrm{R}$ to be added in the update of the
+ * covariance matrix $\mathrm{P}$. Also defined relative to our model
+ * assumptions is the use of the cross-correlation matrix $\mathrm{T}$ which
+ * is the cross-correlation difference in the sigma points in state-space and
+ * the sigma points in measurement space. This term is used to modify the
+ * standard Kalman filter update equations for gain $\mathrm{K}$ and
+ * consequently covariance $\mathrm{P}$ and state $x$.
+ */
 void test_update_state() {
   // Create the Unscented Kalman Filter (UKF) instance
   UKF ukf;
