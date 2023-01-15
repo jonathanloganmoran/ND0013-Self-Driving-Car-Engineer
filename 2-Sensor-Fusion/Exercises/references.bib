@@ -1,12 +1,58 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for Jonathan Moran at 2022-11-17 19:20:27 -0800 
+%% Created for Jonathan Moran at 2023-01-15 15:47:20 -0800 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@inproceedings{882463,
+	abstract = {This paper points out the flaws in using the extended Kalman filter (EKE) and introduces an improvement, the unscented Kalman filter (UKF), proposed by Julier and Uhlman (1997). A central and vital operation performed in the Kalman filter is the propagation of a Gaussian random variable (GRV) through the system dynamics. In the EKF the state distribution is approximated by a GRV, which is then propagated analytically through the first-order linearization of the nonlinear system. This can introduce large errors in the true posterior mean and covariance of the transformed GRV, which may lead to sub-optimal performance and sometimes divergence of the filter. The UKF addresses this problem by using a deterministic sampling approach. The state distribution is again approximated by a GRV, but is now represented using a minimal set of carefully chosen sample points. These sample points completely capture the true mean and covariance of the GRV, and when propagated through the true nonlinear system, captures the posterior mean and covariance accurately to the 3rd order (Taylor series expansion) for any nonlinearity. The EKF in contrast, only achieves first-order accuracy. Remarkably, the computational complexity of the UKF is the same order as that of the EKF. Julier and Uhlman demonstrated the substantial performance gains of the UKF in the context of state-estimation for nonlinear control. Machine learning problems were not considered. We extend the use of the UKF to a broader class of nonlinear estimation problems, including nonlinear system identification, training of neural networks, and dual estimation problems. In this paper, the algorithms are further developed and illustrated with a number of additional examples.},
+	author = {Wan, E.A. and Van Der Merwe, R.},
+	booktitle = {Proceedings of the IEEE 2000 Adaptive Systems for Signal Processing, Communications, and Control Symposium (Cat. No.00EX373)},
+	date-added = {2023-01-15 15:47:13 -0800},
+	date-modified = {2023-01-15 15:47:13 -0800},
+	doi = {10.1109/ASSPCC.2000.882463},
+	month = {Oct},
+	pages = {153-158},
+	title = {The unscented Kalman filter for nonlinear estimation},
+	year = {2000},
+	bdsk-url-1 = {https://doi.org/10.1109/ASSPCC.2000.882463}}
+
+@inproceedings{10.1117/12.280797,
+	abstract = {The Kalman Filter (KF) is one of the most widely used methods for tracking and estimation due to its simplicity, optimality, tractability and robustness. However, the application of the KF to nonlinear systems can be difficult. The most common approach is to use the Extended Kalman Filter (EKF) which simply linearizes all nonlinear models so that the traditional linear Kalman filter can be applied. Although the EKF (in its many forms) is a widely used filtering strategy, over thirty years of experience with it has led to a general consensus within the tracking and control community that it is difficult to implement, difficult to tune, and only reliable for systems which are almost linear on the time scale of the update intervals. In this paper a new linear estimator is developed and demonstrated. Using the principle that a set of discretely sampled points can be used to parameterize mean and covariance, the estimator yields performance equivalent to the KF for linear systems yet generalizes elegantly to nonlinear systems without the linearization steps required by the EKF. We show analytically that the expected performance of the new approach is superior to that of the EKF and, in fact, is directly comparable to that of the second order Gauss filter. The method is not restricted to assuming that the distributions of noise sources are Gaussian. We argue that the ease of implementation and more accurate estimation features of the new filter recommend its use over the EKF in virtually all applications.},
+	author = {Simon J. Julier and Jeffrey K. Uhlmann},
+	booktitle = {Signal Processing, Sensor Fusion, and Target Recognition VI},
+	date-added = {2023-01-15 15:47:13 -0800},
+	date-modified = {2023-01-15 15:47:13 -0800},
+	doi = {10.1117/12.280797},
+	editor = {Ivan Kadar},
+	organization = {International Society for Optics and Photonics},
+	pages = {182 -- 193},
+	publisher = {SPIE},
+	title = {{New extension of the Kalman filter to nonlinear systems}},
+	url = {https://doi.org/10.1117/12.280797},
+	volume = {3068},
+	year = {1997},
+	bdsk-url-1 = {https://doi.org/10.1117/12.280797}}
+
+@unpublished{li:hal-01054709,
+	abstract = {This is the third article of the series "A brief tutorial on recursive estimation". In this article, we focus on the problem of how to handle model nonlinearity (concerning both the system model and the measurement model) in recursive estimation. We will review an important variant of the KF, i.e. the unscented Kalman filter (UKF), which is dedicated to nonlinear estimation problems.},
+	author = {Li, Hao},
+	date-added = {2023-01-15 15:47:13 -0800},
+	date-modified = {2023-01-15 15:47:13 -0800},
+	hal_id = {hal-01054709},
+	hal_version = {v1},
+	keywords = {recursive estimation ; model nonlinearity ; unscented Kalman filter (UKF) ; intelligent vehicles},
+	month = Aug,
+	note = {working paper or preprint},
+	pdf = {https://hal.archives-ouvertes.fr/hal-01054709/file/LI_TRE_03_UKF.pdf},
+	title = {{A Brief Tutorial On Recursive Estimation With Examples From Intelligent Vehicle Applications (Part III): Handling Nonlinear Estimation Problems And The Unscented Kalman Filter}},
+	url = {https://hal.archives-ouvertes.fr/hal-01054709},
+	year = {2014},
+	bdsk-url-1 = {https://hal.archives-ouvertes.fr/hal-01054709}}
 
 @article{geiger20133d,
 	abstract = {In this paper, we present a novel probabilistic generative model for multi-object traffic scene understanding from movable platforms which reasons jointly about the 3D scene layout as well as the location and orientation of objects in the scene. In particular, the scene topology, geometry, and traffic activities are inferred from short video sequences. Inspired by the impressive driving capabilities of humans, our model does not rely on GPS, lidar, or map knowledge. Instead, it takes advantage of a diverse set of visual cues in the form of vehicle tracklets, vanishing points, semantic scene labels, scene flow, and occupancy grids. For each of these cues, we propose likelihood functions that are integrated into a probabilistic generative model. We learn all model parameters from training data using contrastive divergence. Experiments conducted on videos of 113 representative intersections show that our approach successfully infers the correct layout in a variety of very challenging scenarios. To evaluate the importance of each feature cue, experiments using different feature combinations are conducted. Furthermore, we show how by employing context derived from the proposed method we are able to improve over the state-of-the-art in terms of object detection and object orientation estimation in challenging and cluttered urban environments.},
