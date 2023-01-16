@@ -33,6 +33,8 @@ The following topics are covered in course projects:
 ##### Course 2: Sensor Fusion
 * Extract and transform LiDAR range images into 3D point clouds and bird's-eye view (BEV) maps;
 * Build and experiment with state-of-the-art 3D object detection nets;
+* Pre-process and perform multi-object tracking with multi-modal sensor data (LiDAR, RGB camera, radar);
+* Implement the Extended Kalman filter (EKF) and the Unscented Kalman filter (UKF) for multi-object tracking;
 * And so much more ... (see [2-Sensor-Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion) for full list of course topics).
 
 ##### Course 3: Localization

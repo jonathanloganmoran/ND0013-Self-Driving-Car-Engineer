@@ -3,7 +3,7 @@
 #### By Jonathan L. Moran (jonathan.moran107@gmail.com)
 From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
-This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree programme taught by Dr. Antje Muntzinger and Dr. Andreas Haja.
+This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree programme taught by Dr. Antje Muntzinger, Dr. Andreas Haja, Dominik Nuss and Andrei Vatavu.
 
 
 ### Course Objectives
