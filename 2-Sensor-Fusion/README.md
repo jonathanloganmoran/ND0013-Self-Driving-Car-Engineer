@@ -10,14 +10,15 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 * Develop a strong understanding of the important role LiDAR plays in the autonomous vehicle;
 * Learn to work with LiDAR range data, 3D point clouds and bird's-eye view (BEV) maps;
 * Build 3D object detection models using deep learning with LiDAR point cloud data;
-* Perform multi-target tracking with the Extended Kalman Filter (EKF) on multi-modal sensor data;
+* Perform multi-target tracking with the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) on multi-modal sensor data;
 * Apply learnings to complete two real-world AD/ADAS detection and tracking software programmes. 
 
 
 ### Demo Notebooks
 * ✅ [`2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-10-20-Course-2-Sensor-Fusion-Exercises-Part-1.ipynb);
 * ✅ [`2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-11-Course-2-Sensor-Fusion-Exercises-Part-2.ipynb);
-* ✅ [`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb).
+* ✅ [`2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2022-11-17-Course-2-Sensor-Fusion-Exercises-Part-3.ipynb);
+* ✅ [`2023-01-13-Course-2-Sensor-Fusion-Exercises-Part-4.ipynb`](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/2-Sensor-Fusion/Exercises/2023-01-13-Course-2-Sensor-Fusion-Exercises-Part-4.ipynb).
 
 
 ### Projects
@@ -26,10 +27,11 @@ This is Course 2: Sensor Fusion in the Self-Driving Car Engineer Nanodegree prog
 
 
 ### Exercises
-* ✅ [2.1.1: The LiDAR Sensor](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-1-Lidar-Sensor);
-* ✅ [2.1.2: Detecting Objects in LiDAR](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-2-Object-Detection);
-* ✅ [2.2.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
-* ✅ [2.2.4: Multi-Target Tracking (MTT) with Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-4-Multi-Target-Tracking/exercises).
+* ✅ [2.1: The LiDAR Sensor](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-1-Lidar-Sensor);
+* ✅ [2.2: Detecting Objects in LiDAR](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-2-Object-Detection);
+* ✅ [2.3: Extended Kalman Filters (EKF) for LiDAR and Camera Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-3-Extended-Kalman-Filters/exercises);
+* ✅ [2.4: Multi-Target Tracking (MTT) with Sensor Fusion](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-4-Multi-Target-Tracking/exercises);
+* ✅ [2.5: Unscented Kalman Filters (UKF) for Radar Data](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/2-Sensor-Fusion/Exercises/2-5-Unscented-Kalman-Filters/exercises);
 
 
 ### Course Contents
@@ -43,7 +45,10 @@ The following topics are covered in course exercises:
 * Using Kalman Filters for tracking in 1- and 2-D
 * Linearising the camera measurement model
 * Building Extended Kalman Filters (EKF) for tracking with camera and LiDAR data
-* And much more ... (will be announced as course progresses)
+* Building Unscented Kalman Filters (UKF) for tracking with radar data
+* Selecting process noise design parameters for various driving scenarios
+* Evaluating UKF performance with Normalised Innovation Squared (NIS) metrics    
+* And much more ... (check out the `Exercises` section for full list of assignment topics!)
 
 
 Other topics covered in course lectures and reading material:
@@ -55,6 +60,9 @@ Other topics covered in course lectures and reading material:
 * Selecting the best sensor(s) for a given job with constraints
 * In-depth coverage of Kalman filter update / predict equations
 * Assumptions of Kalman filter equations for self-driving cars
+* Using deep learning for object detection and tracking
+* Applying various motion models to the multi-object tracking task
+* Analysing the entire self-driving car software stack w.r.t. sensor fusion
 * And much more ... (will be announced as course progresses)
 
 
@@ -98,6 +106,13 @@ Other topics covered in course lectures and reading material:
 * Associate tracking measurements to perform Multi-Target Tracking (MTT);
 * Reduce association complexity through a gating method;
 * Evaluate tracking performance through metrics, e.g., RMSE.
+
+#### Extracirricular Lesson: Unscented Kalman Filters
+* Derive and implement the UKF innovation and prediction equations;
+* Construct sigma / asugmented point matrices;
+* Work with radar measurement- and nonlinear process models;
+* Select process noise design parameters specific to self-driving cars;
+* Evaluate UKF performance via the Normalised Innovation Squared (NIS) metric.
 
 
 ### Material
