@@ -34,16 +34,16 @@ std::vector<std::vector<double>> load_state_data(
     std::string file_path
 ) {
   // Load the input file
-  std::ifstream in_states_(file_path.c_str(), ifstream::in);
+  std::ifstream in_states_(file_path.c_str(), std::ifstream::in);
   // Instantiate the output vector
   std::vector<std::vector<double>> states_out;
   // Iterate over each line of the input file
   std::string line;
-  while (std::ifstream::getline(in_states_, line)) {
+  while (std::getline(in_states_, line)) {
     std::istringstream iss(line);
     std::vector<double> coordinates;
     std::string token;
-    while (std::ifstream::getline(iss, token, ',')) {
+    while (std::getline(iss, token, ',')) {
       coordinates.push_back(stod(token));
     }
     states_out.push_back(coordinates);
@@ -72,7 +72,7 @@ std::vector<std::string> load_labels(
   std::vector<std::string> labels_out;
   // Iterate over each line of the input file
   std::string line;
-  while (std::ifstream::getline(in_labels_, line)) {
+  while (std::getline(in_labels_, line)) {
     std::istringstream iss(line);
     std::string label;
     iss >> label;
@@ -84,8 +84,8 @@ std::vector<std::string> load_labels(
 
 /* Evaluates the performance of the Gaussian Näive Bayes (GNB) classifier.
  *
- * The GNB classifier is evaluated on the provided dataset in `nd013_pred_data`
- * folder. The training / testing datasets are stored as comma-separated files
+ * The GNB classifier is evaluated on the provided dataset in `data` folder.
+ * The training / testing datasets are stored as comma-separated files
  * containing the behaviour of the vehicles along a three-lane highway.
  * Each of the three highway lanes are assumed to have a width of four metres.
  * The coordinates of the vehicles in each lane are given in the Frenet
@@ -119,8 +119,8 @@ std::vector<std::string> load_labels(
  */
 void test_gnb_classifier() {
   /*** Reading in the training dataset ***/
-  std::string train_data_file_path = "../train_states.txt";
-  std::string train_labels_file_path = "../train_labels.txt";
+  std::string train_data_file_path = "./data/train_states.txt";
+  std::string train_labels_file_path = "./data/train_labels.txt";
   std::vector<std::vector<double>> X_train = load_state_data(
       train_data_file_path
   );
@@ -128,8 +128,8 @@ void test_gnb_classifier() {
       train_labels_file_path
   );
   /*** Reading in the test dataset ****/
-  std::string test_data_file_path = "../test_states.txt";
-  std::string test_labels_file_path = "../test_labels.txt";
+  std::string test_data_file_path = "./data/test_states.txt";
+  std::string test_labels_file_path = "./data/test_labels.txt";
   std::vector<std::vector<double>> X_test = load_state_data(
       test_data_file_path
   );
@@ -161,4 +161,5 @@ void test_gnb_classifier() {
 int main() {
   // Extracurricular Exercise 4.4.1: Gaussian Naïve Bayes (GNB) classifier
   test_gnb_classifier();
+  return 0;
 }
