@@ -155,6 +155,9 @@ void test_gnb_classifier() {
   }
   float acc = float(n_correct) / y_test.size();
   std::cout << "GNB accuracy: " << (100.0 * acc) << "%" << "\n";
+  if (acc >= 0.70) {
+    std::cout << "Passed!" << "\n";
+  }
 }
 
 
