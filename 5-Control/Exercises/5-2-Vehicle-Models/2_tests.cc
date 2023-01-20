@@ -51,13 +51,16 @@ void test_global_kinematic_model() {
   std::cout << next_state << "\n";
   std::cout << "`next_state` matches `next_state_expected` ";
   std::cout << "(with `epsilon = " << epsilon << " ): ";
-  std::cout << std::boolalpha << next_state.isApprox(next_state_expected);
+  std::cout << std::boolalpha << next_state.isApprox(
+      next_state_expected, 
+      epsilon
+  );
   std::cout << "\n";
 }
 
 
 int main() {
   // Extracurricular Exercise 5.2.1: Global Kinematic Model
-  // test_global_kinematic_model();
+  test_global_kinematic_model();
   return 0;
 }
