@@ -2,7 +2,7 @@
  * Lesson "4.4: Prediction"
  * Authors     : Mahni Shayganfar.
  *
- * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com)
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com) 
  *
  * Purpose of this file: Tests for Extracurricular Exercise 4.4.1.
  * ----------------------------------------------------------------------------
