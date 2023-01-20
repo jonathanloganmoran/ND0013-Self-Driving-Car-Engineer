@@ -4,7 +4,7 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com) 
  *
- * Purpose of this file: Header file for the Global Kinematic motion model.
+ * Purpose of this file: Tests Extracurricular Exercises 5.2.1 through 5.2.4.
  * ----------------------------------------------------------------------------
  */
 
