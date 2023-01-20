@@ -1,5 +1,5 @@
-/* ------------------------------------------------------------------------------
- * Lesson "4.4: Prediction"
+/* ----------------------------------------------------------------------------
+ * Lesson "5.2: Vehicle Motion Models"
  * Authors     : David Siller, Andrew Gray, Dominique Luna.
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com) 
