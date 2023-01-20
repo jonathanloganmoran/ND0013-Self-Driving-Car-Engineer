@@ -25,7 +25,8 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 ### Exercises
 * ✅ [4.1: Behavior Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/Exercises/4-1-Behavior-Planning);
 * ✅ [4.2: Trajectory Generation](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/Exercises/4-2-Trajectory-Generation);
-* ✅ [4.3: Motion Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-3-Motion-Planning/).
+* ✅ [4.3: Motion Planning](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-3-Motion-Planning/);
+* ✅ [4.4: Prediction](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/4-Planning/4-4-Prediction/).
 
 
 ### Course Contents
