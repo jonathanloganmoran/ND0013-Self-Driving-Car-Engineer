@@ -110,6 +110,6 @@ int main() {
   // Extracurricular Exercise 5.2.1: Global Kinematic Model
   test_global_kinematic_model();
   // Extracurricular Exercise 5.2.2: Polynomial Curve Fitting
-  // test_polynomial_fitting();
+  test_polynomial_fitting();
   return 0;
 }
