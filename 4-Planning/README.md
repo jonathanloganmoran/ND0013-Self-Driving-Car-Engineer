@@ -32,17 +32,32 @@ This is Course 4: Planning in the Self-Driving Car Engineer Nanodegree programme
 The following topics are covered in course exercises:
 * Behaviour Planning;
 * Vehicle and environment states;
+* Finite state machines (FSM);
 * State transition functions;
 * Cost functions for the self-driving car;
 * 1D vehicle kinematics;
-* More info coming soon...
+* Motion planning algorithms (Hybrid A*);
+* Heuristics (non-holonomic / holonomic-with-obstacles);  
+* Path planning with polynomial splines;
+* Jerk minimising trajectories;
+* Trajectory generation with velocity profile generators;
+* Collision detection;
+* Motion planning in CARLA Simulator;
+* Multi-modal estimation algorithms;
+* Model-based prediction;
+* Data-driven prediction models;
+* Intent / trajectory classification;
+* ML classifiers;
+* And so much more...
 
 Other topics covered in course lectures and reading material:
 * Motion planner scheduling / cycle updates;
 * Finite-state machines;
 * State spaces for self-driving cars;
+* Cost and objective functions for self-driving cars;
 * Feasability / safety / legality / comfort / efficiency trade-offs;
-* More info coming soon...
+* Schedulers / messaging protocols;
+* And so much more...
 
 
 ### Learning Outcomes
@@ -53,12 +68,11 @@ Other topics covered in course lectures and reading material:
 * Implement a behaviour planner in C++.
 
 #### Lesson 2: Trajectory Generation
-* Use the C++ [`Eigen`]() library to design candidate trajectories in C++;
+* Use the C++ [`Eigen`](https://en.wikipedia.org/wiki/Eigen_\(C%2B%2B_library\)) library to design candidate trajectories in C++;
 * Design and implement the [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) and Hybrid [A*](https://en.wikipedia.org/wiki/A*_search_algorithm) search algorithms in C++;
 * Perform trajectory matching and structured trajectory generation;
 * Implement the quintic and polynomial solvers in C++;
 * Study state-of-the-art path planning nets (e.g., [DeepTraffic](https://arxiv.org/abs/1801.02805)).
-
 
 #### Lesson 3: Motion Planning
 * Familiarise yourself with direct trajectory generation and path / velocity planning;
@@ -66,7 +80,17 @@ Other topics covered in course lectures and reading material:
 * Implement offset goals / boundary conditions in C++;
 * Perform numerical approximation using discretisation;
 * Design and implement velocity profiles in C++;
-* Design and implement circle-based collision detection.
+* Design and implement circle-based collision detection;
+* Write and evaluate motion planning algorithms for the vehicle in the CARLA Simulator.
+
+#### Lesson 4: Prediction
+* Understand model-based and data-driven approaches to prediction;
+* Learn about multi-modal estimators / trajectory clustering algorithms;
+* Implement a hybrid-based approach using the Gaussian Naïve Bayes (GNB) classifier in C++; 
+* Apply the GNB classifier to the vehicle trajectory prediction problem;
+* Formulate process models for lane following (e.g., linear / non-linear point models, dynamic bicycle / non-holonomic kinematic models);
+* Design a data-driven model to collect / process and predict vehicle trajectories.
+
 
 
 ### Material
