@@ -21,7 +21,8 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 
 ### Exercises
-* ✅ [5.1 PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-1-PID-Control).
+* ✅ [5.1: PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-1-PID-Control).
+* ✅ [5.2: Vehicle Motion Models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-2-Vehicle-Models).
 
 
 ### Course Contents
@@ -30,11 +31,19 @@ The following topics are covered in course exercises:
 * Feedback controllers (PID, MPC) for trajectory tracking;
 * Stability in the non-linear case;
 * Controller robustness to real-world perturbations;
-* More info coming soon... 
+* Global kinematic motion model;
+* Polynomial curve fitting;
+* Model Predictive Control (MPC) for self-driving cars;
+* Automatic differentiation in C++;
+* Cost functions;
+* Cross-track error (CTE) and heading angle error (e-psi);
+* More info coming soon...
 
 Other topics covered in course lectures and reading material:
 * Basics of feedback controllers;
 * Various controller principles (P-, PI- PID-controllers);
+* Vehicle and actuator dynamics (e.g., tire forces models, actuator constraints / latency);
+* MPC parameter tuning and trade-offs;
 * More info coming soon...
 
 
@@ -44,6 +53,15 @@ Other topics covered in course lectures and reading material:
 * Design and code the PID controller in Python and C++;
 * Design and code the MPC in C++;
 * Evaluate the efficicacy of several controller types for autonomous vehicles using CARLA Simulator.
+
+#### Lesson 2: Vehicle Motion Models
+* Robot motion models (kinematic and dynamic);
+* Vehicle motion models (kinematic bicycle, complex / dynamics models);
+* Tire forces (slip angle / ratio);
+* Pacejka tire model / "magic tire formula"; 
+* Kinematic model parameters;
+* Actuator constraints;
+* Implementation of kinematic models and polynomial curve fitting in C++.
 
 
 ### Material
@@ -62,3 +80,4 @@ Lectures:
 ### Other resources
 Companion code:
 * [`nd013-c6-control-starter` by @udacity | GitHub](https://github.com/udacity/nd013-c6-control-starter/tree/master);
+* [`CarND-MPC-Quizzes` by @udacity | GitHub](https://github.com/udacity/CarND-MPC-Quizzes).
