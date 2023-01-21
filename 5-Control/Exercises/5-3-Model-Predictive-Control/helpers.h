@@ -1,3 +1,16 @@
+/* ----------------------------------------------------------------------------
+ * Lesson "5.3: Model Predictive Control"
+ * Authors     : David Siller, Andrew Gray, Dominique Luna.
+ *
+ * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com) 
+ *
+ * Purpose of this file: Header file for the polynomial curve fitting function.
+ * ----------------------------------------------------------------------------
+ */
+
+#ifndef HELPERS_H
+#define HELPERS_H
+
 /* Evaluates the `y` coordinates of a given polynomial.
  *
  * @param    coeffs   Coefficients of the fitted polynomial.
@@ -46,3 +59,5 @@ Eigen::VectorXd polyfit(
   Eigen::VectorXd result = Q.solve(yvals);
   return result;
 }
+
+#endif  // HELPERS_H
