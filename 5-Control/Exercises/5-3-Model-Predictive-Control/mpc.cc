@@ -67,7 +67,7 @@ class FG_eval {
   //typedef CPPAD_TESTVECTOR(CppAD::AD::AD<double>) ADvector;
   // `fg` is a vector containing the cost and constraints.
   // `vars` is a vector containing the variable values (state & actuators).
-  void operator()(
+  void operator() (
       CppAD::AD<double>& fg, 
       const CppAD::AD<double>& vars
   ) {
@@ -95,10 +95,25 @@ class FG_eval {
        * TODO: Grab the rest of the states at t+1 and t.
        *   We have given you parts of these states below.
        */
-      CppAD::AD<double> x1 = vars[kX_start + t];
       CppAD::AD<double> x0 = vars[kX_start + t - 1];
+      CppAD::AD<double> x1 = vars[kX_start + t];
       CppAD::AD<double> psi0 = vars[kPsi_start + t - 1];
+      CppAD::AD<double> psi1 = vars[kPsi_start + t];
       CppAD::AD<double> v0 = vars[kV_start + t - 1];
+      CppAD::AD<double> v1 = vars[kV_start + t];
+      CppAD::AD<double> cte0 = vars[kCte_start + t - 1];
+      CppAD::AD<double> cte1 = vars[kCte_start + t];
+      CppAD::AD<double> epsi0 = vars[kEpsi_start + t - 1];
+      CppAD::AD<double> epsi1 = vars[kEpsi_start + t];
+      CppAD::AD<double> delta0 = vars[kDelta_start + t - 1];
+      CppAD::AD<double> delta1 = vars[kDelta_start + t];
+      CppAD::AD<double> a0 = vars[kA_start + t - 1];
+      CppAD::AD<double> a1 = vars[kA_start + t];
+      // Compute the line tangential to the first-order polynomial,
+      // i.e., the reference line $\mathcal{f} = a0 + a1 * x_1$
+      CppAD::AD<double> f_x0 = this->coeffs[0] + this->coeffs[1] * x0;
+      // Evaluating the first-order derivative of $\mathrm{f}$ at $x_t$
+      CppAD::AD<double> psi0_des = CppAD::atan(coeffs[1]);
       // Here's `x` to get you started.
       // The idea here is to constraint this value to be 0.
       // NOTE: The use of `AD<double>` and use of `CppAD`!
@@ -106,8 +121,23 @@ class FG_eval {
       /**
        * TODO: Setup the rest of the model constraints
        */
-      fg[1 + kX_start + t] = (
+      fg[kX_start + t + 1] = (
           x1 - (x0 + v0 * CppAD::cos(psi0) * kDt)
+      );
+      fg[kY_start + t + 1] = (
+          y1 - (y0 + v0 * CppAD::sin(psi0) * kDt)
+      );
+      fg[kPsi_start + t + 1] = (
+          psi1 - (psi0 + (v0 / kL_f) * delta0 * kDt)
+      );
+      fg[kV_start + t + 1] = (
+          v1 - (v0 + a0 * kDt)
+      );
+      fg[kCte_start + t + 1] = (
+          cte1 - ((f_x0 - y0) + (v0 * CppAD::sin(epsi0) * kDt))
+      );
+      fg[kEpsi_start + t + 1] = (
+          epsi1 - (psi0 - psi0_des + (v0 / kL_f) * delta0 * kDt)
       );
     }
   }
@@ -173,20 +203,20 @@ std::vector<double> MPC::solve_controller(
   CppAD::AD<double> vars_upperbound(n_vars);
   // Set all non-actuators upper and lower limits
   // to the max negative and positive values.
-  for (int i = 0; i < delta_start; ++i) {
+  for (int i = 0; i < kDelta_start; ++i) {
     vars_lowerbound[i] = -1.0e19;
     vars_upperbound[i] = 1.0e19;
   }
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians)
   // CANDO: Modify these values.
-  for (int i = delta_start; i < a_start; ++i) {
+  for (int i = kDelta_start; i < kA_start; ++i) {
     vars_lowerbound[i] = -0.436332;
     vars_upperbound[i] = 0.436332;
   }
   // Acceleration / decceleration upper and lower limits
   // CANDO: Modify these values.
-  for (int i = a_start; i < n_vars; ++i) {
+  for (int i = kA_start; i < n_vars; ++i) {
     vars_lowerbound[i] = -1.0;
     vars_upperbound[i] = 1.0;
   }
@@ -237,7 +267,7 @@ std::vector<double> MPC::solve_controller(
          == CppAD::ipopt::solve_result<CppAD::AD<double>>::success
   );
   auto cost = solution.obj_value;
-  std::cout << "Cost " << cost << std::endl;
+  std::cout << "Cost " << cost << "\n";
   return {
       solution.x[kX_start + 1],
       solution.x[kY_start + 1],
