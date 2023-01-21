@@ -83,7 +83,9 @@ class FG_eval {
     // Compute the costs associated with deviation from the reference state
     for (int t = 0; t < kN; ++t) {
       // Penalising deviation from reference velocity
-      fg[0] += std::pow(vars[kV_start + t] - kRef_v, 2);
+      fg[0] += std::pow(
+          (vars[kV_start + t] - kRef_v), 2
+      );
       // Penalising deviation from reference trajectory (i.e, the CTE)
       fg[0] += std::pow(vars[kCte_start + t], 2);
       // Penalising deviation from heading angle (i.e., ePSI)
@@ -92,7 +94,13 @@ class FG_eval {
     // Compute the costs associated with comfort constraints
     for (int t = 0; t < kN; ++t) {
       // Penalising higher change in acceleration values
-      fg[0] += std::pow(vars[kA_start + t + 1] - vars[kA_start + t], 2);
+      fg[0] += std::pow(
+          (vars[kA_start + t + 1] - vars[kA_start + t]), 2
+      );
+      // Penalising higher change in steering input
+      fg[0] += std::pow(
+          (vars[kDelta_start + t + 1] - vars[kDelta_start + t + 1]), 2
+      );
     }
     /**
      * TODO: Define the cost related the reference state and
