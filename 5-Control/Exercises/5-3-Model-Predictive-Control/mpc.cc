@@ -83,6 +83,9 @@ class FG_eval {
     for (int t = 0; t < kN; ++t) {
       // Penalising deviation from reference velocity
       fg[0] += std::pow(vars[kV_start + t] - kRef_v, 2);
+      // Penalising deviation from reference trajectory (i.e, the CTE)
+      fg[0] += std::pow(vars[kCte_start + t], 2);
+      
     } 
     /**
      * TODO: Define the cost related the reference state and
