@@ -79,7 +79,11 @@ class FG_eval {
     // The cost is assumed to be stored as the first element of `fg`.
     // Any additions to the cost value should be added to `fg[0]`.
     fg[0] = 0;
-    // Reference state cost value
+    // Cost associated with deviation from the reference state
+    for (int t = 0; t < kN; ++t) {
+      // Penalising deviation from reference velocity
+      fg[0] += std::pow(vars[kV_start + t] - kRef_v, 2);
+    } 
     /**
      * TODO: Define the cost related the reference state and
      *   anything you think may be beneficial.
