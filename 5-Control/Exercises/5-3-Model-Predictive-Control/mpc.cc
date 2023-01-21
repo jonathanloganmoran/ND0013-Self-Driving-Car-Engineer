@@ -102,6 +102,11 @@ class FG_eval {
           (vars[kDelta_start + t + 1] - vars[kDelta_start + t]), 2
       );
     }
+    // Compute the costs associated with efficiency constraints
+    for (int t = 0; t < kN; ++t) {
+      // Penalising use of acceleration
+      fg[0] += CppAD:pow(vars[kA_start + t], 2);
+    }
     /**
      * TODO: Define the cost related the reference state and
      *   anything you think may be beneficial.
