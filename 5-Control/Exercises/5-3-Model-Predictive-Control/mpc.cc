@@ -90,7 +90,7 @@ class FG_eval {
     fg[1 + kCte_start] = vars[kCte_start];
     fg[1 + kEpsi_start] = vars[kEpsi_start];
     // Setting the remaining model constraints
-    for (int t = 1; t < N; ++t) {
+    for (int t = 1; t < kN; ++t) {
       /**
        * TODO: Grab the rest of the states at t+1 and t.
        *   We have given you parts of these states below.
@@ -151,9 +151,9 @@ std::vector<double> MPC::solve_controller(
   double epsi = x0[5];
   // Set the number of independent variables
   // N timesteps == N - 1 actuations
-  size_t n_vars = N * 6 + (N - 1) * 2;
+  size_t n_vars = kN * 6 + (kN - 1) * 2;
   // Number of constraints
-  size_t n_constraints = N * 6;
+  size_t n_constraints = kN * 6;
   // Initial value of the independent variables
   // Should be 0 except for the initial values.
   //CppAD::AD::Dvector vars(n_vars);
@@ -179,13 +179,13 @@ std::vector<double> MPC::solve_controller(
   }
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians)
-  // NOTE: Feel free to change this to something else.
+  // CANDO: Modify these values.
   for (int i = delta_start; i < a_start; ++i) {
     vars_lowerbound[i] = -0.436332;
     vars_upperbound[i] = 0.436332;
   }
   // Acceleration / decceleration upper and lower limits
-  // NOTE: Feel free to change this to something else.
+  // CANDO: Modify these values.
   for (int i = a_start; i < n_vars; ++i) {
     vars_lowerbound[i] = -1.0;
     vars_upperbound[i] = 1.0;
@@ -199,18 +199,18 @@ std::vector<double> MPC::solve_controller(
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
-  constraints_lowerbound[x_start] = x;
-  constraints_lowerbound[y_start] = y;
-  constraints_lowerbound[psi_start] = psi;
-  constraints_lowerbound[v_start] = v;
-  constraints_lowerbound[cte_start] = cte;
-  constraints_lowerbound[epsi_start] = epsi;
-  constraints_upperbound[x_start] = x;
-  constraints_upperbound[y_start] = y;
-  constraints_upperbound[psi_start] = psi;
-  constraints_upperbound[v_start] = v;
-  constraints_upperbound[cte_start] = cte;
-  constraints_upperbound[epsi_start] = epsi;
+  constraints_lowerbound[kX_start] = x;
+  constraints_lowerbound[kY_start] = y;
+  constraints_lowerbound[kPsi_start] = psi;
+  constraints_lowerbound[kV_start] = v;
+  constraints_lowerbound[kCte_start] = cte;
+  constraints_lowerbound[kEpsi_start] = epsi;
+  constraints_upperbound[kX_start] = x;
+  constraints_upperbound[kY_start] = y;
+  constraints_upperbound[kPsi_start] = psi;
+  constraints_upperbound[kV_start] = v;
+  constraints_upperbound[kCte_start] = cte;
+  constraints_upperbound[kEpsi_start] = epsi;
   // Initialise the class that computes objective and constraints
   FG_eval fg_eval(coeffs);
   // Setting the differentiation options
@@ -239,13 +239,13 @@ std::vector<double> MPC::solve_controller(
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << std::endl;
   return {
-      solution.x[x_start + 1],
-      solution.x[y_start + 1],
-      solution.x[psi_start + 1], 
-      solution.x[v_start + 1],
-      solution.x[cte_start + 1], 
-      solution.x[epsi_start + 1],
-      solution.x[delta_start], 
-      solution.x[a_start]
+      solution.x[kX_start + 1],
+      solution.x[kY_start + 1],
+      solution.x[kPsi_start + 1], 
+      solution.x[kV_start + 1],
+      solution.x[kCte_start + 1], 
+      solution.x[kEpsi_start + 1],
+      solution.x[kDelta_start], 
+      solution.x[kA_start]
   };
 }
