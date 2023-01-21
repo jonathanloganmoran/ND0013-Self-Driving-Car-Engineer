@@ -23,10 +23,9 @@
  * TODO: Set N and dt
  */
 // Number of time-steps of the time horizon
-const size_t kN = ? ;
+const size_t kN = 9;
 // Delta-time, i.e., elapsed time (s) between actuations
-const double kDt = ? ;
-
+const double kDt = 0.5;
 // This is the length from front to CoG that has a similar radius.
 // Length (m) taken from the vehicle's centre of mass (CoG) to the front axle
 // NOTE: this value has been estimated via simulation, i.e., obtained by
@@ -34,11 +33,9 @@ const double kDt = ? ;
 // steering angle and constant velocity on flat terrian. The `kL_f` parameter
 // here was tuned until the simulation radius was congruent with circle.
 const double kL_f = 2.67;
-
 // Vehicle reference velocity (m/s)
 // CANDO: modify this value.
 double kRef_v = 40;
-
 /*** Defining state / actuator vector boundaries ****/
 // The solver assumes the state variables and actuator variables are stored
 // in a singular vector. Thus, we define here the boundaries of the variables'
@@ -51,6 +48,11 @@ const size_t kCte_start = kV_start + kN;
 const size_t kEpsi_start = kCte_start + kN;
 const size_t kDelta_start = kEpsi_start + kN;
 const size_t kA_start = kDelta_start + kN - 1;
+
+
+// MPC class definition
+MPC::MPC() {}
+MPC::~MPC() {}
 
 
 /* Solver for the non-linear model used in the MPC controller. 
@@ -171,12 +173,7 @@ class FG_eval {
 };
 
 
-// MPC class definition
-MPC::MPC() {}
-MPC::~MPC() {}
-
-
-/* Implements the MPC non-linear optimisation function solver. 
+/* Implements the IPOPT non-linear optimisation function solver for the MPC. 
  *
  * The MPC controller defined here is used to perform a "follow" manoeuvre
  * with minimal cost. A "follow" manoeuvre consists of maintaining a trajectory
@@ -187,7 +184,7 @@ MPC::~MPC() {}
  * desired vehicle heading.
  * 
  * Used here to solve the non-linear function is the `CppAD::AD::solver()`
- * function which uses automatic differentiation (AD) to estimate the
+ * IPOPT function which uses automatic differentiation (AD) to estimate the
  * Jacobian and Hessians needed to derive the cost-minimised vector of 
  * next-state values.  
  * 
