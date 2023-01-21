@@ -99,7 +99,7 @@ class FG_eval {
       );
       // Penalising higher change in steering input
       fg[0] += std::pow(
-          (vars[kDelta_start + t + 1] - vars[kDelta_start + t + 1]), 2
+          (vars[kDelta_start + t + 1] - vars[kDelta_start + t]), 2
       );
     }
     /**
