@@ -4,7 +4,7 @@
  *
  * Modified by : Jonathan L. Moran (jonathan.moran107@gmail.com) 
  *
- * Purpose of this file: Tests Extracurricular Exercises 5.2.1 through 5.2.4.
+ * Purpose of this file: Tests Extracurricular Exercises 5.2.1 through 5.2.2.
  * ----------------------------------------------------------------------------
  */
 
@@ -104,7 +104,7 @@ void test_polynomial_fitting() {
 }
 
 
-/* Tests the Extracurricular Exercises 5.2.1 through 5.2.4.
+/* Tests the Extracurricular Exercises 5.2.1 through 5.2.2.
  */
 int main() {
   // Extracurricular Exercise 5.2.1: Global Kinematic Model
