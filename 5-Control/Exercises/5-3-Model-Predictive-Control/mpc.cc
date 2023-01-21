@@ -61,12 +61,17 @@ const size_t kA_start = kDelta_start + kN - 1;
  */
 class FG_eval {
  public:
+  // Stores the coefficients of the polynomial function
   Eigen::VectorXd coeffs;
   // Initialise the class instance with the given polynomial coefficients
   FG_eval(Eigen::VectorXd coeffs) : this->coeffs(coeffs) {}
   //typedef CPPAD_TESTVECTOR(CppAD::AD::AD<double>) ADvector;
-  // `fg` is a vector containing the cost and constraints.
-  // `vars` is a vector containing the variable values (state & actuators).
+
+  /* Updates the state and actuator values with the computed values. 
+   *
+   * @param  fg    Vector containing the cost and constraints.
+   * @param  vars  Vector containing the variable values (state & actuators).
+   */
   void operator() (
       CppAD::AD<double>& fg, 
       const CppAD::AD<double>& vars
@@ -79,22 +84,18 @@ class FG_eval {
      * TODO: Define the cost related the reference state and
      *   anything you think may be beneficial.
      */
-    /*** Defining the model constraints ***/
+    /*** Updating the model constraints (state and actuator commands) ***/
     // Set the initial model constraints
-    // We add `1` to each of the starting indices since
-    // cost is located at index 0 of `fg`.
-    fg[1 + kX_start] = vars[kX_start];
-    fg[1 + kY_start] = vars[kY_start];
-    fg[1 + kPsi_start] = vars[kPsi_start];
-    fg[1 + kV_start] = vars[kV_start];
-    fg[1 + kCte_start] = vars[kCte_start];
-    fg[1 + kEpsi_start] = vars[kEpsi_start];
+    // Adding `1` to starting indices since cost is the first element `fg[0]`
+    fg[kX_start + 1] = vars[kX_start];
+    fg[kY_start + 1] = vars[kY_start];
+    fg[kPsi_start + 1] = vars[kPsi_start];
+    fg[kV_start + 1] = vars[kV_start];
+    fg[kCte_start + 1] = vars[kCte_start];
+    fg[kEpsi_start + 1] = vars[kEpsi_start];
     // Setting the remaining model constraints
     for (int t = 1; t < kN; ++t) {
-      /**
-       * TODO: Grab the rest of the states at t+1 and t.
-       *   We have given you parts of these states below.
-       */
+      // Get the previous and current state values
       CppAD::AD<double> x0 = vars[kX_start + t - 1];
       CppAD::AD<double> x1 = vars[kX_start + t];
       CppAD::AD<double> psi0 = vars[kPsi_start + t - 1];
@@ -105,6 +106,7 @@ class FG_eval {
       CppAD::AD<double> cte1 = vars[kCte_start + t];
       CppAD::AD<double> epsi0 = vars[kEpsi_start + t - 1];
       CppAD::AD<double> epsi1 = vars[kEpsi_start + t];
+      // Get the previous and current actuator values
       CppAD::AD<double> delta0 = vars[kDelta_start + t - 1];
       CppAD::AD<double> delta1 = vars[kDelta_start + t];
       CppAD::AD<double> a0 = vars[kA_start + t - 1];
@@ -114,13 +116,7 @@ class FG_eval {
       CppAD::AD<double> f_x0 = this->coeffs[0] + this->coeffs[1] * x0;
       // Evaluating the first-order derivative of $\mathrm{f}$ at $x_t$
       CppAD::AD<double> psi0_des = CppAD::atan(coeffs[1]);
-      // Here's `x` to get you started.
-      // The idea here is to constraint this value to be 0.
-      // NOTE: The use of `AD<double>` and use of `CppAD`!
-      // CppAD can compute derivatives and pass these to the solver
-      /**
-       * TODO: Setup the rest of the model constraints
-       */
+      // Updating all state values to the next-state
       fg[kX_start + t + 1] = (
           x1 - (x0 + v0 * CppAD::cos(psi0) * kDt)
       );
