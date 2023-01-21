@@ -103,14 +103,18 @@ class FG_eval {
       );
     }
     // Compute the costs associated with efficiency constraints
+    // NOTE: we use these costs to encourage goal-directed behaviour
+    // of the vehicle in a lane-keeping manoevure
+    // CANDO: modify these costs to accomodate the desired scenario
+    // i.e., decrease cost associated with steering for urban driving
     for (int t = 0; t < kN; ++t) {
-      // Penalising use of acceleration
-      fg[0] += CppAD:pow(vars[kA_start + t], 2);
+      // Penalising use of throttle (acceleration), since we want to
+      // encourage a fuel-efficient behaviour in this nominal scenario
+      fg[0] += CppAD::pow(vars[kA_start + t], 2);
+      // Penalising use of steering input, since we want the vehicle to
+      // not veer too significantly from the in-lane reference trajectory
+      fg[0] += CppAD::pow(vars[kDelta_start + t], 2);
     }
-    /**
-     * TODO: Define the cost related the reference state and
-     *   anything you think may be beneficial.
-     */
     /*** Updating the model constraints (state and actuator commands) ***/
     // Set the initial model constraints
     // Adding `1` to starting indices since cost is the first element `fg[0]`
