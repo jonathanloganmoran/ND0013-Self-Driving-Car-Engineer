@@ -76,10 +76,11 @@ class FG_eval {
       CppAD::AD<double>& fg, 
       const CppAD::AD<double>& vars
   ) {
-    // The cost is assumed to be stored as the first element of `fg`.
-    // Any additions to the cost value should be added to `fg[0]`.
+    /*** Computing the cost functions ***/
+    // NOTE: the cost is assumed to be stored as the first element of `fg`,
+    // any additions to the cost value should be added to `fg[0]`.
     fg[0] = 0;
-    // Cost associated with deviation from the reference state
+    // Compute the costs associated with deviation from the reference state
     for (int t = 0; t < kN; ++t) {
       // Penalising deviation from reference velocity
       fg[0] += std::pow(vars[kV_start + t] - kRef_v, 2);
@@ -88,6 +89,11 @@ class FG_eval {
       // Penalising deviation from heading angle (i.e., ePSI)
       fg[0] += std::pow(vars[kEpsi_start + t], 2);
     } 
+    // Compute the costs associated with comfort constraints
+    for (int t = 0; t < kN; ++t) {
+      // Penalising higher change in acceleration values
+      fg[0] += std::pow(vars[kA_start + t + 1] - vars[kA_start + t], 2);
+    }
     /**
      * TODO: Define the cost related the reference state and
      *   anything you think may be beneficial.
