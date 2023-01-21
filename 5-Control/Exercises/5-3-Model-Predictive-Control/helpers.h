@@ -11,6 +11,9 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
+#include "include/eigen-3.3.7/Eigen/QR"         // `householderQr()`
+
+
 /* Evaluates the `y` coordinates of a given polynomial.
  *
  * @param    coeffs   Coefficients of the fitted polynomial.

@@ -9,11 +9,6 @@
  */
 
 #include "mpc.h"
-#include <math.h>
-#include <cppad/cppad.hpp>
-#include <cppad/ipopt/solve.hpp>
-#include <vector>
-#include "Eigen-3.3/Eigen/Core"
 
 //using CppAD::AD;
 //using Eigen::VectorXd;

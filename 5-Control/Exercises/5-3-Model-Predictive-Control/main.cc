@@ -9,10 +9,8 @@
  */
 
 #include "mpc.h"
-#include "helpers.h"
-#include "matplotlibcpp.h"
-#include "Eigen-3.3/Eigen/QR"
-#include <vector>
+#include "matplotlibcpp.h"           // Plot controller and actuator values
+#include <vector>                    // Store simulation history
 
 namespace plt = matplotlibcpp;
 
