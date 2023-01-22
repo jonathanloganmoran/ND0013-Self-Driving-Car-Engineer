@@ -9,6 +9,7 @@
  */
 
 #include "mpc.h"
+#include "helpers.h"                 // Get coefficients of the polynomial
 #include "matplotlibcpp.h"           // Plot controller and actuator values
 #include <vector>                    // Store simulation history
 
@@ -47,24 +48,20 @@ int main() {
   Eigen::VectorXd ptsy(2);
   ptsx << -100, 100;
   ptsy << -1, -1;
-  /**
-   * TODO: fit a polynomial to the above x and y coordinates
-   */
-  auto coeffs = ? ;
+  // Fitting a first-order polynomial, i.e., the reference line
+  auto coeffs = polyfit(ptsx, ptsy, 1);
   // Set the initial state values
   // CANDO: modify these values
   double x = -1;
   double y = 10;
   double psi = 0;
   double v = 10;
-  /**
-   * TODO: calculate the cross track error
-   */
-  double cte = ? ;
-  /**
-   * TODO: calculate the orientation error
-   */
-  double epsi = ? ;
+  // Compute the cross-track error (CTE), i.e., the difference
+  // between current position and reference line about the $y$-axis 
+  double cte = polyeval(coeffs, x) - y;
+  // Compute the orientation error, i.e., the difference
+  // between the desired heading and the angle tangential to reference line 
+  double epsi = psi - std::atan(coeffs[1]);
   Eigen::VectorXd state(6);
   // Read in the initial state vector values
   state << x, y, psi, v, cte, epsi;
@@ -82,7 +79,7 @@ int main() {
   for (size_t i = 0; i < iters; ++i) {
     std::cout << "Iteration " << i << "\n";
     // Solve the non-linear optimisation problem with IPOPT
-    auto vars = mpc.Solve(state, coeffs);
+    auto vars = mpc.solve_controller(state, coeffs);
     // Append the next-state values to the state history vectors
     x_vals.push_back(vars[0]);
     y_vals.push_back(vars[1]);
