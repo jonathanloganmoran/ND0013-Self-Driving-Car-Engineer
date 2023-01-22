@@ -94,7 +94,7 @@ class FG_eval {
       fg[0] += std::pow(vars[kEpsi_start + t], 2);
     } 
     // Compute the costs associated with comfort constraints
-    for (int t = 0; t < kN; ++t) {
+    for (int t = 0; t < kN - 2; ++t) {
       // Penalising higher change in acceleration values
       fg[0] += std::pow(
           (vars[kA_start + t + 1] - vars[kA_start + t]), 2
@@ -109,7 +109,7 @@ class FG_eval {
     // of the vehicle in a lane-keeping manoevure
     // CANDO: modify these costs to accomodate the desired scenario
     // i.e., decrease cost associated with steering for urban driving
-    for (int t = 0; t < kN; ++t) {
+    for (int t = 0; t < kN - 1; ++t) {
       // Penalising use of throttle (acceleration), since we want to
       // encourage a fuel-efficient behaviour in this nominal scenario
       fg[0] += CppAD::pow(vars[kA_start + t], 2);
