@@ -20,7 +20,7 @@
 // Number of time-steps of the time horizon
 const size_t kN = 30;
 // Delta-time, i.e., elapsed time (s) between actuations
-const double kDt = 0.01;
+const double kDt = 0.001;
 // This is the length from front to CoG that has a similar radius.
 // Length (m) taken from the vehicle's centre of mass (CoG) to the front axle
 // NOTE: this value has been estimated via simulation, i.e., obtained by
