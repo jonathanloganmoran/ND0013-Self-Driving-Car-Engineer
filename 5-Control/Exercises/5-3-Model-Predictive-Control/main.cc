@@ -12,6 +12,9 @@
 #include "helpers.h"                 // Get coefficients of the polynomial
 #include "matplotlibcpp.h"           // Plot controller and actuator values
 #include <vector>                    // Store simulation history
+#include <cstring>
+#include <string>                    // Matplotlib plotting parameters
+#include <map>                       // Matplotlib plotting parameters
 
 namespace plt = matplotlibcpp;
 
@@ -103,15 +106,36 @@ int main() {
     std::cout << "\n";
   }
   /*** Plotting the actuator and error values with Matplotlib ***/
-  // CANDO: modify the plotting for debugging purposes
+  // CANDO: modify the plotting for debugging or stylistic purposes
   plt::subplot(3, 1, 1);
-  plt::title("CTE");
-  plt::plot(cte_vals);
+  std::map<std::string, std::string> mpl_params;
+  mpl_params["fontname"] = "Times New Roman";
+  mpl_params["fontsize"] = "24";
+  plt::suptitle(
+      "Model Predictive Control (MPC) for Vehicle 'Follow Lane' Trajectory",
+      mpl_params
+  );
+  mpl_params["fontsize"] = "20";
+  plt::title("Cross-Track Error — CTE (m)",
+      mpl_params
+  );
+  plt::plot(cte_vals, "r"
+      // {{"fmt", "r"}, {"label", "\mathrm{CTE}"}}
+  );
   plt::subplot(3, 1, 2);
-  plt::title("Delta (Radians)");
-  plt::plot(delta_vals);
+  plt::title("Steering Input — Delta (radians)",
+      mpl_params
+  );
+  plt::plot(delta_vals, "g"
+      // {{"fmt", "g"}, {"label", "$\delta$ (rad)"}}
+  );
   plt::subplot(3, 1, 3);
-  plt::title("Velocity");
-  plt::plot(v_vals);
+  plt::title("Velocity (m/s)",
+      mpl_params
+  );
+  plt::plot(v_vals, "b"
+      // {{"fmt" , "b"}, {"label", "$\mathrm{m}/\mathrm{s}"}}
+  );
+  //plt::legend();
   plt::show();
 }
