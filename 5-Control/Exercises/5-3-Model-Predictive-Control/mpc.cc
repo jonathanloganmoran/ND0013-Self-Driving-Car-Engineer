@@ -66,7 +66,7 @@ class FG_eval {
   // Stores the coefficients of the polynomial function
   Eigen::VectorXd coeffs;
   // Initialise the class instance with the given polynomial coefficients
-  FG_eval(Eigen::VectorXd coeffs) : this->coeffs(coeffs) {}
+  FG_eval(Eigen::VectorXd coeffs) : coeffs(coeffs) {}
   //typedef CPPAD_TESTVECTOR(CppAD::AD::AD<double>) ADvector;
 
   /* Updates the state and actuator values with the computed values. 
