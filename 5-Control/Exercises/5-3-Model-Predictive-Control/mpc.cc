@@ -10,6 +10,9 @@
 
 #include "mpc.h"
 
+//typedef CPPAD_TESTVECTOR(CppAD::AD<double>) ADvector;
+//typedef CPPAD_TESTVECTOR(double) Dvector;
+
 //using CppAD::AD;
 //using Eigen::VectorXd;
 /*** Initialising the Model Predictive Control (MPC) hyperparameters ****/
@@ -58,6 +61,8 @@ MPC::~MPC() {}
  */
 class FG_eval {
  public:
+  // Used in IPOPT solver (`cppad/ipopt/solve.hpp`)
+  typedef CPPAD_TESTVECTOR(CppAD::AD<double>) ADvector;
   // Stores the coefficients of the polynomial function
   Eigen::VectorXd coeffs;
   // Initialise the class instance with the given polynomial coefficients
@@ -70,8 +75,8 @@ class FG_eval {
    * @param  vars  Vector containing the variable values (state & actuators).
    */
   void operator() (
-      CppAD::AD<double>& fg, 
-      const CppAD::AD<double>& vars
+      ADvector& fg, 
+      const ADvector& vars
   ) {
     /*** Computing the cost functions ***/
     // NOTE: the cost is assumed to be stored as the first element of `fg`,
@@ -126,6 +131,8 @@ class FG_eval {
       // Get the previous and current state values
       CppAD::AD<double> x0 = vars[kX_start + t - 1];
       CppAD::AD<double> x1 = vars[kX_start + t];
+      CppAD::AD<double> y0 = vars[kY_start + t - 1];
+      CppAD::AD<double> y1 = vars[kY_start + t];
       CppAD::AD<double> psi0 = vars[kPsi_start + t - 1];
       CppAD::AD<double> psi1 = vars[kPsi_start + t];
       CppAD::AD<double> v0 = vars[kV_start + t - 1];
@@ -136,9 +143,9 @@ class FG_eval {
       CppAD::AD<double> epsi1 = vars[kEpsi_start + t];
       // Get the previous and current actuator values
       CppAD::AD<double> delta0 = vars[kDelta_start + t - 1];
-      CppAD::AD<double> delta1 = vars[kDelta_start + t];
+      //CppAD::AD<double> delta1 = vars[kDelta_start + t];
       CppAD::AD<double> a0 = vars[kA_start + t - 1];
-      CppAD::AD<double> a1 = vars[kA_start + t];
+      //CppAD::AD<double> a1 = vars[kA_start + t];
       // Compute the line tangential to the first-order polynomial,
       // i.e., the reference line $\mathcal{f} = a0 + a1 * x_1$
       CppAD::AD<double> f_x0 = this->coeffs[0] + this->coeffs[1] * x0;
@@ -191,7 +198,8 @@ std::vector<double> MPC::solve_controller(
     const Eigen::VectorXd& x0, 
     const Eigen::VectorXd& coeffs
 ) {
-  //typedef CPPAD_TESTVECTOR(double) Dvector;
+  // Used in IPOPT solver 
+  typedef CPPAD_TESTVECTOR(double) Dvector;
   double x = x0[0];
   double y = x0[1];
   double psi = x0[2];
@@ -206,20 +214,20 @@ std::vector<double> MPC::solve_controller(
   // Initial value of the independent variables
   // Should be 0 except for the initial values.
   //CppAD::AD::Dvector vars(n_vars);
-  CppAD::AD<double> vars(n_vars);
+  Dvector vars(n_vars);
   for (int i = 0; i < n_vars; ++i) {
     vars[i] = 0.0;
   }
   // Set the initial variable values
-  vars[x_start] = x;
-  vars[y_start] = y;
-  vars[psi_start] = psi;
-  vars[v_start] = v;
-  vars[cte_start] = cte;
-  vars[epsi_start] = epsi;
+  vars[kX_start] = x;
+  vars[kY_start] = y;
+  vars[kPsi_start] = psi;
+  vars[kV_start] = v;
+  vars[kCte_start] = cte;
+  vars[kEpsi_start] = epsi;
   // Lower and upper limits for x
-  CppAD::AD<double> vars_lowerbound(n_vars);
-  CppAD::AD<double> vars_upperbound(n_vars);
+  Dvector vars_lowerbound(n_vars);
+  Dvector vars_upperbound(n_vars);
   // Set all non-actuators upper and lower limits
   // to the max negative and positive values.
   for (int i = 0; i < kDelta_start; ++i) {
@@ -242,8 +250,8 @@ std::vector<double> MPC::solve_controller(
   // Lower and upper limits for constraints
   // All of these should be 0 except the initial
   // state indices.
-  CppAD::AD<double> constraints_lowerbound(n_constraints);
-  CppAD::AD<double> constraints_upperbound(n_constraints);
+  Dvector constraints_lowerbound(n_constraints);
+  Dvector constraints_upperbound(n_constraints);
   for (int i = 0; i < n_constraints; ++i) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
@@ -268,9 +276,9 @@ std::vector<double> MPC::solve_controller(
   options += "Sparse  true        forward\n";
   options += "Sparse  true        reverse\n";
   // Store the returned solution
-  CppAD::ipopt::solve_result<CppAD::AD<double>> solution;
+  CppAD::ipopt::solve_result<Dvector> solution;
   // Solve the non-linear optimisation problem using automatic differentiation
-  CppAD::ipopt::solve<CppAD::AD<double>, FG_eval>(
+  CppAD::ipopt::solve<Dvector, FG_eval>(
       options,
       vars, 
       vars_lowerbound, 
@@ -283,7 +291,7 @@ std::vector<double> MPC::solve_controller(
   // Perform sanity check on some of the solution values
   bool ok = true;
   ok &= (solution.status 
-         == CppAD::ipopt::solve_result<CppAD::AD<double>>::success
+         == CppAD::ipopt::solve_result<Dvector>::success
   );
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << "\n";
