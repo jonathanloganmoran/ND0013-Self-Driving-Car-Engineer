@@ -141,7 +141,9 @@ class FG_eval {
       CppAD::AD<double> cte1 = vars[kCte_start + t];
       CppAD::AD<double> epsi0 = vars[kEpsi_start + t - 1];
       CppAD::AD<double> epsi1 = vars[kEpsi_start + t];
-      // Get the previous and current actuator values
+      // Get the previous actuator values
+      // NOTE: accessing "current" values throws out-of-bounds error
+      // i.e., current actuator values not stored in the `vars` vector
       CppAD::AD<double> delta0 = vars[kDelta_start + t - 1];
       //CppAD::AD<double> delta1 = vars[kDelta_start + t];
       CppAD::AD<double> a0 = vars[kA_start + t - 1];
