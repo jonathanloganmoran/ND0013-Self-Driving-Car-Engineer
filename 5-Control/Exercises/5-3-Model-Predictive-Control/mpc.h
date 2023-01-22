@@ -11,10 +11,11 @@
 #ifndef MPC_H
 #define MPC_H
 
-#include "helpers.h"                            // `polyfit()`, `polyeval()` 
+//#include "helpers.h"                            // `polyfit()`, `polyeval()` 
 #include "eigen-3.3.7/Eigen/Core"               // `Eigen::VectorXd`
 #include <cppad/cppad.hpp>                      // `CppAD::AD`
 #include <cppad/ipopt/solve.hpp>                // `CppAD::ipopt::solve`
+#include <math.h>
 #include <cmath>
 #include <vector>
 
