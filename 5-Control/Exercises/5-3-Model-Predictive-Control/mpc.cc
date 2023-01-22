@@ -17,9 +17,6 @@
 //using Eigen::VectorXd;
 /*** Initialising the Model Predictive Control (MPC) hyperparameters ****/
 // NOTE: All programme and MPC constants are defined with a leading 'k'
-/**
- * TODO: Set N and dt
- */
 // Number of time-steps of the time horizon
 const size_t kN = 9;
 // Delta-time, i.e., elapsed time (s) between actuations
