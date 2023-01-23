@@ -22,7 +22,8 @@ This is Course 5: Control in the Self-Driving Car Engineer Nanodegree programme 
 
 ### Exercises
 * ✅ [5.1: PID Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-1-PID-Control).
-* ✅ [5.2: Vehicle Motion Models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-2-Vehicle-Models).
+* ✅ [5.2: Vehicle Motion Models](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-2-Vehicle-Models);
+* ✅ [5.3: Model Predictive Control](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/tree/main/5-Control/Exercises/5-3-Model-Predictive-Control).
 
 
 ### Course Contents
@@ -34,17 +35,18 @@ The following topics are covered in course exercises:
 * Global kinematic motion model;
 * Polynomial curve fitting;
 * Model Predictive Control (MPC) for self-driving cars;
-* Automatic differentiation in C++;
+* Automatic differentiation in C++ using [CppAD](https://coin-or.github.io/CppAD/doc/cppad.htm);
 * Cost functions;
 * Cross-track error (CTE) and heading angle error (e-psi);
-* More info coming soon...
+* Plotting with Matplotlib in C++;
+* Configuring CMAKE files;
+* Optimising parameters for Model Predictive Control (MPC) controllers.
 
 Other topics covered in course lectures and reading material:
 * Basics of feedback controllers;
 * Various controller principles (P-, PI- PID-controllers);
 * Vehicle and actuator dynamics (e.g., tire forces models, actuator constraints / latency);
-* MPC parameter tuning and trade-offs;
-* More info coming soon...
+* MPC parameter tuning and trade-offs.
 
 
 ### Learning Outcomes
@@ -62,6 +64,13 @@ Other topics covered in course lectures and reading material:
 * Kinematic model parameters;
 * Actuator constraints;
 * Implementation of kinematic models and polynomial curve fitting in C++.
+
+#### Lesson 3: Model Predictive Control
+* Forming trajectory tracking as an optimisation problem;
+* Defining cost functions w.r.t. feasibility, comfort, and efficiency constraints;
+* Realising estimated trajectories and computing their cost;
+* Obtaining the lowest-cost trajectory with automatic differentiation;
+* Using MPC controllers for vehicle trajectory tracking in C++.
 
 
 ### Material
