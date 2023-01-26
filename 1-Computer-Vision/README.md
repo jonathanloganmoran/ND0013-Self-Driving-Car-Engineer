@@ -3,7 +3,7 @@
 #### By Jonathan L. Moran (jonathan.moran107@gmail.com)
 From the Self-Driving Car Engineer Nanodegree programme offered at Udacity.
 
-This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree programme taught by Thomas Hossler and Cezanne Camacho.
+This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree programme taught by Thomas Hossler, Cezanne Camacho, and Kelvin Lwin.
 
 
 ### Course Objectives
@@ -34,6 +34,7 @@ This is Course 1: Computer Vision in the Self-Driving Car Engineer Nanodegree pr
 * ✅ 1.5.1: [Non-Maximum Suppression (NMS) and Soft-NMS](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-1-Non-Maximum-Suppression/2022-09-21-Non-Maximum-Suppression.ipynb);
 * ✅ 1.5.2: [Mean Average Precision (mAP)](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-2-Mean-Average-Precision/2022-09-25-Mean-Average-Precision.ipynb);
 * ✅ 1.5.3: [Learning Rate Schedules and Adaptive Learning Rate methods](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-5-3-Learning-Rate-Schedules/2022-09-28-Learning-Rate-Schedules.ipynb).
+* ✅ 1.6.1: [Fully Convolutional Networks](https://github.com/jonathanloganmoran/ND0013-Self-Driving-Car-Engineer/blob/main/1-Computer-Vision/Exercises/1-6-1-Fully-Convolutional-Networks/2023-01-23-Fully-Convolutional-Networks.ipynb).
 
 
 ### Course Contents
@@ -78,7 +79,10 @@ The following topics are covered in course exercises:
 * Complex model architectures and components (SSDs, RetinaNet, FPNs, RCNNs, SPPs)
 * Improving object detection models for the self-driving car domain
 * Monitoring GPU utilisation during training (and large-scale training on TPUs!)
-* And so much more!
+* Designing skip connections;
+* Transposed convolution layers;
+* Fully Convolutional Networks and their performance (e.g., FPN-8);
+* And so much more...
 
 
 Other topics covered in course lectures and reading material:
@@ -133,7 +137,13 @@ Other topics covered in course lectures and reading material:
 * Calculate Mean Average Precision (mAP);
 * Choose hyper parameters to optimise a neural network.
 
-
+#### Lesson 6: Fully Convolutional Networks
+* Converting fully-connected to 1x1 convolution layers;
+* Using transposed convolutions to upsample feature maps;
+* Designing skip connections to improve segmentation map granularity;
+* Encoder / decoder network architectures;
+* Comparing the performance of fully convolutional networks (e.g., FCN-8s) to traditional CNNs;
+* Implementing fully convolutional networks in TensorFlow using Sequential and Function API design patterns.
 
 ### Material
 Syllabus:
