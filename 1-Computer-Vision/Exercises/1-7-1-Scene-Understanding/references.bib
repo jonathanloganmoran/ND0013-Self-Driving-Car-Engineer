@@ -1,12 +1,26 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for Jonathan Moran at 2023-01-28 11:59:07 -0800 
+%% Created for Jonathan Moran at 2023-01-30 03:25:18 -0800 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@inproceedings{10.1007/978-3-319-46448-0_2,
+	abstract = {We present a method for detecting objects in images using a single deep neural network. Our approach, named SSD, discretizes the output space of bounding boxes into a set of default boxes over different aspect ratios and scales per feature map location. At prediction time, the network generates scores for the presence of each object category in each default box and produces adjustments to the box to better match the object shape. Additionally, the network combines predictions from multiple feature maps with different resolutions to naturally handle objects of various sizes. SSD is simple relative to methods that require object proposals because it completely eliminates proposal generation and subsequent pixel or feature resampling stages and encapsulates all computation in a single network. This makes SSD easy to train and straightforward to integrate into systems that require a detection component. Experimental results on the PASCAL VOC, COCO, and ILSVRC datasets confirm that SSD has competitive accuracy to methods that utilize an additional object proposal step and is much faster, while providing a unified framework for both training and inference. For {\$}{\$}300 {\backslash}times 300{\$}{\$}300{\texttimes}300input, SSD achieves 74.3 {\%} mAP on VOC2007 test at 59 FPS on a Nvidia Titan X and for {\$}{\$}512 {\backslash}times 512{\$}{\$}512{\texttimes}512input, SSD achieves 76.9 {\%} mAP, outperforming a comparable state of the art Faster R-CNN model. Compared to other single stage methods, SSD has much better accuracy even with a smaller input image size. Code is available at https://github.com/weiliu89/caffe/tree/ssd.},
+	address = {Cham},
+	author = {Liu, Wei and Anguelov, Dragomir and Erhan, Dumitru and Szegedy, Christian and Reed, Scott and Fu, Cheng-Yang and Berg, Alexander C.},
+	booktitle = {Computer Vision -- ECCV 2016},
+	date-added = {2023-01-30 03:25:15 -0800},
+	date-modified = {2023-01-30 03:25:15 -0800},
+	editor = {Leibe, Bastian and Matas, Jiri and Sebe, Nicu and Welling, Max},
+	isbn = {978-3-319-46448-0},
+	pages = {21--37},
+	publisher = {Springer International Publishing},
+	title = {SSD: Single Shot MultiBox Detector},
+	year = {2016}}
 
 @misc{https://doi.org/10.48550/arxiv.1411.4038,
 	abstract = {Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build "fully convolutional" networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet, the VGG net, and GoogLeNet) into fully convolutional networks and transfer their learned representations by fine-tuning to the segmentation task. We then define a novel architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes one third of a second for a typical image.},
@@ -19,7 +33,9 @@
 	publisher = {arXiv},
 	title = {Fully Convolutional Networks for Semantic Segmentation},
 	url = {https://arxiv.org/abs/1411.4038},
-	year = {2014}}
+	year = {2014},
+	bdsk-url-1 = {https://arxiv.org/abs/1411.4038},
+	bdsk-url-2 = {https://doi.org/10.48550/ARXIV.1411.4038}}
 
 @misc{https://doi.org/10.48550/arxiv.1704.04861,
 	abstract = {We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization.},
