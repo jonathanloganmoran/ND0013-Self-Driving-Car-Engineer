@@ -18,6 +18,8 @@ REQUIRED_PACKAGES = [
     'lvis',
     'scipy',
     'pandas',
+    'numpy==1.21.5',
+    'pyarrow==10.0.0',
     'tensorflow==2.11.0',
     'tf-models-official==2.11.0',
     'tensorflow_io',
